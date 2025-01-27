@@ -1,0 +1,17 @@
+CREATE TABLE `smi_user_tokens` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `uid` VARCHAR(50) NOT NULL,
+    `platform` ENUM('facebook') NOT NULL,
+    `token` TEXT NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE = MyISAM;
+
+
+CREATE TABLE `facebook_pages` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `uid` VARCHAR(50) NOT NULL,
+    `name` VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+    `page_id` VARCHAR(50) NOT NULL,
+    `token` TEXT NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE = MyISAM;
