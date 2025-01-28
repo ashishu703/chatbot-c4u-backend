@@ -15,3 +15,6 @@ CREATE TABLE `facebook_pages` (
     `token` TEXT NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = MyISAM;
+
+
+ALTER TABLE `chats` ADD `type` ENUM('WHATSAPP','MESSENGER','INSTAGRAM','') NOT NULL DEFAULT 'WHATSAPP' AFTER `uid`;

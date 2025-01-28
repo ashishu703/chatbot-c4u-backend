@@ -166,13 +166,13 @@ async function runChatbot(i, incomingMsg, uid, senderNumber, toName) {
 
 async function botWebhook(incomingMsg, uid, senderNumber, toName) {
   console.log({
-    booooot: incomingMsg,
+    incomingMsg: incomingMsg,
   });
 
   const getUser = await query(`SELECT * FROM user WHERE uid = ?`, [uid]);
   if (getUser[0]?.plan) {
     const plan = JSON.parse(getUser[0]?.plan);
-    if (plan.allow_chatbot > 0 && false) {
+    if (plan.allow_chatbot > 0) {
       const chatbots = await query(
         `SELECT * FROM chatbot WHERE uid = ? AND active = ?`,
         [uid, 1]
@@ -193,13 +193,19 @@ async function botWebhook(incomingMsg, uid, senderNumber, toName) {
 
 async function saveMessage(body, uid, type, msgContext) {
   try {
+    console.log("CAME HERE");
 
     const getUser = await query(`SELECT * FROM user WHERE uid = ?`, [uid]);
     const userTimezone = getCurrentTimestampInTimeZone(
       getUser[0]?.timezone || Date.now() / 1000
     );
 
-    const chatId = "jIuIIUjijUiU";
+    const chatId = convertNumberToRandomString(
+      body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
+      body?.entry[0]?.changes
+        ? body?.entry[0]?.changes[0]?.value?.contacts[0]?.profile?.name
+        : "NA"
+    );
 
     const actualMsg = {
       type: type,
@@ -226,7 +232,6 @@ async function saveMessage(body, uid, type, msgContext) {
       `SELECT * FROM chats WHERE chat_id = ? AND uid = ?`,
       [chatId, uid]
     );
-
 
     if (chat.length < 1) {
       await query(
@@ -255,7 +260,6 @@ async function saveMessage(body, uid, type, msgContext) {
     }
 
     const chatPath = `${__dirname}/../conversations/inbox/${uid}/${chatId}.json`;
-
     addObjectToFile(actualMsg, chatPath);
 
     const io = getIOInstance();
@@ -276,9 +280,6 @@ async function saveMessage(body, uid, type, msgContext) {
       `SELECT * FROM agent_chats WHERE owner_uid = ? AND chat_id = ?`,
       [uid, chatId]
     );
-
-
-
 
     if (getAgentChat.length > 0) {
       const getMyChatsId = await query(
@@ -305,7 +306,6 @@ async function saveMessage(body, uid, type, msgContext) {
         chatId: chatId,
       });
     }
-
   } catch (err) {
     console.log(`error in saveMessage in function `, err);
   }
@@ -313,7 +313,6 @@ async function saveMessage(body, uid, type, msgContext) {
 
 async function saveWebhookConversation(body, uid) {
   //  saving simple text
-
   if (
     body?.entry[0]?.changes[0]?.value?.messages &&
     body?.entry[0]?.changes[0]?.value?.messages[0]?.type === "text"
@@ -335,6 +334,7 @@ async function saveWebhookConversation(body, uid) {
         : "NA"
     );
   }
+
   // images
   else if (
     body?.entry[0]?.changes[0]?.value?.messages &&
@@ -364,7 +364,7 @@ async function saveWebhookConversation(body, uid) {
     }
     botWebhook(
       body?.entry[0]?.changes[0]?.value?.messages[0]?.image?.caption ||
-      "aU1uLzohPGMncyrwlPIb",
+        "aU1uLzohPGMncyrwlPIb",
       uid,
       body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
       body?.entry[0]?.changes
@@ -400,7 +400,7 @@ async function saveWebhookConversation(body, uid) {
 
     botWebhook(
       body?.entry[0]?.changes[0]?.value?.messages[0]?.video?.caption ||
-      "aU1uLzohPGMncyrwlPIb",
+        "aU1uLzohPGMncyrwlPIb",
       uid,
       body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
       body?.entry[0]?.changes
@@ -435,7 +435,7 @@ async function saveWebhookConversation(body, uid) {
     }
     botWebhook(
       body?.entry[0]?.changes[0]?.value?.messages[0]?.document?.caption ||
-      "aU1uLzohPGMncyrwlPIb",
+        "aU1uLzohPGMncyrwlPIb",
       uid,
       body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
       body?.entry[0]?.changes
@@ -469,7 +469,7 @@ async function saveWebhookConversation(body, uid) {
 
     botWebhook(
       body?.entry[0]?.changes[0]?.value?.messages[0]?.document?.caption ||
-      "aU1uLzohPGMncyrwlPIb",
+        "aU1uLzohPGMncyrwlPIb",
       uid,
       body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
       body?.entry[0]?.changes
@@ -544,7 +544,7 @@ async function saveWebhookConversation(body, uid) {
 
     botWebhook(
       body?.entry[0]?.changes[0]?.value?.messages[0]?.button?.text ||
-      "aU1uLzohPGMncyrwlPIb",
+        "aU1uLzohPGMncyrwlPIb",
       uid,
       body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
       body?.entry[0]?.changes
@@ -761,31 +761,24 @@ function getCurrentTimestampInTimeZone(timezone) {
 }
 
 function addObjectToFile(object, filePath) {
-  try {
-    const parentDir = path.dirname(filePath);
+  const parentDir = path.dirname(filePath);
 
-    // Check if the parent directory exists
-    if (!fs.existsSync(parentDir)) {
-      // Create the parent directory if it doesn't exist
-      fs.mkdirSync(parentDir, { recursive: true });
-    }
+  // Check if the parent directory exists
+  if (!fs.existsSync(parentDir)) {
+    // Create the parent directory if it doesn't exist
+    fs.mkdirSync(parentDir, { recursive: true });
+  }
 
-    if (fs.existsSync(filePath)) {
-      const existingData = JSON.parse(fs.readFileSync(filePath));
-
-      if (Array.isArray(existingData)) {
-        existingData.push(object);
-        fs.writeFileSync(filePath, JSON.stringify(existingData, null, 2));
-      } else {
-        console.error("File does not contain an array.");
-      }
+  if (fs.existsSync(filePath)) {
+    const existingData = JSON.parse(fs.readFileSync(filePath));
+    if (Array.isArray(existingData)) {
+      existingData.push(object);
+      fs.writeFileSync(filePath, JSON.stringify(existingData, null, 2));
     } else {
-      fs.writeFileSync(filePath, JSON.stringify([object], null, 2));
+      console.error("File does not contain an array.");
     }
-  } catch (error) {
-    console.log({
-      error
-    })
+  } else {
+    fs.writeFileSync(filePath, JSON.stringify([object], null, 2));
   }
 }
 
@@ -1003,9 +996,6 @@ function updateMetaTempletInMsg(uid, savObj, chatId, msgId) {
       };
 
       const chatPath = `${__dirname}/../conversations/inbox/${uid}/${chatId}.json`;
-      return console.log({
-        chatPath
-      })
       addObjectToFile(finalSaveMsg, chatPath);
 
       const io = getIOInstance();
@@ -1350,8 +1340,8 @@ async function sendMetatemplet(
             link: dynamicMedia
               ? dynamicMedia
               : getMedia.length > 0
-                ? `${process.env.FRONTENDURI}/media/${getMedia[0]?.file_name}`
-                : getHeader[0].example?.header_handle[0],
+              ? `${process.env.FRONTENDURI}/media/${getMedia[0]?.file_name}`
+              : getHeader[0].example?.header_handle[0],
           },
         },
       ],
@@ -1373,8 +1363,8 @@ async function sendMetatemplet(
             link: dynamicMedia
               ? dynamicMedia
               : getMedia.length > 0
-                ? `${process.env.FRONTENDURI}/media/${getMedia[0]?.file_name}`
-                : getHeader[0].example?.header_handle[0],
+              ? `${process.env.FRONTENDURI}/media/${getMedia[0]?.file_name}`
+              : getHeader[0].example?.header_handle[0],
           },
         },
       ],
@@ -1396,8 +1386,8 @@ async function sendMetatemplet(
             link: dynamicMedia
               ? dynamicMedia
               : getMedia.length > 0
-                ? `${process.env.FRONTENDURI}/media/${getMedia[0]?.file_name}`
-                : getHeader[0].example?.header_handle[0],
+              ? `${process.env.FRONTENDURI}/media/${getMedia[0]?.file_name}`
+              : getHeader[0].example?.header_handle[0],
             filename: "document",
           },
         },
@@ -1893,11 +1883,11 @@ async function makeRequest({ method, url, body = null, headers = [] }) {
       method === "GET" || method === "DELETE"
         ? undefined
         : JSON.stringify(
-          body.reduce((acc, { key, value }) => {
-            acc[key] = value;
-            return acc;
-          }, {})
-        );
+            body.reduce((acc, { key, value }) => {
+              acc[key] = value;
+              return acc;
+            }, {})
+          );
 
     // Set up the request configuration
     const config = {
@@ -2087,4 +2077,6 @@ module.exports = {
   runChatbot,
   rzCapturePayment,
   validateFacebookToken,
+  addObjectToFile,
+  convertNumberToRandomString
 };

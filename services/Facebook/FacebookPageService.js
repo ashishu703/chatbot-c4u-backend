@@ -3,8 +3,22 @@ const FacebookService = require("./FacebookService");
 
 
 module.exports = class FacebookPageService extends FacebookService {
-    constructor(user, accessToken) {
+    page;
+    constructor(user = null, accessToken = null) {
         super(user, accessToken);
+    }
+
+    async setCurrentPage(pageId) {
+        this.page = await FacebookPageRepository.findByPageId(pageId); 
+        this.accessToken = this.page.token;
+        return this;
+    }
+
+    async fetchProfile(psid) {  
+        return this.get(`/${psid}`, {
+            fields: 'first_name,last_name,profile_pic',
+            access_token: this.accessToken
+        });
     }
 
     async fetchAndSavePages() {
@@ -21,7 +35,7 @@ module.exports = class FacebookPageService extends FacebookService {
     }
 
     async savePage(page) {
-        await FacebookPageRepository.save(
+        await FacebookPageRepository.updateOrCreate(
             this.user.uid,
             page.id,
             page.name,

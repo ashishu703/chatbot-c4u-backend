@@ -1,4 +1,4 @@
-const { FACEBOOK_TYPE_KEY } = require("../../constants/facebook.contant");
+const { FACEBOOK_TYPE_KEY } = require("../../constants/facebook.constant");
 const SmiUserTokenRepository = require("../../repositories/SmiUserTokenRepository");
 const FacebookService = require("./FacebookService");
 
@@ -34,7 +34,7 @@ module.exports = class FacebookAuthService extends FacebookService {
     }
 
     async saveCurrentToken() {
-        await SmiUserTokenRepository.save(this.user.uid, FACEBOOK_TYPE_KEY, this.accessToken);
+        await SmiUserTokenRepository.updateOrCreate(this.user.uid, FACEBOOK_TYPE_KEY, this.accessToken);
         return this;
     }
 
