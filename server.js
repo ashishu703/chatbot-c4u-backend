@@ -49,7 +49,7 @@ const agentRoute = require('./routes/agent')
 app.use('/api/agent', agentRoute)
 
 
-app.use('/api/facebook', require('./routes/facebook.js'))
+app.use('/api/messanger', require('./routes/messanger'))
 
 const path = require("path");
 

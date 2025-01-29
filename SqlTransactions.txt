@@ -18,3 +18,5 @@ CREATE TABLE `facebook_pages` (
 
 
 ALTER TABLE `chats` ADD `type` ENUM('WHATSAPP','MESSENGER','INSTAGRAM','') NOT NULL DEFAULT 'WHATSAPP' AFTER `uid`;
+
+ALTER TABLE `chats` ADD `recipient` VARCHAR(50) NULL AFTER `last_message`;

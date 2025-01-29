@@ -14,8 +14,8 @@ module.exports = class FacebookService {
     }
 
 
-    async post(url, data) {
-       
+    async post(url, data, query = []) {
+        const queryString = new URLSearchParams(query).toString();
         const options = {
             method: 'POST',
             headers: {
@@ -24,7 +24,7 @@ module.exports = class FacebookService {
             },
             body: JSON.stringify(data)
         };
-        const response = await fetch(`${this.APIURL}${url}`, options);
+        const response = await fetch(`${this.APIURL}${url}?${queryString}`, options);
         return handleApiResponse(response);
     }
 

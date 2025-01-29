@@ -2,14 +2,14 @@ const { query } = require("../database/dbpromise");
 
 module.exports = class ChatRepository {
     static async createIfNotExist({
-        chat_id, uid, type, last_message_came, chat_note, chat_tags, sender_name, sender_mobile, chat_status, is_opened, last_message
+        chat_id, uid, type, last_message_came, chat_note, chat_tags, sender_name, sender_mobile, chat_status, is_opened, last_message, recipient
     }) {
         const isExisting = await this.findChatByChatId(chat_id);
         if (isExisting) {
             return this.updateLastMessage(chat_id, last_message, last_message_came);
         }
         return this.createMessengerChat({
-            chat_id, uid, type, last_message_came, chat_note, chat_tags, sender_name, sender_mobile, chat_status, is_opened, last_message
+            chat_id, uid, type, last_message_came, chat_note, chat_tags, sender_name, sender_mobile, chat_status, is_opened, last_message, recipient
         });
     }
     static async createMessengerChat({
@@ -23,10 +23,11 @@ module.exports = class ChatRepository {
         sender_mobile,
         chat_status,
         is_opened,
-        last_message
+        last_message,
+        recipient
     }) {
-        return query(`INSERT INTO chats (chat_id, uid, type, last_message_came, chat_note, chat_tags, sender_name, sender_mobile, chat_status, is_opened, last_message)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [chat_id, uid, type, last_message_came, chat_note, chat_tags, sender_name, sender_mobile, chat_status, is_opened, last_message]);
+        return query(`INSERT INTO chats (chat_id, uid, type, last_message_came, chat_note, chat_tags, sender_name, sender_mobile, chat_status, is_opened, last_message, recipient)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [chat_id, uid, type, last_message_came, chat_note, chat_tags, sender_name, sender_mobile, chat_status, is_opened, last_message, recipient]);
     }
 
 

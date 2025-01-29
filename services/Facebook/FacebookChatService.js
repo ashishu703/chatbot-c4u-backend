@@ -5,7 +5,7 @@ const ChatRepository = require("../../repositories/ChatRepository");
 const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
 const SmiUserTokenRepository = require("../../repositories/SmiUserTokenRepository");
 const { prepareChatPath, createChatId } = require("../../utils/facebook.utils");
-const { convertWebhookToSimpleMessage, convertWebhookToDBChatCreateObject, convertWebhookToDBChatUpdateObject } = require("../../utils/messenger.utils");
+const { convertWebhookReciveMessageToJsonObj, convertWebhookToDBChatCreateObject, convertWebhookToDBChatUpdateObject, convertWebhookRecieptToJsonObj } = require("../../utils/messenger.utils");
 const ChatIOService = require("../ChatIOService");
 const FacebookPageService = require("./FacebookPageService");
 const FacebookService = require("./FacebookService");
@@ -24,34 +24,41 @@ module.exports = class FacebookChatService extends FacebookService {
     }
 
     async processIncomingMessages(payload) {
-
-
         const { object, entry } = payload;
-
+    
         entry.forEach(entryObj => {
             const { messaging } = entryObj
-
             messaging.forEach(async (messageObj) => {
-
-
                 const {
                     recipient,
                     sender,
                     message,
-                    reaction
+                    reaction,
+                    delivery,
+                    read
                 } = messageObj;
 
+                let pageProfile;
+                let chatId;
 
-
-                const pageProfile = await FacebookPageRepository.findByPageId(recipient.id);
+                if (message && message.is_echo) {
+                    pageProfile = await FacebookPageRepository.findByPageId(sender.id);
+                    chatId = createChatId(recipient.id, sender.id);
+                }
+                else {
+                    pageProfile = await FacebookPageRepository.findByPageId(recipient.id);
+                    chatId = createChatId(sender.id, recipient.id);
+                    const existingChat = await ChatRepository.findChatByChatId(chatId);
+                    if (!existingChat) {
+                        await this.createNewChat(messageObj);
+                    }
+                }
 
                 if (!pageProfile) {
                     throw new FacebookException("Page not found", "Unknown", 403);
                 }
 
                 await this.initIOService(pageProfile.uid);
-
-                const chatId = createChatId(sender.id, recipient.id);
 
                 const path = prepareChatPath(pageProfile.uid, chatId);
 
@@ -62,21 +69,20 @@ module.exports = class FacebookChatService extends FacebookService {
                     chatId
                 }
 
-                const existingChat = await ChatRepository.findChatByChatId(chatId);
-
-
-                if (!existingChat) {
-                    await this.createNewChat(messageObj);
+                if (message && message.is_echo) {
+                    this.processSentReciept(messageObj);
                 }
-
-                if (message) {
+                else if (message) {
                     this.processTextMessage(messageObj);
                 }
                 else if (reaction) {
                     this.processReaction(messageObj);
                 }
+                else if (delivery || read) {
+                    this.processDeliveryMessage(messageObj);
+                }
 
-               await this.emitUpdateConversationEvent(pageProfile.uid);
+                await this.emitUpdateConversationEvent(pageProfile.uid);
             })
         });
     }
@@ -95,15 +101,19 @@ module.exports = class FacebookChatService extends FacebookService {
     }
 
 
+    async processSentReciept(messageObj) {
+        const { path, chatId } = messageObj;
+        const dbMessageObj = convertWebhookRecieptToJsonObj(messageObj);
+        addObjectToFile(dbMessageObj, path);
+        this.emitNewMessageEvent(dbMessageObj, chatId);
+        await ChatRepository.updateLastMessage(chatId, convertWebhookToDBChatUpdateObject({ ...messageObj, message: dbMessageObj }));
+    }
+
     async processTextMessage(messageObj) {
         const { path, chatId } = messageObj;
-
-        const dbMessageObj = convertWebhookToSimpleMessage(messageObj);
-
+        const dbMessageObj = convertWebhookReciveMessageToJsonObj(messageObj);
         addObjectToFile(dbMessageObj, path);
-
-        this.emitNewMessageEvent(dbMessageObj);
-
+        this.emitNewMessageEvent(dbMessageObj, chatId);
         await ChatRepository.updateLastMessage(chatId, convertWebhookToDBChatUpdateObject({ ...messageObj, message: dbMessageObj }));
     }
 
@@ -113,32 +123,60 @@ module.exports = class FacebookChatService extends FacebookService {
             chatId,
             path
         } = messageObj;
-
         const chats = readJsonFromFile(path);
-
         let foundMessage;
-
         const updatedChat = chats.map((chat) => {
-           
             if (chat.message_id === reaction.mid) {
                 chat.reaction = reaction.emoji
                 foundMessage = chat;
             }
-
             return chat;
         })
-
         if (foundMessage) {
             this.emitNewReactionEvent(foundMessage, chatId);
             await ChatRepository.updateLastMessage(chatId, convertWebhookToDBChatUpdateObject({ ...messageObj, message: foundMessage }));
         }
+        writeJsonToFile(path, updatedChat, null);
+    }
 
+
+    async processDeliveryMessage(messageObj) {
+
+        const { path, chatId, delivery, read } = messageObj;
+        const chats = readJsonFromFile(path);
+
+        const updatedChat = chats.map((chat) => {
+            if (delivery && delivery.mids.includes(chat.message_id)) {
+                chat.status = 'delivered';
+                this.emitMessageDeliveryEvent(chat, chatId);
+            }
+            else if (read) {
+                chat.status = 'read';
+                this.emitMessageDeliveryEvent(chat, chatId);
+            }
+            return chat;
+        })
         writeJsonToFile(path, updatedChat, null);
     }
 
     async emitUpdateConversationEvent(uid) {
         const chats = await ChatRepository.findUidId(uid);
-        this.ioService.updateConversation({chats});
+        this.ioService.updateConversation({ chats });
+    }
+
+
+    async send({
+        text,
+        toNumber
+    }) {
+        const payload = {
+            recipient: { id: toNumber },
+            message: { text },
+            messaging_type: "RESPONSE",
+        };
+        return this.post('/me/messages', payload, {
+            access_token: this.accessToken
+        });
     }
 
 
@@ -146,13 +184,16 @@ module.exports = class FacebookChatService extends FacebookService {
         this.ioService.pushNewReaction({
             chatId,
             reaction: message.reaction,
-            msgId: message.message_id
+            message_id: message.message_id
         });
     }
-    
 
-     async emitNewMessageEvent(message, chatId) {
-        this.ioService.pushNewMsg({msg: message, chatId});
+
+    async emitNewMessageEvent(message, chatId) {
+        this.ioService.pushNewMsg({ msg: message, chatId });
+    }
+
+    async emitMessageDeliveryEvent({ message_id, status }, chatId) {
+        this.ioService.pushUpdateDelivery({ message_id, status, chatId });
     }
 }
-
