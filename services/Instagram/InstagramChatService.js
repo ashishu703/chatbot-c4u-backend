@@ -7,11 +7,11 @@ const SmiUserTokenRepository = require("../../repositories/SmiUserTokenRepositor
 const { prepareChatPath, createChatId } = require("../../utils/facebook.utils");
 const { convertWebhookReciveMessageToJsonObj, convertWebhookToDBChatCreateObject, convertWebhookToDBChatUpdateObject, convertWebhookRecieptToJsonObj } = require("../../utils/messenger.utils");
 const ChatIOService = require("../ChatIOService");
-const FacebookPageService = require("./FacebookPageService");
-const FacebookService = require("./FacebookService");
+const MessangerPageService = require("./InstagramPageService");
+const MessangerService = require("./InstagramService");
 
 
-module.exports = class FacebookChatService extends FacebookService {
+module.exports = class InstagramChatService extends MessangerService {
     pageService;
     ioService;
     constructor(user = null, accessToken = null) {
@@ -92,7 +92,7 @@ module.exports = class FacebookChatService extends FacebookService {
 
     async createNewChat(messageObj) {
         const sender = messageObj.sender;
-        const pageService = new FacebookPageService(null, messageObj.token)
+        const pageService = new MessangerPageService(null, messageObj.token)
         const person = await pageService.fetchProfile(sender.id);
         await ChatRepository.createIfNotExist(convertWebhookToDBChatCreateObject({
             ...messageObj,

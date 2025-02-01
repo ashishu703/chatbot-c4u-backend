@@ -1,19 +1,19 @@
 const router = require("express").Router();
 const validateUser = require("../middlewares/user.js");
 
-const AuthController = require("../controllers/Facebook/FacebookAuthController.js");
-const MetaWebhookController = require("../controllers/Facebook/MetaWebhookController");
-const MessengerChatController = require("../controllers/Facebook/MessengerChatController");
+const AuthController = require("../controllers/Messanger/MessangerAuthController.js");
+const MessengerWebhookController = require("../controllers/Messanger/MessengerWebhookController.js");
+const MessengerChatController = require("../controllers/Messanger/MessengerChatController.js");
 const authController = new AuthController();
-const metaWebhookController = new MetaWebhookController();
+const messengerWebhookController = new MessengerWebhookController();
 const messengerChatController = new MessengerChatController();
 
 router.post("/auth-init", validateUser, authController.initiateUserAuth.bind(authController));
 
-router.get('/webhook', metaWebhookController.verifyWebhook.bind(metaWebhookController));
+router.get('/webhook', messengerWebhookController.verifyWebhook.bind(messengerWebhookController));
 
-router.post('/webhook', metaWebhookController.handleWebhook.bind(metaWebhookController));
+router.post('/webhook', messengerWebhookController.handleWebhook.bind(messengerWebhookController));
 
-router.post('/send', validateUser, messengerChatController.send.bind(metaWebhookController));
+router.post('/send', validateUser, messengerChatController.send.bind(messengerChatController));
 
 module.exports = router;

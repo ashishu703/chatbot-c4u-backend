@@ -1,7 +1,7 @@
 const { FACEBOOK_CLIENT_ID, FACEBOOK_CLIENT_SECRET, FACEBOOK_DEFAULT_GRAPH_VERSION } = require("../../constants/facebook.constant");
 const { handleApiResponse } = require("../../utils/facebook.utils");
 
-module.exports = class FacebookService {
+module.exports = class InstagramService {
     AppId = FACEBOOK_CLIENT_ID;
     AppSecret = FACEBOOK_CLIENT_SECRET;
     DefaultApiVersion = FACEBOOK_DEFAULT_GRAPH_VERSION;

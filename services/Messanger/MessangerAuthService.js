@@ -1,9 +1,9 @@
 const { FACEBOOK_TYPE_KEY } = require("../../constants/facebook.constant");
 const SmiUserTokenRepository = require("../../repositories/SmiUserTokenRepository");
-const FacebookService = require("./FacebookService");
+const MessangerService = require("./MessangerService");
 
 
-module.exports = class FacebookAuthService extends FacebookService {
+module.exports = class MessangerAuthService extends MessangerService {
     pageService;
     constructor(user, accessToken) {
         super(user, accessToken);

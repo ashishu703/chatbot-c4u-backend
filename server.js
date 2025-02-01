@@ -51,6 +51,9 @@ app.use('/api/agent', agentRoute)
 
 app.use('/api/messanger', require('./routes/messanger'))
 
+app.use('/api/instagram', require('./routes/instagram'))
+
+
 const path = require("path");
 
 const currentDir = process.cwd();

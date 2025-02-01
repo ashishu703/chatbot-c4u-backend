@@ -1,8 +1,8 @@
 const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
-const FacebookService = require("./FacebookService");
+const MessangerService = require("./InstagramService");
 
 
-module.exports = class FacebookPageService extends FacebookService {
+module.exports = class InstagramPageService extends MessangerService {
     page;
     constructor(user = null, accessToken = null) {
         super(user, accessToken);

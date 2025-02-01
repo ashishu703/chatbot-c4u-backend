@@ -1,22 +1,22 @@
 const FacebookException = require("../../exceptions/FacebookException");
-const FacebookAuthService = require("../../services/Facebook/FacebookAuthService");
-const FacebookPageService = require("../../services/Facebook/FacebookPageService");
-const FacebookController = require("./FacebookController");
+const MessangerAuthService = require("../../services/Messanger/MessangerAuthService");
+const MessangerPageService = require("../../services/Messanger/MessangerPageService");
+const MessangerController = require("./MessangerController");
 
-module.exports = class FacebookAuthController extends FacebookController {
+module.exports = class MessangerAuthController extends MessangerController {
     async initiateUserAuth(req, res) {
         try {
             const { accessToken } = req.body
 
             const user = req.decode;
 
-            const authService = new FacebookAuthService(user, accessToken);
+            const authService = new MessangerAuthService(user, accessToken);
 
             const longLiveToken = await authService.initiateUserAuth(user);
 
             if(!longLiveToken) throw new Error("Authentication Failed");
 
-            const pageService = new FacebookPageService(user, accessToken)
+            const pageService = new MessangerPageService(user, accessToken)
 
             await pageService.fetchAndSavePages();
             
