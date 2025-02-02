@@ -1,5 +1,6 @@
 const { INSTAGRAM_CLIENT_ID, INSTAGRAM_CLIENT_SECRET, INSTAGRAM_DEFAULT_GRAPH_VERSION } = require("../../constants/instagram.constant");
 const { handleApiResponse } = require("../../utils/facebook.utils");
+const fetch = require("node-fetch");
 
 module.exports = class InstagramService {
     AppId = INSTAGRAM_CLIENT_ID;

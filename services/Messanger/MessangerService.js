@@ -1,6 +1,6 @@
 const { MESSANGER_CLIENT_ID, MESSANGER_CLIENT_SECRET, MESSANGER_DEFAULT_GRAPH_VERSION } = require("../../constants/messanger.constant");
 const { handleApiResponse } = require("../../utils/facebook.utils");
-
+const fetch = require("node-fetch");
 module.exports = class MessangerService {
     AppId = MESSANGER_CLIENT_ID;
     AppSecret = MESSANGER_CLIENT_SECRET;
