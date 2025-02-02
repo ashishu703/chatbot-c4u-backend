@@ -1,4 +1,4 @@
-const { FACEBOOK_TYPE_KEY } = require("../../constants/facebook.constant");
+const { FACEBOOK_TYPE_KEY } = require("../../constants/messanger.constant");
 const SmiUserTokenRepository = require("../../repositories/SmiUserTokenRepository");
 const MessangerService = require("./MessangerService");
 

@@ -1,11 +1,11 @@
-const { FACEBOOK_CLIENT_ID, FACEBOOK_CLIENT_SECRET, FACEBOOK_DEFAULT_GRAPH_VERSION } = require("../../constants/facebook.constant");
+const { INSTAGRAM_CLIENT_ID, INSTAGRAM_CLIENT_SECRET, INSTAGRAM_DEFAULT_GRAPH_VERSION } = require("../../constants/instagram.constant");
 const { handleApiResponse } = require("../../utils/facebook.utils");
 
 module.exports = class InstagramService {
-    AppId = FACEBOOK_CLIENT_ID;
-    AppSecret = FACEBOOK_CLIENT_SECRET;
-    DefaultApiVersion = FACEBOOK_DEFAULT_GRAPH_VERSION;
-    APIURL = `https://graph.facebook.com/${this.DefaultApiVersion}`
+    AppId = INSTAGRAM_CLIENT_ID;
+    AppSecret = INSTAGRAM_CLIENT_SECRET;
+    DefaultApiVersion = INSTAGRAM_DEFAULT_GRAPH_VERSION;
+    APIURL = `https://graph.instagram.com/${this.DefaultApiVersion}`
     accessToken = null;
 
     constructor(user, accessToken) {

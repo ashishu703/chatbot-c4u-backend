@@ -1,10 +1,10 @@
-const { FACEBOOK_CLIENT_ID, FACEBOOK_CLIENT_SECRET, FACEBOOK_DEFAULT_GRAPH_VERSION } = require("../../constants/facebook.constant");
+const { MESSANGER_CLIENT_ID, MESSANGER_CLIENT_SECRET, MESSANGER_DEFAULT_GRAPH_VERSION } = require("../../constants/messanger.constant");
 const { handleApiResponse } = require("../../utils/facebook.utils");
 
 module.exports = class MessangerService {
-    AppId = FACEBOOK_CLIENT_ID;
-    AppSecret = FACEBOOK_CLIENT_SECRET;
-    DefaultApiVersion = FACEBOOK_DEFAULT_GRAPH_VERSION;
+    AppId = MESSANGER_CLIENT_ID;
+    AppSecret = MESSANGER_CLIENT_SECRET;
+    DefaultApiVersion = MESSANGER_DEFAULT_GRAPH_VERSION;
     APIURL = `https://graph.facebook.com/${this.DefaultApiVersion}`
     accessToken = null;
 

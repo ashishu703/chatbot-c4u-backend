@@ -14,12 +14,17 @@ module.exports = class InstagramChatController extends InstagramController {
             toNumber
         } = req.body;
 
+
+      
+
         const chat = await ChatRepository.findChatByChatId(chatId);
 
         const { recipient } = chat;
-
-        const pageProfile = await FacebookPageRepository.findByPageId(recipient);
-
+        
+        let pageProfile = {//dummy profile
+            uid: "lWvj6K0xI0FlSKJoyV7ak9DN0mzvKJK8",
+            token: "IGAANJYZAG6nXdBZAE9saG5NTzNSUjFiaHRlRVVhSFJsYzg4ZADRpRi04WDh4OXBXamhUenRibGwySEVlQlZApX2VBUUt1ZAzF1NDhmZAWZAxTlA5TGd3M2dZAbU9RbkdQcm11VmpjVGdtcHp4blNTbWlwaGxIZAzI4YlU0RnFUNzV6d3puZAwZDZD"
+        };
         const chatService = new InstagramChatService(null, pageProfile.token);
 
         await chatService.send({

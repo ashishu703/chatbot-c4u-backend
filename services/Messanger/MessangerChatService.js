@@ -1,11 +1,11 @@
-const { FACEBOOK_TYPE_KEY } = require("../../constants/facebook.constant");
+const { FACEBOOK_TYPE_KEY } = require("../../constants/messanger.constant");
 const FacebookException = require("../../exceptions/FacebookException");
 const { readJsonFromFile, writeJsonToFile, addObjectToFile } = require("../../functions/function");
 const ChatRepository = require("../../repositories/ChatRepository");
 const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
 const SmiUserTokenRepository = require("../../repositories/SmiUserTokenRepository");
 const { prepareChatPath, createChatId } = require("../../utils/facebook.utils");
-const { convertWebhookReciveMessageToJsonObj, convertWebhookToDBChatCreateObject, convertWebhookToDBChatUpdateObject, convertWebhookRecieptToJsonObj } = require("../../utils/messenger.utils");
+const { convertWebhookReciveMessageToJsonObj, convertMessangerWebhookToDBChatCreateObject, convertWebhookToDBChatUpdateObject, convertWebhookRecieptToJsonObj } = require("../../utils/messenger.utils");
 const ChatIOService = require("../ChatIOService");
 const MessangerPageService = require("./MessangerPageService");
 const MessangerService = require("./MessangerService");
@@ -25,7 +25,7 @@ module.exports = class MessangerChatService extends MessangerService {
 
     async processIncomingMessages(payload) {
         const { object, entry } = payload;
-    
+
         entry.forEach(entryObj => {
             const { messaging } = entryObj
             messaging.forEach(async (messageObj) => {
@@ -50,7 +50,7 @@ module.exports = class MessangerChatService extends MessangerService {
                     chatId = createChatId(sender.id, recipient.id);
                     const existingChat = await ChatRepository.findChatByChatId(chatId);
                     if (!existingChat) {
-                        await this.createNewChat(messageObj);
+                        await this.createNewChat({ ...messageObj, ...pageProfile, chatId });
                     }
                 }
 
@@ -94,7 +94,7 @@ module.exports = class MessangerChatService extends MessangerService {
         const sender = messageObj.sender;
         const pageService = new MessangerPageService(null, messageObj.token)
         const person = await pageService.fetchProfile(sender.id);
-        await ChatRepository.createIfNotExist(convertWebhookToDBChatCreateObject({
+        await ChatRepository.createIfNotExist(convertMessangerWebhookToDBChatCreateObject({
             ...messageObj,
             ...person
         }));

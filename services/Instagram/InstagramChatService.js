@@ -1,18 +1,17 @@
-const { FACEBOOK_TYPE_KEY } = require("../../constants/facebook.constant");
+const { FACEBOOK_TYPE_KEY } = require("../../constants/messanger.constant");
 const FacebookException = require("../../exceptions/FacebookException");
 const { readJsonFromFile, writeJsonToFile, addObjectToFile } = require("../../functions/function");
 const ChatRepository = require("../../repositories/ChatRepository");
 const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
 const SmiUserTokenRepository = require("../../repositories/SmiUserTokenRepository");
 const { prepareChatPath, createChatId } = require("../../utils/facebook.utils");
-const { convertWebhookReciveMessageToJsonObj, convertWebhookToDBChatCreateObject, convertWebhookToDBChatUpdateObject, convertWebhookRecieptToJsonObj } = require("../../utils/messenger.utils");
+const { convertWebhookReciveMessageToJsonObj, convertInstagramWebhookToDBChatCreateObject, convertWebhookToDBChatUpdateObject, convertWebhookRecieptToJsonObj } = require("../../utils/messenger.utils");
 const ChatIOService = require("../ChatIOService");
-const MessangerPageService = require("./InstagramPageService");
+const InstagramProfileService = require("./InstagramProfileService");
 const MessangerService = require("./InstagramService");
 
 
 module.exports = class InstagramChatService extends MessangerService {
-    pageService;
     ioService;
     constructor(user = null, accessToken = null) {
         super(user, accessToken);
@@ -24,33 +23,34 @@ module.exports = class InstagramChatService extends MessangerService {
     }
 
     async processIncomingMessages(payload) {
-        const { object, entry } = payload;
-    
+        const { entry } = payload;
+
         entry.forEach(entryObj => {
-            const { messaging } = entryObj
-            messaging.forEach(async (messageObj) => {
+            const { messaging, changes } = entryObj
+            messaging?.forEach(async (messageObj) => {
                 const {
                     recipient,
                     sender,
                     message,
                     reaction,
-                    delivery,
-                    read
                 } = messageObj;
 
-                let pageProfile;
+                let pageProfile = {//dummy profile
+                    uid: "lWvj6K0xI0FlSKJoyV7ak9DN0mzvKJK8",
+                    token: "IGAANJYZAG6nXdBZAE9saG5NTzNSUjFiaHRlRVVhSFJsYzg4ZADRpRi04WDh4OXBXamhUenRibGwySEVlQlZApX2VBUUt1ZAzF1NDhmZAWZAxTlA5TGd3M2dZAbU9RbkdQcm11VmpjVGdtcHp4blNTbWlwaGxIZAzI4YlU0RnFUNzV6d3puZAwZDZD"
+                };
+
                 let chatId;
 
                 if (message && message.is_echo) {
-                    pageProfile = await FacebookPageRepository.findByPageId(sender.id);
                     chatId = createChatId(recipient.id, sender.id);
                 }
                 else {
-                    pageProfile = await FacebookPageRepository.findByPageId(recipient.id);
                     chatId = createChatId(sender.id, recipient.id);
                     const existingChat = await ChatRepository.findChatByChatId(chatId);
+
                     if (!existingChat) {
-                        await this.createNewChat(messageObj);
+                        await this.createNewChat({ ...messageObj, ...pageProfile, chatId });
                     }
                 }
 
@@ -78,11 +78,52 @@ module.exports = class InstagramChatService extends MessangerService {
                 else if (reaction) {
                     this.processReaction(messageObj);
                 }
-                else if (delivery || read) {
-                    this.processDeliveryMessage(messageObj);
-                }
+               
 
                 await this.emitUpdateConversationEvent(pageProfile.uid);
+            })
+
+
+            changes?.forEach(async (change) => {
+                const {
+                    field,
+                    value
+                } = change;
+
+                if (field === "messaging_seen") {
+
+                    const {
+                        sender,
+                        recipient,
+                    } = value
+
+                    let pageProfile = {//dummy profile
+                        uid: "lWvj6K0xI0FlSKJoyV7ak9DN0mzvKJK8",
+                        token: "IGAANJYZAG6nXdBZAE9saG5NTzNSUjFiaHRlRVVhSFJsYzg4ZADRpRi04WDh4OXBXamhUenRibGwySEVlQlZApX2VBUUt1ZAzF1NDhmZAWZAxTlA5TGd3M2dZAbU9RbkdQcm11VmpjVGdtcHp4blNTbWlwaGxIZAzI4YlU0RnFUNzV6d3puZAwZDZD"
+                    };
+
+                    let chatId = createChatId(sender.id, recipient.id);
+
+                    if (!pageProfile) {
+                        throw new FacebookException("Page not found", "Unknown", 403);
+                    }
+
+                    await this.initIOService(pageProfile.uid);
+
+                    const path = prepareChatPath(pageProfile.uid, chatId);
+
+                    change = {
+                        ...value,
+                        ...pageProfile,
+                        path,
+                        chatId
+                    }
+
+                    this.processDeliveryMessage(change);
+
+                    await this.emitUpdateConversationEvent(pageProfile.uid);
+                }
+
             })
         });
     }
@@ -91,12 +132,11 @@ module.exports = class InstagramChatService extends MessangerService {
 
 
     async createNewChat(messageObj) {
-        const sender = messageObj.sender;
-        const pageService = new MessangerPageService(null, messageObj.token)
-        const person = await pageService.fetchProfile(sender.id);
-        await ChatRepository.createIfNotExist(convertWebhookToDBChatCreateObject({
+        const profileService = new InstagramProfileService(null, messageObj.token)
+        const { from } = await profileService.fetchProfile(messageObj.message.mid);
+        await ChatRepository.createIfNotExist(convertInstagramWebhookToDBChatCreateObject({
             ...messageObj,
-            ...person
+            username: from.username
         }));
     }
 
@@ -142,20 +182,21 @@ module.exports = class InstagramChatService extends MessangerService {
 
     async processDeliveryMessage(messageObj) {
 
-        const { path, chatId, delivery, read } = messageObj;
+        const { path, chatId, read } = messageObj;
         const chats = readJsonFromFile(path);
-
-        const updatedChat = chats.map((chat) => {
-            if (delivery && delivery.mids.includes(chat.message_id)) {
-                chat.status = 'delivered';
-                this.emitMessageDeliveryEvent(chat, chatId);
-            }
-            else if (read) {
+        const updatedChat = [];
+        for (let index = 0; index < chats.length; index++) {
+            const chat = chats[index];
+            if (read) {
                 chat.status = 'read';
                 this.emitMessageDeliveryEvent(chat, chatId);
+                if (read.mid == chat.message_id) {
+                    break;
+                }
             }
-            return chat;
-        })
+            updatedChat.push(chat);
+        }
+
         writeJsonToFile(path, updatedChat, null);
     }
 
@@ -172,7 +213,6 @@ module.exports = class InstagramChatService extends MessangerService {
         const payload = {
             recipient: { id: toNumber },
             message: { text },
-            messaging_type: "RESPONSE",
         };
         return this.post('/me/messages', payload, {
             access_token: this.accessToken

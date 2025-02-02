@@ -1,9 +1,8 @@
-const { META_WEBHOOK_VERIFICATION_KEY } = require("../constants/facebook.constant");
+const { META_WEBHOOK_VERIFICATION_KEY } = require("../constants/messanger.constant");
 const { convertNumberToRandomString } = require("../functions/function");
 const FacebookException = require("./../exceptions/FacebookException");
 
 async function handleApiResponse(response) {
-
     if (!response.ok) {
         const errorData = await response.json();
         const { code, message, type } = errorData.error || {};

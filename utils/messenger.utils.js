@@ -1,4 +1,4 @@
-const { MESSENGER_KEY } = require("../constants/chat.constant");
+const { MESSENGER_KEY, INSTAGRAM_KEY } = require("../constants/chat.constant");
 
 function convertWebhookReciveMessageToJsonObj(messageObj) {
 
@@ -25,7 +25,8 @@ function convertWebhookRecieptToJsonObj(messageObj) {
     };
 }
 
-function convertWebhookToDBChatCreateObject(object) {
+function convertMessangerWebhookToDBChatCreateObject(object) {
+   
     const {
         chatId,
         uid,
@@ -46,6 +47,35 @@ function convertWebhookToDBChatCreateObject(object) {
         chat_note: null,
         chat_tags: null,
         sender_name: combineNames({ first_name, last_name }),
+        sender_mobile: sender.id,
+        chat_status: "open",
+        is_opened: 0,
+        last_message: null
+    }
+}
+
+
+function convertInstagramWebhookToDBChatCreateObject(object) {
+  
+    const {
+        chatId,
+        uid,
+        page_id,
+        timestamp,
+        sender,
+        username
+    } = object
+
+
+    return {
+        chat_id: chatId,
+        uid: uid,
+        recipient: page_id,
+        type: INSTAGRAM_KEY,
+        last_message_came: timestamp / 1000,
+        chat_note: null,
+        chat_tags: null,
+        sender_name: username,
         sender_mobile: sender.id,
         chat_status: "open",
         is_opened: 0,
@@ -75,7 +105,8 @@ function combineNames({ first_name, last_name }) {
 
 module.exports = {
     convertWebhookReciveMessageToJsonObj,
-    convertWebhookToDBChatCreateObject,
+    convertMessangerWebhookToDBChatCreateObject,
+    convertInstagramWebhookToDBChatCreateObject,
     convertWebhookToDBChatUpdateObject,
     convertWebhookRecieptToJsonObj
 }

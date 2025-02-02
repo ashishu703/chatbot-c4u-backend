@@ -1,4 +1,4 @@
-const { FACEBOOK_CLIENT_ID, FACEBOOK_CLIENT_SECRET, FACEBOOK_DEFAULT_GRAPH_VERSION } = require("../../constants/facebook.constant");
+const { MESSANGER_CLIENT_ID, MESSANGER_CLIENT_SECRET, MESSANGER_DEFAULT_GRAPH_VERSION } = require("../../constants/messanger.constant");
 
 module.exports = class MessangerController {
   

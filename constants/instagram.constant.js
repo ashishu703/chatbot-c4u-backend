@@ -1,0 +1,14 @@
+const dotenv = require("dotenv");
+dotenv.config();
+const env = process.env;
+
+console.log({
+    env: env.INSTAGRAM_DEFAULT_GRAPH_VERSION
+})
+module.exports = {
+    INSTAGRAM_CLIENT_ID: env.INSTAGRAM_CLIENT_ID,
+    INSTAGRAM_CLIENT_SECRET: env.INSTAGRAM_CLIENT_SECRET,
+    INSTAGRAM_DEFAULT_GRAPH_VERSION: env.INSTAGRAM_DEFAULT_GRAPH_VERSION,
+    META_WEBHOOK_VERIFICATION_KEY: env.META_WEBHOOK_VERIFICATION_KEY,
+    FACEBOOK_TYPE_KEY : "instagram"
+}
