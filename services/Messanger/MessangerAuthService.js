@@ -12,7 +12,7 @@ module.exports = class MessangerAuthService extends MessangerService {
     async initiateUserAuth() {
         await this.getLongLiveToken()
         await this.saveCurrentToken();
-        return true;
+        return this.accessToken;
     }
 
 

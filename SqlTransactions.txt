@@ -20,3 +20,12 @@ CREATE TABLE `facebook_pages` (
 ALTER TABLE `chats` ADD `type` ENUM('WHATSAPP','MESSENGER','INSTAGRAM','') NOT NULL DEFAULT 'WHATSAPP' AFTER `uid`;
 
 ALTER TABLE `chats` ADD `recipient` VARCHAR(50) NULL AFTER `last_message`;
+
+CREATE TABLE `instagram_accounts` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `uid` VARCHAR(50) NOT NULL,
+    `account_id` VARCHAR(50) NOT NULL,
+    `name` VARCHAR(50) NOT NULL,
+    `avatar` VARCHAR(50),
+    PRIMARY KEY (`id`)
+) ENGINE = MyISAM;

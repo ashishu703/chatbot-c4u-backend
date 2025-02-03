@@ -12,6 +12,8 @@ router.post("/auth-init", validateUser, authController.initiateUserAuth.bind(aut
 
 router.get('/webhook', instagramWebhookController.verifyWebhook.bind(instagramWebhookController));
 
+router.get('/auth-uri', authController.getAuthUri.bind(authController));
+
 router.post('/webhook', instagramWebhookController.handleWebhook.bind(instagramWebhookController));
 
 router.post('/send', validateUser, instagramChatController.send.bind(instagramChatController));

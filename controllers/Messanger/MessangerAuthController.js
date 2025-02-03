@@ -12,11 +12,11 @@ module.exports = class MessangerAuthController extends MessangerController {
 
             const authService = new MessangerAuthService(user, accessToken);
 
-            const longLiveToken = await authService.initiateUserAuth(user);
+            const longLiveToken = await authService.initiateUserAuth();
 
             if(!longLiveToken) throw new Error("Authentication Failed");
 
-            const pageService = new MessangerPageService(user, accessToken)
+            const pageService = new MessangerPageService(user, longLiveToken)
 
             await pageService.fetchAndSavePages();
             

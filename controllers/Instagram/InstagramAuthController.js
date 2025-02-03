@@ -1,24 +1,23 @@
 const FacebookException = require("../../exceptions/FacebookException");
 const InstagramAuthService = require("../../services/Instagram/InstagramAuthService");
+const InstagramProfileService = require("../../services/Instagram/InstagramProfileService");
 const InstagramController = require("./InstagramController");
 
 module.exports = class InstagramAuthController extends InstagramController {
     async initiateUserAuth(req, res) {
         try {
-            const { accessToken } = req.body
+            const { code } = req.body
 
             const user = req.decode;
 
-            const authService = new InstagramAuthService(user, accessToken);
+            const authService = new InstagramAuthService(user, null);
 
-            const longLiveToken = await authService.initiateUserAuth(user);
+            const accessToken =  await authService.initiateUserAuth(code);
 
-            if(!longLiveToken) throw new Error("Authentication Failed");
+            const profileService = new InstagramProfileService(user, accessToken);
 
-            const pageService = new MessangerPageService(user, accessToken)
+            await profileService.fetchAndSaveProfile()
 
-            await pageService.fetchAndSavePages();
-            
             res.status(200).json({ msg: "success" });
         }
         catch (err) {
@@ -26,6 +25,20 @@ module.exports = class InstagramAuthController extends InstagramController {
             if (err instanceof FacebookException) {
                 return res.status(400).json(err);
             }
+            return res.status(500).json({ msg: "something went wrong", err });
+        }
+    }
+
+
+    async getAuthUri(req, res) {
+        try {
+            const authService = new InstagramAuthService(null, null)
+
+            const authURI = authService.prepareAuthUri();
+
+            res.status(200).json({ msg: "success", authURI });
+
+        } catch (error) {
             return res.status(500).json({ msg: "something went wrong", err });
         }
     }
