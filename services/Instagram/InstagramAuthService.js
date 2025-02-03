@@ -16,15 +16,25 @@ module.exports = class InstagramAuthService extends MessangerService {
     }
 
     async getLongLiveToken(code) {
-        const response = await this.post('/oauth/access_token', {
-            client_id: this.AppId,
-            client_secret: this.AppSecret,
-            grant_type: 'authorization_code',
-            code: code,
-            redirect_uri: INSTAGRAM_REDIRECT_URI
-        })
 
-        const { access_token } = response;
+        const url = 'https://api.instagram.com/oauth/access_token';
+
+        const params = new URLSearchParams();
+        params.append('client_id', this.AppId);
+        params.append('client_secret', this.AppSecret);
+        params.append('grant_type', 'authorization_code');
+        params.append('redirect_uri', INSTAGRAM_REDIRECT_URI);
+        params.append('code', code);
+
+        const response = fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: params.toString(), // Convert URLSearchParams to string
+        });
+
+        const { access_token } = await response.json();
 
         this.accessToken = access_token;
 
