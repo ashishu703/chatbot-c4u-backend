@@ -16,7 +16,7 @@ module.exports = class InstagramAuthService extends MessangerService {
     }
 
     async getLongLiveToken(code) {
-        const response = await this.get('/oauth/access_token', {
+        const response = await this.post('/oauth/access_token', {
             client_id: this.AppId,
             client_secret: this.AppSecret,
             grant_type: 'authorization_code',
