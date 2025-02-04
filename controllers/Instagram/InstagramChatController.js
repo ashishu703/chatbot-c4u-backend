@@ -9,24 +9,29 @@ const InstagramController = require("./InstagramController");
 module.exports = class InstagramChatController extends InstagramController {
 
     async send(req, res) {
-        const {
-            text,
-            chatId,
-            toNumber
-        } = req.body;
-
-        const chat = await ChatRepository.findChatByChatId(chatId);
-
-        const smiUserToken  = await SmiUserTokenRepository.findByUserId(chat.uid, INSTAGRAM_TYPE_KEY);
-        
-        const chatService = new InstagramChatService(null, smiUserToken.token);
-
-        await chatService.send({
-            text,
-            toNumber
-        })
-
-        res.status(200).json({ msg: "success" });
+        try {
+            const {
+                text,
+                chatId,
+                toNumber
+            } = req.body;
+    
+            const chat = await ChatRepository.findChatByChatId(chatId);
+    
+            const smiUserToken  = await SmiUserTokenRepository.findByUserId(chat.uid, INSTAGRAM_TYPE_KEY);
+            
+    
+            const chatService = new InstagramChatService(null, smiUserToken.token);
+    
+            await chatService.send({
+                text,
+                toNumber
+            })
+    
+            return res.status(200).json({ msg: "success" });
+        } catch (error) {
+            return res.status(500).json({ msg: "something went wrong", err });
+        }
 
     }
 
