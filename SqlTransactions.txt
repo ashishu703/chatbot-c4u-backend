@@ -4,6 +4,8 @@ CREATE TABLE `facebook_profiles` (
     `account_id` VARCHAR(50) NOT NULL,
     `name` VARCHAR(50) NOT NULL,
     `token` TEXT NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 ) ENGINE = MyISAM;
 
@@ -16,6 +18,8 @@ CREATE TABLE `facebook_pages` (
     `page_id` VARCHAR(50) NOT NULL,
     `account_id` VARCHAR(50) NOT NULL,
     `token` TEXT NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 ) ENGINE = MyISAM;
 
@@ -27,9 +31,13 @@ ALTER TABLE `chats` ADD `recipient` VARCHAR(50) NULL AFTER `last_message`;
 CREATE TABLE `instagram_accounts` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `uid` VARCHAR(50) NOT NULL,
+    `instagram_user_id` VARCHAR(50) NOT NULL,
     `account_id` VARCHAR(50) NOT NULL,
     `name` VARCHAR(50) NOT NULL,
+    `username` VARCHAR(50) NOT NULL,
     `avatar` VARCHAR(200),
     `token` TEXT NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 ) ENGINE = MyISAM;

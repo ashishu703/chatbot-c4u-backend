@@ -22,19 +22,21 @@ module.exports = class InstagramProfileService extends InstagramService {
     async fetchAndSaveProfile(accountId) {
         const {
             id,
+            user_id: instagramUserId,
             name,
+            username,
             avatar
         } = await this.get(`/${accountId}`, {
-            fields: 'id,profile_picture_url,username,name',
+            fields: 'id,profile_picture_url,username,name,user_id',
             access_token: this.accessToken
         });
 
-        return this.saveProfile(accountId, name, avatar);
+        return this.saveProfile(accountId, name, avatar, username, instagramUserId);
     }
 
 
-    async saveProfile(accountId, name, avatar) {
-        return InstagramAccountRepository.updateOrCreate(this.user.uid, accountId, name, avatar, this.accessToken);
+    async saveProfile(accountId, name, avatar, username, instagramUserId) {
+        return InstagramAccountRepository.updateOrCreate(this.user.uid, instagramUserId, accountId, name, username, avatar, this.accessToken);
     }
 
 

@@ -29,36 +29,97 @@ module.exports = class InstagramChatService extends MessangerService {
         entry.forEach(entryObj => {
             const { messaging, changes } = entryObj
             messaging?.forEach(async (messageObj) => {
+                await this.processMessage(messageObj);
+            })
+
+            changes?.forEach(async (change) => {
+                await this.processChanges(change);
+            })
+        });
+    }
+
+
+    async processMessage(messageObj) {
+        try {
+            const {
+                recipient,
+                sender,
+                message,
+                reaction,
+            } = messageObj;
+
+            let instagramProfile;
+            let chatId;
+
+           
+
+
+            if (message && message.is_echo) {
+                chatId = createChatId(recipient.id, sender.id);
+                instagramProfile = await InstagramAccountRepository.findByInstagramUserId(sender.id);
+            }
+            else {
+                chatId = createChatId(sender.id, recipient.id);
+                instagramProfile = await InstagramAccountRepository.findByInstagramUserId(recipient.id);
+            }
+
+
+            const existingChat = await ChatRepository.findChatByChatId(chatId);
+            if (!existingChat) {
+                await this.createNewChat({ ...messageObj, chatId, ...instagramProfile });
+            }
+
+
+            if (!instagramProfile) {
+                throw new FacebookException("Profile not found", "Unknown", 403);
+            }
+
+            await this.initIOService(instagramProfile.uid);
+
+            const path = prepareChatPath(instagramProfile.uid, chatId);
+
+            messageObj = {
+                ...messageObj,
+                ...instagramProfile,
+                path,
+                chatId
+            }
+
+            if (message && message.is_echo) {
+                this.processSentReciept(messageObj);
+            }
+            else if (message) {
+                this.processTextMessage(messageObj);
+            }
+            else if (reaction) {
+                this.processReaction(messageObj);
+            }
+
+            await this.emitUpdateConversationEvent(instagramProfile.uid);
+        } catch (error) {
+            return false;
+        }
+    }
+
+
+    async processChanges(change) {
+        try {
+            const {
+                field,
+                value
+            } = change;
+
+            if (field === "messaging_seen") {
+
                 const {
-                    recipient,
                     sender,
-                    message,
-                    reaction,
-                } = messageObj;
+                    recipient,
+                } = value
 
+                instagramProfile = await InstagramAccountRepository.findByInstagramUserId(recipient.id);
 
-                console.log({
-                    messageObj: JSON.stringify(messageObj)
-                })
-
-                let instagramProfile = "";
-
-                let chatId;
-
-                if (message && message.is_echo) {
-                    chatId = createChatId(recipient.id, sender.id);
-                    instagramProfile = await InstagramAccountRepository.findByAccountId(sender.id);
-                }
-                else {
-                    chatId = createChatId(sender.id, recipient.id);
-                    instagramProfile = await InstagramAccountRepository.findByAccountId(recipient.id);
-                    const existingChat = await ChatRepository.findChatByChatId(chatId);
-
-                    if (!existingChat) {
-                        const tokens = await FacebookProfileRepository.findByUserId(instagramProfile.uid);
-                        await this.createNewChat({ ...messageObj, ...instagramProfile, chatId, ...tokens });
-                    }
-                }
+              
+                let chatId = createChatId(sender.id, recipient.id);
 
                 if (!instagramProfile) {
                     throw new FacebookException("Profile not found", "Unknown", 403);
@@ -68,70 +129,20 @@ module.exports = class InstagramChatService extends MessangerService {
 
                 const path = prepareChatPath(instagramProfile.uid, chatId);
 
-                messageObj = {
-                    ...messageObj,
+                change = {
+                    ...value,
                     ...instagramProfile,
                     path,
                     chatId
                 }
 
-                if (message && message.is_echo) {
-                    this.processSentReciept(messageObj);
-                }
-                else if (message) {
-                    this.processTextMessage(messageObj);
-                }
-                else if (reaction) {
-                    this.processReaction(messageObj);
-                }
+                this.processDeliveryMessage(change);
 
                 await this.emitUpdateConversationEvent(instagramProfile.uid);
-            })
-
-
-            changes?.forEach(async (change) => {
-                const {
-                    field,
-                    value
-                } = change;
-
-                if (field === "messaging_seen") {
-
-                    const {
-                        sender,
-                        recipient,
-                    } = value
-
-                    let instagramProfile = await InstagramAccountRepository.findByAccountId(recipient.id);
-
-                    console.log({
-                        instagramProfile
-                    })
-
-                    let chatId = createChatId(sender.id, recipient.id);
-
-                    if (!instagramProfile) {
-                        throw new FacebookException("Profile not found", "Unknown", 403);
-                    }
-
-                    await this.initIOService(instagramProfile.uid);
-
-                    const path = prepareChatPath(instagramProfile.uid, chatId);
-
-                    change = {
-                        ...value,
-                        ...instagramProfile,
-                        path,
-                        chatId
-                    }
-
-                    this.processDeliveryMessage(change);
-
-                    await this.emitUpdateConversationEvent(instagramProfile.uid);
-                }
-
-            })
-        });
+            }
+        } catch (error) {
+            return false;
+        }
     }
 
 
