@@ -12,11 +12,7 @@ module.exports = class InstagramAuthController extends InstagramController {
 
             const authService = new InstagramAuthService(user, null);
 
-            const accessToken =  await authService.initiateUserAuth(code);
-
-            const profileService = new InstagramProfileService(user, accessToken);
-
-            await profileService.fetchAndSaveProfile()
+            await authService.initiateUserAuth(code);
 
             res.status(200).json({ msg: "success" });
         }

@@ -4,7 +4,7 @@ const { readJsonFromFile, writeJsonToFile, addObjectToFile } = require("../../fu
 const ChatRepository = require("../../repositories/ChatRepository");
 const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
 const InstagramAccountRepository = require("../../repositories/InstagramAccountRepository");
-const SmiUserTokenRepository = require("../../repositories/SmiUserTokenRepository");
+const FacebookProfileRepository = require("../../repositories/FacebookProfileRepository");
 const { prepareChatPath, createChatId } = require("../../utils/facebook.utils");
 const { convertWebhookReciveMessageToJsonObj, convertInstagramWebhookToDBChatCreateObject, convertWebhookToDBChatUpdateObject, convertWebhookRecieptToJsonObj } = require("../../utils/messenger.utils");
 const ChatIOService = require("../ChatIOService");
@@ -36,6 +36,11 @@ module.exports = class InstagramChatService extends MessangerService {
                     reaction,
                 } = messageObj;
 
+
+                console.log({
+                    messageObj: JSON.stringify(messageObj)
+                })
+
                 let instagramProfile = "";
 
                 let chatId;
@@ -50,7 +55,7 @@ module.exports = class InstagramChatService extends MessangerService {
                     const existingChat = await ChatRepository.findChatByChatId(chatId);
 
                     if (!existingChat) {
-                        const tokens = await SmiUserTokenRepository.findByUserId(instagramProfile.uid);
+                        const tokens = await FacebookProfileRepository.findByUserId(instagramProfile.uid);
                         await this.createNewChat({ ...messageObj, ...instagramProfile, chatId, ...tokens });
                     }
                 }

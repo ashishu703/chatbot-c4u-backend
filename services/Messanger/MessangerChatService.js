@@ -3,9 +3,14 @@ const FacebookException = require("../../exceptions/FacebookException");
 const { readJsonFromFile, writeJsonToFile, addObjectToFile } = require("../../functions/function");
 const ChatRepository = require("../../repositories/ChatRepository");
 const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
-const SmiUserTokenRepository = require("../../repositories/SmiUserTokenRepository");
+const FacebookProfileRepository = require("../../repositories/FacebookProfileRepository");
 const { prepareChatPath, createChatId } = require("../../utils/facebook.utils");
-const { convertWebhookReciveMessageToJsonObj, convertMessangerWebhookToDBChatCreateObject, convertWebhookToDBChatUpdateObject, convertWebhookRecieptToJsonObj } = require("../../utils/messenger.utils");
+const {
+    convertWebhookReciveMessageToJsonObj,
+    convertMessangerWebhookToDBChatCreateObject,
+    convertWebhookToDBChatUpdateObject,
+    convertWebhookRecieptToJsonObj
+} = require("../../utils/messenger.utils");
 const ChatIOService = require("../ChatIOService");
 const MessangerPageService = require("./MessangerPageService");
 const MessangerService = require("./MessangerService");

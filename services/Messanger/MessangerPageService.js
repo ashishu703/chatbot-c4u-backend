@@ -21,11 +21,11 @@ module.exports = class MessangerPageService extends MessangerService {
         });
     }
 
-    async fetchAndSavePages() {
+    async fetchAndSavePages(accountId) {
         const { data: pages } = await this.fetchPages();
 
         pages.forEach(async (page) => {
-            await this.savePage(page);
+            await this.savePage(page, accountId);
         });
 
         return pages;
@@ -34,9 +34,10 @@ module.exports = class MessangerPageService extends MessangerService {
         return await this.get('/me/accounts', { fields: 'id,name,access_token' });
     }
 
-    async savePage(page) {
+    async savePage(page, accountId) {
         await FacebookPageRepository.updateOrCreate(
             this.user.uid,
+            accountId,
             page.id,
             page.name,
             page.access_token

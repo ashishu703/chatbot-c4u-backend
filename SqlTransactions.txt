@@ -1,7 +1,8 @@
-CREATE TABLE `smi_user_tokens` (
+CREATE TABLE `facebook_profiles` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `uid` VARCHAR(50) NOT NULL,
-    `platform` ENUM('messanger', 'instagram') NOT NULL,
+    `account_id` VARCHAR(50) NOT NULL,
+    `name` VARCHAR(50) NOT NULL,
     `token` TEXT NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = MyISAM;
@@ -13,6 +14,7 @@ CREATE TABLE `facebook_pages` (
     `uid` VARCHAR(50) NOT NULL,
     `name` VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
     `page_id` VARCHAR(50) NOT NULL,
+    `account_id` VARCHAR(50) NOT NULL,
     `token` TEXT NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = MyISAM;
@@ -27,6 +29,7 @@ CREATE TABLE `instagram_accounts` (
     `uid` VARCHAR(50) NOT NULL,
     `account_id` VARCHAR(50) NOT NULL,
     `name` VARCHAR(50) NOT NULL,
-    `avatar` VARCHAR(50),
+    `avatar` VARCHAR(200),
+    `token` TEXT NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = MyISAM;

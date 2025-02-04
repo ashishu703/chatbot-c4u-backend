@@ -1,12 +1,12 @@
 const { query } = require("../database/dbpromise");
 
 module.exports = class InstagramAccountRepository {
-    static async updateOrCreate(userId, accountId, name, avatar) {
+    static async updateOrCreate(userId, accountId, name, avatar, accessToken) {
         const page = await InstagramAccountRepository.findByAccountId(accountId);
         if (page) {
-            return InstagramAccountRepository.update(userId, accountId, name, avatar);
+            return InstagramAccountRepository.update(userId, accountId, name, avatar, accessToken);
         }
-        return InstagramAccountRepository.create(userId, accountId, name, avatar);
+        return InstagramAccountRepository.create(userId, accountId, name, avatar, accessToken);
     }
 
     static async findByAccountId(accountId) {
@@ -14,11 +14,11 @@ module.exports = class InstagramAccountRepository {
         return pages.length > 0 ? pages[0] : null;
     }
 
-    static async create(userId, accountId, name, avatar) {
-        return query("INSERT INTO `instagram_accounts` (`uid`, `account_id`,`name`, `avatar`) VALUES (?, ?, ?, ?);", [userId, accountId, name, avatar]);
+    static async create(userId, accountId, name, avatar, accessToken) {
+        return query("INSERT INTO `instagram_accounts` (`uid`, `account_id`,`name`, `avatar` , `token`) VALUES (?, ?, ?, ?, ?);", [userId, accountId, name, avatar, accessToken]);
     }
 
-    static async update(userId, accountId, name, avatar) {
-        return query("UPDATE `instagram_accounts` SET `avatar` = ?, `name` = ?, uid = ? WHERE account_id = ?", [avatar, name, userId, accountId]);
+    static async update(userId, accountId, name, avatar, accessToken) {
+        return query("UPDATE `instagram_accounts` SET `avatar` = ?, `name` = ?, uid = ? , `token` = ? WHERE account_id = ?", [avatar, name, userId, accessToken, accountId]);
     }
 }

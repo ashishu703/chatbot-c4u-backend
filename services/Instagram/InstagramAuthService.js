@@ -1,23 +1,53 @@
 const { MESSANGER_TYPE_KEY, INSTAGRAM_REDIRECT_URI, INSTAGRAM_CLIENT_ID, INSTAGRAM_TYPE_KEY } = require("../../constants/instagram.constant");
 const FacebookException = require("../../exceptions/FacebookException");
-const SmiUserTokenRepository = require("../../repositories/SmiUserTokenRepository");
+const FacebookProfileRepository = require("../../repositories/FacebookProfileRepository");
+const InstagramProfileService = require("./InstagramProfileService");
 const MessangerService = require("./InstagramService");
 const fetch = require("node-fetch");
 
 module.exports = class InstagramAuthService extends MessangerService {
     pageService;
+    userId;
+
     constructor(user, accessToken) {
         super(user, accessToken);
     }
 
     async initiateUserAuth(code) {
-        await this.getLongLiveToken(code)
-        await this.saveCurrentToken();
+        await this.getToken(code)
+        await this.saveCurrentSession();
+        return this;
+    }
+
+    async getToken(code) {
+        await this.authorizeAuthCode(code);
+        await this.getLongLiveToken()
         return this.accessToken;
     }
 
-    async getLongLiveToken(code) {
+    async saveCurrentSession() {
 
+        const profileService = new InstagramProfileService(this.user, this.accessToken);
+
+        await profileService.fetchAndSaveProfile(this.userId)
+
+        return this;
+    }
+
+    async getLongLiveToken() {
+        const { access_token: longLiveToken } = await this.get("/access_token", {
+            access_token: this.accessToken,
+            grant_type: "ig_exchange_token",
+            client_secret: this.AppSecret,
+        });
+
+        this.accessToken = longLiveToken;
+
+        return this;
+    }
+
+
+    async authorizeAuthCode(code) {
         const url = 'https://api.instagram.com/oauth/access_token';
 
         const params = new URLSearchParams();
@@ -32,25 +62,24 @@ module.exports = class InstagramAuthService extends MessangerService {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: params.toString(), // Convert URLSearchParams to string
+            body: params.toString(),
         });
 
-        const data = await response.json();
-        
-        if (!response.ok)  throw new FacebookException("Token verification failed.")
-         
-        const {access_token} = data;
-     
+
+        if (!response.ok) throw new FacebookException("Token verification failed.")
+
+        const {
+            user_id,
+            access_token,
+        } = await response.json();
+
+        this.userId = user_id;
+
         this.accessToken = access_token;
-        
-        return this.accessToken;
 
-    }
-
-    async saveCurrentToken() {
-        await SmiUserTokenRepository.updateOrCreate(this.user.uid, INSTAGRAM_TYPE_KEY, this.accessToken);
         return this;
     }
+
 
     prepareAuthUri() {
         return `https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=${INSTAGRAM_CLIENT_ID}&redirect_uri=${INSTAGRAM_REDIRECT_URI}&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments%2Cinstagram_business_content_publish%2Cinstagram_business_manage_insights`
