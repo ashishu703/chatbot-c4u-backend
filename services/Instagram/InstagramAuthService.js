@@ -26,7 +26,7 @@ module.exports = class InstagramAuthService extends MessangerService {
         params.append('redirect_uri', INSTAGRAM_REDIRECT_URI);
         params.append('code', code);
 
-        const response = fetch(url, {
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -34,9 +34,10 @@ module.exports = class InstagramAuthService extends MessangerService {
             body: params.toString(), // Convert URLSearchParams to string
         });
 
-        const { access_token } = await response.json();
-
-        this.accessToken = access_token;
+        if (response.ok) {
+            const { access_token } = response.json();
+            this.accessToken = access_token;
+        }
 
         return access_token;
 
