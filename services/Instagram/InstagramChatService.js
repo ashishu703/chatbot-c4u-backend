@@ -1,8 +1,9 @@
-const { FACEBOOK_TYPE_KEY } = require("../../constants/messanger.constant");
+const { MESSANGER_TYPE_KEY } = require("../../constants/messanger.constant");
 const FacebookException = require("../../exceptions/FacebookException");
 const { readJsonFromFile, writeJsonToFile, addObjectToFile } = require("../../functions/function");
 const ChatRepository = require("../../repositories/ChatRepository");
 const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
+const InstagramAccountRepository = require("../../repositories/InstagramAccountRepository");
 const SmiUserTokenRepository = require("../../repositories/SmiUserTokenRepository");
 const { prepareChatPath, createChatId } = require("../../utils/facebook.utils");
 const { convertWebhookReciveMessageToJsonObj, convertInstagramWebhookToDBChatCreateObject, convertWebhookToDBChatUpdateObject, convertWebhookRecieptToJsonObj } = require("../../utils/messenger.utils");
@@ -35,36 +36,36 @@ module.exports = class InstagramChatService extends MessangerService {
                     reaction,
                 } = messageObj;
 
-                let pageProfile = {//dummy profile
-                    uid: "lWvj6K0xI0FlSKJoyV7ak9DN0mzvKJK8",
-                    token: "IGAANJYZAG6nXdBZAE9saG5NTzNSUjFiaHRlRVVhSFJsYzg4ZADRpRi04WDh4OXBXamhUenRibGwySEVlQlZApX2VBUUt1ZAzF1NDhmZAWZAxTlA5TGd3M2dZAbU9RbkdQcm11VmpjVGdtcHp4blNTbWlwaGxIZAzI4YlU0RnFUNzV6d3puZAwZDZD"
-                };
+                let instagramProfile = "";
 
                 let chatId;
 
                 if (message && message.is_echo) {
                     chatId = createChatId(recipient.id, sender.id);
+                    instagramProfile = await InstagramAccountRepository.findByAccountId(sender.id);
                 }
                 else {
                     chatId = createChatId(sender.id, recipient.id);
+                    instagramProfile = await InstagramAccountRepository.findByAccountId(recipient.id);
                     const existingChat = await ChatRepository.findChatByChatId(chatId);
 
                     if (!existingChat) {
-                        await this.createNewChat({ ...messageObj, ...pageProfile, chatId });
+                        const tokens = await SmiUserTokenRepository.findByUserId(instagramProfile.uid);
+                        await this.createNewChat({ ...messageObj, ...instagramProfile, chatId, ...tokens });
                     }
                 }
 
-                if (!pageProfile) {
-                    throw new FacebookException("Page not found", "Unknown", 403);
+                if (!instagramProfile) {
+                    throw new FacebookException("Profile not found", "Unknown", 403);
                 }
 
-                await this.initIOService(pageProfile.uid);
+                await this.initIOService(instagramProfile.uid);
 
-                const path = prepareChatPath(pageProfile.uid, chatId);
+                const path = prepareChatPath(instagramProfile.uid, chatId);
 
                 messageObj = {
                     ...messageObj,
-                    ...pageProfile,
+                    ...instagramProfile,
                     path,
                     chatId
                 }
@@ -78,9 +79,8 @@ module.exports = class InstagramChatService extends MessangerService {
                 else if (reaction) {
                     this.processReaction(messageObj);
                 }
-               
 
-                await this.emitUpdateConversationEvent(pageProfile.uid);
+                await this.emitUpdateConversationEvent(instagramProfile.uid);
             })
 
 
@@ -97,31 +97,32 @@ module.exports = class InstagramChatService extends MessangerService {
                         recipient,
                     } = value
 
-                    let pageProfile = {//dummy profile
-                        uid: "lWvj6K0xI0FlSKJoyV7ak9DN0mzvKJK8",
-                        token: "IGAANJYZAG6nXdBZAE9saG5NTzNSUjFiaHRlRVVhSFJsYzg4ZADRpRi04WDh4OXBXamhUenRibGwySEVlQlZApX2VBUUt1ZAzF1NDhmZAWZAxTlA5TGd3M2dZAbU9RbkdQcm11VmpjVGdtcHp4blNTbWlwaGxIZAzI4YlU0RnFUNzV6d3puZAwZDZD"
-                    };
+                    let instagramProfile = await InstagramAccountRepository.findByAccountId(recipient.id);
+
+                    console.log({
+                        instagramProfile
+                    })
 
                     let chatId = createChatId(sender.id, recipient.id);
 
-                    if (!pageProfile) {
-                        throw new FacebookException("Page not found", "Unknown", 403);
+                    if (!instagramProfile) {
+                        throw new FacebookException("Profile not found", "Unknown", 403);
                     }
 
-                    await this.initIOService(pageProfile.uid);
+                    await this.initIOService(instagramProfile.uid);
 
-                    const path = prepareChatPath(pageProfile.uid, chatId);
+                    const path = prepareChatPath(instagramProfile.uid, chatId);
 
                     change = {
                         ...value,
-                        ...pageProfile,
+                        ...instagramProfile,
                         path,
                         chatId
                     }
 
                     this.processDeliveryMessage(change);
 
-                    await this.emitUpdateConversationEvent(pageProfile.uid);
+                    await this.emitUpdateConversationEvent(instagramProfile.uid);
                 }
 
             })

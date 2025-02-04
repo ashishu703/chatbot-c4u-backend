@@ -1,10 +1,11 @@
 CREATE TABLE `smi_user_tokens` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `uid` VARCHAR(50) NOT NULL,
-    `platform` ENUM('facebook') NOT NULL,
+    `platform` ENUM('messanger', 'instagram') NOT NULL,
     `token` TEXT NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = MyISAM;
+
 
 
 CREATE TABLE `facebook_pages` (

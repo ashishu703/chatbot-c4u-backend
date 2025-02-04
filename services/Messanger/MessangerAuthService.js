@@ -1,4 +1,4 @@
-const { FACEBOOK_TYPE_KEY } = require("../../constants/messanger.constant");
+const { MESSANGER_TYPE_KEY } = require("../../constants/messanger.constant");
 const SmiUserTokenRepository = require("../../repositories/SmiUserTokenRepository");
 const MessangerService = require("./MessangerService");
 
@@ -34,7 +34,7 @@ module.exports = class MessangerAuthService extends MessangerService {
     }
 
     async saveCurrentToken() {
-        await SmiUserTokenRepository.updateOrCreate(this.user.uid, FACEBOOK_TYPE_KEY, this.accessToken);
+        await SmiUserTokenRepository.updateOrCreate(this.user.uid, MESSANGER_TYPE_KEY, this.accessToken);
         return this;
     }
 

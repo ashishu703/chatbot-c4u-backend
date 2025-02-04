@@ -1,4 +1,4 @@
-const { FACEBOOK_TYPE_KEY } = require("../../constants/messanger.constant");
+const { MESSANGER_TYPE_KEY } = require("../../constants/messanger.constant");
 const FacebookException = require("../../exceptions/FacebookException");
 const { readJsonFromFile, writeJsonToFile, addObjectToFile } = require("../../functions/function");
 const ChatRepository = require("../../repositories/ChatRepository");

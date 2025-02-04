@@ -1,6 +1,7 @@
 
+const { INSTAGRAM_TYPE_KEY } = require("../../constants/instagram.constant");
 const ChatRepository = require("../../repositories/ChatRepository");
-const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
+const SmiUserTokenRepository = require("../../repositories/SmiUserTokenRepository");
 const InstagramChatService = require("../../services/Instagram/InstagramChatService");
 const InstagramController = require("./InstagramController");
 
@@ -14,18 +15,11 @@ module.exports = class InstagramChatController extends InstagramController {
             toNumber
         } = req.body;
 
-
-      
-
         const chat = await ChatRepository.findChatByChatId(chatId);
 
-        const { recipient } = chat;
+        const smiUserToken  = await SmiUserTokenRepository.findByUserId(chat.uid, INSTAGRAM_TYPE_KEY);
         
-        let pageProfile = {//dummy profile
-            uid: "lWvj6K0xI0FlSKJoyV7ak9DN0mzvKJK8",
-            token: "IGAANJYZAG6nXdBZAE9saG5NTzNSUjFiaHRlRVVhSFJsYzg4ZADRpRi04WDh4OXBXamhUenRibGwySEVlQlZApX2VBUUt1ZAzF1NDhmZAWZAxTlA5TGd3M2dZAbU9RbkdQcm11VmpjVGdtcHp4blNTbWlwaGxIZAzI4YlU0RnFUNzV6d3puZAwZDZD"
-        };
-        const chatService = new InstagramChatService(null, pageProfile.token);
+        const chatService = new InstagramChatService(null, smiUserToken.token);
 
         await chatService.send({
             text,

@@ -1,4 +1,5 @@
-const { FACEBOOK_TYPE_KEY, INSTAGRAM_REDIRECT_URI, INSTAGRAM_CLIENT_ID } = require("../../constants/instagram.constant");
+const { MESSANGER_TYPE_KEY, INSTAGRAM_REDIRECT_URI, INSTAGRAM_CLIENT_ID, INSTAGRAM_TYPE_KEY } = require("../../constants/instagram.constant");
+const FacebookException = require("../../exceptions/FacebookException");
 const SmiUserTokenRepository = require("../../repositories/SmiUserTokenRepository");
 const MessangerService = require("./InstagramService");
 
@@ -34,12 +35,15 @@ module.exports = class InstagramAuthService extends MessangerService {
             body: params.toString(), // Convert URLSearchParams to string
         });
 
-        if (response.ok) {
-            const { access_token } = response.json();
-            this.accessToken = access_token;
-        }
-
-        return access_token;
+        const data = await response.json();
+        
+        if (!response.ok)  throw new FacebookException("Token verification failed.")
+         
+        const {access_token} = data;
+     
+        this.accessToken = access_token;
+        
+        return this.accessToken;
 
     }
 
