@@ -2,7 +2,7 @@ const { MESSANGER_TYPE_KEY, INSTAGRAM_REDIRECT_URI, INSTAGRAM_CLIENT_ID, INSTAGR
 const FacebookException = require("../../exceptions/FacebookException");
 const SmiUserTokenRepository = require("../../repositories/SmiUserTokenRepository");
 const MessangerService = require("./InstagramService");
-
+const fetch = require("node-fetch");
 
 module.exports = class InstagramAuthService extends MessangerService {
     pageService;
