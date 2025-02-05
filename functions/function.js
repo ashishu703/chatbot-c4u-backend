@@ -2077,4 +2077,6 @@ module.exports = {
   runChatbot,
   rzCapturePayment,
   validateFacebookToken,
+  addObjectToFile,
+  convertNumberToRandomString
 };
