@@ -18,4 +18,8 @@ router.post('/webhook', instagramWebhookController.handleWebhook.bind(instagramW
 
 router.post('/send', validateUser, instagramChatController.send.bind(instagramChatController));
 
+router.get('/accounts', validateUser, authController.getAccounts.bind(authController));
+
+router.delete('/accounts/:id', validateUser, authController.deleteAccount.bind(authController));
+
 module.exports = router;

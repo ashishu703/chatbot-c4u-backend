@@ -29,4 +29,14 @@ module.exports = class InstagramAccountRepository {
     static async update(userId, instagramUserId, accountId, name, username, avatar, accessToken) {
         return query("UPDATE `instagram_accounts` SET `avatar` = ?, `name` = ?, `username` = ?, `uid` = ?, instagram_user_id = ? , `token` = ? WHERE account_id = ?", [avatar, name, username, userId, instagramUserId, accessToken, accountId]);
     }
+
+    static async findManyByUserId(userId) {
+        const profiles = await query(`SELECT * FROM instagram_accounts WHERE uid = ? `, [userId]);
+        return profiles;
+    }
+   
+    static async deleteByAccountId(accountId) {
+        const profiles = await query(`DELETE FROM instagram_accounts WHERE account_id = ? `, [accountId]);
+        return profiles;
+    }
 }

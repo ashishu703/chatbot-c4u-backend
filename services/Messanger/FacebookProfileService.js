@@ -35,4 +35,13 @@ module.exports = class FacebookProfileService extends MessangerService {
         });
     }
 
+    async getProfiles(){
+        return FacebookProfileRepository.findManyByUserId(this.user.uid);
+    }
+
+
+    async deleteProfile(id) {
+        return FacebookProfileRepository.deleteByAccountId(id);
+    }
+
 }

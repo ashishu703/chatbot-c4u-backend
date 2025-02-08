@@ -39,7 +39,14 @@ module.exports = class InstagramProfileService extends InstagramService {
         return InstagramAccountRepository.updateOrCreate(this.user.uid, instagramUserId, accountId, name, username, avatar, this.accessToken);
     }
 
+    async getProfiles(){
+        return InstagramAccountRepository.findManyByUserId(this.user.uid);
+    }
 
+
+    async deleteProfile(id) {
+        return InstagramAccountRepository.deleteByAccountId(id);
+    }
 
 
 }

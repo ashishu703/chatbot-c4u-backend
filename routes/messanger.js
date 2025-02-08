@@ -16,4 +16,8 @@ router.post('/webhook', messengerWebhookController.handleWebhook.bind(messengerW
 
 router.post('/send', validateUser, messengerChatController.send.bind(messengerChatController));
 
+router.get('/accounts', validateUser, authController.getAccounts.bind(messengerChatController));
+
+router.delete('/accounts/:id', validateUser, authController.deleteAccount.bind(messengerChatController));
+
 module.exports = router;

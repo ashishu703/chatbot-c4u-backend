@@ -364,7 +364,7 @@ async function saveWebhookConversation(body, uid) {
     }
     botWebhook(
       body?.entry[0]?.changes[0]?.value?.messages[0]?.image?.caption ||
-        "aU1uLzohPGMncyrwlPIb",
+      "aU1uLzohPGMncyrwlPIb",
       uid,
       body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
       body?.entry[0]?.changes
@@ -400,7 +400,7 @@ async function saveWebhookConversation(body, uid) {
 
     botWebhook(
       body?.entry[0]?.changes[0]?.value?.messages[0]?.video?.caption ||
-        "aU1uLzohPGMncyrwlPIb",
+      "aU1uLzohPGMncyrwlPIb",
       uid,
       body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
       body?.entry[0]?.changes
@@ -435,7 +435,7 @@ async function saveWebhookConversation(body, uid) {
     }
     botWebhook(
       body?.entry[0]?.changes[0]?.value?.messages[0]?.document?.caption ||
-        "aU1uLzohPGMncyrwlPIb",
+      "aU1uLzohPGMncyrwlPIb",
       uid,
       body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
       body?.entry[0]?.changes
@@ -469,7 +469,7 @@ async function saveWebhookConversation(body, uid) {
 
     botWebhook(
       body?.entry[0]?.changes[0]?.value?.messages[0]?.document?.caption ||
-        "aU1uLzohPGMncyrwlPIb",
+      "aU1uLzohPGMncyrwlPIb",
       uid,
       body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
       body?.entry[0]?.changes
@@ -544,7 +544,7 @@ async function saveWebhookConversation(body, uid) {
 
     botWebhook(
       body?.entry[0]?.changes[0]?.value?.messages[0]?.button?.text ||
-        "aU1uLzohPGMncyrwlPIb",
+      "aU1uLzohPGMncyrwlPIb",
       uid,
       body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
       body?.entry[0]?.changes
@@ -770,6 +770,7 @@ function addObjectToFile(object, filePath) {
   }
 
   if (fs.existsSync(filePath)) {
+ 
     const existingData = JSON.parse(fs.readFileSync(filePath));
     if (Array.isArray(existingData)) {
       existingData.push(object);
@@ -1340,8 +1341,8 @@ async function sendMetatemplet(
             link: dynamicMedia
               ? dynamicMedia
               : getMedia.length > 0
-              ? `${process.env.FRONTENDURI}/media/${getMedia[0]?.file_name}`
-              : getHeader[0].example?.header_handle[0],
+                ? `${process.env.FRONTENDURI}/media/${getMedia[0]?.file_name}`
+                : getHeader[0].example?.header_handle[0],
           },
         },
       ],
@@ -1363,8 +1364,8 @@ async function sendMetatemplet(
             link: dynamicMedia
               ? dynamicMedia
               : getMedia.length > 0
-              ? `${process.env.FRONTENDURI}/media/${getMedia[0]?.file_name}`
-              : getHeader[0].example?.header_handle[0],
+                ? `${process.env.FRONTENDURI}/media/${getMedia[0]?.file_name}`
+                : getHeader[0].example?.header_handle[0],
           },
         },
       ],
@@ -1386,8 +1387,8 @@ async function sendMetatemplet(
             link: dynamicMedia
               ? dynamicMedia
               : getMedia.length > 0
-              ? `${process.env.FRONTENDURI}/media/${getMedia[0]?.file_name}`
-              : getHeader[0].example?.header_handle[0],
+                ? `${process.env.FRONTENDURI}/media/${getMedia[0]?.file_name}`
+                : getHeader[0].example?.header_handle[0],
             filename: "document",
           },
         },
@@ -1883,11 +1884,11 @@ async function makeRequest({ method, url, body = null, headers = [] }) {
       method === "GET" || method === "DELETE"
         ? undefined
         : JSON.stringify(
-            body.reduce((acc, { key, value }) => {
-              acc[key] = value;
-              return acc;
-            }, {})
-          );
+          body.reduce((acc, { key, value }) => {
+            acc[key] = value;
+            return acc;
+          }, {})
+        );
 
     // Set up the request configuration
     const config = {

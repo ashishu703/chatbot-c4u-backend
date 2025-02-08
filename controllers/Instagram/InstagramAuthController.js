@@ -38,4 +38,40 @@ module.exports = class InstagramAuthController extends InstagramController {
             return res.status(500).json({ msg: "something went wrong", err });
         }
     }
+
+
+    async getAccounts(req, res) {
+        try {
+            const user = req.decode;
+            const profileService = new InstagramProfileService(user, null);
+            const profiles = await profileService.getProfiles();
+            res.status(200).json({ msg: "success", profiles });
+        }
+        catch (err) {
+            console.log(err);
+            if (err instanceof FacebookException) {
+                return res.status(400).json(err);
+            }
+            return res.status(500).json({ msg: "something went wrong", err });
+        }
+    }
+
+
+
+    async deleteAccount(req, res) {
+        try {
+            const { id } = req.params;
+            const user = req.decode;
+            const profileService = new InstagramProfileService(user, null);
+            await profileService.deleteProfile(id);
+            res.status(200).json({ msg: "success" });
+        }
+        catch (err) {
+            console.log(err);
+            if (err instanceof FacebookException) {
+                return res.status(400).json(err);
+            }
+            return res.status(500).json({ msg: "something went wrong", err });
+        }
+    }
 }

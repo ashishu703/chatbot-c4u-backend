@@ -1,4 +1,5 @@
 const FacebookException = require("../../exceptions/FacebookException");
+const FacebookProfileService = require("../../services/Messanger/FacebookProfileService");
 const MessangerAuthService = require("../../services/Messanger/MessangerAuthService");
 const MessangerPageService = require("../../services/Messanger/MessangerPageService");
 const MessangerController = require("./MessangerController");
@@ -14,12 +15,47 @@ module.exports = class MessangerAuthController extends MessangerController {
 
             const accountInfo = await authService.initiateUserAuth();
 
-            if(!accountInfo) throw new Error("Authentication Failed");
+            if (!accountInfo) throw new Error("Authentication Failed");
 
             const pageService = new MessangerPageService(user, accountInfo.accessToken)
 
             await pageService.fetchAndSavePages(accountInfo.accountId);
-            
+
+            res.status(200).json({ msg: "success" });
+        }
+        catch (err) {
+            console.log(err);
+            if (err instanceof FacebookException) {
+                return res.status(400).json(err);
+            }
+            return res.status(500).json({ msg: "something went wrong", err });
+        }
+    }
+
+    async getAccounts(req, res) {
+        try {
+            const user = req.decode;
+            const profileService = new FacebookProfileService(user, null);
+            const profiles = await profileService.getProfiles();
+            res.status(200).json({ msg: "success", profiles });
+        }
+        catch (err) {
+            console.log(err);
+            if (err instanceof FacebookException) {
+                return res.status(400).json(err);
+            }
+            return res.status(500).json({ msg: "something went wrong", err });
+        }
+    }
+
+
+
+    async deleteAccount(req, res) {
+        try {
+            const { id } = req.params;
+            const user = req.decode;
+            const profileService = new FacebookProfileService(user, null);
+            await profileService.deleteProfile(id);
             res.status(200).json({ msg: "success" });
         }
         catch (err) {

@@ -1,0 +1,4 @@
+https://business-api.tiktok.com/portal/auth?app_id=7436203832048123921&state=you_custom_params&redirect_uri=https://string.karobar.org/tiktok/callback
+
+
+http://thestring.test/smi/state-callback?code=ea244e77164456cdfbb51a7bd9a07b564822faf5

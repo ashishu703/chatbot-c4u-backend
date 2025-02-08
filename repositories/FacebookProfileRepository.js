@@ -3,6 +3,7 @@ const { query } = require("../database/dbpromise");
 module.exports = class FacebookProfileRepository {
     static async updateOrCreate(userId, accountId, name, token) {
         const tokens = await this.findByUserIdAndAccountId(userId, accountId);
+     
         if (tokens) {
             return FacebookProfileRepository.update(userId, accountId, token, name);
         }
@@ -20,5 +21,15 @@ module.exports = class FacebookProfileRepository {
 
     static async create(userId, accountId, token, name) {
         return query("INSERT INTO `facebook_profiles` (`token`,  `name`, `uid`, `account_id`) VALUES (?, ?, ?, ?);", [token, name, userId, accountId]);
+    }
+
+    static async findManyByUserId(userId) {
+        const profiles = await query(`SELECT * FROM facebook_profiles WHERE uid = ? `, [userId]);
+        return profiles;
+    }
+   
+    static async deleteByAccountId(accountId) {
+        const profiles = await query(`DELETE FROM facebook_profiles WHERE account_id = ? `, [accountId]);
+        return profiles;
     }
 }   
