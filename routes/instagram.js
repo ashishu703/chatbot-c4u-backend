@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const validateUser = require("../middlewares/user.js");
+const validateAgent = require("../middlewares/agent.js");
 
 const AuthController = require("../controllers/Instagram/InstagramAuthController");
 const InstagramWebhookController = require("../controllers/Instagram/InstagramWebhookController");
@@ -17,6 +18,8 @@ router.get('/auth-uri', authController.getAuthUri.bind(authController));
 router.post('/webhook', instagramWebhookController.handleWebhook.bind(instagramWebhookController));
 
 router.post('/send', validateUser, instagramChatController.send.bind(instagramChatController));
+
+router.post('/send-agent-message', validateAgent, instagramChatController.send.bind(instagramChatController));
 
 router.get('/accounts', validateUser, authController.getAccounts.bind(authController));
 
