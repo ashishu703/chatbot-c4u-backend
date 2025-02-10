@@ -1,3 +1,4 @@
+const ChatRepository = require("../../repositories/ChatRepository");
 const FacebookProfileRepository = require("../../repositories/FacebookProfileRepository");
 const MessangerService = require("./MessangerService");
 
@@ -41,6 +42,7 @@ module.exports = class FacebookProfileService extends MessangerService {
 
 
     async deleteProfile(id) {
+        await ChatRepository.removePlatformChat(this.user.uid, 'MESSENGER');
         return FacebookProfileRepository.deleteByAccountId(id);
     }
 

@@ -1,4 +1,5 @@
 
+const ChatRepository = require("../../repositories/ChatRepository");
 const InstagramAccountRepository = require("../../repositories/InstagramAccountRepository");
 const InstagramService = require("./InstagramService");
 
@@ -45,6 +46,7 @@ module.exports = class InstagramProfileService extends InstagramService {
 
 
     async deleteProfile(id) {
+        await ChatRepository.removePlatformChat(this.user.uid, 'INSTAGRAM');
         return InstagramAccountRepository.deleteByAccountId(id);
     }
 
