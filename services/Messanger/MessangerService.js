@@ -14,7 +14,7 @@ module.exports = class MessangerService {
     }
 
 
-    async init() {
+    async initMeta() {
         const {
             facebook_client_id,
             facebook_client_secret,

@@ -1,6 +1,6 @@
 const FacebookException = require("../../exceptions/FacebookException");
-const InstagramAuthService = require("../../services/Instagram/InstagramAuthService");
-const InstagramProfileService = require("../../services/Instagram/InstagramProfileService");
+const InstagramAuthService = require("../../services/instagram/InstagramAuthService");
+const InstagramProfileService = require("../../services/instagram/InstagramProfileService");
 const InstagramController = require("./InstagramController");
 
 module.exports = class InstagramAuthController extends InstagramController {
@@ -9,7 +9,7 @@ module.exports = class InstagramAuthController extends InstagramController {
             const { code } = req.body
             const user = req.decode;
             const authService = new InstagramAuthService(user, null);
-            await authService.init();
+            await authService.initMeta();
             await authService.initiateUserAuth(code);
             res.status(200).json({ msg: "success" });
         }
@@ -26,7 +26,7 @@ module.exports = class InstagramAuthController extends InstagramController {
     async getAuthUri(req, res) {
         try {
             const authService = new InstagramAuthService(null, null)
-            await authService.init();
+            await authService.initMeta();
             const authURI = authService.prepareAuthUri();
             res.status(200).json({ msg: "success", authURI });
         } catch (error) {

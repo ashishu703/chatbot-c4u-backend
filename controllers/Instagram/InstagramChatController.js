@@ -1,7 +1,7 @@
 
 const ChatRepository = require("../../repositories/ChatRepository");
 const InstagramAccountRepository = require("../../repositories/InstagramAccountRepository");
-const InstagramChatService = require("../../services/Instagram/InstagramChatService");
+const InstagramChatService = require("../../services/instagram/InstagramChatService");
 const InstagramController = require("./InstagramController");
 
 
@@ -21,7 +21,7 @@ module.exports = class InstagramChatController extends InstagramController {
           
             const chatService = new InstagramChatService(null, smiUserToken.token);
 
-            await chatService.init();
+            await chatService.initMeta();
     
             await chatService.send({
                 text,

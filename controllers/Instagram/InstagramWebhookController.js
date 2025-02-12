@@ -1,5 +1,5 @@
 const FacebookException = require("../../exceptions/FacebookException");
-const InstagramChatService = require("../../services/Instagram/InstagramChatService");
+const InstagramChatService = require("../../services/instagram/InstagramChatService");
 const { verifyMetaWebhook } = require("../../utils/facebook.utils");
 const InstagramController = require("./InstagramController");
 
@@ -9,7 +9,7 @@ module.exports = class InstagramWebhookController extends InstagramController {
         try {
             const webhookPayload = req.body;
             const chatService = new InstagramChatService();
-            await chatService.init();
+            await chatService.initMeta();
             await chatService.processIncomingMessages(webhookPayload);
             res.status(200).json({ msg: "success" });
         }

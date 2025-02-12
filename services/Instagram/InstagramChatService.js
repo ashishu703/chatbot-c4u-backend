@@ -149,7 +149,7 @@ module.exports = class InstagramChatService extends InstagramService {
 
     async createNewChat(messageObj) {
         const profileService = new InstagramProfileService(null, messageObj.token)
-        await profileService.init();
+        await profileService.initMeta();
         const { from } = await profileService.fetchProfileByMessage(messageObj.message.mid);
         await ChatRepository.createIfNotExist(convertInstagramWebhookToDBChatCreateObject({
             ...messageObj,

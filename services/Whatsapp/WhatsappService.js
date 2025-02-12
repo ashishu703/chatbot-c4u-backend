@@ -14,19 +14,19 @@ module.exports = class WhatsappService {
     }
 
 
-    async init() {
+    async initMeta() {
         const {
-            facebook_client_id,
-            facebook_client_secret,
-            facebook_graph_version,
-            facebook_auth_scopes
+            whatsapp_client_id,
+            whatsapp_client_secret,
+            whatsapp_graph_version,
+            whatsapp_auth_scopes
         } = await WebPublicRepository.getSetting();
 
-        this.AppId = facebook_client_id;
-        this.AppSecret = facebook_client_secret;
-        this.DefaultApiVersion = facebook_graph_version;
+        this.AppId = whatsapp_client_id;
+        this.AppSecret = whatsapp_client_secret;
+        this.DefaultApiVersion = whatsapp_graph_version;
         this.APIURL = `https://graph.facebook.com/${this.DefaultApiVersion}`
-        this.scopes = facebook_auth_scopes
+        this.scopes = whatsapp_auth_scopes
     }
 
 

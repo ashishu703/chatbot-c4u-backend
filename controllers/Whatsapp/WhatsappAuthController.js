@@ -1,29 +1,37 @@
+const FacebookException = require("../../exceptions/FacebookException");
 const WebPublicRepository = require("../../repositories/WebPublicRepository");
-const MessangerAuthService = require("../../services/Messanger/MessangerAuthService");
+const WhatsappAuthService = require("../../services/whatsapp/WhatsappAuthService");
 const WhatsappController = require("./WhatsappController");
 
 module.exports = class MessangerAuthController extends WhatsappController {
-    // async initiateUserAuth(req, res) {
-    //     try {
-    //         const { accessToken } = req.body
-    //         const user = req.decode;
-    //         const authService = new MessangerAuthService(user, accessToken);
-    //         await authService.init();
-    //         const accountInfo = await authService.initiateUserAuth();
-    //         if (!accountInfo) throw new Error("Authentication Failed");
-    //         const pageService = new MessangerPageService(user, accountInfo.accessToken)
-    //         await pageService.init();
-    //         await pageService.fetchAndSavePages(accountInfo.accountId);
-    //         res.status(200).json({ msg: "success" });
-    //     }
-    //     catch (err) {
-    //         console.log(err);
-    //         if (err instanceof FacebookException) {
-    //             return res.status(400).json(err);
-    //         }
-    //         return res.status(500).json({ msg: "something went wrong", err });
-    //     }
-    // }
+    async initiateUserAuth(req, res) {
+        try {
+            const {
+                code,
+                phone_number_id,
+                waba_id
+            } = req.body
+
+            
+            const user = req.decode;
+            const authService = new WhatsappAuthService(user);
+            await authService.initMeta();
+            const accountInfo = await authService.initiateUserAuth(
+                code,
+                phone_number_id,
+                waba_id
+            );
+            if (!accountInfo) throw new Error("Authentication Failed");
+            res.status(200).json({ msg: "success" });
+        }
+        catch (err) {
+            console.log(err);
+            if (err instanceof FacebookException) {
+                return res.status(400).json(err);
+            }
+            return res.status(500).json({ msg: "something went wrong", err });
+        }
+    }
 
     // async getAccounts(req, res) {
     //     try {

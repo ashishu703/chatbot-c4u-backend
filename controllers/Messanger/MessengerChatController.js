@@ -1,7 +1,7 @@
 
 const ChatRepository = require("../../repositories/ChatRepository");
 const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
-const MessangerChatService = require("../../services/Messanger/MessangerChatService");
+const MessangerChatService = require("../../services/messanger/MessangerChatService");
 const MessangerController = require("./MessangerController");
 
 
@@ -18,7 +18,7 @@ module.exports = class MessengerChatController extends MessangerController {
             const { recipient } = chat;
             const pageProfile = await FacebookPageRepository.findByPageId(recipient);
             const chatService = new MessangerChatService(null, pageProfile.token);
-            await chatService.init();
+            await chatService.initMeta();
             await chatService.send({
                 text,
                 toNumber

@@ -97,7 +97,7 @@ module.exports = class MessangerChatService extends MessangerService {
     async createNewChat(messageObj) {
         const sender = messageObj.sender;
         const pageService = new MessangerPageService(null, messageObj.token)
-        await pageService.init();
+        await pageService.initMeta();
         const person = await pageService.fetchProfile(sender.id);
         await ChatRepository.createIfNotExist(convertMessangerWebhookToDBChatCreateObject({
             ...messageObj,

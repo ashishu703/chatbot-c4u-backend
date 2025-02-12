@@ -27,7 +27,7 @@ module.exports = class InstagramAuthService extends InstagramService {
     async saveCurrentSession() {
 
         const profileService = new InstagramProfileService(this.user, this.accessToken);
-        await profileService.init();
+        await profileService.initMeta();
         await profileService.fetchAndSaveProfile(this.userId)
 
         return this;

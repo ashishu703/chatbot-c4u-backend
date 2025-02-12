@@ -4,7 +4,6 @@ const MessangerService = require("./MessangerService");
 
 
 module.exports = class MessangerAuthService extends MessangerService {
-    pageService;
     constructor(user, accessToken) {
         super(user, accessToken);
     }
@@ -33,7 +32,7 @@ module.exports = class MessangerAuthService extends MessangerService {
 
     async saveCurrentSession() {
         const facebookProfileService = new FacebookProfileService(this.user, this.accessToken);
-        await facebookProfileService.init();
+        await facebookProfileService.initMeta();
         return facebookProfileService.fetchAndSaveProfileInformation();
     }
 

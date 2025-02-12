@@ -1,8 +1,8 @@
 const FacebookException = require("../../exceptions/FacebookException");
 const WebPublicRepository = require("../../repositories/WebPublicRepository");
-const FacebookProfileService = require("../../services/Messanger/FacebookProfileService");
-const MessangerAuthService = require("../../services/Messanger/MessangerAuthService");
-const MessangerPageService = require("../../services/Messanger/MessangerPageService");
+const FacebookProfileService = require("../../services/messanger/FacebookProfileService");
+const MessangerAuthService = require("../../services/messanger/MessangerAuthService");
+const MessangerPageService = require("../../services/messanger/MessangerPageService");
 const MessangerController = require("./MessangerController");
 
 module.exports = class MessangerAuthController extends MessangerController {
@@ -11,11 +11,11 @@ module.exports = class MessangerAuthController extends MessangerController {
             const { accessToken } = req.body
             const user = req.decode;
             const authService = new MessangerAuthService(user, accessToken);
-            await authService.init();
+            await authService.initMeta();
             const accountInfo = await authService.initiateUserAuth();
             if (!accountInfo) throw new Error("Authentication Failed");
             const pageService = new MessangerPageService(user, accountInfo.accessToken)
-            await pageService.init();
+            await pageService.initMeta();
             await pageService.fetchAndSavePages(accountInfo.accountId);
             res.status(200).json({ msg: "success" });
         }

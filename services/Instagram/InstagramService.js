@@ -17,7 +17,7 @@ module.exports = class InstagramService {
     }
 
 
-    async init() {
+    async initMeta() {
         const {
             instagram_client_id,
             instagram_client_secret,
