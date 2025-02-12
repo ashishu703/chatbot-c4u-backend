@@ -24,43 +24,42 @@ const { checkPlan } = require("../middlewares/plan.js");
 // handle post webhook
 router.post("/webhook/:uid", async (req, res) => {
   try {
+
     const body = req.body;
-    const userUID = req.params.uid;
-    console.log({ userUID, body: JSON.stringify(body) });
+
+    const phoneNumberId = body?.entry[0]?.changes[0]?.value?.metadata?.phone_number_id;
+
+    const getMyMetaApi = await query(`SELECT * FROM meta_api WHERE business_phone_number_id = ?`, [
+      phoneNumberId,
+    ]);
 
     res.sendStatus(200);
 
-    console.log({
-      body: JSON.stringify(body),
-    });
+    if (getMyMetaApi?.length < 0) {
+      console.log("Account not found")
+      return;
+    }
+
+    const userUID = getMyMetaApi[0].uid;
+
+    console.log({ userUID, body: JSON.stringify(body) });
 
     const getDays = await getUserPlayDays(userUID);
+
     if (getDays < 1) {
       return;
     }
 
-    console.log({
-      check: body?.entry[0]?.changes[0]?.value?.metadata?.phone_number_id
-    })
+    const checkNumber = phoneNumberId;
 
-    if (body?.entry[0]?.changes[0]?.value?.metadata?.phone_number_id) {
-      const getMyMetaApi = await query(`SELECT * FROM meta_api WHERE uid = ?`, [
-        userUID,
-      ]);
-      if (getMyMetaApi?.length > 0) {
-        const checkNumber =
-          body?.entry[0]?.changes[0]?.value?.metadata?.phone_number_id;
-        const myNumberId = getMyMetaApi[0]?.business_phone_number_id;
-        
-        if (checkNumber !== myNumberId) {
-          return;
-        }
-      }
+    const myNumberId = getMyMetaApi[0]?.business_phone_number_id;
+
+    if (checkNumber !== myNumberId) {
+      return;
     }
 
-    // save message
     await saveWebhookConversation(body, userUID);
-   return;
+    return;
   } catch (err) {
     console.log(err);
     res.json({ err, success: false, msg: "Something went wrong" });
