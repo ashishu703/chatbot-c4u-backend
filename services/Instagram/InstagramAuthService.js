@@ -27,7 +27,7 @@ module.exports = class InstagramAuthService extends InstagramService {
     async saveCurrentSession() {
 
         const profileService = new InstagramProfileService(this.user, this.accessToken);
-
+        await profileService.init();
         await profileService.fetchAndSaveProfile(this.userId)
 
         return this;
@@ -47,6 +47,13 @@ module.exports = class InstagramAuthService extends InstagramService {
 
 
     async authorizeAuthCode(code) {
+
+        console.log({
+            code,
+            AppId: this.AppId,
+            AppSecret: this.AppSecret,
+            redirectUri: this.redirectUri,
+        })
         const url = 'https://api.instagram.com/oauth/access_token';
 
         const params = new URLSearchParams();
