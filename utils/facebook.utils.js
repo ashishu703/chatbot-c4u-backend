@@ -20,7 +20,7 @@ async  function verifyMetaWebhook(req) {
         meta_webhook_verifcation_key 
     } = await WebPublicRepository.getSetting();
     if (mode && token) {
-        if (mode === "subscribe" && token === META_WEBHOOK_VERIFICATION_KEY) {
+        if (mode === "subscribe" && token === meta_webhook_verifcation_key) {
             console.log("WEBHOOK_VERIFIED");
             return {
                 status: 200,
