@@ -1,5 +1,5 @@
-const { META_WEBHOOK_VERIFICATION_KEY } = require("../constants/messanger.constant");
 const { convertNumberToRandomString } = require("../functions/function");
+const WebPublicRepository = require("../repositories/WebPublicRepository");
 const FacebookException = require("./../exceptions/FacebookException");
 
 async function handleApiResponse(response) {
@@ -11,12 +11,14 @@ async function handleApiResponse(response) {
     return await response.json();
 }
 
-function verifyMetaWebhook(req) {
+async  function verifyMetaWebhook(req) {
 
     let mode = req.query["hub.mode"];
     let token = req.query["hub.verify_token"];
     let challenge = req.query["hub.challenge"];
-
+    const {
+        meta_webhook_verifcation_key 
+    } = await WebPublicRepository.getSetting();
     if (mode && token) {
         if (mode === "subscribe" && token === META_WEBHOOK_VERIFICATION_KEY) {
             console.log("WEBHOOK_VERIFIED");

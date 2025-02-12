@@ -8,11 +8,9 @@ module.exports = class InstagramWebhookController extends InstagramController {
     async handleWebhook(req, res) {
         try {
             const webhookPayload = req.body;
-            
             const chatService = new InstagramChatService();
-
+            await chatService.init();
             await chatService.processIncomingMessages(webhookPayload);
-            
             res.status(200).json({ msg: "success" });
         }
         catch (err) {
@@ -24,18 +22,12 @@ module.exports = class InstagramWebhookController extends InstagramController {
         }
     }
 
-
     async verifyWebhook(req, res) {
         const {
             status,
             message,
             data
-        } = verifyMetaWebhook(req);
-        console.log({
-            message
-        })
+        } = await verifyMetaWebhook(req);
         return res.status(status).send(data);
     }
-
-
 }

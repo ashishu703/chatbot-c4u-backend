@@ -131,7 +131,18 @@ router.post("/update_web_config", adminValidator, async (req, res) => {
       broadcast_screen_tutorial,
       login_header_footer,
       exchange_rate,
+      facebook_client_id,
+      facebook_client_secret,
+      facebook_graph_version,
+      facebook_auth_scopes,
+      meta_webhook_verifcation_key,
+      instagram_client_id,
+      instagram_client_secret,
+      instagram_graph_version,
+      instagram_auth_scopes
+
     } = req.body;
+
 
     let filename = "";
 
@@ -162,7 +173,17 @@ router.post("/update_web_config", adminValidator, async (req, res) => {
         chatbot_screen_tutorial = ?,
         broadcast_screen_tutorial = ?,
         login_header_footer = ?,
-        exchange_rate = ?`,
+        exchange_rate = ?,
+        facebook_client_id = ?,
+        facebook_client_secret = ?,
+        facebook_graph_version = ?,
+        facebook_auth_scopes = ?,
+        meta_webhook_verifcation_key = ?,
+        instagram_client_id = ?,
+        instagram_client_secret = ?,
+        instagram_graph_version = ?,
+        instagram_auth_scopes = ?
+        WHERE id = 1`,
       [
         filename,
         app_name,
@@ -176,6 +197,16 @@ router.post("/update_web_config", adminValidator, async (req, res) => {
         broadcast_screen_tutorial,
         login_header_footer,
         exchange_rate,
+        facebook_client_id,
+        facebook_client_secret,
+        facebook_graph_version,
+        facebook_auth_scopes,
+        meta_webhook_verifcation_key,
+        instagram_client_id,
+        instagram_client_secret,
+        instagram_graph_version,
+        instagram_auth_scopes
+
       ]
     );
 

@@ -1,4 +1,3 @@
-const { MESSANGER_TYPE_KEY } = require("../../constants/messanger.constant");
 const FacebookProfileRepository = require("../../repositories/FacebookProfileRepository");
 const FacebookProfileService = require("./FacebookProfileService");
 const MessangerService = require("./MessangerService");
@@ -34,6 +33,7 @@ module.exports = class MessangerAuthService extends MessangerService {
 
     async saveCurrentSession() {
         const facebookProfileService = new FacebookProfileService(this.user, this.accessToken);
+        await facebookProfileService.init();
         return facebookProfileService.fetchAndSaveProfileInformation();
     }
 

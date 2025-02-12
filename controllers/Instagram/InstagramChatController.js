@@ -1,5 +1,4 @@
 
-const { INSTAGRAM_TYPE_KEY } = require("../../constants/instagram.constant");
 const ChatRepository = require("../../repositories/ChatRepository");
 const InstagramAccountRepository = require("../../repositories/InstagramAccountRepository");
 const InstagramChatService = require("../../services/Instagram/InstagramChatService");
@@ -21,6 +20,8 @@ module.exports = class InstagramChatController extends InstagramController {
             const smiUserToken  = await InstagramAccountRepository.findByUserId(chat.uid);
           
             const chatService = new InstagramChatService(null, smiUserToken.token);
+
+            await chatService.init();
     
             await chatService.send({
                 text,

@@ -1,17 +1,39 @@
-const { INSTAGRAM_CLIENT_ID, INSTAGRAM_CLIENT_SECRET, INSTAGRAM_DEFAULT_GRAPH_VERSION } = require("../../constants/instagram.constant");
+const WebPublicRepository = require("../../repositories/WebPublicRepository");
 const { handleApiResponse } = require("../../utils/facebook.utils");
 const fetch = require("node-fetch");
 
 module.exports = class InstagramService {
-    AppId = INSTAGRAM_CLIENT_ID;
-    AppSecret = INSTAGRAM_CLIENT_SECRET;
-    DefaultApiVersion = INSTAGRAM_DEFAULT_GRAPH_VERSION;
-    APIURL = `https://graph.instagram.com/${this.DefaultApiVersion}`
-    accessToken = null;
+    AppId;
+    AppSecret;
+    DefaultApiVersion;
+    APIURL;
+    scopes;
+    accessToken;
+    redirectUri;
 
     constructor(user, accessToken) {
         this.accessToken = accessToken,
             this.user = user
+    }
+
+
+    async init() {
+        const {
+            instagram_client_id,
+            instagram_client_secret,
+            instagram_graph_version,
+            instagram_auth_scopes,
+            instagram_redirect_url
+        } = await WebPublicRepository.getSetting();
+
+       
+        
+        this.AppId = instagram_client_id;
+        this.AppSecret = instagram_client_secret;
+        this.DefaultApiVersion = instagram_graph_version;
+        this.APIURL = `https://graph.instagram.com/${this.DefaultApiVersion}`
+        this.scopes = instagram_auth_scopes
+        this.redirectUri = instagram_redirect_url
     }
 
 

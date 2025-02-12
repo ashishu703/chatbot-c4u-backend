@@ -1,4 +1,5 @@
 const FacebookException = require("../../exceptions/FacebookException");
+const WebPublicRepository = require("../../repositories/WebPublicRepository");
 const FacebookProfileService = require("../../services/Messanger/FacebookProfileService");
 const MessangerAuthService = require("../../services/Messanger/MessangerAuthService");
 const MessangerPageService = require("../../services/Messanger/MessangerPageService");
@@ -8,19 +9,14 @@ module.exports = class MessangerAuthController extends MessangerController {
     async initiateUserAuth(req, res) {
         try {
             const { accessToken } = req.body
-
             const user = req.decode;
-
             const authService = new MessangerAuthService(user, accessToken);
-
+            await authService.init();
             const accountInfo = await authService.initiateUserAuth();
-
             if (!accountInfo) throw new Error("Authentication Failed");
-
             const pageService = new MessangerPageService(user, accountInfo.accessToken)
-
+            await pageService.init();
             await pageService.fetchAndSavePages(accountInfo.accountId);
-
             res.status(200).json({ msg: "success" });
         }
         catch (err) {
@@ -44,6 +40,26 @@ module.exports = class MessangerAuthController extends MessangerController {
             if (err instanceof FacebookException) {
                 return res.status(400).json(err);
             }
+            return res.status(500).json({ msg: "something went wrong", err });
+        }
+    }
+
+
+    async getAuthParams(req, res) {
+        try {
+            const {
+                facebook_client_id,
+                facebook_auth_scopes,
+                facebook_graph_version
+            } = await WebPublicRepository.getSetting();
+
+            res.status(200).json({
+                msg: "success",
+                clientId: facebook_client_id,
+                scopes: facebook_auth_scopes,
+                version: facebook_graph_version
+            });
+        } catch (error) {
             return res.status(500).json({ msg: "something went wrong", err });
         }
     }

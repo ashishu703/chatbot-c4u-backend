@@ -21,7 +21,7 @@ function initializeSocket(server) {
         socket.on('user_connected', async ({ userId }) => {
             console.log({ userId })
             if (userId) {
-                console.log(`User ${userId?.slice(0, 5)} connected with socket ID: ${socket.id}`);
+                // console.log(`User ${userId?.slice(0, 5)} connected with socket ID: ${socket.id}`);
                 try {
                     // Perform database operations within a try-catch block for error handling
                     await query(`DELETE FROM rooms WHERE uid = ?`, [userId]);

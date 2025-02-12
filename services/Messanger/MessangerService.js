@@ -1,16 +1,32 @@
-const { MESSANGER_CLIENT_ID, MESSANGER_CLIENT_SECRET, MESSANGER_DEFAULT_GRAPH_VERSION } = require("../../constants/messanger.constant");
+const WebPublicRepository = require("../../repositories/WebPublicRepository");
 const { handleApiResponse } = require("../../utils/facebook.utils");
 const fetch = require("node-fetch");
 module.exports = class MessangerService {
-    AppId = MESSANGER_CLIENT_ID;
-    AppSecret = MESSANGER_CLIENT_SECRET;
-    DefaultApiVersion = MESSANGER_DEFAULT_GRAPH_VERSION;
-    APIURL = `https://graph.facebook.com/${this.DefaultApiVersion}`
-    accessToken = null;
-
+    AppId;
+    AppSecret;
+    DefaultApiVersion;
+    APIURL;
+    scopes;
+    accessToken;
     constructor(user, accessToken) {
         this.accessToken = accessToken,
             this.user = user
+    }
+
+
+    async init() {
+        const {
+            facebook_client_id,
+            facebook_client_secret,
+            facebook_graph_version,
+            facebook_auth_scopes
+        } = await WebPublicRepository.getSetting();
+
+        this.AppId = facebook_client_id;
+        this.AppSecret = facebook_client_secret;
+        this.DefaultApiVersion = facebook_graph_version;
+        this.APIURL = `https://graph.facebook.com/${this.DefaultApiVersion}`
+        this.scopes = facebook_auth_scopes
     }
 
 

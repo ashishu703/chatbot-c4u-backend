@@ -8,11 +8,9 @@ module.exports = class InstagramWebhookController extends MessangerController {
     async handleWebhook(req, res) {
         try {
             const webhookPayload = req.body;
-
             const chatService = new MessangerChatService();
-
+            await chatService.init();
             await chatService.processIncomingMessages(webhookPayload);
-            
             res.status(200).json({ msg: "success" });
         }
         catch (err) {

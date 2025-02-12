@@ -1,4 +1,3 @@
-const { MESSANGER_TYPE_KEY } = require("../../constants/messanger.constant");
 const FacebookException = require("../../exceptions/FacebookException");
 const { readJsonFromFile, writeJsonToFile, addObjectToFile } = require("../../functions/function");
 const ChatRepository = require("../../repositories/ChatRepository");
@@ -9,10 +8,10 @@ const { prepareChatPath, createChatId } = require("../../utils/facebook.utils");
 const { convertWebhookReciveMessageToJsonObj, convertInstagramWebhookToDBChatCreateObject, convertWebhookToDBChatUpdateObject, convertWebhookRecieptToJsonObj } = require("../../utils/messenger.utils");
 const ChatIOService = require("../ChatIOService");
 const InstagramProfileService = require("./InstagramProfileService");
-const MessangerService = require("./InstagramService");
+const InstagramService = require("./InstagramService");
 
 
-module.exports = class InstagramChatService extends MessangerService {
+module.exports = class InstagramChatService extends InstagramService {
     ioService;
     constructor(user = null, accessToken = null) {
         super(user, accessToken);
@@ -150,6 +149,7 @@ module.exports = class InstagramChatService extends MessangerService {
 
     async createNewChat(messageObj) {
         const profileService = new InstagramProfileService(null, messageObj.token)
+        await profileService.init();
         const { from } = await profileService.fetchProfileByMessage(messageObj.message.mid);
         await ChatRepository.createIfNotExist(convertInstagramWebhookToDBChatCreateObject({
             ...messageObj,

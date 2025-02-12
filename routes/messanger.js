@@ -8,6 +8,8 @@ const authController = new AuthController();
 const messengerWebhookController = new MessengerWebhookController();
 const messengerChatController = new MessengerChatController();
 
+router.get("/auth-params", validateUser, authController.getAuthParams.bind(authController));
+
 router.post("/auth-init", validateUser, authController.initiateUserAuth.bind(authController));
 
 router.get('/webhook', messengerWebhookController.verifyWebhook.bind(messengerWebhookController));

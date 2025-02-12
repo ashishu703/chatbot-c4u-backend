@@ -7,13 +7,10 @@ module.exports = class InstagramAuthController extends InstagramController {
     async initiateUserAuth(req, res) {
         try {
             const { code } = req.body
-
             const user = req.decode;
-
             const authService = new InstagramAuthService(user, null);
-
+            await authService.init();
             await authService.initiateUserAuth(code);
-
             res.status(200).json({ msg: "success" });
         }
         catch (err) {
@@ -29,11 +26,9 @@ module.exports = class InstagramAuthController extends InstagramController {
     async getAuthUri(req, res) {
         try {
             const authService = new InstagramAuthService(null, null)
-
+            await authService.init();
             const authURI = authService.prepareAuthUri();
-
             res.status(200).json({ msg: "success", authURI });
-
         } catch (error) {
             return res.status(500).json({ msg: "something went wrong", err });
         }
