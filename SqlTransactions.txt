@@ -43,4 +43,14 @@ CREATE TABLE `instagram_accounts` (
 ) ENGINE = MyISAM;
 
 
-ALTER TABLE `web_public` ADD `facebook_client_id` VARCHAR(100) NULL AFTER `fb_login_active`, ADD `facebook_client_secret` VARCHAR(100) NULL AFTER `facebook_client_id`, ADD `facebook_graph_version` VARCHAR(5) NULL AFTER `facebook_client_secret`, ADD `facebook_auth_scopes` TEXT NULL AFTER `facebook_default_graph_version`, ADD `meta_webhook_verifcation_key` TEXT NULL AFTER `facebook_auth_scopes`, ADD `instagram_client_id` VARCHAR(100) NULL AFTER `meta_webhook_verifcation_key`, ADD `instagram_client_secret` VARCHAR(100) NULL AFTER `instagram_client_id`, ADD `instagram_graph_version` VARCHAR(5) NULL AFTER `instagram_client_secret`, ADD `instagram_auth_scopes` TEXT NULL AFTER `instagram_graph_version`;
+
+ALTER TABLE `web_public` ADD `facebook_client_id` VARCHAR(100) NULL AFTER `fb_login_active`, ADD `facebook_client_secret` VARCHAR(100) NULL AFTER `facebook_client_id`, ADD `facebook_default_graph_version` VARCHAR(5) NULL AFTER `facebook_client_secret`, ADD `facebook_auth_scopes` TEXT NULL AFTER `facebook_default_graph_version`, ADD `meta_webhook_verifcation_key` TEXT NULL AFTER `facebook_auth_scopes`, ADD `instagram_client_id` VARCHAR(100) NULL AFTER `meta_webhook_verifcation_key`, ADD `instagram_client_secret` VARCHAR(100) NULL AFTER `instagram_client_id`, ADD `instagram_graph_version` VARCHAR(5) NULL AFTER `instagram_client_secret`, ADD `instagram_auth_scopes` TEXT NULL AFTER `instagram_graph_version`;
+
+
+ALTER TABLE `web_public` ADD `instagram_webhook_url` TEXT NULL AFTER `instagram_auth_scopes`, ADD `messanger_webhook_url` TEXT NULL AFTER `instagram_webhook_url`;
+
+
+ALTER TABLE `web_public` ADD `instagram_redirect_url` VARCHAR(999) NOT NULL AFTER `messanger_webhook_url`;
+
+
+ALTER TABLE `web_public` ADD `whatsapp_client_id` VARCHAR(100) NULL AFTER `instagram_redirect_url`, ADD `whatsapp_client_secret` VARCHAR(100) NULL AFTER `whatsapp_client_id`, ADD `whatsapp_graph_version` VARCHAR(5) NULL AFTER `whatsapp_client_secret`, ADD `whatsapp_auth_scopes` TEXT NULL AFTER `whatsapp_graph_version`;

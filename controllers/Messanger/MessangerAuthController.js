@@ -59,7 +59,7 @@ module.exports = class MessangerAuthController extends MessangerController {
                 scopes: facebook_auth_scopes,
                 version: facebook_graph_version
             });
-        } catch (error) {
+        } catch (err) {
             return res.status(500).json({ msg: "something went wrong", err });
         }
     }

@@ -20,8 +20,8 @@ router.post('/send', validateUser, messengerChatController.send.bind(messengerCh
 
 router.post('/send-agent-message', validateAgent, messengerChatController.send.bind(messengerChatController));
 
-router.get('/accounts', validateUser, authController.getAccounts.bind(messengerChatController));
+router.get('/accounts', validateUser, authController.getAccounts.bind(authController));
 
-router.delete('/accounts/:id', validateUser, authController.deleteAccount.bind(messengerChatController));
+router.delete('/accounts/:id', validateUser, authController.deleteAccount.bind(authController));
 
 module.exports = router;

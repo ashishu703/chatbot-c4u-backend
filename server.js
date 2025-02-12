@@ -53,6 +53,8 @@ app.use('/api/messanger', require('./routes/messanger'))
 
 app.use('/api/instagram', require('./routes/instagram'))
 
+app.use('/api/whatsapp', require('./routes/whatsapp'))
+
 
 const path = require("path");
 

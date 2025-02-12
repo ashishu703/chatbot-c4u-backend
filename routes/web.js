@@ -139,8 +139,11 @@ router.post("/update_web_config", adminValidator, async (req, res) => {
       instagram_client_id,
       instagram_client_secret,
       instagram_graph_version,
-      instagram_auth_scopes
-
+      instagram_auth_scopes,
+      whatsapp_client_id,
+      whatsapp_client_secret,
+      whatsapp_graph_version,
+      whatsapp_auth_scopes
     } = req.body;
 
 
@@ -182,7 +185,11 @@ router.post("/update_web_config", adminValidator, async (req, res) => {
         instagram_client_id = ?,
         instagram_client_secret = ?,
         instagram_graph_version = ?,
-        instagram_auth_scopes = ?
+        instagram_auth_scopes = ?,
+        whatsapp_client_id = ?,
+        whatsapp_client_secret = ?,
+        whatsapp_graph_version = ?,
+        whatsapp_auth_scopes = ?
         WHERE id = 1`,
       [
         filename,
@@ -205,8 +212,11 @@ router.post("/update_web_config", adminValidator, async (req, res) => {
         instagram_client_id,
         instagram_client_secret,
         instagram_graph_version,
-        instagram_auth_scopes
-
+        instagram_auth_scopes,
+        whatsapp_client_id,
+        whatsapp_client_secret,
+        whatsapp_graph_version,
+        whatsapp_auth_scopes
       ]
     );
 
