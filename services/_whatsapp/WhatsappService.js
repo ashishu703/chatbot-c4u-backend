@@ -19,14 +19,14 @@ module.exports = class WhatsappService {
             whatsapp_client_id,
             whatsapp_client_secret,
             whatsapp_graph_version,
-            whatsapp_auth_scopes
+            config_id
         } = await WebPublicRepository.getSetting();
 
         this.AppId = whatsapp_client_id;
         this.AppSecret = whatsapp_client_secret;
         this.DefaultApiVersion = whatsapp_graph_version;
         this.APIURL = `https://graph.facebook.com/${this.DefaultApiVersion}`
-        this.scopes = whatsapp_auth_scopes
+        this.scopes = config_id
     }
 
 

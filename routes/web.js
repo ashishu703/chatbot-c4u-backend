@@ -143,7 +143,7 @@ router.post("/update_web_config", adminValidator, async (req, res) => {
       whatsapp_client_id,
       whatsapp_client_secret,
       whatsapp_graph_version,
-      whatsapp_auth_scopes
+      config_id
     } = req.body;
 
 
@@ -189,7 +189,7 @@ router.post("/update_web_config", adminValidator, async (req, res) => {
         whatsapp_client_id = ?,
         whatsapp_client_secret = ?,
         whatsapp_graph_version = ?,
-        whatsapp_auth_scopes = ?
+        config_id = ?
         WHERE id = 1`,
       [
         filename,
@@ -216,7 +216,7 @@ router.post("/update_web_config", adminValidator, async (req, res) => {
         whatsapp_client_id,
         whatsapp_client_secret,
         whatsapp_graph_version,
-        whatsapp_auth_scopes
+        config_id
       ]
     );
 
