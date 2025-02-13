@@ -22,7 +22,7 @@ const { getIOInstance } = require("../socket.js");
 const { checkPlan } = require("../middlewares/plan.js");
 
 // handle post webhook
-router.post("/webhook/:uid", async (req, res) => {
+router.post("/webhook", async (req, res) => {
   try {
 
     const body = req.body;
