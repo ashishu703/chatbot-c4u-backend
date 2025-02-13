@@ -1,6 +1,6 @@
 const FacebookException = require("../../exceptions/FacebookException");
-const InstagramAuthService = require("../../services/instagram/InstagramAuthService");
-const InstagramProfileService = require("../../services/instagram/InstagramProfileService");
+const InstagramAuthService = require("../../services/_instagram/InstagramAuthService");
+const InstagramProfileService = require("../../services/_instagram/InstagramProfileService");
 const InstagramController = require("./InstagramController");
 
 module.exports = class InstagramAuthController extends InstagramController {

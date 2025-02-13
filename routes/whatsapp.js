@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const validateUser = require("../middlewares/user.js");
-const AuthController = require("../controllers/Whatsapp/WhatsappAuthController.js");
+const AuthController = require("../controllers/_whatsapp/WhatsappAuthController.js");
 const authController = new AuthController();
 
 router.get("/auth-params", validateUser, authController.getAuthParams.bind(authController));

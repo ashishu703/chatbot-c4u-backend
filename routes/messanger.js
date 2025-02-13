@@ -1,9 +1,9 @@
 const router = require("express").Router();
 const validateUser = require("../middlewares/user.js");
 const validateAgent = require("../middlewares/agent.js");
-const AuthController = require("../controllers/Messanger/MessangerAuthController.js");
-const MessengerWebhookController = require("../controllers/Messanger/MessengerWebhookController.js");
-const MessengerChatController = require("../controllers/Messanger/MessengerChatController.js");
+const AuthController = require("../controllers/_messanger/MessangerAuthController.js");
+const MessengerWebhookController = require("../controllers/_messanger/MessengerWebhookController.js");
+const MessengerChatController = require("../controllers/_messanger/MessengerChatController.js");
 const authController = new AuthController();
 const messengerWebhookController = new MessengerWebhookController();
 const messengerChatController = new MessengerChatController();
