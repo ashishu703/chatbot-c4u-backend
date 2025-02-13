@@ -103,21 +103,13 @@ router.post("/get_convo", validateUser, async (req, res) => {
 });
 
 // adding webhook
-router.get("/webhook/:uid", async (req, res) => {
+router.get("/webhook", async (req, res) => {
   try {
-    const { uid } = req.params;
-
-    const queryParan = req.query;
-    const body = req.body;
-
-    // console.log({ query: JSON.stringify(queryParan) });
-    // console.log({ body: JSON.stringify(body) });
-
-    const getUser = await query(`SELECT * FROM user WHERE uid = ?`, [uid]);
+    const settings = await query(`SELECT * FROM web_public;`, []);
 
     let verify_token = "";
 
-    if (getUser.length < 1) {
+    if (settings.length < 1) {
       verify_token = "NULL";
       res.json({
         success: false,
@@ -126,7 +118,7 @@ router.get("/webhook/:uid", async (req, res) => {
         token: "NOT FOUND",
       });
     } else {
-      verify_token = uid;
+      verify_token = settings[0].meta_webhook_verifcation_key;
 
       let mode = req.query["hub.mode"];
       let token = req.query["hub.verify_token"];
