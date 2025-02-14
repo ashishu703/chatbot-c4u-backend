@@ -1,3 +1,4 @@
+const { generateRandomNumber } = require("../../utils/others.utils");
 const WhatsappProfileService = require("./WhatsappProfileService");
 const WhatsappService = require("./WhatsappService");
 
@@ -11,9 +12,10 @@ module.exports = class WhatsappAuthService extends WhatsappService {
         phoneNumberId,
         wabaId
     ) {
-       
+
         await this.getLongLiveToken(code)
-        return this.saveCurrentSession(phoneNumberId, wabaId);
+        const pin = await this.registerAccount(phoneNumberId);
+        return this.saveCurrentSession(phoneNumberId, wabaId, pin);
     }
 
 
@@ -35,10 +37,17 @@ module.exports = class WhatsappAuthService extends WhatsappService {
 
 
 
-    async saveCurrentSession(phoneNumberId, wabaId) {
+    async saveCurrentSession(phoneNumberId, wabaId, pin) {
         const whatsappProfileService = new WhatsappProfileService(this.user, this.accessToken);
-        const profile = await whatsappProfileService.saveProfile(phoneNumberId, wabaId);
+        const profile = await whatsappProfileService.saveProfile(phoneNumberId, wabaId, pin);
         return profile
+    }
+
+
+    async registerAccount(phoneNumberId) {
+        const pin = generateRandomNumber(6);
+        await this.post(`${phoneNumberId}/register`, { messaging_product: "whatsapp", pin });
+        return pin;
     }
 
 }

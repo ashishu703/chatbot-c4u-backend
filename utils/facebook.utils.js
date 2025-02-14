@@ -19,6 +19,7 @@ async  function verifyMetaWebhook(req) {
     const {
         meta_webhook_verifcation_key 
     } = await WebPublicRepository.getSetting();
+ 
     if (mode && token) {
         if (mode === "subscribe" && token === meta_webhook_verifcation_key) {
             console.log("WEBHOOK_VERIFIED");
@@ -30,10 +31,11 @@ async  function verifyMetaWebhook(req) {
         }
     }
 
+
     return {
         status: 403,
         message: "UNAUTHORIZED",
-        data: 0
+        data: {}
     }
 }
 

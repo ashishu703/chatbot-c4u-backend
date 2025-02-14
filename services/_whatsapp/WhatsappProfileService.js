@@ -11,11 +11,12 @@ module.exports = class WhatsappProfileService extends WhatsappService {
     }
 
 
-    async saveProfile(phoneNumberId, wabaId) {
+    async saveProfile(phoneNumberId, wabaId, pin) {
         await this.initMeta();
-        await WhatsappProfileRepository.updateOrCreate(wabaId, wabaId, this.accessToken, phoneNumberId, this.user.uid, this.AppId);
+        await WhatsappProfileRepository.updateOrCreate(wabaId, wabaId, this.accessToken, phoneNumberId, this.user.uid, this.AppId, pin);
         return {
             userId: this.user.uid,
+            pin,
             wabaId,
             phoneNumberId,
             accessToken: this.accessToken

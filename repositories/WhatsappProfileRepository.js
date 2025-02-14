@@ -7,20 +7,22 @@ module.exports = class WhatsappProfileRepository {
         access_token,
         business_phone_number_id,
         userId,
-        app_id
+        app_id,
+        pin
     ) {
         const findOne = await query(`SELECT * FROM meta_api WHERE uid = ?`, [
             userId,
         ]);
         if (findOne.length > 0) {
             await query(
-                `UPDATE meta_api SET waba_id = ?, business_account_id = ?, access_token = ?, business_phone_number_id = ?, app_id = ? WHERE uid = ?`,
+                `UPDATE meta_api SET waba_id = ?, business_account_id = ?, access_token = ?, business_phone_number_id = ?, app_id = ?, pin = ? WHERE uid = ?`,
                 [
                     waba_id,
                     business_account_id,
                     access_token,
                     business_phone_number_id,
                     app_id,
+                    pin,
                     userId,
                 ]
             );
@@ -33,7 +35,8 @@ module.exports = class WhatsappProfileRepository {
                     business_account_id,
                     access_token,
                     business_phone_number_id,
-                    app_id
+                    app_id,
+                    pin
                 ]
             );
         }
