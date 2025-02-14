@@ -1407,6 +1407,11 @@ async function sendMetatemplet(
     template: templ,
   };
 
+
+  console.log({
+    body: JSON.stringify(body),
+  })
+
   const options = {
     method: "POST",
     headers: {

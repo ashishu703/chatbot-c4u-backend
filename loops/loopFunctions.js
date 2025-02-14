@@ -54,6 +54,11 @@ async function sendMessage(message, metaKeys) {
             exampleArr
         )
 
+
+        console.log({
+            resp: JSON.stringify(resp)
+        })
+
         if (resp.error) {
             return { success: false, msg: resp?.error?.error_user_title || "Please check your API" }
         } else {

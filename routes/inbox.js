@@ -22,44 +22,40 @@ const { getIOInstance } = require("../socket.js");
 const { checkPlan } = require("../middlewares/plan.js");
 
 // handle post webhook
-router.post("/webhook", async (req, res) => {
+router.post("/webhook/:uid", async (req, res) => {
   try {
-
     const body = req.body;
-
-    const phoneNumberId = body?.entry[0]?.changes[0]?.value?.metadata?.phone_number_id;
-
-    const getMyMetaApi = await query(`SELECT * FROM meta_api WHERE business_phone_number_id = ?`, [
-      phoneNumberId,
-    ]);
+    const userUID = req.params.uid;
+    console.log({ userUID, body: JSON.stringify(body) });
 
     res.sendStatus(200);
 
-    if (getMyMetaApi?.length < 0) {
-      console.log("Account not found")
-      return;
-    }
-
-    const userUID = getMyMetaApi[0].uid;
-
-    console.log({ userUID, body: JSON.stringify(body) });
+    console.log({
+      body: JSON.stringify(body),
+    });
 
     const getDays = await getUserPlayDays(userUID);
-
     if (getDays < 1) {
       return;
     }
 
-    const checkNumber = phoneNumberId;
+    if (body?.entry[0]?.changes[0]?.value?.metadata?.phone_number_id) {
+      const getMyMetaApi = await query(`SELECT * FROM meta_api WHERE uid = ?`, [
+        userUID,
+      ]);
+      if (getMyMetaApi?.length > 0) {
+        const checkNumber =
+          body?.entry[0]?.changes[0]?.value?.metadata?.phone_number_id;
+        const myNumberId = getMyMetaApi[0]?.business_phone_number_id;
 
-    const myNumberId = getMyMetaApi[0]?.business_phone_number_id;
-
-    if (checkNumber !== myNumberId) {
-      return;
+        if (checkNumber !== myNumberId) {
+          return;
+        }
+      }
     }
 
+    // save message
     await saveWebhookConversation(body, userUID);
-    return;
   } catch (err) {
     console.log(err);
     res.json({ err, success: false, msg: "Something went wrong" });
@@ -103,13 +99,21 @@ router.post("/get_convo", validateUser, async (req, res) => {
 });
 
 // adding webhook
-router.get("/webhook", async (req, res) => {
+router.get("/webhook/:uid", async (req, res) => {
   try {
-    const settings = await query(`SELECT * FROM web_public;`, []);
+    const { uid } = req.params;
+
+    const queryParan = req.query;
+    const body = req.body;
+
+    // console.log({ query: JSON.stringify(queryParan) });
+    // console.log({ body: JSON.stringify(body) });
+
+    const getUser = await query(`SELECT * FROM user WHERE uid = ?`, [uid]);
 
     let verify_token = "";
 
-    if (settings.length < 1) {
+    if (getUser.length < 1) {
       verify_token = "NULL";
       res.json({
         success: false,
@@ -118,7 +122,7 @@ router.get("/webhook", async (req, res) => {
         token: "NOT FOUND",
       });
     } else {
-      verify_token = settings[0].meta_webhook_verifcation_key;
+      verify_token = uid;
 
       let mode = req.query["hub.mode"];
       let token = req.query["hub.verify_token"];
