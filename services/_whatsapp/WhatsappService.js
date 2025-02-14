@@ -31,6 +31,7 @@ module.exports = class WhatsappService {
 
 
     async post(url, data, query = []) {
+     
         const queryString = new URLSearchParams(query).toString();
         const options = {
             method: 'POST',

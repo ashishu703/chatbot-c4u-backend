@@ -1,6 +1,7 @@
 const ChatRepository = require("../../repositories/ChatRepository");
 const WhatsappProfileRepository = require("../../repositories/WhatsappProfileRepository");
 const WhatsappService = require("./WhatsappService");
+const WhatsappWebhookService = require("./WhatsappWebhookService");
 
 
 
@@ -28,7 +29,12 @@ module.exports = class WhatsappProfileService extends WhatsappService {
     }
 
     async deleteProfile(wabaId) {
+        
         await ChatRepository.removePlatformChat(this.user.uid, 'WHATSAPP');
+        const profile = await WhatsappProfileRepository.getByAccountId(wabaId);
+        const webhookService = new WhatsappWebhookService(this.user, profile.access_token);
+        await webhookService.initMeta();
+        await webhookService.unsubscribeWebhook(wabaId);
         return WhatsappProfileRepository.deleteByAccountId(wabaId);
     }
 

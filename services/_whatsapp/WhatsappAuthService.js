@@ -1,6 +1,8 @@
 const { generateRandomNumber } = require("../../utils/others.utils");
 const WhatsappProfileService = require("./WhatsappProfileService");
 const WhatsappService = require("./WhatsappService");
+const WhatsappWebhookService = require("./WhatsappWebhookService");
+const pin = process.env.ACCOUNT_SECRET;
 
 
 module.exports = class WhatsappAuthService extends WhatsappService {
@@ -14,7 +16,8 @@ module.exports = class WhatsappAuthService extends WhatsappService {
     ) {
 
         await this.getLongLiveToken(code)
-        const pin = await this.registerAccount(phoneNumberId);
+        await this.registerAccount(phoneNumberId);
+        await this.subscribeWebhook(wabaId);
         return this.saveCurrentSession(phoneNumberId, wabaId, pin);
     }
 
@@ -39,15 +42,21 @@ module.exports = class WhatsappAuthService extends WhatsappService {
 
     async saveCurrentSession(phoneNumberId, wabaId, pin) {
         const whatsappProfileService = new WhatsappProfileService(this.user, this.accessToken);
-        const profile = await whatsappProfileService.saveProfile(phoneNumberId, wabaId, pin);
-        return profile
+        return whatsappProfileService.saveProfile(phoneNumberId, wabaId, pin);
     }
 
 
     async registerAccount(phoneNumberId) {
-        const pin = generateRandomNumber(6);
-        await this.post(`${phoneNumberId}/register`, { messaging_product: "whatsapp", pin });
-        return pin;
+        this.post(`/${phoneNumberId}/register`, { messaging_product: "whatsapp", pin }).then((res) => { }).catch((err) => { console.log(err); });
     }
+
+
+    async subscribeWebhook(wabaId) {
+        const webhookService = new WhatsappWebhookService(this.user, this.accessToken);
+        await webhookService.initMeta();
+        return webhookService.subscribeWebhook(wabaId);
+    }
+
+
 
 }

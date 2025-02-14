@@ -28,7 +28,7 @@ module.exports = class WhatsappProfileRepository {
             );
         } else {
             await query(
-                `INSERT INTO meta_api (uid, waba_id, business_account_id, access_token, business_phone_number_id,app_id) VALUES (?,?,?,?,?,?)`,
+                `INSERT INTO meta_api (uid, waba_id, business_account_id, access_token, business_phone_number_id, app_id, pin) VALUES (?,?,?,?,?,?,?)`,
                 [
                     userId,
                     waba_id,
@@ -41,6 +41,11 @@ module.exports = class WhatsappProfileRepository {
             );
         }
 
+    }
+
+    static async getByAccountId(wabaId) {
+        const profiles = await query(`SELECT * FROM meta_api WHERE waba_id = ? `, [wabaId]);
+        return profiles.length ? profiles[0] : null;
     }
 
     static async deleteByAccountId(wabaId) {
