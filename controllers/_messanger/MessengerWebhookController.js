@@ -28,7 +28,7 @@ module.exports = class InstagramWebhookController extends MessangerController {
             status,
             message,
             data
-        } = verifyMetaWebhook(req);
+        } = await verifyMetaWebhook(req);
         return res.status(status).send(data);
     }
 
