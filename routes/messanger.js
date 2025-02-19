@@ -4,9 +4,11 @@ const validateAgent = require("../middlewares/agent.js");
 const AuthController = require("../controllers/_messanger/MessangerAuthController.js");
 const MessengerWebhookController = require("../controllers/_messanger/MessengerWebhookController.js");
 const MessengerChatController = require("../controllers/_messanger/MessengerChatController.js");
+const FacebookPageController = require("../controllers/_messanger/FacebookPageController.js");
 const authController = new AuthController();
 const messengerWebhookController = new MessengerWebhookController();
 const messengerChatController = new MessengerChatController();
+const facebookPageController = new FacebookPageController();
 
 router.get("/auth-params", validateUser, authController.getAuthParams.bind(authController));
 
@@ -22,6 +24,14 @@ router.post('/send-agent-message', validateAgent, messengerChatController.send.b
 
 router.get('/accounts', validateUser, authController.getAccounts.bind(authController));
 
+router.get('/inactive-pages', validateUser, facebookPageController.getInactivePages.bind(facebookPageController));
+
+router.get('/active-pages', validateUser, facebookPageController.getActivePages.bind(facebookPageController));
+
+router.post('/active-pages', validateUser, facebookPageController.activatePages.bind(facebookPageController));
+
 router.delete('/accounts/:id', validateUser, authController.deleteAccount.bind(authController));
+
+router.delete('/pages/:id', validateUser, facebookPageController.deletePage.bind(facebookPageController));
 
 module.exports = router;

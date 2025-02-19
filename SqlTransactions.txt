@@ -54,3 +54,6 @@ ALTER TABLE `web_public` ADD `instagram_redirect_url` VARCHAR(999) NOT NULL AFTE
 
 
 ALTER TABLE `web_public` ADD `whatsapp_client_id` VARCHAR(100) NULL AFTER `instagram_redirect_url`, ADD `whatsapp_client_secret` VARCHAR(100) NULL AFTER `whatsapp_client_id`, ADD `whatsapp_graph_version` VARCHAR(5) NULL AFTER `whatsapp_client_secret`, ADD `config_id` TEXT NULL AFTER `whatsapp_graph_version`;
+
+
+ALTER TABLE  `omni-chat`.facebook_pages ADD COLUMN status BOOLEAN DEFAULT FALSE after `token`;

@@ -31,7 +31,7 @@ module.exports = class MessangerPageService extends MessangerService {
         return pages;
     }
     async fetchPages() {
-        return await this.get('/me/accounts', { fields: 'id,name,access_token' });
+        return await this.get('/me/accounts?limit=1000', { fields: 'id,name,access_token' });
     }
 
     async savePage(page, accountId) {
@@ -40,7 +40,8 @@ module.exports = class MessangerPageService extends MessangerService {
             accountId,
             page.id,
             page.name,
-            page.access_token
+            page.access_token,
+            false
         );
     }
 }
