@@ -12,7 +12,7 @@ module.exports = class InstagramProfileService extends InstagramService {
 
 
     async fetchProfileByMessage(messageId) {
-        return this.get(`/${messageId}`, {
+        return this.get(`/me`, {
             fields: 'id,created_time,from,to,message',
             access_token: this.accessToken
         });
