@@ -57,3 +57,14 @@ ALTER TABLE `web_public` ADD `whatsapp_client_id` VARCHAR(100) NULL AFTER `insta
 
 
 ALTER TABLE  `omni-chat`.facebook_pages ADD COLUMN status BOOLEAN DEFAULT FALSE after `token`;
+
+
+
+CREATE TABLE quick_replies (
+    id INT NOT NULL AUTO_INCREMENT,
+    uid VARCHAR(50) NOT NULL,
+    message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);

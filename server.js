@@ -58,6 +58,9 @@ app.use('/api/instagram', require('./routes/instagram'))
 
 app.use('/api/whatsapp', require('./routes/whatsapp'))
 
+app.use('/api/quick-replies', require('./routes/quickReplies'))
+
+
 
 const path = require("path");
 
