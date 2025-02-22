@@ -6,7 +6,7 @@ const quickRepliesController = new QuickRepliesController();
 
 router.get("/", validateUser, quickRepliesController.getQuickReplies.bind(quickRepliesController));
 router.post("/", validateUser, quickRepliesController.createQuickReplies.bind(quickRepliesController));
-router.delete("/", validateUser, quickRepliesController.deleteQuickReplies.bind(quickRepliesController));
+router.delete("/:id", validateUser, quickRepliesController.deleteQuickReplies.bind(quickRepliesController));
 
 
 module.exports = router;
