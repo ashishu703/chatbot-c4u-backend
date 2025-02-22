@@ -24,7 +24,7 @@ module.exports = class MessengerChatController extends MessangerController {
                 toNumber
             })
             return res.status(200).json({ msg: "success" });
-        } catch (error) {
+        } catch (err) {
             return res.status(500).json({ msg: "something went wrong", err });
         }
 

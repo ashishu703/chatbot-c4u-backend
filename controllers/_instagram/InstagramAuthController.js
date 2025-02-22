@@ -29,7 +29,7 @@ module.exports = class InstagramAuthController extends InstagramController {
             await authService.initMeta();
             const authURI = authService.prepareAuthUri();
             res.status(200).json({ msg: "success", authURI });
-        } catch (error) {
+        } catch (err) {
             return res.status(500).json({ msg: "something went wrong", err });
         }
     }
