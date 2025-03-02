@@ -30,6 +30,8 @@ router.get('/active-pages', validateUser, facebookPageController.getActivePages.
 
 router.post('/active-pages', validateUser, facebookPageController.activatePages.bind(facebookPageController));
 
+router.post('/discard-inactive-pages', validateUser, facebookPageController.discardInactivePages.bind(facebookPageController));
+
 router.delete('/accounts/:id', validateUser, authController.deleteAccount.bind(authController));
 
 router.delete('/pages/:id', validateUser, facebookPageController.deletePage.bind(facebookPageController));

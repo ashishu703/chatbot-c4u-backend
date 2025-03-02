@@ -1,3 +1,4 @@
+const ChatRepository = require("../../repositories/ChatRepository");
 const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
 const MessangerController = require("./MessangerController");
 
@@ -27,8 +28,17 @@ module.exports = class FacebookPageController extends MessangerController {
 
     async deletePage(req, res) {
         const { id } = req.params;
+
         const user = req.decode;
         await FacebookPageRepository.deleteByPageId(id);
+        await ChatRepository.removePlatformChat(user.uid, 'MESSENGER');
+
         res.json({ success: true });
     }   
+
+    async discardInactivePages(req, res) {
+        const user = req.decode;
+        await FacebookPageRepository.deleteInActiveByUserId(user.uid);
+        res.json({ success: true });
+    }
 }
