@@ -59,23 +59,23 @@ module.exports = class MessangerPageService extends MessangerService {
     async activatePage(pageId) {
         await this.initMeta();
         await this.initInactivePage(pageId);
-        await this.subscribeWebhooks();
+        this.subscribeWebhooks();
         await FacebookPageRepository.activatePagesByUserId(this.page.uid, [pageId]);
         await FacebookPageRepository.deleteInActiveByUserId(this.page.uid);
     }
 
     async removePage(pageId) {
-      
+
         await this.initMeta();
         await this.initActivePage(pageId);
-        await this.unsubscribeWebhooks();
+        this.unsubscribeWebhooks();
         await FacebookPageRepository.deleteByPageId(pageId);
         await ChatRepository.removePlatformChat(this.page.uid, 'MESSENGER');
     }
 
 
-    async subscribeWebhooks() {
-        await this.post(`/${this.page.page_id}/subscribed_apps`, {
+    subscribeWebhooks() {
+        this.post(`/${this.page.page_id}/subscribed_apps`, {
             "subscribed_fields": [
                 "messaging_account_linking",
                 "messages",
@@ -86,11 +86,23 @@ module.exports = class MessangerPageService extends MessangerService {
                 "message_deliveries",
                 "message_context"
             ].join(',')
+        }).then(response => {
+            console.log(
+                "Subscription successfully activated: " + this.page.page_id
+            )
+        }).catch(err => {
+            console.log("Subscription activation failed: " + this.page.page_id, err)
         });
     }
 
-    async unsubscribeWebhooks() {
-        await this.delete(`/${this.page.page_id}/subscribed_apps`);
+    unsubscribeWebhooks() {
+        this.delete(`/${this.page.page_id}/subscribed_apps`).then(response => {
+            console.log(
+                "Subscription successfully removed: " + this.page.page_id
+            )
+        }).catch(err => {
+            console.log("Subscription removal failed: " + this.page.page_id, err)
+        });
     }
 }
 
