@@ -39,11 +39,7 @@ module.exports = class FacebookPageController extends MessangerController {
     async deletePage(req, res) {
         const { id } = req.params;
 
-        const user = req.decode;
-
-        this.pageService.setUser(user)
-
-        this.pageService.removePage(id);
+        await this.pageService.removePage(id);
 
         res.json({ success: true });
     }
