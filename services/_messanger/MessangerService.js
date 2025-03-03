@@ -13,6 +13,16 @@ module.exports = class MessangerService {
             this.user = user
     }
 
+    setUser(user) {
+        this.user = user;
+        return this;
+    }
+
+    setToken(accessToken) {
+        this.accessToken = accessToken;
+        return this;
+    }
+
 
     async initMeta() {
         const {
@@ -40,6 +50,7 @@ module.exports = class MessangerService {
             },
             body: JSON.stringify(data)
         };
+      
         const response = await fetch(`${this.APIURL}${url}?${queryString}`, options);
         return handleApiResponse(response);
     }
@@ -56,6 +67,18 @@ module.exports = class MessangerService {
         const queryString = new URLSearchParams(query).toString();
         const response = await fetch(`${this.APIURL}${url}?${queryString}`, options);
 
+        return handleApiResponse(response);
+    }
+
+    async delete(url) {
+
+        const options = {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${this.accessToken}`
+            }
+        };
+        const response = await fetch(`${this.APIURL}${url}`, options);
         return handleApiResponse(response);
     }
 

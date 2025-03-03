@@ -1,3 +1,4 @@
+const ChatRepository = require("../../repositories/ChatRepository");
 const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
 const MessangerService = require("./MessangerService");
 
@@ -8,13 +9,22 @@ module.exports = class MessangerPageService extends MessangerService {
         super(user, accessToken);
     }
 
-    async setCurrentPage(pageId) {
-        this.page = await FacebookPageRepository.findByPageId(pageId); 
+    async initActivePage(pageId) {
+        this.page = await FacebookPageRepository.findByPageId(pageId);
+        this.initPage();
+    }
+
+    async initInactivePage(pageId) {
+        this.page = await FacebookPageRepository.findInactiveByPageId(pageId);
+        this.initPage();
+    }
+
+    async initPage() {
         this.accessToken = this.page.token;
         return this;
     }
 
-    async fetchProfile(psid) {  
+    async fetchProfile(psid) {
         return this.get(`/${psid}`, {
             fields: 'first_name,last_name,profile_pic',
             access_token: this.accessToken
@@ -44,4 +54,43 @@ module.exports = class MessangerPageService extends MessangerService {
             false
         );
     }
+
+
+    async activatePage(pageId) {
+        await this.initMeta();
+        await this.initInactivePage(pageId);
+        await this.subscribeWebhooks();
+        await FacebookPageRepository.activatePagesByUserId(this.page.uid, [pageId]);
+        await FacebookPageRepository.deleteInActiveByUserId(this.page.uid);
+    }
+
+    async removePage(pageId) {
+      
+        await this.initMeta();
+        await this.initActivePage(pageId);
+        await this.unsubscribeWebhooks();
+        await FacebookPageRepository.deleteByPageId(pageId);
+        await ChatRepository.removePlatformChat(this.page.uid, 'MESSENGER');
+    }
+
+
+    async subscribeWebhooks() {
+        await this.post(`/${this.page.page_id}/subscribed_apps`, {
+            "subscribed_fields": [
+                "messaging_account_linking",
+                "messages",
+                "message_reads",
+                "message_reactions",
+                "message_edits",
+                "message_echoes",
+                "message_deliveries",
+                "message_context"
+            ].join(',')
+        });
+    }
+
+    async unsubscribeWebhooks() {
+        await this.delete(`/${this.page.page_id}/subscribed_apps`);
+    }
 }
+

@@ -14,6 +14,11 @@ module.exports = class FacebookPageRepository {
         return pages.length > 0 ? pages[0] : null;
     }
 
+    static async findInactiveByPageId(pageId) {
+        const pages = await query(`SELECT * FROM facebook_pages WHERE page_id = ? AND status = ?`, [pageId, 0]);
+        return pages.length > 0 ? pages[0] : null;
+    }
+
     static async create(userId, accountId, pageId, name, token, status) {
         return query("INSERT INTO `facebook_pages` (`uid`, `page_id`,`name`, `token`, `status`, `account_id`) VALUES (?, ?, ?, ?, ?, ?);", [userId, pageId, name, token, status, accountId]);
     }
