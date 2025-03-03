@@ -26,7 +26,7 @@ module.exports = class MessangerPageService extends MessangerService {
 
     async fetchProfile(psid) {
         return this.get(`/${psid}`, {
-            fields: 'first_name,last_name,profile_pic',
+            fields: 'from',
             access_token: this.accessToken
         });
     }
