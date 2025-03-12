@@ -20,7 +20,23 @@ router.post('/webhook', messengerWebhookController.handleWebhook.bind(messengerW
 
 router.post('/send', validateUser, messengerChatController.send.bind(messengerChatController));
 
+router.post('/send-image', validateUser, messengerChatController.sendImage.bind(messengerChatController));
+
+router.post('/send-video', validateUser, messengerChatController.sendVideo.bind(messengerChatController));
+
+router.post('/send-doc', validateUser, messengerChatController.sendDoc.bind(messengerChatController));
+
+router.post('/send-audio', validateUser, messengerChatController.sendAudio.bind(messengerChatController));
+
 router.post('/send-agent-message', validateAgent, messengerChatController.send.bind(messengerChatController));
+
+router.post('/send-agent-image', validateAgent, messengerChatController.sendImage.bind(messengerChatController));
+
+router.post('/send-agent-video', validateAgent, messengerChatController.sendVideo.bind(messengerChatController));
+
+router.post('/send-agent-doc', validateAgent, messengerChatController.sendDoc.bind(messengerChatController));
+
+router.post('/send-agent-audio', validateAgent, messengerChatController.sendAudio.bind(messengerChatController));
 
 router.get('/accounts', validateUser, authController.getAccounts.bind(authController));
 

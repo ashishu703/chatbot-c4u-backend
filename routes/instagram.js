@@ -19,7 +19,23 @@ router.post('/webhook', instagramWebhookController.handleWebhook.bind(instagramW
 
 router.post('/send', validateUser, instagramChatController.send.bind(instagramChatController));
 
+router.post('/send-image', validateUser, instagramChatController.sendImage.bind(instagramChatController));
+
+router.post('/send-video', validateUser, instagramChatController.sendVideo.bind(instagramChatController));
+
+router.post('/send-doc', validateUser, instagramChatController.sendDoc.bind(instagramChatController));
+
+router.post('/send-audio', validateUser, instagramChatController.sendAudio.bind(instagramChatController));
+
 router.post('/send-agent-message', validateAgent, instagramChatController.send.bind(instagramChatController));
+
+router.post('/send-agent-image', validateAgent, instagramChatController.sendImage.bind(instagramChatController));
+
+router.post('/send-agent-video', validateAgent, instagramChatController.sendVideo.bind(instagramChatController));
+
+router.post('/send-agent-doc', validateAgent, instagramChatController.sendDoc.bind(instagramChatController));
+
+router.post('/send-agent-audio', validateAgent, instagramChatController.sendAudio.bind(instagramChatController));
 
 router.get('/accounts', validateUser, authController.getAccounts.bind(authController));
 

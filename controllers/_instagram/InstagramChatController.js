@@ -35,4 +35,18 @@ module.exports = class InstagramChatController extends InstagramController {
 
     }
 
+
+    async  sendImage(req, res){
+        
+    }
+    async  sendVideo(req, res){
+        
+    }
+    async  sendDoc(req, res){
+        
+    }
+    async  sendAudio(req, res){
+        
+    }
+
 }

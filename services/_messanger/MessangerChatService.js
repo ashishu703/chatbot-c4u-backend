@@ -188,6 +188,56 @@ module.exports = class MessangerChatService extends MessangerService {
         });
     }
 
+    async sendImage({
+        toNumber,
+        url
+    }) {
+        return this.sendAttachment(url, "image", toNumber);
+    }
+
+    async sendVideo({
+        toNumber,
+        url
+    }) {
+        return this.sendAttachment(url, "video", toNumber);
+    }
+
+    async sendDoc({
+        toNumber,
+        url
+    }) {
+        return this.sendAttachment(url, "file", toNumber);
+    }
+
+    async sendAudio({
+        toNumber,
+        url
+    }) {
+        return this.sendAttachment(url, "audio", toNumber);
+    }
+
+
+    async sendAttachment({
+        url,
+        type,
+        toNumber
+    }) {
+        const payload = {
+            recipient: { id: toNumber },
+            message: {
+                attachment: {
+                    type,
+                    payload: {
+                        url
+                    }
+                }
+            },
+        };
+        return this.post('/me/messages', payload, {
+            access_token: this.accessToken
+        });
+    }
+
 
     async emitNewReactionEvent(message, chatId) {
         this.ioService.pushNewReaction({

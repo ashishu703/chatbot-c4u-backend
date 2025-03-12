@@ -30,4 +30,18 @@ module.exports = class MessengerChatController extends MessangerController {
 
     }
 
+
+    async  sendImage(req, res){
+        
+    }
+    async  sendVideo(req, res){
+        
+    }
+    async  sendDoc(req, res){
+        
+    }
+    async  sendAudio(req, res){
+        
+    }
+
 }

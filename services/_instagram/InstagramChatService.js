@@ -50,7 +50,7 @@ module.exports = class InstagramChatService extends InstagramService {
             let instagramProfile;
             let chatId;
 
-           
+
 
 
             if (message && message.is_echo) {
@@ -117,7 +117,7 @@ module.exports = class InstagramChatService extends InstagramService {
 
                 instagramProfile = await InstagramAccountRepository.findByInstagramUserId(recipient.id);
 
-              
+
                 let chatId = createChatId(sender.id, recipient.id);
 
                 if (!instagramProfile) {
@@ -230,6 +230,57 @@ module.exports = class InstagramChatService extends InstagramService {
         const payload = {
             recipient: { id: toNumber },
             message: { text },
+        };
+        return this.post('/me/messages', payload, {
+            access_token: this.accessToken
+        });
+    }
+
+
+    async sendImage({
+        toNumber,
+        url
+    }) {
+        return this.sendAttachment(url, "image", toNumber);
+    }
+
+    async sendVideo({
+        toNumber,
+        url
+    }) {
+        return this.sendAttachment(url, "video", toNumber);
+    }
+
+    async sendDoc({
+        toNumber,
+        url
+    }) {
+        return this.sendAttachment(url, "file", toNumber);
+    }
+
+    async sendAudio({
+        toNumber,
+        url
+    }) {
+        return this.sendAttachment(url, "audio", toNumber);
+    }
+
+
+    async sendAttachment({
+        url,
+        type,
+        toNumber
+    }) {
+        const payload = {
+            recipient: { id: toNumber },
+            message: {
+                attachment: {
+                    type,
+                    payload: {
+                        url
+                    }
+                }
+            },
         };
         return this.post('/me/messages', payload, {
             access_token: this.accessToken
