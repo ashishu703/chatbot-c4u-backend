@@ -29,7 +29,6 @@ module.exports = class MessangerChatService extends MessangerService {
 
     async processIncomingMessages(payload) {
         const { object, entry } = payload;
-
         entry.forEach(entryObj => {
             const { messaging } = entryObj
             messaging.forEach(async (messageObj) => {
@@ -217,11 +216,11 @@ module.exports = class MessangerChatService extends MessangerService {
     }
 
 
-    async sendAttachment({
+    async sendAttachment(
         url,
         type,
         toNumber
-    }) {
+    ) {
         const payload = {
             recipient: { id: toNumber },
             message: {
@@ -233,6 +232,8 @@ module.exports = class MessangerChatService extends MessangerService {
                 }
             },
         };
+
+
         return this.post('/me/messages', payload, {
             access_token: this.accessToken
         });

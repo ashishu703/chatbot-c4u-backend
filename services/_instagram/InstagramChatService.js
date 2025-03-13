@@ -22,13 +22,13 @@ module.exports = class InstagramChatService extends InstagramService {
         await this.ioService.initSocket();
     }
 
-    async processIncomingMessages(payload) {
+    async processIncomingWebhook(payload) {
         const { entry } = payload;
-
+      
         entry.forEach(entryObj => {
             const { messaging, changes } = entryObj
             messaging?.forEach(async (messageObj) => {
-                await this.processMessage(messageObj);
+                await this.processWebhookEntry(messageObj);
             })
 
             changes?.forEach(async (change) => {
@@ -38,7 +38,7 @@ module.exports = class InstagramChatService extends InstagramService {
     }
 
 
-    async processMessage(messageObj) {
+    async processWebhookEntry(messageObj) {
         try {
             const {
                 recipient,
@@ -88,7 +88,7 @@ module.exports = class InstagramChatService extends InstagramService {
                 this.processSentReciept(messageObj);
             }
             else if (message) {
-                this.processTextMessage(messageObj);
+                this.processIncomingMessage(messageObj);
             }
             else if (reaction) {
                 this.processReaction(messageObj);
@@ -166,7 +166,7 @@ module.exports = class InstagramChatService extends InstagramService {
         await ChatRepository.updateLastMessage(chatId, convertWebhookToDBChatUpdateObject({ ...messageObj, message: dbMessageObj }));
     }
 
-    async processTextMessage(messageObj) {
+    async processIncomingMessage(messageObj) {
         const { path, chatId } = messageObj;
         const dbMessageObj = convertWebhookReciveMessageToJsonObj(messageObj);
         addObjectToFile(dbMessageObj, path);
@@ -266,11 +266,11 @@ module.exports = class InstagramChatService extends InstagramService {
     }
 
 
-    async sendAttachment({
+    async sendAttachment(
         url,
         type,
         toNumber
-    }) {
+    ) {
         const payload = {
             recipient: { id: toNumber },
             message: {
@@ -282,6 +282,8 @@ module.exports = class InstagramChatService extends InstagramService {
                 }
             },
         };
+        console.log({ payload });
+
         return this.post('/me/messages', payload, {
             access_token: this.accessToken
         });

@@ -10,7 +10,7 @@ module.exports = class InstagramWebhookController extends InstagramController {
             const webhookPayload = req.body;
             const chatService = new InstagramChatService();
             await chatService.initMeta();
-            await chatService.processIncomingMessages(webhookPayload);
+            await chatService.processIncomingWebhook(webhookPayload);
             res.status(200).json({ msg: "success" });
         }
         catch (err) {

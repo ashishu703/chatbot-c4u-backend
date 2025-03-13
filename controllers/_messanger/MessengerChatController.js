@@ -31,17 +31,90 @@ module.exports = class MessengerChatController extends MessangerController {
     }
 
 
-    async  sendImage(req, res){
-        
+    async sendImage(req, res) {
+        try {
+            const {
+                chatId,
+                toNumber,
+                url
+            } = req.body;
+            const chat = await ChatRepository.findChatByChatId(chatId);
+            const { recipient } = chat;
+            const pageProfile = await FacebookPageRepository.findByPageId(recipient);
+            const chatService = new MessangerChatService(null, pageProfile.token);
+            await chatService.initMeta();
+            await chatService.sendImage({
+                url,
+                toNumber
+            })
+            return res.status(200).json({ msg: "success" });
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json({ msg: "something went wrong", err });
+        }
     }
-    async  sendVideo(req, res){
-        
+    async sendVideo(req, res) {
+        try {
+            const {
+                chatId,
+                toNumber,
+                url
+            } = req.body;
+            const chat = await ChatRepository.findChatByChatId(chatId);
+            const { recipient } = chat;
+            const pageProfile = await FacebookPageRepository.findByPageId(recipient);
+            const chatService = new MessangerChatService(null, pageProfile.token);
+            await chatService.initMeta();
+            await chatService.sendVideo({
+                url,
+                toNumber
+            })
+            return res.status(200).json({ msg: "success" });
+        } catch (err) {
+            return res.status(500).json({ msg: "something went wrong", err });
+        }
     }
-    async  sendDoc(req, res){
-        
+    async sendDoc(req, res) {
+        try {
+            const {
+                chatId,
+                toNumber,
+                url
+            } = req.body;
+            const chat = await ChatRepository.findChatByChatId(chatId);
+            const { recipient } = chat;
+            const pageProfile = await FacebookPageRepository.findByPageId(recipient);
+            const chatService = new MessangerChatService(null, pageProfile.token);
+            await chatService.initMeta();
+            await chatService.sendDoc({
+                url,
+                toNumber
+            })
+            return res.status(200).json({ msg: "success" });
+        } catch (err) {
+            return res.status(500).json({ msg: "something went wrong", err });
+        }
     }
-    async  sendAudio(req, res){
-        
+    async sendAudio(req, res) {
+        try {
+            const {
+                chatId,
+                toNumber,
+                url
+            } = req.body;
+            const chat = await ChatRepository.findChatByChatId(chatId);
+            const { recipient } = chat;
+            const pageProfile = await FacebookPageRepository.findByPageId(recipient);
+            const chatService = new MessangerChatService(null, pageProfile.token);
+            await chatService.initMeta();
+            await chatService.sendAudio({
+                url,
+                toNumber
+            })
+            return res.status(200).json({ msg: "success" });
+        } catch (err) {
+            return res.status(500).json({ msg: "something went wrong", err });
+        }
     }
 
 }

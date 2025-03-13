@@ -1,11 +1,19 @@
 const { MESSENGER_KEY, INSTAGRAM_KEY } = require("../constants/chat.constant");
 
 function convertWebhookReciveMessageToJsonObj(messageObj) {
+    let type = "text",
+        url = undefined;
+
+    if (messageObj.message.attachments && messageObj.message.attachments.length > 0) {
+        type = messageObj.message.attachments[0].type;
+        url = messageObj.message.attachments[0].payload.url;
+    }
 
     return {
         timestamp: messageObj.timestamp / 1000,
         message_id: messageObj.message.mid,
-        type: "text",
+        type,
+        url,
         status: "",
         text: messageObj.message.text,
         reaction: "",
@@ -14,10 +22,19 @@ function convertWebhookReciveMessageToJsonObj(messageObj) {
 }
 
 function convertWebhookRecieptToJsonObj(messageObj) {
+    let type = "text",
+        url = undefined;
+
+    if (messageObj.message.attachments && messageObj.message.attachments.length > 0) {
+        type = messageObj.message.attachments[0].type;
+        url = messageObj.message.attachments[0].payload.url;
+    }
+
     return {
         timestamp: messageObj.timestamp / 1000,
         message_id: messageObj.message.mid,
-        type: "text",
+        type,
+        url,
         text: messageObj.message.text,
         status: "sent",
         reaction: "",
@@ -26,7 +43,7 @@ function convertWebhookRecieptToJsonObj(messageObj) {
 }
 
 function convertMessangerWebhookToDBChatCreateObject(object) {
-   
+
     const {
         chatId,
         uid,
@@ -56,7 +73,7 @@ function convertMessangerWebhookToDBChatCreateObject(object) {
 
 
 function convertInstagramWebhookToDBChatCreateObject(object) {
-  
+
     const {
         chatId,
         uid,
