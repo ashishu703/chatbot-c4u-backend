@@ -31,7 +31,7 @@ const {
   checkTags,
   checkContactLimit,
 } = require("../middlewares/plan.js");
-const { recoverEmail } = require("../emails/returnEmails.js");
+const { recoverEmail, welcomeEmail } = require("../emails/returnEmails.js");
 const moment = require("moment");
 const fetch = require("node-fetch");
 const jwt = require("jsonwebtoken");
@@ -269,6 +269,33 @@ router.post("/signup", async (req, res) => {
       `INSERT INTO user (name, uid, email, password, mobile_with_country_code) VALUES (?,?,?,?,?)`,
       [name, uid, email, haspass, mobile_with_country_code]
     );
+
+    const getWeb = await query(`SELECT * FROM web_public`, []);
+    const appName = getWeb[0]?.app_name;
+
+
+
+    const getHtml = welcomeEmail(appName, name);
+
+    // getting smtp
+    const smtp = await query(`SELECT * FROM smtp`, []);
+    if (
+      smtp[0]?.email &&
+      smtp[0]?.host &&
+      smtp[0]?.port &&
+      smtp[0]?.password
+    ) {
+      sendEmail(
+        smtp[0]?.host,
+        smtp[0]?.port,
+        smtp[0]?.email,
+        smtp[0]?.password,
+        getHtml,
+        `${appName} - Welcome`,
+        smtp[0]?.email,
+        email
+      );
+    }
 
     res.json({ msg: "Signup Success", success: true });
   } catch (err) {
