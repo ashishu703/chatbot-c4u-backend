@@ -50,5 +50,9 @@ module.exports = class ChatRepository {
         return query(`DELETE FROM chats WHERE uid = ? AND type = ?`, [uid, platform]);
     }
 
+    static async searchByChatIds(chatIds) {
+        return query(`SELECT * FROM chats WHERE chat_id IN (?)`, [chatIds]);
+    }
+
     
 }   

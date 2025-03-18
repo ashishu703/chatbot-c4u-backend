@@ -17,15 +17,33 @@ const MessangerService = require("./MessangerService");
 
 module.exports = class MessangerChatService extends MessangerService {
     pageService;
-    ioService;
+    agentIoService = null;
+    userIoService = null;
     constructor(user = null, accessToken = null) {
         super(user, accessToken);
     }
 
-    async initIOService(uid) {
-        this.ioService = new ChatIOService(uid);
-        await this.ioService.initSocket();
+    async initIOService(chatId) {
+        // Reset services (optional; remove if you want to reuse existing instances)
+        this.agentIoService = null;
+        this.userIoService = null;
+
+        const chat = await ChatRepository.findChatByChatId(chatId);
+        const chatAgent = await AgentChatRepository.getAssignedAgent(chatId);
+
+        // Initialize user socket if chat exists
+        if (chat?.uid) {
+            this.userIoService = new ChatIOService(chat.uid);
+            await this.userIoService.initSocket();
+        }
+
+        // Initialize agent socket if agent exists
+        if (chatAgent?.uid) {
+            this.agentIoService = new ChatIOService(chatAgent.uid);
+            await this.agentIoService.initSocket();
+        }
     }
+
 
     async processIncomingMessages(payload) {
         const { object, entry } = payload;
@@ -85,7 +103,7 @@ module.exports = class MessangerChatService extends MessangerService {
                     this.processDeliveryMessage(messageObj);
                 }
 
-                await this.emitUpdateConversationEvent(pageProfile.uid);
+                await this.emitUpdateConversationEvent(chatId);
             })
         });
     }
@@ -167,10 +185,7 @@ module.exports = class MessangerChatService extends MessangerService {
         writeJsonToFile(path, updatedChat, null);
     }
 
-    async emitUpdateConversationEvent(uid) {
-        const chats = await ChatRepository.findUidId(uid);
-        this.ioService.updateConversation({ chats });
-    }
+
 
 
     async send({
@@ -240,20 +255,57 @@ module.exports = class MessangerChatService extends MessangerService {
     }
 
 
-    async emitNewReactionEvent(message, chatId) {
-        this.ioService.pushNewReaction({
-            chatId,
-            reaction: message.reaction,
-            message_id: message.message_id
-        });
+    // Emit to user only (chat list update)
+    async emitUpdateConversationEvent(chatId) {
+        const chat = await ChatRepository.findChatByChatId(chatId);
+        const chats = await ChatRepository.findUidId(chat.uid);
+        const agentChat = await AgentChatRepository.getAssignedAgent(chatId);
+
+        this.executeSocket('updateConversation', {
+            chats
+        }, 'user');
+
+
+        if (agentChat) {
+            const agentChats = await AgentChatRepository.getAgentChats(agentChat.uid);
+            const chatIds = agentChats.map((i) => i?.chat_id);
+            const chats = await ChatRepository.searchByChatIds(chatIds);
+            this.executeSocket('updateConversation', {
+                chats
+            }, 'agent');
+        }
+
+
+
     }
 
-
+    // Emit to both agent and user by default
     async emitNewMessageEvent(message, chatId) {
-        this.ioService.pushNewMsg({ msg: message, chatId });
+        const payload = { msg: message, chatId };
+        this.executeSocket('pushNewMsg', payload, 'both');
+    }
+
+    async emitNewReactionEvent(message, chatId) {
+        const payload = { chatId, reaction: message.reaction, message_id: message.message_id };
+        this.executeSocket('pushNewReaction', payload, 'both');
     }
 
     async emitMessageDeliveryEvent({ message_id, status }, chatId) {
-        this.ioService.pushUpdateDelivery({ message_id, status, chatId });
+        const payload = { message_id, status, chatId };
+        this.executeSocket('pushUpdateDelivery', payload, 'both');
+    }
+
+    // Updated executeSocket to handle single objects
+    async executeSocket(action, payload, target = 'both') {
+        if (target === 'both' || target === 'user') {
+            if (this.userIoService) {
+                this.userIoService[action](payload);
+            }
+        }
+        if (target === 'both' || target === 'agent') {
+            if (this.agentIoService) {
+                this.agentIoService[action](payload);
+            }
+        }
     }
 }

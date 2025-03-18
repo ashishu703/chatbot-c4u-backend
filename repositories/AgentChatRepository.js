@@ -12,9 +12,9 @@ module.exports = class AgentChatRepository {
     }
 
 
-    static async getAssignedChats(uid) {
+    static async getAgentChats(uid) {
         const agentChats = await query(
-            `SELECT * FROM agent_chats WHERE owner_uid = ?`,
+            `SELECT * FROM agent_chats WHERE uid = ?`,
             [uid]
         );
 
