@@ -15,28 +15,25 @@ const InstagramProfileService = require("./InstagramProfileService");
 const InstagramService = require("./InstagramService");
 
 module.exports = class InstagramChatService extends InstagramService {
-    agentIoService = null; // Single object for agent
-    userIoService = null; // Single object for user
+    agentIoService = null; 
+    userIoService = null; 
 
     constructor(user = null, accessToken = null) {
         super(user, accessToken);
     }
 
     async initIOService(chatId) {
-        // Reset services (optional; remove if you want to reuse existing instances)
         this.agentIoService = null;
         this.userIoService = null;
 
         const chat = await ChatRepository.findChatByChatId(chatId);
         const chatAgent = await AgentChatRepository.getAssignedAgent(chatId);
 
-        // Initialize user socket if chat exists
         if (chat?.uid) {
             this.userIoService = new ChatIOService(chat.uid);
             await this.userIoService.initSocket();
         }
 
-        // Initialize agent socket if agent exists
         if (chatAgent?.uid) {
             this.agentIoService = new ChatIOService(chatAgent.uid);
             await this.agentIoService.initSocket();
@@ -200,7 +197,6 @@ module.exports = class InstagramChatService extends InstagramService {
 
 
 
-    // Emit to user only (chat list update)
     async emitUpdateConversationEvent(chatId) {
         const chat = await ChatRepository.findChatByChatId(chatId);
         const chats = await ChatRepository.findUidId(chat.uid);
@@ -224,7 +220,6 @@ module.exports = class InstagramChatService extends InstagramService {
 
     }
 
-    // Emit to both agent and user by default
     async emitNewMessageEvent(message, chatId) {
         const payload = { msg: message, chatId };
         this.executeSocket('pushNewMsg', payload, 'both');
@@ -240,7 +235,6 @@ module.exports = class InstagramChatService extends InstagramService {
         this.executeSocket('pushUpdateDelivery', payload, 'both');
     }
 
-    // Updated executeSocket to handle single objects
     async executeSocket(action, payload, target = 'both') {
         if (target === 'both' || target === 'user') {
             if (this.userIoService) {
