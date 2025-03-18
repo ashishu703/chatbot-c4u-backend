@@ -1,5 +1,6 @@
 const FacebookException = require("../../exceptions/FacebookException");
 const { readJsonFromFile, writeJsonToFile, addObjectToFile } = require("../../functions/function");
+const AgentChatRepository = require("../../repositories/AgentChatRepository");
 const ChatRepository = require("../../repositories/ChatRepository");
 const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
 const FacebookProfileRepository = require("../../repositories/FacebookProfileRepository");
