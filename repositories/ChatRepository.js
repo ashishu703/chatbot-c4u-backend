@@ -49,4 +49,6 @@ module.exports = class ChatRepository {
     static async removePlatformChat(uid, platform) {
         return query(`DELETE FROM chats WHERE uid = ? AND type = ?`, [uid, platform]);
     }
+
+    
 }   

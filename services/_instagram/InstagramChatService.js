@@ -9,22 +9,40 @@ const { convertWebhookReciveMessageToJsonObj, convertInstagramWebhookToDBChatCre
 const ChatIOService = require("../ChatIOService");
 const InstagramProfileService = require("./InstagramProfileService");
 const InstagramService = require("./InstagramService");
+const AgentChatRepository = require("../../repositories/AgentChatRepository");
+const RoomRepository = require("../../repositories/RoomRepository");
 
 
 module.exports = class InstagramChatService extends InstagramService {
-    ioService;
+    ioServices = [];
     constructor(user = null, accessToken = null) {
         super(user, accessToken);
     }
 
-    async initIOService(uid) {
-        this.ioService = new ChatIOService(uid);
-        await this.ioService.initSocket();
+    async initIOService(chatId) {
+        const targets = [];
+        const chat = await ChatRepository.findChatByChatId(chatId);
+        const chatAgent = await AgentChatRepository.getAssignedAgent(chatId);
+
+        if (chat) {
+            targets.push(chat.uid);
+        }
+
+
+        if (chatAgent) {
+            targets.push(chatAgent.uid);
+        }
+
+        targets.forEach(async (target) => {
+            return this.ioServices.push(await (new ChatIOService(target)).initSocket());
+        })
+
+
     }
 
     async processIncomingWebhook(payload) {
         const { entry } = payload;
-      
+
         entry.forEach(entryObj => {
             const { messaging, changes } = entryObj
             messaging?.forEach(async (messageObj) => {
@@ -73,7 +91,7 @@ module.exports = class InstagramChatService extends InstagramService {
                 throw new FacebookException("Profile not found", "Unknown", 403);
             }
 
-            await this.initIOService(instagramProfile.uid);
+            await this.initIOService(chatId);
 
             const path = prepareChatPath(instagramProfile.uid, chatId);
 
@@ -124,7 +142,7 @@ module.exports = class InstagramChatService extends InstagramService {
                     throw new FacebookException("Profile not found", "Unknown", 403);
                 }
 
-                await this.initIOService(instagramProfile.uid);
+                await this.initIOService(chatId);
 
                 const path = prepareChatPath(instagramProfile.uid, chatId);
 
@@ -217,10 +235,6 @@ module.exports = class InstagramChatService extends InstagramService {
         writeJsonToFile(path, updatedChat, null);
     }
 
-    async emitUpdateConversationEvent(uid) {
-        const chats = await ChatRepository.findUidId(uid);
-        this.ioService.updateConversation({ chats });
-    }
 
 
     async send({
@@ -282,28 +296,43 @@ module.exports = class InstagramChatService extends InstagramService {
                 }
             },
         };
-        console.log({ payload });
 
         return this.post('/me/messages', payload, {
             access_token: this.accessToken
         });
     }
 
+    async emitUpdateConversationEvent(uid) {
+        const chats = await ChatRepository.findUidId(uid);
+        const payload = {
+            chats
+        }
+        this.executeSocket('updateConversation', payload);
+    }
+
+
 
     async emitNewReactionEvent(message, chatId) {
-        this.ioService.pushNewReaction({
+        const payload = {
             chatId,
             reaction: message.reaction,
             message_id: message.message_id
-        });
+        }
+        this.executeSocket('pushNewReaction', payload);
     }
 
 
     async emitNewMessageEvent(message, chatId) {
-        this.ioService.pushNewMsg({ msg: message, chatId });
+        const payload = { msg: message, chatId }
+        this.executeSocket('pushNewMessage', payload);
     }
 
     async emitMessageDeliveryEvent({ message_id, status }, chatId) {
-        this.ioService.pushUpdateDelivery({ message_id, status, chatId });
+        const payload = { message_id, status, chatId }
+        this.executeSocket('pushUpdateDelivery', payload);
+    }
+
+    async executeSocket(action, payload) {
+        this.ioServices.forEach(ioService => ioService[action](payload));
     }
 }
