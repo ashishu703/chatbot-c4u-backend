@@ -33,18 +33,22 @@ module.exports = class InstagramChatService extends InstagramService {
             targets.push(chatAgent.uid);
         }
 
-        targets.forEach(async (target) => {
+        
+        for (const target of targets) {
             const ioHandler = new ChatIOService(target)
             await ioHandler.initSocket()
-            return this.ioServices.push(ioHandler);
-        })
+            this.ioServices.push(ioHandler);
+        }
+   
+
 
 
     }
 
     async processIncomingWebhook(payload) {
         const { entry } = payload;
-
+     
+    
         entry.forEach(entryObj => {
             const { messaging, changes } = entryObj
             messaging?.forEach(async (messageObj) => {
@@ -328,7 +332,7 @@ module.exports = class InstagramChatService extends InstagramService {
 
     async emitNewMessageEvent(message, chatId) {
         const payload = { msg: message, chatId }
-        this.executeSocket('pushNewMessage', payload);
+        this.executeSocket('pushNewMsg', payload);
     }
 
     async emitMessageDeliveryEvent({ message_id, status }, chatId) {
