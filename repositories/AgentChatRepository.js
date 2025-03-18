@@ -7,7 +7,7 @@ module.exports = class AgentChatRepository {
             [ chatId]
         );
 
-        agentChats.length > 0 ? agentChats[0] : null
+       return agentChats.length > 0 ? agentChats[0] : null
 
     }
 
