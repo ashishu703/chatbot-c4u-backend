@@ -32,6 +32,7 @@ module.exports = class MessangerChatService extends MessangerService {
         const chat = await ChatRepository.findChatByChatId(chatId);
         const chatAgent = await AgentChatRepository.getAssignedAgent(chatId);
 
+
         // Initialize user socket if chat exists
         if (chat?.uid) {
             this.userIoService = new ChatIOService(chat.uid);
@@ -80,7 +81,7 @@ module.exports = class MessangerChatService extends MessangerService {
                     throw new FacebookException("Page not found", "Unknown", 403);
                 }
 
-                await this.initIOService(pageProfile.uid);
+                await this.initIOService(chatId);
 
                 const path = prepareChatPath(pageProfile.uid, chatId);
 
