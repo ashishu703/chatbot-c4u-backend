@@ -34,7 +34,9 @@ module.exports = class InstagramChatService extends InstagramService {
         }
 
         targets.forEach(async (target) => {
-            return this.ioServices.push(await (new ChatIOService(target)).initSocket());
+            const ioHandler = new ChatIOService(target)
+            await ioHandler.initSocket()
+            return this.ioServices.push(ioHandler);
         })
 
 
@@ -91,6 +93,7 @@ module.exports = class InstagramChatService extends InstagramService {
                 throw new FacebookException("Profile not found", "Unknown", 403);
             }
 
+
             await this.initIOService(chatId);
 
             const path = prepareChatPath(instagramProfile.uid, chatId);
@@ -114,6 +117,7 @@ module.exports = class InstagramChatService extends InstagramService {
 
             await this.emitUpdateConversationEvent(instagramProfile.uid);
         } catch (error) {
+            console.log(error);
             return false;
         }
     }
