@@ -172,28 +172,19 @@ router.post("/update_user", adminValidator, async (req, res) => {
     }
 
     if (newPassword) {
-      const findUserByUid = await query(`SELECT * FROM user WHERE uid = ?`, [
-        uid,
-      ]);
-      if (findUserByUid.length === 0) {
-        return res.json({ msg: "User not found" });
-      }
-    } else {
-      if (newPassword) {
-        const hashpass = await bcrypt.hash(newPassword, 10);
+      const hashpass = await bcrypt.hash(newPassword, 10);
 
-        await query(
-          `UPDATE user SET name = ?, email = ?, password = ?, mobile_with_country_code = ? WHERE uid = ?`,
-          [name, email, hashpass, mobile_with_country_code, uid]
-        );
-      } else {
-        await query(
-          `UPDATE user SET name = ?, email = ?, mobile_with_country_code = ? WHERE uid = ?`,
-          [name, email, mobile_with_country_code, uid]
-        );
-      }
-      res.json({ msg: "User was updated", success: true });
+      await query(
+        `UPDATE user SET name = ?, email = ?, password = ?, mobile_with_country_code = ? WHERE uid = ?`,
+        [name, email, hashpass, mobile_with_country_code, uid]
+      );
+    } else {
+      await query(
+        `UPDATE user SET name = ?, email = ?, mobile_with_country_code = ? WHERE uid = ?`,
+        [name, email, mobile_with_country_code, uid]
+      );
     }
+    res.json({ msg: "User was updated", success: true });
   } catch (err) {
     res.json({ success: false, msg: "something went wrong" });
     console.log(err);
