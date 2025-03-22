@@ -355,7 +355,7 @@ async function saveWebhookConversation(body, uid) {
       saveMessage(body, uid, "image", {
         type: "image",
         image: {
-          link: `${process.env.FRONTENDURI}/meta-media/${fileName}`,
+          link: `${process.env.BACKURI}/meta-media/${fileName}`,
           caption:
             body?.entry[0]?.changes[0]?.value?.messages[0]?.image?.caption ||
             "",
@@ -391,7 +391,7 @@ async function saveWebhookConversation(body, uid) {
       saveMessage(body, uid, "video", {
         type: "video",
         video: {
-          link: `${process.env.FRONTENDURI}/meta-media/${fileName}`,
+          link: `${process.env.BACKURI}/meta-media/${fileName}`,
           caption:
             body?.entry[0]?.changes[0]?.value?.messages[0]?.video?.caption,
         },
@@ -427,7 +427,7 @@ async function saveWebhookConversation(body, uid) {
       saveMessage(body, uid, "document", {
         type: "document",
         document: {
-          link: `${process.env.FRONTENDURI}/meta-media/${fileName}`,
+          link: `${process.env.BACKURI}/meta-media/${fileName}`,
           caption:
             body?.entry[0]?.changes[0]?.value?.messages[0]?.document?.caption,
         },
@@ -462,7 +462,7 @@ async function saveWebhookConversation(body, uid) {
       saveMessage(body, uid, "audio", {
         type: "audio",
         audio: {
-          link: `${process.env.FRONTENDURI}/meta-media/${fileName}`,
+          link: `${process.env.BACKURI}/meta-media/${fileName}`,
         },
       });
     }
@@ -1341,7 +1341,7 @@ async function sendMetatemplet(
             link: dynamicMedia
               ? dynamicMedia
               : getMedia.length > 0
-                ? `${process.env.FRONTENDURI}/media/${getMedia[0]?.file_name}`
+                ? `${process.env.BACKURI}/media/${getMedia[0]?.file_name}`
                 : getHeader[0].example?.header_handle[0],
           },
         },
@@ -1364,7 +1364,7 @@ async function sendMetatemplet(
             link: dynamicMedia
               ? dynamicMedia
               : getMedia.length > 0
-                ? `${process.env.FRONTENDURI}/media/${getMedia[0]?.file_name}`
+                ? `${process.env.BACKURI}/media/${getMedia[0]?.file_name}`
                 : getHeader[0].example?.header_handle[0],
           },
         },
@@ -1387,7 +1387,7 @@ async function sendMetatemplet(
             link: dynamicMedia
               ? dynamicMedia
               : getMedia.length > 0
-                ? `${process.env.FRONTENDURI}/media/${getMedia[0]?.file_name}`
+                ? `${process.env.BACKURI}/media/${getMedia[0]?.file_name}`
                 : getHeader[0].example?.header_handle[0],
             filename: "document",
           },

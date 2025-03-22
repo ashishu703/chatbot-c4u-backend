@@ -378,7 +378,7 @@ router.post("/return_media_url", validateUser, async (req, res) => {
       }
     });
 
-    const url = `${process.env.FRONTENDURI}/media/${filename}`;
+    const url = `${process.env.BACKURI}/media/${filename}`;
     res.json({ success: true, url });
   } catch (err) {
     res.json({ success: false, msg: "something went wrong", err });
@@ -864,7 +864,7 @@ router.post("/return_media_url_meta", validateUser, async (req, res) => {
         return res.json({ success: false, msg: "Please check your meta API" });
       }
 
-      const url = `${process.env.FRONTENDURI}/media/${filename}`;
+      const url = `${process.env.BACKURI}/media/${filename}`;
 
       await query(
         `INSERT INTO meta_templet_media (uid, templet_name, meta_hash, file_name) VALUES (?,?,?,?)`,
@@ -1151,7 +1151,7 @@ function returnHtmlRes(msg) {
   const html = `<!DOCTYPE html>
     <html>
     <head>
-      <meta http-equiv="refresh" content="5;url=${process.env.FRONTENDURI}/user">
+      <meta http-equiv="refresh" content="5;url=${process.env.BACKURI}/user">
       <style>
         body {
           font-family: Arial, sans-serif;
@@ -1698,7 +1698,7 @@ router.get("/widget", async (req, res) => {
 
     res.send(
       returnWidget(
-        `${process.env.FRONTENDURI}/media/${getWidget[0]?.logo}`,
+        `${process.env.BACKURI}/media/${getWidget[0]?.logo}`,
         getWidget[0]?.size,
         url,
         getWidget[0]?.place

@@ -496,7 +496,7 @@ router.post("/return_media_url", validateAgent, async (req, res) => {
       }
     });
 
-    const url = `${process.env.FRONTENDURI}/media/${filename}`;
+    const url = `${process.env.BACKURI}/media/${filename}`;
     res.json({ success: true, url });
   } catch (err) {
     res.json({ success: false, msg: "something went wrong", err });
