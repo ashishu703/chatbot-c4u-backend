@@ -1,23 +1,38 @@
-const { query } = require("../database/dbpromise");
+const { AgentChat, Chat, User } = require("../models/agent_chat");
 
-module.exports = class AgentChatRepository {
-    static async getAssignedAgent(chatId) {
-        const agentChats = await query(
-            `SELECT * FROM agent_chats WHERE chat_id = ?`,
-            [ chatId]
-        );
+class AgentChatRepository {
+  static async findChatsByAgent(owner_uid, uid) {
+    return await AgentChat.findAll({
+      where: { owner_uid, uid },
+      include: [
+        {
+          model: Chat,
+          where: { uid: owner_uid },
+          include: [{ model: User }],
+        },
+      ],
+    });
+  }
 
-       return agentChats.length > 0 ? agentChats[0] : null
+  static async findByChatId(owner_uid, chat_id) {
+    return await AgentChat.findOne({ where: { owner_uid, chat_id } });
+  }
 
-    }
+  static async create(agentChat) {
+    await AgentChat.create(agentChat);
+  }
 
+  static async deleteByChatId(owner_uid, chat_id) {
+    await AgentChat.destroy({ where: { owner_uid, chat_id } });
+  }
 
-    static async getAgentChats(uid) {
-        const agentChats = await query(
-            `SELECT * FROM agent_chats WHERE uid = ?`,
-            [uid]
-        );
+  static async delete(owner_uid, uid, chat_id) {
+    await AgentChat.destroy({ where: { owner_uid, uid, chat_id } });
+  }
 
-        return agentChats;
-    }
-}   
+  static async findByAgentId(uid) {
+    return await AgentChat.findAll({ where: { uid } });
+  }
+}
+
+module.exports = AgentChatRepository;

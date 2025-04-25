@@ -1,9 +1,9 @@
 const FacebookException = require("../../exceptions/FacebookException");
-const WebPublicRepository = require("../../repositories/WebPublicRepository");
+const WebPublicRepository = require("../../repositories/webPublicRepository");
 const FacebookProfileService = require("../../services/_messanger/FacebookProfileService");
 const MessangerAuthService = require("../../services/_messanger/MessangerAuthService");
 const MessangerPageService = require("../../services/_messanger/MessangerPageService");
-const MessangerController = require("./MessangerController");
+const MessangerController = require("../_messanger/MessangerController");
 
 module.exports = class MessangerAuthController extends MessangerController {
     async initiateUserAuth(req, res) {

@@ -1,6 +1,3 @@
-
-
-
 require('dotenv').config()
 const express = require('express')
 const app = express()
@@ -8,7 +5,8 @@ const cors = require('cors')
 const fileUpload = require('express-fileupload')
 const { initializeSocket } = require('./socket.js');
 const { runCampaign } = require('./loops/campaignLoop.js')
-
+const errorHandler = require("./utils/errorHandler");
+const { sequelize } = require("./models");
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
@@ -16,39 +14,48 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cors())
 app.use(express.json())
 app.use(fileUpload())
+app.use(errorHandler);
+sequelize
+  .sync({ force: false, logging: false })
+  .then(() => {
+    console.log("Database synced successfully");
+  })
+  .catch((err) => {
+    console.error("Failed to sync database:", err);
+  });
 
 // routers 
-const userRoute = require('./routes/user')
+const userRoute = require('./routes/userRoutes.js')
 app.use('/api/user', userRoute)
 
-const webRoute = require('./routes/web')
+const webRoute = require('./routes/webRoutes.js')
 app.use('/api/web', webRoute)
 
-const adminRoute = require('./routes/admin')
+const adminRoute = require('./routes/adminRoutes.js')
 app.use('/api/admin', adminRoute)
 
-const phonebookRoute = require('./routes/phonebook')
+const phonebookRoute = require('./routes/phonebookRoutes.js')
 app.use('/api/phonebook', phonebookRoute)
 
-const chat_flowRoute = require('./routes/chatFlow')
+const chat_flowRoute = require('./routes/chatFlowRoutes.js')
 app.use('/api/chat_flow', chat_flowRoute)
 
-const inboxRoute = require('./routes/inbox')
+const inboxRoute = require('./routes/inboxRoutes.js')
 app.use('/api/inbox', inboxRoute)
 
-const templetRoute = require('./routes/templet')
+const templetRoute = require('./routes/templetRoutes.js')
 app.use('/api/templet', templetRoute)
 
-const chatbotRoute = require('./routes/chatbot')
+const chatbotRoute = require('./routes/chatbotRoutes.js')
 app.use('/api/chatbot', chatbotRoute)
 
-const broadcastRoute = require('./routes/broadcast')
+const broadcastRoute = require('./routes/broadcastRoutes.js')
 app.use('/api/broadcast', broadcastRoute)
 
-const apiRoute = require('./routes/apiv2')
+const apiRoute = require('./routes/apiv2Routes.js')
 app.use('/api/v1', apiRoute)
 
-const agentRoute = require('./routes/agent')
+const agentRoute = require('./routes/agentRoutes.js')
 app.use('/api/agent', agentRoute)
 
 

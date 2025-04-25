@@ -1,7 +1,7 @@
 const FacebookException = require("../../exceptions/FacebookException");
 const { readJsonFromFile, writeJsonToFile, addObjectToFile } = require("../../functions/function");
 const AgentChatRepository = require("../../repositories/AgentChatRepository");
-const ChatRepository = require("../../repositories/ChatRepository");
+const ChatRepository = require("../../repositories/chatRepository");
 const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
 const FacebookProfileRepository = require("../../repositories/FacebookProfileRepository");
 const { prepareChatPath, createChatId } = require("../../utils/facebook.utils");

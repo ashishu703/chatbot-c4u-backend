@@ -10,6 +10,7 @@ const mime = require("mime-types");
 const nodemailer = require("nodemailer");
 const unzipper = require("unzipper");
 const { destributeTaskFlow } = require("./chatbot");
+const csv = require('csv-parse/sync');
 
 function executeQueries(queries, connection) {
   return new Promise(async (resolve) => {
@@ -174,7 +175,7 @@ async function botWebhook(incomingMsg, uid, senderNumber, toName) {
     const plan = JSON.parse(getUser[0]?.plan);
     if (plan.allow_chatbot > 0) {
       const chatbots = await query(
-        `SELECT * FROM chatbot WHERE uid = ? AND active = ?`,
+        `SELECT * FROM chatbot WHERE uid = $1 AND active = $2`,
         [uid, 1]
       );
 
@@ -2038,7 +2039,16 @@ async function validateFacebookToken(userAccessToken, appId, appSecret) {
     console.error("Error validating Facebook token:", error);
     return { success: false, response: error };
   }
-}
+  
+};
+const parseCSVFile = async (fileData) => {
+  try {
+    return csv.parse(fileData, { columns: true, skip_empty_lines: true });
+  } catch (error) {
+    return null;
+  }
+};
+
 
 module.exports = {
   isValidEmail,
@@ -2084,5 +2094,6 @@ module.exports = {
   rzCapturePayment,
   validateFacebookToken,
   addObjectToFile,
-  convertNumberToRandomString
+  convertNumberToRandomString,
+  parseCSVFile
 };

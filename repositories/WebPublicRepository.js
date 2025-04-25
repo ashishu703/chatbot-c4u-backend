@@ -1,8 +1,27 @@
-const { query } = require("../database/dbpromise");
+const { WebPublic } = require("../models/web_public");
 
-module.exports = class WebPublicRepository {
-    static async getSetting() {
-        const settings = await query(`SELECT * FROM web_public;`, []);
-        return settings.length < 1 ? null : settings[0];
+class WebPublicRepository {
+  static async getWebPublic() {
+    return await WebPublic.findOne();
+  }
+
+  static async updateSocialLogin(google_client_id, google_login_active) {
+    const existing = await WebPublic.findOne();
+    if (existing) {
+      await WebPublic.update({ google_client_id, google_login_active }, { where: { id: existing.id } });
+    } else {
+      await WebPublic.create({ google_client_id, google_login_active });
     }
-}       
+  }
+
+  static async updateRtl(rtl) {
+    const existing = await WebPublic.findOne();
+    if (existing) {
+      await WebPublic.update({ rtl }, { where: { id: existing.id } });
+    } else {
+      await WebPublic.create({ rtl });
+    }
+  }
+}
+
+module.exports = WebPublicRepository;

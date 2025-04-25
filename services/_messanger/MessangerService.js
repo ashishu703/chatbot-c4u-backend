@@ -1,4 +1,4 @@
-const WebPublicRepository = require("../../repositories/WebPublicRepository");
+const WebPublicRepository = require("../../repositories/webPublicRepository");
 const { handleApiResponse } = require("../../utils/facebook.utils");
 const fetch = require("node-fetch");
 module.exports = class MessangerService {

@@ -1,58 +1,40 @@
-const { query } = require("../database/dbpromise");
+const { Chat } = require("../models/chats");
 
-module.exports = class ChatRepository {
-    static async createIfNotExist({
-        chat_id, uid, type, last_message_came, chat_note, chat_tags, sender_name, sender_mobile, chat_status, is_opened, last_message, recipient
-    }) {
-        const isExisting = await this.findChatByChatId(chat_id);
-        if (isExisting) {
-            return this.updateLastMessage(chat_id, last_message, last_message_came);
-        }
-        return this.createMessengerChat({
-            chat_id, uid, type, last_message_came, chat_note, chat_tags, sender_name, sender_mobile, chat_status, is_opened, last_message, recipient
-        });
+class ChatRepository {
+  static async findByIds(chatIds, uid) {
+    return await Chat.findAll({
+      where: { chat_id: chatIds, uid },
+    });
+  }
+
+  static async updateStatus(chat_id, chat_status) {
+    await Chat.update({ chat_status }, { where: { chat_id } });
+  }
+
+  static async delete(uid, chat_id) {
+    return await Chats.destroy({ where: { uid, chat_id } });
+  }
+
+ static async findByChatId(chatId) {
+    return await Chats.findOne({ where: { chat_id: chatId } });
+  }
+
+ static async update(chatId, updateData) {
+    const chat = await Chats.findOne({ where: { chat_id: chatId } });
+    if (chat) {
+      return await chat.update(updateData);
     }
-    static async createMessengerChat({
-        chat_id,
-        uid,
-        type,
-        last_message_came,
-        chat_note,
-        chat_tags,
-        sender_name,
-        sender_mobile,
-        chat_status,
-        is_opened,
-        last_message,
-        recipient
-    }) {
-        return query(`INSERT INTO chats (chat_id, uid, type, last_message_came, chat_note, chat_tags, sender_name, sender_mobile, chat_status, is_opened, last_message, recipient)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [chat_id, uid, type, last_message_came, chat_note, chat_tags, sender_name, sender_mobile, chat_status, is_opened, last_message, recipient]);
-    }
+    return null;
+  }
 
+ static async findByStatus(uid, status) {
+    return await Chats.findAll({ where: { uid, chat_status: status } });
+  }
 
+ static async countByUid(uid) {
+    return await Chats.count({ where: { uid } });
+  }
 
-    static async updateLastMessage(id, { last_message_came, last_message }) {
-        return query(`UPDATE chats SET last_message = ?, last_message_came = ? WHERE chat_id = ?`, [JSON.stringify(last_message), last_message_came, id]);
-    }
+}
 
-    static async findChatByChatId(chatId) {
-        const chats = await query(`SELECT * FROM chats WHERE chat_id = ?`, [chatId]);
-        return chats.length > 0 ? chats[0] : null;
-    }
-
-    static async findUidId(uid) {
-        return query(`SELECT * FROM chats WHERE uid = ?`, [uid]);
-    }
-
-
-    static async removePlatformChat(uid, platform) {
-        return query(`DELETE FROM chats WHERE uid = ? AND type = ?`, [uid, platform]);
-    }
-
-    static async searchByChatIds(chatIds) {
-        return query(`SELECT * FROM chats WHERE chat_id IN (?)`, [chatIds]);
-    }
-
-    
-}   
+module.exports = ChatRepository;

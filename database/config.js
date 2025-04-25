@@ -1,26 +1,26 @@
-const mysql = require('mysql2')
+require("dotenv").config();
+const { Pool } = require("pg");
 
-const con = mysql.createPool({
-    connectionLimit: 1000,
+const pool = new Pool({
+    max: 1000,
     host: process.env.DBHOST || "localhost",
-    port: process.env.DBPORT || 3306,
+    port: process.env.DBPORT || 5432,
     user: process.env.DBUSER,
     password: process.env.DBPASS,
-    database: process.env.DBNAME,
-    charset: 'utf8mb4'
-})
+    database: process.env.DBNAME
+});
 
-
-con.getConnection((err) => {
+// Test connection
+pool.connect((err, client, release) => {
     if (err) {
-        console.log({
+        console.error({
             err: err,
-            msg: "Database connected error"
-        })
-        return
+            msg: "Database connection error"
+        });
     } else {
-        console.log('Database has been connected')
+        console.log("Database has been connected");
+        release(); // release the client back to the pool
     }
-})
+});
 
-module.exports = con
+module.exports = pool;

@@ -1,5 +1,5 @@
 const FacebookException = require("../../exceptions/FacebookException");
-const WebPublicRepository = require("../../repositories/WebPublicRepository");
+const WebPublicRepository = require("../../repositories/webPublicRepository");
 const WhatsappAuthService = require("../../services/_whatsapp/WhatsappAuthService");
 const WhatsappProfileService = require("../../services/_whatsapp/WhatsappProfileService");
 const WhatsappController = require("./WhatsappController");

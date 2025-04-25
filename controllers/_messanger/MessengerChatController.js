@@ -1,5 +1,5 @@
 
-const ChatRepository = require("../../repositories/ChatRepository");
+const ChatRepository = require("../../repositories/chatRepository");
 const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
 const MessangerChatService = require("../../services/_messanger/MessangerChatService");
 const MessangerController = require("./MessangerController");

@@ -1,4 +1,4 @@
-const ChatRepository = require("../../repositories/ChatRepository");
+const ChatRepository = require("../../repositories/chatRepository");
 const WhatsappProfileRepository = require("../../repositories/WhatsappProfileRepository");
 const WhatsappService = require("./WhatsappService");
 const WhatsappWebhookService = require("./WhatsappWebhookService");

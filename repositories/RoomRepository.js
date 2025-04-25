@@ -1,14 +1,12 @@
-const { query } = require("../database/dbpromise");
+const { Rooms } = require("../models/rooms");
 
 module.exports = class RoomRepository {
-    static async findByUserId(userId, platform) {
-        const romms = await query(`SELECT * FROM rooms WHERE uid = ?`, [userId, platform]);
-        return romms.length > 0 ? romms[0] : null;
-    }
+  static async findByUserId(userId) {
+    const room = await Rooms.findOne({ where: { uid: userId } });
+    return room || null;
+  }
 
-    static async findMultipleByUid (ids = []) {
-        const romms = await query(`SELECT * FROM rooms WHERE uid IN (?)`, [ids]);
-        return romms
-    }
-
-}   
+  static async findMultipleByUid(ids = []) {
+    return await Rooms.findAll({ where: { uid: ids } });
+  }
+}

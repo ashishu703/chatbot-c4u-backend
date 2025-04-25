@@ -5,7 +5,11 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "migration:create": "npx sequelize-cli model:generate --attributes dummy:string --name",
+    "migration:migrate": "npx sequelize-cli db:migrate",
+    "migration:rollback": "npx sequelize-cli db:migrate:undo",
+    "migration:rollback:all": "npx sequelize-cli db:migrate:undo:all"
   },
   "keywords": [],
   "author": "",
@@ -15,9 +19,10 @@
     "axios": "^1.6.7",
     "bcrypt": "5.0.1",
     "cors": "^2.8.5",
+    "csv-parse": "^5.6.0",
     "csv-parser": "^3.0.0",
-    "dotenv": "^16.0.0",
-    "express": "^4.17.2",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
     "express-fileupload": "^1.4.0",
     "express-validator": "^6.14.0",
     "jsonwebtoken": "^9.0.0",
@@ -28,10 +33,15 @@
     "node-fetch": "^2.6.9",
     "nodemailer": "^6.9.1",
     "nodemon": "^3.1.7",
+    "pg": "^8.14.1",
+    "pg-hstore": "^2.3.4",
     "randomstring": "^1.2.3",
+    "sequelize": "^6.37.7",
+    "sequelize-cli": "^6.6.2",
     "socket.io": "^4.7.4",
     "stripe": "^12.13.0",
-    "unzipper": "^0.10.14"
+    "unzipper": "^0.10.14",
+    "yarn": "^1.22.22"
   },
   "devDependencies": {
     "ngrok": "^5.0.0-beta.2"

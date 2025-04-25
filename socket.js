@@ -1,7 +1,7 @@
 const socketIO = require('socket.io');
 const { query } = require('./database/dbpromise');
 
-let ioInstance; // Global variable to store the io instance
+let ioInstance;
 
 function initializeSocket(server) {
     const io = socketIO(server, {
@@ -11,24 +11,19 @@ function initializeSocket(server) {
         }
     });
 
-    // Save the io instance to the global variable
     ioInstance = io;
 
-    // Socket.IO event handling
     io.on('connection', (socket) => {
         console.log('A user connected', socket.id);
 
         socket.on('user_connected', async ({ userId }) => {
-            console.log({ userId })
+            console.log({ userId });
             if (userId) {
-                // console.log(`User ${userId?.slice(0, 5)} connected with socket ID: ${socket.id}`);
                 try {
-                    // Perform database operations within a try-catch block for error handling
-                    await query(`DELETE FROM rooms WHERE uid = ?`, [userId]);
-                    await query(`INSERT INTO rooms (uid, socket_id) VALUES (?, ?)`, [userId, socket.id]);
+                    await query(`DELETE FROM rooms WHERE uid = $1`, [userId]);
+                    await query(`INSERT INTO rooms (uid, socket_id) VALUES ($1, $2)`, [userId, socket.id]);
                 } catch (error) {
                     console.error('Error executing database queries:', error);
-                    // Handle error gracefully, such as sending an error response to the client
                 }
             }
         });
@@ -36,7 +31,7 @@ function initializeSocket(server) {
         socket.on('disconnect', async () => {
             console.log(`A user disconnected with socket ID: ${socket.id}`);
             try {
-                await query(`DELETE FROM rooms WHERE socket_id = ?`, [socket.id]);
+                await query(`DELETE FROM rooms WHERE socket_id = $1`, [socket.id]);
             } catch (error) {
                 console.error('Error executing database query:', error);
             }
@@ -44,10 +39,10 @@ function initializeSocket(server) {
 
         socket.on("change_ticket_status", async ({ uid, status, chatId }) => {
             try {
-                await query(`UPDATE chats SET chat_status = ? WHERE chat_id = ? AND uid = ?`, [status, chatId, uid]);
+                await query(`UPDATE chats SET chat_status = $1 WHERE chat_id = $2 AND uid = $3`, [status, chatId, uid]);
 
-                const chats = await query(`SELECT * FROM chats WHERE uid = ?`, [uid]);
-                const getId = await query(`SELECT * FROM rooms WHERE uid = ?`, [uid]);
+                const chats = await query(`SELECT * FROM chats WHERE uid = $1`, [uid]);
+                const getId = await query(`SELECT * FROM rooms WHERE uid = $1`, [uid]);
 
                 if (getId[0]?.socket_id) {
                     io.to(getId[0].socket_id).emit("update_chats", { chats });
@@ -60,10 +55,9 @@ function initializeSocket(server) {
         });
     });
 
-    return io; // Return io instance
+    return io;
 }
 
-// Export a function to get the io instance
 function getIOInstance() {
     return ioInstance;
 }
