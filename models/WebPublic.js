@@ -46,7 +46,6 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'WebPublic',
-    tableName: 'web_publics'
   });
 
   return WebPublic;

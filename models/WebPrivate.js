@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class web_private extends Model {
+  class WebPrivate extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  web_private.init({
+  WebPrivate.init({
     pay_offline_id: DataTypes.STRING,
     pay_offline_key: DataTypes.TEXT,
     offline_active: DataTypes.INTEGER,
@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     rz_active: DataTypes.STRING,
   }, {
     sequelize,
-    modelName: 'web_private',
+    modelName: 'WebPrivate',
   });
-  return web_private;
+  return WebPrivate;
 };

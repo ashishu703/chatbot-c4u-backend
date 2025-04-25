@@ -1,4 +1,4 @@
-const { Smtp } = require("../models/smtp");
+const { Smtp } = require("../models/Smtp");
 
 class SmtpRepository {
   static async getSmtp() {

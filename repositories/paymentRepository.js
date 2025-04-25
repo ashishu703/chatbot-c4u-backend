@@ -1,4 +1,4 @@
-const { WebPrivate } = require("../models/web_private");
+const { WebPrivate } = require("../models/WebPrivate");
 
 class PaymentRepository {
   static async getPaymentGateway() {

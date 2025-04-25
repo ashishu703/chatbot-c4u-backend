@@ -1,6 +1,8 @@
-const WebPublic = require('../models/web_public');
-const WebPrivate = require('../models/web_private');
-const Smtp = require('../models/smtp');
+const {
+  WebPublic,
+  WebPrivate,
+  Smtp
+} = require('../models');
 
 class WebRepository {
   // Fetches one record from the WebPublic model
