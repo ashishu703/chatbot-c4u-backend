@@ -1,4 +1,4 @@
-const { Partner } = require("../models/partners");
+const { Partner } = require("../models");
 
 class BrandRepository {
   static async addBrand(filename) {

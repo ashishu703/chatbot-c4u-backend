@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class broadcast extends Model {
+  class Broadcast extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  broadcast.init({
+  Broadcast.init({
     broadcast_id: DataTypes.STRING,
     uid: DataTypes.STRING,
     title: DataTypes.STRING,
@@ -24,7 +24,8 @@ module.exports = (sequelize, DataTypes) => {
     timezone: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'broadcast',
+    modelName: 'Broadcast',
+     tableName:'broadcasts'
   });
-  return broadcast;
+  return Broadcast;
 };

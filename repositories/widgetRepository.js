@@ -1,4 +1,4 @@
-const ChatWidget = require('../models/chat_widget');
+const {ChatWidget} = require('../models');
 
 class WidgetRepository {
   async create(widgetData) {x

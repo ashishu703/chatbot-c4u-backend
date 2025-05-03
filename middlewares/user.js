@@ -1,53 +1,39 @@
-const jwt = require('jsonwebtoken')
-const { query } = require('../database/dbpromise')
+const jwt = require("jsonwebtoken");
+const { User } = require("../models");
+const HttpException = require("../utils/HttpException");
 
 const validateUser = async (req, res, next) => {
-    try {
-        const token = req.get('Authorization')
-        if (!token) {
-            return res.json({ msg: "No token found", token: token, logout: true })
-        }
+  try {
+    const authHeader = req.headers.authorization;
 
-
-        jwt.verify(token.split(' ')[1], process.env.JWTKEY, async (err, decode) => {
-            if (err) {
-                return res.json({
-                    success: 0,
-                    msg: "Invalid token found",
-                    token,
-                    logout: true
-                })
-            } else {
-                const getUser = await query(`SELECT * FROM user WHERE email = ? and password = ? `, [
-                    decode.email, decode.password
-                ])
-                if (getUser.length < 1) {
-                    return res.json({
-                        success: false,
-                        msg: "Invalid token found",
-                        token,
-                        logout: true
-                    })
-                }
-                if (getUser[0].role === 'user') {
-                    req.decode = decode
-                    next()
-                } else {
-                    return res.json({
-                        success: 0,
-                        msg: "Unauthorized token",
-                        token: token,
-                        logout: true
-                    })
-                }
-            }
-        })
-
-
-    } catch (err) {
-        console.log(err)
-        res.json({ msg: "server error", err })
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new HttpException("No token found", 400);
     }
-}
 
-module.exports = validateUser
+    const token = authHeader.split(' ')[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || process.env.JWTKEY);
+
+    const user = await User.findOne({ where: { uid: decoded.uid } });
+
+    if (!user) {
+      throw new HttpException("User not found", 404);
+    }
+
+    req.user = user;
+    req.decode = decoded;
+
+    next();
+  } catch (err) {
+    console.error(err);
+    if (err.name === "TokenExpiredError") {
+      return res.status(401).json({ success: false, message: "Token has expired" });
+    }
+    if (err instanceof HttpException) {
+      return res.status(err.status).json({ success: false, message: err.message });
+    }
+    res.status(401).json({ success: false, message: err.message || "Authentication Failed" });
+  }
+};
+
+module.exports = validateUser;

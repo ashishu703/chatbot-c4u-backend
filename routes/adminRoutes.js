@@ -15,22 +15,30 @@ const SmtpController = require("../controllers/smtpController");
 const DashboardController = require("../controllers/dashboardController");
 const SocialController = require("../controllers/socialController");
 const LinkController = require("../controllers/linkController");
+const AuthController = require('../controllers/authController');
 
-router.post("/login", AdminController.login);
-router.post("/send_resovery", AdminController.sendRecovery);
-router.get("/modify_password", adminValidator, AdminController.modifyPassword);
-router.get("/get_admin", adminValidator, AdminController.getAdmin);
-router.post("/update-admin", adminValidator, AdminController.updateAdmin);
+const authController = new AuthController();
+const adminController = new AdminController();
+const planController = new PlanController();
+const contactController = new ContactController();
+const testimonialController = new TestimonialController();
+const userController = new UserController();
 
-router.post("/add_plan", adminValidator, PlanController.addPlan);
-router.get("/get_plans", PlanController.getPlans);
-router.post("/del_plan", adminValidator, PlanController.deletePlan);
-router.post("/update_plan", adminValidator, PlanController.updatePlan);
+router.post('/login', authController.adminlogin.bind(authController));
+router.post("/send_resovery", adminController.sendRecovery.bind(adminController));
+router.get("/modify_password", adminValidator, adminController.modifyPassword.bind(adminController));
+router.get("/get_admin", adminValidator, adminController.getAdmin.bind(adminController));
+router.post("/update-admin", adminValidator, adminController.updateAdmin.bind(adminController));
 
-router.get("/get_users", adminValidator, UserController.getUsers);
-router.post("/update_user", adminValidator, UserController.updateUser);
-router.post("/del_user", adminValidator, UserController.deleteUser);
-router.post("/auto_login", adminValidator, UserController.autoLogin);
+router.post("/add_plan", adminValidator, planController.addPlan.bind(planController));
+router.get("/get_plans", planController.getPlans.bind(planController));
+router.post("/del_plan", adminValidator, planController.deletePlan.bind(planController));
+router.post("/update_plan", adminValidator, planController.updatePlan.bind(planController));
+
+router.get("/get_users", adminValidator, userController.getUsers.bind(userController));
+router.post("/update_user", adminValidator, userController.updateUser.bind(userController));
+router.post("/del_user", adminValidator, userController.deleteUser.bind(userController));
+router.post("/auto_login", adminValidator, userController.autoLogin.bind(userController));
 
 router.get("/get_payment_gateway_admin", adminValidator, PaymentController.getPaymentGateway);
 router.post("/update_pay_gateway", adminValidator, PaymentController.updatePaymentGateway);
@@ -50,20 +58,20 @@ router.post("/get_page_slug", PageController.getPageBySlug);
 router.post("/update_terms", adminValidator, PageController.updateTerms);
 router.post("/update_privacy_policy", adminValidator, PageController.updatePrivacyPolicy);
 
-router.post("/add_testimonial", adminValidator, TestimonialController.addTestimonial);
-router.get("/get_testi", TestimonialController.getTestimonials);
-router.post("/del_testi", adminValidator, TestimonialController.deleteTestimonial);
+router.post("/add_testimonial", adminValidator, testimonialController.addTestimonial.bind(testimonialController));
+router.get("/get_testi", testimonialController.getTestimonials.bind(testimonialController));
+router.post("/del_testi", adminValidator, testimonialController.deleteTestimonial.bind(testimonialController));
 
 router.get("/get_orders", adminValidator, OrderController.getOrders);
 
-router.get("/get_contact_leads", adminValidator, ContactController.getContactLeads);
-router.post("/del_cotact_entry", adminValidator, ContactController.deleteContactEntry);
+router.get("/get_contact_leads", adminValidator, contactController.getContactLeads.bind(contactController));
+router.post("/del_cotact_entry", adminValidator, contactController.deleteContactEntry.bind(contactController));
 
 router.get("/get_smtp", adminValidator, SmtpController.getSmtp);
 router.post("/update_smtp", adminValidator, SmtpController.updateSmtp);
 router.post("/send_test_email", adminValidator, SmtpController.sendTestEmail);
 
-router.get("/get_dashboard_for_user", adminValidator, DashboardController.getDashboard);
+router.get("/dashboard", adminValidator, DashboardController.getAdminDashboard);
 
 router.get("/get_wa_gen", adminValidator, LinkController.getGeneratedLinks);
 router.post("/de_wa_den_link", adminValidator, LinkController.deleteGeneratedLink);

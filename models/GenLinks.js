@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class agent_task extends Model {
+  class GenLinks extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,16 +13,14 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  agent_task.init({
-    owner_uid: DataTypes.STRING,
-    uid: DataTypes.STRING,
-    title: DataTypes.STRING,
-    description: DataTypes.TEXT,
-    agent_comments: DataTypes.TEXT,
-    status: DataTypes.STRING,
+  GenLinks.init({
+    wa_mobile: DataTypes.STRING,
+    email: DataTypes.STRING,
+    msg: DataTypes.STRING,
   }, {
     sequelize,
-    modelName: 'agent_task',
+    modelName: 'GenLinks',
+    tableName:'gen_links'
   });
-  return agent_task;
+  return GenLinks;
 };

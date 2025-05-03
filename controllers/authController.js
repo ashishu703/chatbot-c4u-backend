@@ -7,18 +7,26 @@ class AuthController {
   constructor() {
     this.authService = new AuthService(); 
   }
-
+ 
   async verify(req, res) {
     try {
       let token = req.headers.authorization;
-      if (!token) throw new HttpException('Invalid token provided', 400);
-      token = token.split(' ')[1];
+      if (!token) {
+        return res.status(400).json({ message: 'Token is missing or invalid' });
+      }
+      token = token.split(' ')[1]; 
+      if (!token) {
+        return res.status(400).json({ message: 'Token is malformed' });
+      }
       const user = await this.authService.verifyToken(token);
       res.status(200).json({ user });
     } catch (error) {
-      res.status(400).json({ message: 'Token expired' });
+    
+      res.status(400).json({ message: 'Token expired or invalid', error: error.message });
     }
   }
+  
+  
 
   async loginWithFacebook(req, res) {
     try {
@@ -53,10 +61,24 @@ class AuthController {
     }
   }
 
-  async login(req, res) {
+  async userlogin(req, res) {
     try {
       const { email, password } = req.body;
-      const result = await this.authService.login({ email, password });
+      const result = await this.authService.userlogin({ email, password });
+      res.status(200).json(result);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        res.status(error.status).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: 'Something went wrong' });
+      }
+    }
+  }
+
+  async adminlogin(req, res) {
+    try {
+      const { email, password } = req.body;
+      const result = await this.authService.adminlogin({ email, password });
       res.status(200).json(result);
     } catch (error) {
       if (error instanceof HttpException) {

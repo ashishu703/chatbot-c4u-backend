@@ -1,4 +1,4 @@
-const { Order, User } = require("../models/orders");
+const { Order, User } = require("../models");
 
 class OrderRepository {
   static async getOrders() {

@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'WebPrivate',
+    tableName:'web_privates'
   });
   return WebPrivate;
 };

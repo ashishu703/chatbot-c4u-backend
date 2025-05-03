@@ -1,4 +1,4 @@
-const { Rooms } = require("../models/rooms");
+const { Rooms } = require("../models");
 
 module.exports = class RoomRepository {
   static async findByUserId(userId) {

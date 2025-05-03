@@ -1,4 +1,4 @@
-const { GenLink } = require("../models/gen_links");
+const { GenLink } = require("../models");
 
 class LinkRepository {
   static async getGeneratedLinks() {

@@ -1,4 +1,4 @@
-const { Flow } = require("../models/flow");
+const { Flow } =  require("../models");
 
 class FlowRepository {
   static async create(flow) {

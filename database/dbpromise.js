@@ -1,19 +1,27 @@
-const con = require('./config')
+const { Pool } = require('pg');
 
-function query(sql, arr) {
-    return new Promise((resolve, reject) => {
-        if (!sql || !arr) {
-            return resolve("No sql provided")
-        }
-        con.query(sql, arr, (err, result) => {
-            if (err) {
-                console.log(err)
-                return reject(err)
-            } else {
-                return resolve(result)
-            }
-        })
-    })
+const pool = new Pool({
+  user: process.env.DBUSER,
+  host: process.env.DBHOST,
+  database: process.env.DBNAME,
+  password: process.env.DBPASS,
+  port: process.env.DBPORT,
+});
+
+// Debug function to log queries
+async function query(text, params) {
+  console.log('Executing query:', { text, params });
+  try {
+    const res = await pool.query(text, params);
+    console.log('Query result:', res.rows);
+    return res.rows; // Return only rows for simpler usage
+  } catch (err) {
+    console.error('Query error:', err);
+    throw err;
+  }
 }
 
-exports.query = query   
+module.exports = {
+  query,
+  pool,
+};

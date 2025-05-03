@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class quick_replies extends Model {
+  class InstagramAccounts extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,12 +13,18 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  quick_replies.init({
+  InstagramAccounts.init({
     uid: DataTypes.STRING,
-    message: DataTypes.TEXT,
+    instagram_user_id: DataTypes.STRING,
+    account_id: DataTypes.STRING,
+    name: DataTypes.STRING,
+    username: DataTypes.STRING,
+    avatar: DataTypes.STRING,
+    token: DataTypes.TEXT,
   }, {
     sequelize,
-    modelName: 'quick_replies',
+    modelName: 'InstagramAccounts',
+    tableName:'instagram_accounts'
   });
-  return quick_replies;
+  return InstagramAccounts;
 };

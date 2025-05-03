@@ -6,20 +6,22 @@ const { checkPlan } = require("../middlewares/plan");
 const AgentController = require("../controllers/agentController");
 const AgentChatController = require("../controllers/agentChatController");
 const AgentMessageController = require("../controllers/agentMessageController");
-const AgentTaskController = require("../controllers/agentTaskController");
+const AgentTaskController = require("../controllers/agentTaskController"); 
 
-router.post("/add_agent", validateUser, checkPlan, AgentController.addAgent);
-router.get("/get_my_agents", validateUser, AgentController.getMyAgents);
-router.post("/change_agent_activeness", validateUser, AgentController.changeAgentActiveness);
-router.post("/del_agent", validateUser, AgentController.deleteAgent);
+const agentController = new AgentController();
+
+router.post("/add_agent", validateUser, checkPlan, agentController.addAgent.bind(agentController));
+router.get("/get_my_agents", validateUser, agentController.getMyAgents.bind(agentController));
+router.post("/change_agent_activeness", validateUser, agentController.changeAgentActiveness.bind(agentController));
+router.post("/del_agent", validateUser, agentController.deleteAgent.bind(agentController));
 
 router.post("/get_agent_chats_owner", validateUser, AgentChatController.getAgentChatsOwner);
 router.post("/get_assigned_chat_agent", validateUser, AgentChatController.getAssignedChatAgent);
 router.post("/update_agent_in_chat", validateUser, AgentChatController.updateAgentInChat);
 router.post("/del_assign_chat_by_owner", validateUser, AgentChatController.deleteAssignedChat);
 
-router.post("/login", AgentController.login);
-router.get("/get_me", validateAgent, AgentController.getMe);
+router.post("/login", agentController.login.bind(agentController));
+router.get("/get_me", validateAgent, agentController.getMe.bind(agentController));
 
 router.get("/get_my_assigned_chats", validateAgent, AgentChatController.getMyAssignedChats);
 router.post("/get_convo", validateAgent, AgentChatController.getConversation);

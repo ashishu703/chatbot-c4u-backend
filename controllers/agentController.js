@@ -2,7 +2,11 @@ const AgentService = require("../services/agentService");
 const { isValidEmail } = require("../functions/function");
 
 class AgentController {
-  static async addAgent(req, res) {
+  constructor() {
+    this.agentService = new AgentService();
+  }
+
+  async addAgent(req, res) {
     try {
       const { name, password, email, mobile, comments } = req.body;
 
@@ -14,7 +18,7 @@ class AgentController {
         return res.json({ msg: "Please enter a valid email" });
       }
 
-      await AgentService.addAgent({
+      await this.agentService.addAgent({
         owner_uid: req.decode.uid,
         name,
         password,
@@ -30,9 +34,9 @@ class AgentController {
     }
   }
 
-  static async getMyAgents(req, res) {
+  async getMyAgents(req, res) {
     try {
-      const agents = await AgentService.getMyAgents(req.decode.uid);
+      const agents = await this.agentService.getMyAgents(req.decode.uid);
       res.json({ data: agents, success: true });
     } catch (err) {
       console.error(err);
@@ -40,10 +44,10 @@ class AgentController {
     }
   }
 
-  static async changeAgentActiveness(req, res) {
+  async changeAgentActiveness(req, res) {
     try {
       const { agentUid, activeness } = req.body;
-      await AgentService.changeAgentActiveness(agentUid, activeness);
+      await this.agentService.changeAgentActiveness(agentUid, activeness);
       res.json({ success: true, msg: "Success" });
     } catch (err) {
       console.error(err);
@@ -51,10 +55,10 @@ class AgentController {
     }
   }
 
-  static async deleteAgent(req, res) {
+  async deleteAgent(req, res) {
     try {
       const { uid } = req.body;
-      await AgentService.deleteAgent(uid, req.decode.uid);
+      await this.agentService.deleteAgent(uid, req.decode.uid);
       res.json({ success: true, msg: "Agent was deleted" });
     } catch (err) {
       console.error(err);
@@ -62,7 +66,7 @@ class AgentController {
     }
   }
 
-  static async login(req, res) {
+  async login(req, res) {
     try {
       const { email, password } = req.body;
 
@@ -73,7 +77,7 @@ class AgentController {
         });
       }
 
-      const token = await AgentService.login(email, password);
+      const token = await this.agentService.login(email, password);
       res.json({ success: true, token });
     } catch (err) {
       console.error(err);
@@ -81,9 +85,9 @@ class AgentController {
     }
   }
 
-  static async getMe(req, res) {
+  async getMe(req, res) {
     try {
-      const agent = await AgentService.getAgentById(req.decode.uid);
+      const agent = await this.agentService.getAgentById(req.decode.uid);
       res.json({ data: agent, success: true });
     } catch (err) {
       console.error(err);

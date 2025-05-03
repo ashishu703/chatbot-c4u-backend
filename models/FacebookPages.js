@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class meta_api extends Model {
+  class FacebookPages extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,17 +13,17 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  meta_api.init({
+  FacebookPages.init({
     uid: DataTypes.STRING,
-    waba_id: DataTypes.STRING,
-    business_account_id: DataTypes.STRING,
-    access_token: DataTypes.STRING,
-    business_phone_number_id: DataTypes.STRING,
-    app_id: DataTypes.STRING,
-    pin: DataTypes.STRING,
+    name: DataTypes.STRING,
+    page_id: DataTypes.STRING,
+    account_id	: DataTypes.STRING,
+    token: DataTypes.TEXT,
+    status: DataTypes.INTEGER,
   }, {
     sequelize,
-    modelName: 'meta_api',
+    modelName: 'FacebookPages',
+    tableName:'facebook_pages'
   });
-  return meta_api;
+  return FacebookPages;
 };

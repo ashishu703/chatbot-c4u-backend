@@ -1,4 +1,4 @@
-const { AgentChat, Chat, User } = require("../models/agent_chat");
+const { AgentChat, Chat, User } = require("../models");
 
 class AgentChatRepository {
   static async findChatsByAgent(owner_uid, uid) {

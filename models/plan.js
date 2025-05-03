@@ -1,33 +1,28 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class plan extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+  class Plan extends Model {
     static associate(models) {
       // define association here
     }
   }
-  plan.init({
+  Plan.init({
     title: DataTypes.STRING,
     short_description: DataTypes.TEXT,
-    allow_tag: DataTypes.INTEGER,
-    allow_note: DataTypes.INTEGER,
-    allow_chatbot: DataTypes.INTEGER,
-    contact_limit: DataTypes.STRING,
-    allow_api: DataTypes.INTEGER,
+    allow_tag: DataTypes.BOOLEAN,
+    allow_note: DataTypes.BOOLEAN,
+    allow_chatbot: DataTypes.BOOLEAN,
+    contact_limit: DataTypes.INTEGER,
+    allow_api: DataTypes.BOOLEAN,
     is_trial: DataTypes.INTEGER,
     price: DataTypes.BIGINT,
-    price_strike: DataTypes.STRING,
-    plan_duration_in_days: DataTypes.STRING,
+    price_strike: DataTypes.BIGINT,
+    plan_duration_in_days: DataTypes.INTEGER,
+    
   }, {
     sequelize,
-    modelName: 'plan',
+    modelName: 'Plan',
+    tableName: "plans"
   });
-  return plan;
+  return Plan;
 };

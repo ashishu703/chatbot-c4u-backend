@@ -1,26 +1,46 @@
-const db = require('../models');
-const WebPublic = db.WebPublic;
+const {WebPublic} = require('../models');
 
-class WebConfigRepository {
+module.exports = {
   async findFirst() {
-    try {
-      return await WebPublic.findOne({ where: { id: 1 } });
-    } catch (error) {
-      console.error('Error fetching config:', error);
-      throw error;
+    let config = await WebPublic.findOne({ where: { id: 1 } });
+    if (!config) {
+      config = await WebPublic.create({
+        currency_code: 'USD',
+        logo: '',
+        app_name: 'MyApp',
+        custom_home: '',
+        is_custom_home: 0,
+        meta_description: 'Default meta description',
+        currency_symbol: '$',
+        chatbot_screen_tutorial: '',
+        broadcast_screen_tutorial: '',
+        home_page_tutorial: '',
+        login_header_footer: 0,
+        exchange_rate: '1',
+        facebook_client_id: '',
+        facebook_client_secret: '',
+        facebook_graph_version: '',
+        facebook_auth_scopes: '',
+        meta_webhook_verifcation_key: '',
+        instagram_client_id: '',
+        instagram_client_secret: '',
+        instagram_graph_version: '',
+        instagram_auth_scopes: '',
+        whatsapp_client_id: '',
+        whatsapp_client_secret: '',
+        whatsapp_graph_version: '',
+        config_id: ''
+      });
     }
-  }
 
-  async update(id, configData) {
-    try {
-      const config = await WebPublic.findByPk(id);
-      if (!config) return null;
-      return await config.update(configData);
-    } catch (error) {
-      console.error('Error updating config:', error);
-      throw error;
-    }
-  }
-}
+    return config;
+  },
 
-module.exports = new WebConfigRepository();
+  async update(id, data) {
+    const config = await WebPublic.findByPk(id);
+    if (!config) return null;
+    await config.update(data);
+    return config;
+  }
+};
+

@@ -1,4 +1,4 @@
-const { BroadcastLog } = require("../models/broadcast_log");
+const { BroadcastLog } = require("../models");
 
 class BroadcastLogRepository {
   static async bulkCreate(logs) {

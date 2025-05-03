@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class facebook_pages extends Model {
+  class ContactForm extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,16 +13,15 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  facebook_pages.init({
-    uid: DataTypes.STRING,
+  ContactForm.init({
+    email: DataTypes.STRING,
     name: DataTypes.STRING,
-    page_id: DataTypes.STRING,
-    account_id	: DataTypes.STRING,
-    token: DataTypes.TEXT,
-    status: DataTypes.INTEGER,
+    mobile: DataTypes.STRING,
+    content: DataTypes.STRING,
   }, {
     sequelize,
-    modelName: 'facebook_pages',
+    modelName: 'ContactForm',
+    tableName:'contact_forms'
   });
-  return facebook_pages;
+  return ContactForm;
 };

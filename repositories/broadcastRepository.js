@@ -1,4 +1,4 @@
-const { Broadcast } = require("../models/broadcast");
+const { Broadcast } =  require("../models");
 
 class BroadcastRepository {
   static async create(broadcast) {

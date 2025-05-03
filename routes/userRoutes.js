@@ -1,60 +1,86 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../controllers/userController");
-const userMiddleware = require("../middlewares/user");
-const {checkPlan, checkNote, checkTags, checkContactLimit} = require("../middlewares/plan");
+const adminValidator = require("../middlewares/admin");
+const AdminController = require("../controllers/adminController");
+const PlanController = require("../controllers/planController");
+const UserController = require("../controllers/userController");
+const PaymentController = require("../controllers/paymentController");
+const BrandController = require("../controllers/brandController");
+const FaqController = require("../controllers/faqController");
+const PageController = require("../controllers/pageController");
+const TestimonialController = require("../controllers/testimonialController");
+const OrderController = require("../controllers/orderController");
+const ContactController = require("../controllers/contactController");
+const SmtpController = require("../controllers/smtpController");
+const DashboardController = require("../controllers/dashboardController");
+const SocialController = require("../controllers/socialController");
+const LinkController = require("../controllers/linkController");
 const AuthController = require('../controllers/authController');
-const paymentController = require('../controllers/paymentController');
-const metaController = require('../controllers/metaController');
-const widgetController = require('../controllers/widgetController');
-const user = require("../models/user");
-
 
 const authController = new AuthController();
-
-router.get('/verify', authController.verify);
-router.post('/login_with_facebook', authController.loginWithFacebook.bind(authController));
-router.post('/login_with_google', authController.loginWithGoogle.bind(authController));
+const adminController = new AdminController();
+const planController = new PlanController();
+const contactController = new ContactController();
+const testimonialController = new TestimonialController();
+const userController = new UserController();
+ 
+router.get('/verify', authController.verify.bind(authController));
 router.post('/signup', authController.signup.bind(authController));
-router.post('/login', authController.login.bind(authController));
-router.post('/send_resovery', authController.sendRecovery.bind(authController));
-router.get('/modify_password', userMiddleware, authController.modifyPassword.bind(authController));
-router.get('/generate_api_keys', userMiddleware, authController.generateApiKeys.bind(authController));
-router.post('/auto_agent_login', userMiddleware, authController.autoAgentLogin.bind(authController));
+router.post('/login', authController.userlogin.bind(authController));
+router.post("/send_resovery", adminController.sendRecovery.bind(adminController));
+router.get("/modify_password", adminValidator, adminController.modifyPassword.bind(adminController));
+router.get("/get_admin", adminValidator, adminController.getAdmin.bind(adminController));
+router.post("/update-admin", adminValidator, adminController.updateAdmin.bind(adminController));
 
-router.post('/return_media_url', userMiddleware, userController.returnMediaUrl);
-router.get('/get_me', userMiddleware, userController.getMe);
-router.post('/save_note', userMiddleware, checkPlan, checkNote, userController.saveNote);
-router.post('/push_tag', userMiddleware, checkPlan, checkTags, userController.pushTag);
-router.post('/del_tag', userMiddleware, userController.deleteTag);
-router.post('/check_contact', userMiddleware, userController.checkContact);
-router.post('/save_contact', userMiddleware, checkPlan, checkContactLimit, userController.saveContact);
-router.post('/del_contact', userMiddleware, userController.deleteContact);
-router.post('/update_profile', userMiddleware, userController.updateProfile);
-router.get('/get_dashboard', userMiddleware, userController.getDashboard);
-router.post('/add_task_for_agent', userMiddleware, userController.addTaskForAgent);
-router.get('/get_my_agent_tasks', userMiddleware, userController.getMyAgentTasks);
-router.post('/del_task_for_agent', userMiddleware, userController.deleteTaskForAgent);
-router.post('/update_agent_profile', userMiddleware, userController.updateAgentProfile);
-router.get('/fetch_profile', userMiddleware, userController.fetchProfile);
+router.post("/add_plan", adminValidator, planController.addPlan.bind(planController));
+router.get("/get_plans", planController.getPlans.bind(planController));
+router.post("/del_plan", adminValidator, planController.deletePlan.bind(planController));
+router.post("/update_plan", adminValidator, planController.updatePlan.bind(planController));
 
-router.get('/get_payment_details', userMiddleware, paymentController.getPaymentDetails);
-router.post('/create_stripe_session', userMiddleware, paymentController.createStripeSession);
-router.post('/pay_with_rz', userMiddleware, paymentController.payWithRazorpay);
-router.post('/pay_with_paypal', userMiddleware, paymentController.payWithPaypal);
-router.get('/stripe_payment', paymentController.stripePayment);
-router.post('/start_free_trial', userMiddleware, paymentController.startFreeTrial);
-router.post('/get_plan_details', userMiddleware, paymentController.getPlanDetails);
+router.get("/get_users", adminValidator, userController.getUsers.bind(userController));
+router.post("/update_user", adminValidator, userController.updateUser.bind(userController));
+router.post("/del_user", adminValidator, userController.deleteUser.bind(userController));
+router.post("/auto_login", adminValidator, userController.autoLogin.bind(userController));
 
-router.post('/update_meta', userMiddleware, metaController.updateMeta);
-router.get('/get_meta_keys', userMiddleware, metaController.getMetaKeys);
-router.post('/add_meta_templet', userMiddleware, checkPlan, metaController.addMetaTemplet);
-router.get('/get_my_meta_templets', userMiddleware, metaController.getMyMetaTemplets);
-router.post('/del_meta_templet', userMiddleware, metaController.deleteMetaTemplet);
-router.post('/return_media_url_meta', userMiddleware, metaController.returnMediaUrlMeta);
+router.get("/get_payment_gateway_admin", adminValidator, PaymentController.getPaymentGateway);
+router.post("/update_pay_gateway", adminValidator, PaymentController.updatePaymentGateway);
 
-router.post('/add_widget', userMiddleware, widgetController.addWidget);
-router.get('/get_my_widget', userMiddleware, widgetController.getMyWidget);
-router.post('/del_widget', userMiddleware, widgetController.deleteWidget);
-router.get('/widget', widgetController.getWidget);
+router.post("/add_brand_image", adminValidator, BrandController.addBrandImage);
+router.get("/get_brands", BrandController.getBrands);
+router.post("/del_brand_logo", adminValidator, BrandController.deleteBrandLogo);
+
+router.post("/add_faq", adminValidator, FaqController.addFaq);
+router.get("/get_faq", FaqController.getFaqs);
+router.post("/del_faq", adminValidator, FaqController.deleteFaq);
+
+router.post("/add_page", adminValidator, PageController.addPage);
+router.get("/get_pages", PageController.getPages);
+router.post("/del_page", adminValidator, PageController.deletePage);
+router.post("/get_page_slug", PageController.getPageBySlug);
+router.post("/update_terms", adminValidator, PageController.updateTerms);
+router.post("/update_privacy_policy", adminValidator, PageController.updatePrivacyPolicy);
+
+router.post("/add_testimonial", adminValidator, testimonialController.addTestimonial.bind(testimonialController));
+router.get("/get_testi", testimonialController.getTestimonials.bind(testimonialController));
+router.post("/del_testi", adminValidator, testimonialController.deleteTestimonial.bind(testimonialController));
+
+router.get("/get_orders", adminValidator, OrderController.getOrders);
+
+router.get("/get_contact_leads", adminValidator, contactController.getContactLeads.bind(contactController));
+router.post("/del_cotact_entry", adminValidator, contactController.deleteContactEntry.bind(contactController));
+
+router.get("/get_smtp", adminValidator, SmtpController.getSmtp);
+router.post("/update_smtp", adminValidator, SmtpController.updateSmtp);
+router.post("/send_test_email", adminValidator, SmtpController.sendTestEmail);
+
+router.get("/dashboard", adminValidator, DashboardController.getAdminDashboard);
+
+router.get("/get_wa_gen", adminValidator, LinkController.getGeneratedLinks);
+router.post("/de_wa_den_link", adminValidator, LinkController.deleteGeneratedLink);
+
+router.get("/get_web_public", SocialController.getWebPublic);
+router.get("/get_social_login", SocialController.getSocialLogin);
+router.post("/update_social_login", adminValidator, SocialController.updateSocialLogin);
+router.post("/update_rtl", adminValidator, SocialController.updateRtl);
+
 module.exports = router;

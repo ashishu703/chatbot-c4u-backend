@@ -18,23 +18,23 @@ module.exports = {
         allowNull:true
       },
       allow_tag: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.BOOLEAN,
         defaultValue:"0"
       },
       allow_note: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.BOOLEAN,
         defaultValue:"0"
       },
       allow_chatbot: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.BOOLEAN,
         defaultValue:"0"
       },
       contact_limit: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         allowNull:true
       },
       allow_api: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.BOOLEAN,
         defaultValue:"0"
       },
       is_trial: {
@@ -46,11 +46,11 @@ module.exports = {
         allowNull:true
       },
       price_strike: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         allowNull:true
       },
       plan_duration_in_days: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         allowNull:true
       },
       createdAt: {

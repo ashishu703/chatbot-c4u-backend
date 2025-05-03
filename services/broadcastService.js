@@ -1,12 +1,70 @@
 const randomstring = require("randomstring");
 const UserRepository = require("../repositories/userRepository");
+const AdminRepository = require("../repositories/adminRepository"); // Assuming you have an admin repository
 const MetaApiRepository = require("../repositories/metaApiRepository");
 const ContactRepository = require("../repositories/contactRepository");
 const BroadcastRepository = require("../repositories/broadcastRepository");
 const BroadcastLogRepository = require("../repositories/broadcastLogRepository");
 const { getMetaNumberDetail } = require("../functions/function");
 
-class BroadcastService {
+class DashboardService {
+  static async getUserDashboardData(userUid) {
+    const metaApi = await MetaApiRepository.findByUid(userUid);
+    if (!metaApi) {
+      throw new Error("We could not find your Meta API keys");
+    }
+    const totalBroadcasts = await BroadcastRepository.count({ where: { uid: userUid } });
+    const totalBroadcastLogs = await BroadcastLogRepository.count({ where: { uid: userUid } });
+    const userData = await UserRepository.findById(userUid);
+    
+    return {
+      totalBroadcasts,
+      totalBroadcastLogs,
+      userDetails: userData,
+    };
+  }
+
+  static async getAdminDashboardData(adminUid) {
+    const admin = await AdminRepository.findById(adminUid);
+    if (!admin) {
+      throw new Error("Admin not found");
+    }
+    const totalUsers = await UserRepository.count();
+    const totalBroadcasts = await BroadcastRepository.count({ where: { uid: adminUid } });
+    const totalBroadcastLogs = await BroadcastLogRepository.count({ where: { uid: adminUid } });
+
+    return {
+      totalUsers,
+      totalBroadcasts,
+      totalBroadcastLogs,
+      adminDetails: admin,
+    };
+  }
+  static async getAdminBroadcastLogs(adminUid) {
+    const broadcasts = await BroadcastRepository.findByAdminUid(adminUid);
+    const broadcastLogs = [];
+    for (const broadcast of broadcasts) {
+      const logs = await BroadcastLogRepository.findByBroadcastId(broadcast.broadcast_id, adminUid);
+      const stats = {
+        broadcast_id: broadcast.broadcast_id,
+        totalLogs: logs.length,
+        getSent: logs.filter((log) => log.delivery_status === "sent").length,
+        totalDelivered: logs.filter((log) => log.delivery_status === "delivered").length,
+        totalRead: logs.filter((log) => log.delivery_status === "read").length,
+        totalFailed: logs.filter((log) => log.delivery_status === "failed").length,
+        totalPending: logs.filter((log) => log.delivery_status === "PENDING").length,
+      };
+
+      broadcastLogs.push({
+        broadcast: broadcast,
+        stats,
+        logs: logs,
+      });
+    }
+
+    return broadcastLogs;
+  }
+
   static async addBroadcast({ title, templet, phonebook, scheduleTimestamp, example, user }) {
     const metaApi = await MetaApiRepository.findByUid(user.uid);
     if (!metaApi) {
@@ -36,7 +94,6 @@ class BroadcastService {
       example,
       contact,
     }));
-
     await BroadcastLogRepository.bulkCreate(broadcastLogs);
 
     const broadcast = {
@@ -55,25 +112,6 @@ class BroadcastService {
     return { success: true, msg: "Your broadcast has been added" };
   }
 
-  static async getBroadcasts(uid) {
-    return await BroadcastRepository.findByUid(uid);
-  }
-
-  static async getBroadcastLogs(broadcast_id, uid) {
-    const logs = await BroadcastLogRepository.findByBroadcastId(broadcast_id, uid);
-
-    const stats = {
-      totalLogs: logs.length,
-      getSent: logs.filter((log) => log.delivery_status === "sent").length,
-      totalDelivered: logs.filter((log) => log.delivery_status === "delivered").length,
-      totalRead: logs.filter((log) => log.delivery_status === "read").length,
-      totalFailed: logs.filter((log) => log.delivery_status === "failed").length,
-      totalPending: logs.filter((log) => log.delivery_status === "PENDING").length,
-    };
-
-    return { data: logs, success: true, ...stats };
-  }
-
   static async changeBroadcastStatus(broadcast_id, status, uid) {
     await BroadcastRepository.updateStatus(broadcast_id, status, uid);
     return { success: true, msg: "Campaign status updated" };
@@ -86,4 +124,4 @@ class BroadcastService {
   }
 }
 
-module.exports = BroadcastService;
+module.exports = DashboardService;

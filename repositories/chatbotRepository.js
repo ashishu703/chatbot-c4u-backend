@@ -1,4 +1,4 @@
-const { Chatbot } = require("../models/chatbot");
+const { Chatbot } = require("../models");
 
 class ChatbotRepository {
   static async create(chatbot) {

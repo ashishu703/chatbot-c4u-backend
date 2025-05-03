@@ -1,51 +1,43 @@
-const jwt = require('jsonwebtoken')
-const { query } = require('../database/dbpromise')
+const jwt = require('jsonwebtoken');
+const { Admin } = require('../models'); 
+const HttpException = require('./HttpException');
 
 const adminValidator = async (req, res, next) => {
-    try {
-        const token = req.get('Authorization')
-        if (!token) {
-            return res.json({ msg: "No token found", token: token, logout: true })
-        }
-
-        jwt.verify(token.split(' ')[1], process.env.JWTKEY, async (err, decode) => {
-            if (err) {
-                return res.json({
-                    success: 0,
-                    msg: "Invalid token found",
-                    token,
-                    logout: true
-                })
-            } else {
-                const getAdmin = await query(`SELECT * FROM admin WHERE email = ? and password = ? `, [
-                    decode.email, decode.password
-                ])
-                if (getAdmin.length < 1) {
-                    return res.json({
-                        success: false,
-                        msg: "Invalid token found",
-                        token,
-                        logout: true
-                    })
-                }
-                if (getAdmin[0].role === 'admin') {
-                    req.decode = decode
-                    next()
-                } else {
-                    return res.json({
-                        success: 0,
-                        msg: "Unauthorized token",
-                        token: token,
-                        logout: true
-                    })
-                }
-            }
-        })
-
-    } catch (err) {
-        console.log(err)
-        res.json({ msg: "server error", err })
+  try {
+    const authHeader = req.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ msg: 'No token found', logout: true });
     }
-}
 
-module.exports = adminValidator
+    const token = authHeader.split(' ')[1];
+
+    jwt.verify(token, process.env.JWTKEY, async (err, decoded) => {
+      if (err) {
+        console.error('JWT Error:', err);
+        if (err.name === 'TokenExpiredError') {
+          return res.status(401).json({ msg: 'Token has expired. Please log in again.', logout: true });
+        }
+        return res.status(401).json({ msg: 'Invalid token found', logout: true });
+      }
+      const admin = await Admin.findOne({ where: { uid: decoded.uid } });
+      if (!admin) {
+        return res.status(403).json({ msg: 'Admin not found or unauthorized', logout: true });
+      }
+
+
+      if (decoded.role !== 'admin') {
+        return res.status(403).json({ msg: 'Unauthorized token', logout: true });
+      }
+
+
+      req.decode = decoded;
+      next();
+    });
+
+  } catch (err) {
+    console.error('Server error in adminValidator:', err);
+    return res.status(500).json({ msg: 'Server error', err });
+  }
+};
+
+module.exports = adminValidator;

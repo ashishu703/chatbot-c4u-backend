@@ -13,17 +13,16 @@ let sequelize;
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], {
     ...config,
-    logging: console.log // Enable query logging
+    logging: false
   });
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, {
     ...config,
-    dialect: 'postgres', // Explicitly set dialect
-    logging: console.log // Enable query logging
+    dialect: 'postgres', 
+    logging: false
   });
 }
 
-// Load models dynamically
 fs
   .readdirSync(__dirname)
   .filter(file => {
@@ -35,11 +34,12 @@ fs
     );
   })
   .forEach(file => {
+    
     const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
     db[model.name] = model;
   });
 
-// Associate models if they have associate methods
+
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);

@@ -1,4 +1,4 @@
-const { Page } = require("../models/page");
+const { Page } = require("../models");
 
 class PageRepository {
   static async addPage({ title, content, slug, image }) {
@@ -16,7 +16,7 @@ class PageRepository {
   }
 
   static async getPages() {
-    return await Page.findAll({ where: { permanent: false } });
+    return await Page.findAll({ where: { permanent: true } });
   }
 
   static async deletePage(id) {

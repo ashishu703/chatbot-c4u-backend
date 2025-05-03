@@ -1,29 +1,41 @@
 const { User } = require("../models");
-
+const { addDaysToCurrentTimestamp } = require("../utils/dateUtils");
 class UserRepository {
-  static async getUsers() {
+  async findAll() {
+    try {
+      return await User.findAll(); 
+    } catch (error) {
+      console.error('Error in userRepository.findAll:', error);
+      throw error;
+    }
+  }
+
+  async findById(id) {
+    try {
+      return await User.findByPk(id); 
+    } catch (error) {
+      console.error('Error in userRepository.findById:', error);
+      throw error;
+    } 
+  }
+
+  async getUsers() {
     return await User.findAll();
   }
 
-  static async create(userData) {
+  async create(userData) {
     return await User.create(userData);
   }
 
-  static async findByEmail(email) {
+  async findByEmail(email) {
     return await User.findOne({ where: { email } });
   }
 
-  static async findById(uid) {
-    const user = await User.findOne({ where: { uid } });
-    if (!user) {
-      const err = new Error("User not found");
-      err.status = 404;
-      throw err;
-    }
-    return user;
+  async findByUid(uid) {
+    return await User.findOne({ where: { uid } });
   }
 
-  static async updateUser(uid, data) {
+  async updateUser(uid, data) {
     const user = await User.findOne({ where: { uid } });
     if (!user) {
       const err = new Error("User not found");
@@ -33,7 +45,7 @@ class UserRepository {
     return await user.update(data);
   }
 
-  static async deleteUser(id) {
+  async deleteUser(id) {
     const user = await User.findOne({ where: { id } });
     if (!user) {
       const err = new Error("User not found");
@@ -44,29 +56,34 @@ class UserRepository {
     return user;
   }
 
-  static async findByApiKey(api_key) {
+  async findByApiKey(api_key) {
     return await User.findOne({ where: { api_key } });
   }
 
-  static async updatePlan(uid, plan) {
-    const plan_expire = new Date();
-    plan_expire.setDate(plan_expire.getDate() + plan.plan_duration_in_days);
+  async updatePlan(uid, plan) {
+    try {
+      const planDays = parseInt(plan.plan_duration_in_days || 0);
+      const timeStamp = addDaysToCurrentTimestamp(planDays);
 
-    const user = await User.findOne({ where: { uid } });
-    if (!user) {
-      const err = new Error("User not found");
-      err.status = 404;
-      throw err;
+      const user = await User.findOne({ where: { uid } });
+      if (!user) {
+        const err = new Error("User not found");
+        err.status = 404;
+        throw err;
+      }
+
+      return await user.update({
+        plan: JSON.stringify(plan),
+        plan_expire: timeStamp,   
+        trial: plan.is_trial ? 1 : 0 
+      });
+    } catch (error) {
+      console.error("Error updating user plan in UserRepository:", error);
+      throw error;
     }
-
-    return await user.update({
-      plan,
-      plan_expire,
-      trial: plan.is_trial
-    });
   }
-
-  static async update(uid, userData) {
+  
+  async update(uid, userData) {
     const user = await User.findOne({ where: { uid } });
     if (!user) {
       const err = new Error("User not found");
@@ -83,7 +100,7 @@ class UserRepository {
     });
   }
 
-  static async delete(uid) {
+  async delete(uid) {
     const user = await User.findOne({ where: { uid } });
     if (!user) {
       const err = new Error("User not found");

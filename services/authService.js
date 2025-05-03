@@ -1,27 +1,33 @@
 const bcrypt = require("bcrypt");
-const { sign } = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const moment = require("moment");
-const { isValidEmail } = require("../functions/function");
-const { generateToken, verifyToken, decodeGoogleToken } = require('../utils/authUtils');
+const { isValidEmail, sendEmail } = require("../functions/function");
+const { generateToken, decodeGoogleToken } = require('../utils/authUtils');
 const { validateFacebookToken } = require('../utils/metaUtils');
 const randomstring = require('randomstring');
 const { welcomeEmail, recoverEmail } = require('../emails/returnEmails');
 const HttpException = require('../middlewares/HttpException');
-const { user: User } = require('../models'); 
-const WebRepository = require('../repositories/webRepository');
-const sendEmail = require('../functions/function'); 
+const { User,Admin } = require('../models'); 
+const WebRepository = require('../repositories/webRepository'); 
 
 class AuthService {
   async verifyToken(token) {
-    const decoded = verifyToken(token);
-    const user = await User.findOne({ where: { uid: decoded.uid } });
-    if (!user) throw new HttpException('User not found', 400);
-    return {
-      id: user.uid,
-      name: user.name,
-      email: user.email
-    };
+    return new Promise((resolve, reject) => {
+      jwt.verify(token, process.env.JWTKEY, (err, decoded) => {
+        if (err) {
+          console.error('JWT Verification failed:', err.message);
+          if (err.name === 'TokenExpiredError') {
+            return reject(new Error('Token has expired'));
+          } else if (err.name === 'JsonWebTokenError') {
+            return reject(new Error('Token is invalid'));
+          }
+          return reject(new Error('Token verification failed'));
+        }
+        resolve(decoded); 
+      });
+    });
   }
+
 
   async loginWithFacebook({ token, userId, email, name }) {
     if (!token || !userId || !email || !name) {
@@ -100,25 +106,71 @@ class AuthService {
     return { success: true, msg: 'Signup Success' };
   }
 
-  async login({ email, password }) {
-    if (!email || !password) {
-      throw new HttpException('Please provide email and password', 400);
+  async userlogin({ email, password }) {
+    try {
+      console.log("🟡 Login Attempt: ", email);
+  
+      if (!email || !password) {
+        throw new HttpException('Please provide email and password', 400);
+      }
+  
+      const user = await User.findOne({ where: { email } });
+      if (!user) {
+        console.log("🔴 No user found");
+        throw new HttpException('Invalid credentials', 400);
+      }
+  
+      const compare = await bcrypt.compare(password, user.password);
+      if (!compare) {
+        console.log("🔴 Password does not match");
+        throw new HttpException('Invalid credentials', 400);
+      }
+  
+      const token = generateToken({ uid: user.uid, role: 'user' });
+      console.log("🟢 Token Generated:", token);
+  
+      return {
+        token,
+        user: { id: user.uid, name: user.name, email: user.email }
+      };
+    } catch (err) {
+      console.error("🔥 ERROR in login:", err);
+      throw new HttpException('Something went wrong in login', 500);
     }
-    const user = await User.findOne({ where: { email } });
-    if (!user) {
-      throw new HttpException('Invalid credentials', 400);
-    }
-    const compare = await bcrypt.compare(password, user.password);
-    if (!compare) {
-      throw new HttpException('Invalid credentials', 400);
-    }
-    const token = generateToken({ uid: user.uid, role: 'user' });
-    return {
-      token,
-      user: { id: user.uid, name: user.name, email: user.email }
-    };
   }
 
+  async adminlogin({ email, password }) {
+    try {
+      console.log("🟡 Login Attempt: ", email, password);
+  
+      if (!email || !password) {
+        throw new HttpException('Please provide email and password', 400);
+      }
+
+      const admin = await Admin.findOne({ where: { email } });
+      if (!admin) {
+        console.log("🔴 No user found");
+        throw new HttpException('Invalid credentials', 400);
+      }
+  
+      const compare = await bcrypt.compare(password, admin.password);
+      if (!compare) {
+        console.log("🔴 Password does not match");
+        throw new HttpException('Invalid credentials', 400);
+      }
+  
+      const token = generateToken({ uid: admin.uid, role: 'admin' });
+      console.log("🟢 Token Generated:", token);
+  
+      return {
+        token,
+        admin: { id: admin.uid,email: admin.email }
+      };
+    } catch (err) {
+      console.error("🔥 ERROR in login:", err);
+      throw new HttpException('Something went wrong in login', 500);
+    }
+  }
   async sendRecovery(email) {
     if (!isValidEmail(email)) {
       return { success: false, msg: 'Please enter a valid email' };

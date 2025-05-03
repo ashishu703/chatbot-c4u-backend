@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const translationController = require('../controllers/translationController');
-const contactController = require('../controllers/contactController');
+const ContactController = require('../controllers/contactController');
 const webConfigController = require('../controllers/webConfigController');
 const appController = require('../controllers/appController');
 const themeController = require('../controllers/themeController');
 const waLinkController = require('../controllers/waLinkController');
 const adminMiddleware = require('../middlewares/admin');
+
+const contactController = new ContactController();
 
 // Translation routes
 router.get('/return_module', appController.returnModule);
@@ -17,7 +19,7 @@ router.post('/add-new-translation', adminMiddleware, translationController.addNe
 router.post('/del-one-translation', adminMiddleware, translationController.deleteTranslation);
 
 // Contact form
-router.post('/submit_contact_form', contactController.submitContactForm);
+router.post('/submit_contact_form', contactController.submitContactForm.bind(contactController));
 
 // Web config
 router.post('/update_web_config', adminMiddleware, webConfigController.updateWebConfig);

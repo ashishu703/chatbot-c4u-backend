@@ -1,6 +1,5 @@
 
-const Contact = require('../models/contact');
-const Phonebook = require('../models/phonebook');
+const {Contact,Phonebook} =  require("../models");
 
 class ContactRepository {
   async getPhonebooksByUid(uid) {

@@ -1,5 +1,4 @@
-// repositories/phonebookRepository.js
-const Phonebook = require('../models/phonebook');
+const {Phonebook} = require('../models');
 
 class PhonebookRepository {
   async findByUidAndName(uid, name) {

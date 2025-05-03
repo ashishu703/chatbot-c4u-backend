@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class page extends Model {
+  class Page extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,15 +13,37 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  page.init({
-    slug: DataTypes.STRING,
-    title: DataTypes.STRING,
-    image: DataTypes.STRING,
-    content: DataTypes.TEXT,
-    permanent: DataTypes.INTEGER,
+  Page.init({
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    slug: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    image: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    permanent: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   }, {
     sequelize,
-    modelName: 'page',
+    modelName: 'Page',
+    tableName:'pages'
   });
-  return page;
+  return Page;
 };

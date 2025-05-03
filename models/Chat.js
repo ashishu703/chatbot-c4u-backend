@@ -1,12 +1,12 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class chats extends Model {
+  class Chat extends Model {
     static associate(models) {
       // Define association here
     }
   }
-  chats.init({
+  Chat.init({
     chat_id: DataTypes.STRING,
     uid: DataTypes.STRING,
     type: {
@@ -29,8 +29,8 @@ module.exports = (sequelize, DataTypes) => {
     recipient: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'chats',
-    tableName: 'chats' 
+    modelName: 'Chat',
+    tableName: 'chats'
   });
-  return chats;
+  return Chat;
 };

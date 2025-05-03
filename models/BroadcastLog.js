@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class broadcast_log extends Model {
+  class BroadcastLog extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  broadcast_log.init({
+  BroadcastLog.init({
     uid: DataTypes.STRING,
     broadcast_id: DataTypes.STRING,
     templet_name: DataTypes.STRING,
@@ -28,7 +28,8 @@ module.exports = (sequelize, DataTypes) => {
     contact: DataTypes.TEXT,
   }, {
     sequelize,
-    modelName: 'broadcast_log',
+    modelName: 'BroadcastLog',
+     tableName:'broadcast_logs'
   });
-  return broadcast_log;
+  return BroadcastLog;
 };

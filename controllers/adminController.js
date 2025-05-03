@@ -2,7 +2,7 @@ const AuthService = require("../services/authService");
 const AdminRepository = require("../repositories/adminRepository");
 
 class AdminController {
-  static async login(req, res) {
+   async login(req, res) {
     try {
       const { email, password } = req.body;
       if (!email || !password) {
@@ -23,7 +23,7 @@ class AdminController {
     }
   }
 
-  static async sendRecovery(req, res) {
+   async sendRecovery(req, res) {
     try {
       const { email } = req.body;
       await AuthService.sendRecoveryEmail(email);
@@ -37,7 +37,7 @@ class AdminController {
     }
   }
 
-  static async modifyPassword(req, res) {
+   async modifyPassword(req, res) {
     try {
       const { pass } = req.query;
       if (!pass) {
@@ -54,7 +54,7 @@ class AdminController {
     }
   }
 
-  static async getAdmin(req, res) {
+   async getAdmin(req, res) {
     try {
       const admin = await AdminRepository.findById(req.decode.uid);
       res.json({ data: admin, success: true });
@@ -64,7 +64,7 @@ class AdminController {
     }
   }
 
-  static async updateAdmin(req, res) {
+   async updateAdmin(req, res) {
     try {
       const { email, newpass } = req.body;
       await AdminRepository.updateAdmin(req.decode.uid, email, newpass);

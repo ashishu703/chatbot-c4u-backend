@@ -1,4 +1,4 @@
-const { MetaApi } = require("../models/meta_api");
+const { MetaApi } = require("../models");
 
 class MetaApiRepository {
   static async findByUid(uid) {

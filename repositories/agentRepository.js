@@ -1,28 +1,28 @@
-const { Agent } = require("../models/agents");
+const { Agents } = require("../models");
 
 class AgentRepository {
-  static async findByEmail(email) {
-    return await Agent.findOne({ where: { email } });
+  async findByEmail(email) {
+    return await Agents.findOne({ where: { email } });
   }
 
-  static async findById(uid) {
-    return await Agent.findByPk(uid);
+  async findById(uid) {
+    return await Agents.findByPk(uid);
   }
 
-  static async findByOwner(owner_uid) {
-    return await Agent.findAll({ where: { owner_uid } });
+  async findByOwner(owner_uid) {
+    return await Agents.findAll({ where: { owner_uid } });
   }
 
-  static async create(agent) {
-    await Agent.create(agent);
+  async create(agent) {
+    await Agents.create(agent);
   }
 
-  static async updateActiveness(uid, is_active) {
-    await Agent.update({ is_active }, { where: { uid } });
+  async updateActiveness(uid, is_active) {
+    await Agents.update({ is_active }, { where: { uid } });
   }
 
-  static async delete(uid, owner_uid) {
-    await Agent.destroy({ where: { uid, owner_uid } });
+  async delete(uid, owner_uid) {
+    await Agents.destroy({ where: { uid, owner_uid } });
   }
 }
 

@@ -8,32 +8,33 @@ const checkPlan = async (req, res, next) => {
       req.decode.uid = req.owner.uid;
     }
 
-    const getUser = await query(`SELECT * FROM user WHERE uid = ?`, [
+    const getUser = await query(`SELECT * FROM "users" WHERE uid = $1`, [
       req.decode.uid,
     ]);
-    const plan = getUser[0]?.plan;
 
-    if (!plan) {
+    // Check if user exists (getUser.rows for pg result)
+    const user = getUser[0];
+    if (!user || !user.plan) {
       return res.json({
         success: false,
-        msg: "Please subscribe a plan to proceed this.",
+        msg: "Please subscribe a plan to proceed.",
       });
     }
 
-    const numOfDyaLeft = getNumberOfDaysFromTimestamp(getUser[0]?.plan_expire);
+    const numOfDaysLeft = getNumberOfDaysFromTimestamp(user.plan_expire);
 
-    if (numOfDyaLeft < 1) {
+    if (numOfDaysLeft < 1) {
       return res.json({
         success: false,
-        msg: "Your plan was expired. Please buy a plan",
+        msg: "Your plan has expired. Please buy a plan.",
       });
-    } else {
-      req.plan = JSON.parse(getUser[0]?.plan);
-      next();
     }
+
+    req.plan = JSON.parse(user.plan);
+    next();
   } catch (err) {
-    console.log(err);
-    res.json({ msg: "server error", err });
+    console.error("Error in checkPlan:", err);
+    res.status(500).json({ success: false, msg: "Server error", error: err.message });
   }
 };
 
@@ -41,21 +42,22 @@ const checkContactLimit = async (req, res, next) => {
   try {
     const contact_limit = req.plan?.contact_limit;
 
-    const getContacts = await query(`SELECT * FROM contact WHERE uid = ?`, [
+    // Use $1 placeholder for contact query
+    const getContacts = await query(`SELECT * FROM contact WHERE uid = $1`, [
       req.decode.uid,
     ]);
 
-    if (getContacts.length >= contact_limit) {
+    if (getContacts.rows.length >= contact_limit) {
       return res.json({
         success: false,
-        msg: `Your plan allowd you to add only ${contact_limit} contacts. Delete some to add new`,
+        msg: `Your plan allows you to add only ${contact_limit} contacts. Delete some to add new.`,
       });
-    } else {
-      next();
     }
+
+    next();
   } catch (err) {
-    console.log(err);
-    res.json({ msg: "server error", err });
+    console.error("Error in checkContactLimit:", err);
+    res.status(500).json({ success: false, msg: "Server error", error: err.message });
   }
 };
 
@@ -65,12 +67,13 @@ const checkNote = async (req, res, next) => {
       next();
     } else {
       return res.json({
-        msg: "Your plan does not allow you to add or edit chat notes",
+        success: false,
+        msg: "Your plan does not allow you to add or edit chat notes.",
       });
     }
   } catch (err) {
-    console.log(err);
-    res.json({ msg: "server error", err });
+    console.error("Error in checkNote:", err);
+    res.status(500).json({ success: false, msg: "Server error", error: err.message });
   }
 };
 
@@ -80,12 +83,13 @@ const checkTags = async (req, res, next) => {
       next();
     } else {
       return res.json({
-        msg: "Your plan does not allow you to add or edit chat notes",
+        success: false,
+        msg: "Your plan does not allow you to add or edit chat tags.",
       });
     }
   } catch (err) {
-    console.log(err);
-    res.json({ msg: "server error", err });
+    console.error("Error in checkTags:", err);
+    res.status(500).json({ success: false, msg: "Server error", error: err.message });
   }
 };
 

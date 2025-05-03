@@ -1,4 +1,4 @@
-const { WebPublic } = require("../models/WebPublic");
+const { WebPublic } = require("../models");
 
 class WebPublicRepository {
   static async getWebPublic() {

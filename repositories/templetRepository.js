@@ -1,4 +1,4 @@
-const { Templet } = require("../models/templets");
+const { Templet } = require("../models");
 
 class TempletRepository {
   static async create(template) {

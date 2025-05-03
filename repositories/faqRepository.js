@@ -1,4 +1,4 @@
-const { Faq } = require("../models/faq");
+const {Faq} = require("../models");
 
 class FaqRepository {
   static async addFaq(question, answer) {

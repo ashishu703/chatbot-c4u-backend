@@ -1,8 +1,12 @@
 const PlanRepository = require("../repositories/planRepository");
-const UserRepository = require("../repositories/userRepository");
+const UserRepository = require("../repositories/UserRepository");
 
 class PlanService {
-  static async addPlan({
+  
+  constructor() {
+    this.userRepository = new UserRepository();
+  }
+   async addPlan({
     title,
     short_description,
     allow_tag,
@@ -33,20 +37,37 @@ class PlanService {
     });
   }
 
-  static async getPlans() {
+   async getPlans() {
     return await PlanRepository.getPlans();
   }
 
-  static async deletePlan(id) {
+   async deletePlan(id) {
     await PlanRepository.deletePlan(id);
   }
 
-  static async updateUserPlan(plan, uid) {
-    if (!plan || !uid) throw new Error("Invalid input provided");
-    const existingPlan = await PlanRepository.findById(plan.id);
-    if (!existingPlan) throw new Error("Invalid plan found");
-    await UserRepository.updatePlan(uid, existingPlan);
+  async updateUserPlan(uid, plan) {
+    if (!uid || !plan || !plan.id) {
+      throw new Error("Invalid UID or Plan data");
+    }
+
+    try {
+      const user = await this.userRepository.findByUid(uid);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      const updatedUser = await this.userRepository.updatePlan(uid, {
+        id: plan.id,
+        plan_duration_in_days: plan.plan_duration_in_days,
+        is_trial: plan.is_trial
+      });
+      return updatedUser;
+    } catch (error) {
+      console.error("Error in updateUserPlan:", error);
+      throw error;
+    }
   }
+  
+  
 }
 
 module.exports = PlanService;

@@ -5,8 +5,13 @@ const AgentRepository = require("../repositories/agentRepository");
 const AgentTaskRepository = require("../repositories/agentTaskRepository");
 
 class AgentService {
-  static async addAgent({ owner_uid, name, password, email, mobile, comments }) {
-    const existingAgent = await AgentRepository.findByEmail(email);
+  constructor() {
+    this.agentRepository = new AgentRepository();
+    this.agentTaskRepository = new AgentTaskRepository();
+  }
+
+  async addAgent({ owner_uid, name, password, email, mobile, comments }) {
+    const existingAgent = await this.agentRepository.findByEmail(email);
     if (existingAgent) {
       throw new Error(
         "This email is already used by you or someone else on the platform, Please choose another email"
@@ -14,7 +19,7 @@ class AgentService {
     }
     const hashPass = await bcrypt.hash(password, 10);
     const uid = randomstring.generate();
-    await AgentRepository.create({
+    await this.agentRepository.create({
       owner_uid,
       uid,
       email,
@@ -22,23 +27,24 @@ class AgentService {
       name,
       mobile,
       comments,
+      is_active: 1, // Set as integer to match model
     });
   }
 
-  static async getMyAgents(owner_uid) {
-    return await AgentRepository.findByOwner(owner_uid);
+  async getMyAgents(owner_uid) {
+    return await this.agentRepository.findByOwner(owner_uid);
   }
 
-  static async changeAgentActiveness(agentUid, activeness) {
-    await AgentRepository.updateActiveness(agentUid, !!activeness);
+  async changeAgentActiveness(agentUid, activeness) {
+    await this.agentRepository.updateActiveness(agentUid, activeness ? 1 : 0); // Convert boolean to integer
   }
 
-  static async deleteAgent(uid, owner_uid) {
-    await AgentRepository.delete(uid, owner_uid);
+  async deleteAgent(uid, owner_uid) {
+    await this.agentRepository.delete(uid, owner_uid);
   }
 
-  static async login(email, password) {
-    const agent = await AgentRepository.findByEmail(email);
+  async login(email, password) {
+    const agent = await this.agentRepository.findByEmail(email);
     if (!agent) {
       throw new Error("Invalid credentials");
     }
@@ -50,28 +56,27 @@ class AgentService {
       {
         uid: agent.uid,
         role: "agent",
-        password: agent.password,
         email: agent.email,
       },
       process.env.JWTKEY,
-      {}
+      { expiresIn: "7d" } // Token expires in 7 days
     );
   }
 
-  static async getAgentById(uid) {
-    const agent = await AgentRepository.findById(uid);
+  async getAgentById(uid) {
+    const agent = await this.agentRepository.findById(uid);
     if (!agent) {
       throw new Error("Agent not found");
     }
     return agent;
   }
 
-  static async getAgentTasks(uid) {
-    return await AgentTaskRepository.findByAgentId(uid);
+  async getAgentTasks(uid) {
+    return await this.agentTaskRepository.findByAgentId(uid);
   }
 
-  static async markTaskComplete(id, comment) {
-    await AgentTaskRepository.updateTask(id, "COMPLETED", comment);
+  async markTaskComplete(id, comment) {
+    await this.agentTaskRepository.updateTask(id, "COMPLETED", comment);
   }
 }
 

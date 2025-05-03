@@ -1,4 +1,4 @@
-const { AgentTask } = require("../models/agent_task");
+const { AgentTask } = require("../models");
 
 class AgentTaskRepository {
   static async findByAgentId(uid) {

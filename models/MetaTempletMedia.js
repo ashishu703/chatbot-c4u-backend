@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class agent_chat extends Model {
+  class MetaTempletMedia extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,13 +13,15 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  agent_chat.init({
-    owner_uid: DataTypes.STRING,
+  MetaTempletMedia.init({
     uid: DataTypes.STRING,
-    chat_id: DataTypes.STRING
+    templet_name: DataTypes.STRING,
+    meta_hash: DataTypes.STRING,
+    file_name: DataTypes.STRING,
   }, {
     sequelize,
-    modelName: 'agent_chat',
+    modelName: 'MetaTempletMedia',
+    tableName:'meta_templet_media'
   });
-  return agent_chat;
+  return MetaTempletMedia;
 };

@@ -13,4 +13,4 @@ class ContactService {
   }
 }
 
-module.exports = new ContactService();
+module.exports = ContactService;

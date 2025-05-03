@@ -1,4 +1,4 @@
-const GenLinks = require('../models/gen_links');
+const {GenLinks} = require('../models');
 
 class WaLinkRepository {
   async create(linkData) {

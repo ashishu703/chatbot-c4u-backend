@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class smi_user_tokens extends Model {
+  class SmiUserTokens extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,13 +13,14 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  smi_user_tokens.init({
+  SmiUserTokens.init({
     uid: DataTypes.STRING,
     platform: DataTypes.ENUM('messenger', 'instagram'),
     token: DataTypes.TEXT
   }, {
     sequelize,
-    modelName: 'smi_user_tokens',
+    modelName: 'SmiUserTokens',
+    tableName:'smi_user_tokens'
   });
-  return smi_user_tokens;
+  return SmiUserTokens;
 };
