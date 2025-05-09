@@ -1,10 +1,14 @@
 const FaqRepository = require("../repositories/faqRepository");
 
 class FaqController {
-  static async addFaq(req, res) {
+  faqRepository;
+  constructor(){
+    this.faqRepository = new FaqRepository();
+  }
+   async addFaq(req, res) {
     try {
       const { question, answer } = req.body;
-      await FaqRepository.addFaq(question, answer);
+      await this.faqRepository.addFaq(question, answer);
       res.json({ success: true, msg: "Faq was added" });
     } catch (err) {
       console.error(err);
@@ -12,9 +16,9 @@ class FaqController {
     }
   }
 
-  static async getFaqs(req, res) {
+   async getFaqs(req, res) {
     try {
-      const faqs = await FaqRepository.getFaqs();
+      const faqs = await this.faqRepository.getFaqs();
       res.json({ data: faqs, success: true });
     } catch (err) {
       console.error(err);
@@ -22,10 +26,10 @@ class FaqController {
     }
   }
 
-  static async deleteFaq(req, res) {
+   async deleteFaq(req, res) {
     try {
       const { id } = req.body;
-      await FaqRepository.deleteFaq(id);
+      await this.faqRepository.deleteFaq(id);
       res.json({ success: true, msg: "Faq was deleted" });
     } catch (err) {
       console.error(err);

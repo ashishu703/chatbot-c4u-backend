@@ -18,4 +18,4 @@ class PhonebookRepository {
   }
 }
 
-module.exports = new PhonebookRepository();
+module.exports = PhonebookRepository;

@@ -1,11 +1,18 @@
 const UserRepository = require("../repositories/UserRepository");
 const OrderRepository = require("../repositories/orderRepository");
-const ContactRepository = require("../repositories/contactRepository");
+const ContactRepository = require("../repositories/ContactRepository");
 const { getUserSignupsByMonth, getUserOrderssByMonth } = require("../functions/function");
 
 class DashboardService {
+  serRepository;
+  orderRepository;
+  constructor(){
+    this.userRepository = new UserRepository();
+    this.orderRepository = new OrderRepository();
+    this.contactRepository = new ContactRepository();
+  }
 
-  static async getDashboardData(userId, role) {
+   async getDashboardData(userId, role) {
     try {
       if (!userId) {
         throw new Error("User ID is required");
@@ -25,15 +32,15 @@ class DashboardService {
       throw new Error(error.message);
     }
   }
-  static async getUserDashboardData(userId) {
+   async getUserDashboardData(userId) {
     try {
-      const users = await UserRepository.getUsers();
+      const users = await this.userRepository.getUsers();
       const { paidSignupsByMonth, unpaidSignupsByMonth } = getUserSignupsByMonth(users);
 
-      const orders = await OrderRepository.getRawOrders();
+      const orders = await this.orderRepository.getRawOrders();
       const ordersByMonth = getUserOrderssByMonth(orders);
 
-      const contactForms = await ContactRepository.getPhonebooksByUid();
+      const contactForms = await this.contactRepository.getPhonebooksByUid();
 
       return {
         success: true,
@@ -51,15 +58,15 @@ class DashboardService {
     }
   }
 
-  static async getAdminDashboardData() {
+   async getAdminDashboardData() {
     try {
-      const users = await UserRepository.getUsers();
+      const users = await this.userRepository.getUsers();
       const { paidSignupsByMonth, unpaidSignupsByMonth } = getUserSignupsByMonth(users);
 
-      const orders = await OrderRepository.getRawOrders();
+      const orders = await this.orderRepository.getRawOrders();
       const ordersByMonth = getUserOrderssByMonth(orders);
 
-      const contactForms = await ContactRepository.getPhonebooksByUid();
+      const contactForms = await this.contactRepository.getPhonebooksByUid();
 
       return {
         success: true,

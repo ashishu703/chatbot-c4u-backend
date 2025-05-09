@@ -11,6 +11,19 @@ class ContactService {
     }
     return await contactRepository.create({ email, name, mobile, content });
   }
+  async getContactLeads(uid) {
+    if (!uid) {
+      throw new Error("UID is missing");
+    }
+    return await contactRepository.findByUid(uid);
+  }
+
+  async deleteContactEntry(id) {
+    if (!id) {
+      throw new Error("ID is missing");
+    }
+    return await contactRepository.delete(id);
+  }
 }
 
 module.exports = ContactService;

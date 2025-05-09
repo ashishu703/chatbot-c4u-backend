@@ -1,9 +1,13 @@
-const translationService = require('../services/translationService');
+const TranslationService = require('../services/TranslationService');
 
 class TranslationController {
+  translationService;
+  constructor() {
+    this.translationService = TranslationService;
+  }
   async getOneTranslation(req, res) {
     try {
-      const result = await translationService.getOneTranslation(req.query.code);
+      const result = await this.translationService.getOneTranslation(req.query.code);
       res.json(result);
     } catch (error) {
       res.json({ err: error.message, msg: 'server error' });
@@ -13,7 +17,7 @@ class TranslationController {
 
   async getAllTranslationNames(req, res) {
     try {
-      const result = await translationService.getAllTranslationNames();
+      const result = await this.translationService.getAllTranslationNames();
       res.json(result);
     } catch (error) {
       res.json({ msg: 'Server error', err: error.message });
@@ -23,7 +27,7 @@ class TranslationController {
 
   async updateTranslation(req, res) {
     try {
-      const result = await translationService.updateTranslation(req.body.code, req.body.updatedjson);
+      const result = await this.translationService.updateTranslation(req.body.code, req.body.updatedjson);
       res.json(result);
     } catch (error) {
       res.json({ success: false, error: error.message, msg: 'Server error' });
@@ -33,7 +37,7 @@ class TranslationController {
 
   async addNewTranslation(req, res) {
     try {
-      const result = await translationService.addNewTranslation(req.body.newcode);
+      const result = await this.translationService.addNewTranslation(req.body.newcode);
       res.json(result);
     } catch (error) {
       res.json({ success: false, error: error.message, msg: 'Server error' });
@@ -43,7 +47,7 @@ class TranslationController {
 
   async deleteTranslation(req, res) {
     try {
-      const result = await translationService.deleteTranslation(req.body.code);
+      const result = await this.translationService.deleteTranslation(req.body.code);
       res.json(result);
     } catch (error) {
       res.json({ success: false, error: error.message, msg: 'Server error' });
@@ -52,4 +56,4 @@ class TranslationController {
   }
 }
 
-module.exports = new TranslationController();
+module.exports = TranslationController;

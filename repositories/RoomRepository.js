@@ -1,12 +1,12 @@
 const { Rooms } = require("../models");
 
 module.exports = class RoomRepository {
-  static async findByUserId(userId) {
+   async findByUserId(userId) {
     const room = await Rooms.findOne({ where: { uid: userId } });
     return room || null;
   }
 
-  static async findMultipleByUid(ids = []) {
+   async findMultipleByUid(ids = []) {
     return await Rooms.findAll({ where: { uid: ids } });
   }
 }

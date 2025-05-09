@@ -1,74 +1,70 @@
-const metaService = require('../services/metaService');
+const MetaService = require('../services/metaService');
 
 class MetaController {
-  async updateMeta(req, res) {
+  metaService;
+  constructor(){
+    this.metaService = new MetaService();
+  }
+  async updateMetaApi(req, res) {
     try {
-      const { waba_id, business_account_id, access_token, business_phone_number_id, app_id } = req.body;
-      const result = await metaService.updateMeta(req.decode.uid, {
-        waba_id,
-        business_account_id,
-        access_token,
-        business_phone_number_id,
-        app_id
-      });
+      const result = await this.metaService.updateMetaApi(req.decode.uid, req.body);
       res.json(result);
-    } catch (error) {
-      res.json({ success: false, msg: 'Something went wrong', err: error.message });
-      console.log(error);
+    } catch (err) {
+      res.json({ success: false, msg: err.message || 'Something went wrong', err });
     }
   }
 
   async getMetaKeys(req, res) {
     try {
-      const result = await metaService.getMetaKeys(req.decode.uid);
+      const result = await this.metaService.getMetaKeys(req.decode.uid);
       res.json(result);
-    } catch (error) {
-      res.json({ success: false, msg: 'Something went wrong', err: error.message });
-      console.log(error);
+    } catch (err) {
+      res.json({ success: false, msg: err.message || 'Something went wrong', err });
     }
   }
 
   async addMetaTemplet(req, res) {
     try {
-      const result = await metaService.addMetaTemplet(req.decode.uid, req.body);
+      const result = await this.metaService.addMetaTemplet(req.decode.uid, req.body);
       res.json(result);
-    } catch (error) {
-      res.json({ success: false, msg: 'Something went wrong', err: error.message });
-      console.log(error);
+    } catch (err) {
+      res.json({ success: false, msg: err.message || 'Something went wrong', err });
     }
   }
 
   async getMyMetaTemplets(req, res) {
     try {
-      const result = await metaService.getMyMetaTemplets(req.decode.uid);
+      const result = await this.metaService.getMyMetaTemplets(req.decode.uid);
       res.json(result);
-    } catch (error) {
-      res.json({ success: false, msg: 'Something went wrong', err: error.message });
-      console.log(error);
+    } catch (err) {
+      res.json({ success: false, msg: err.message || 'Something went wrong', err });
     }
   }
 
   async deleteMetaTemplet(req, res) {
     try {
       const { name } = req.body;
-      const result = await metaService.deleteMetaTemplet(req.decode.uid, name);
+      const result = await this.metaService.deleteMetaTemplet(req.decode.uid, name);
       res.json(result);
-    } catch (error) {
-      res.json({ success: false, msg: 'Something went wrong', err: error.message });
-      console.log(error);
+    } catch (err) {
+      res.json({ success: false, msg: err.message || 'Something went wrong', err });
     }
   }
 
   async returnMediaUrlMeta(req, res) {
     try {
       const { templet_name } = req.body;
-      const result = await metaService.returnMediaUrlMeta(req.decode.uid, templet_name, req.files);
+      const file = req.files?.file;
+      const getFileInfo = async (filePath) => {
+        // Placeholder: Implement actual file info logic
+        return { fileSizeInBytes: 1000, mimeType: file.mimetype };
+      };
+      const result = await this.metaService.returnMediaUrlMeta(req.decode.uid, templet_name, file, getFileInfo);
       res.json(result);
-    } catch (error) {
-      res.json({ success: false, msg: 'Something went wrong', err: error.message });
-      console.log(error);
+    } catch (err) {
+      res.json({ success: false, msg: err.message || 'Something went wrong', err });
     }
   }
 }
 
-module.exports = new MetaController();
+module.exports = MetaController;

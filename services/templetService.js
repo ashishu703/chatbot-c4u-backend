@@ -1,17 +1,26 @@
 const TempletRepository = require("../repositories/templetRepository");
 
 class TempletService {
-  static async addTemplate(uid, { title, type, content }) {
-    await TempletRepository.create({ uid, title, type, content });
+  templetRepository;
+  constructor() {
+    this.templetRepository = new TempletRepository();
+  }
+
+  async addTemplate(uid, { title, type, content }) {
+    if (typeof content !== 'string') {
+      content = JSON.stringify(content);
+    }
+
+    await this.templetRepository.create({ uid, title, type, content });
     return { success: true, msg: "Template was added" };
   }
 
-  static async getTemplates(uid) {
-    return await TempletRepository.findByUid(uid);
+  async getTemplates(uid) {
+    return await this.templetRepository.findByUid(uid);
   }
 
-  static async deleteTemplates(ids) {
-    await TempletRepository.deleteByIds(ids);
+  async deleteTemplates(ids) {
+    await this.templetRepository.deleteByIds(ids);
     return { success: true, msg: "Template(s) were deleted" };
   }
 }

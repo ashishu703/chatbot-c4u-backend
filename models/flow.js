@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Flow.init({
     uid: DataTypes.STRING,
-    Flow_id: DataTypes.STRING,
+    flow_id: DataTypes.STRING,
     title: DataTypes.STRING,
     prevent_list: DataTypes.TEXT,
     ai_list: DataTypes.TEXT,

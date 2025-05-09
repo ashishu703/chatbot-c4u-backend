@@ -1,12 +1,17 @@
-const webRepository = require('../repositories/webRepository');
-const orderRepository = require('../repositories/orderRepository');
+const WebRepository = require('../repositories/webRepository');
+const OrderRepository = require('../repositories/orderRepository');
 const { rzCapturePayment, updateUserPlan } = require('../utils/paymentUtils');
 const Stripe = require('stripe');
 const randomstring = require('randomstring');
 
 class PaymentService {
+  webRepository;
+  constructor(){
+    this.webRepository= new WebRepository();
+    this.orderRepository = new OrderRepository();
+  }
   async getPaymentDetails() {
-    const webPrivate = await webRepository.getWebPrivate();
+    const webPrivate = await this.webRepository.getWebPrivate();
     if (!webPrivate) {
       return { success: false, msg: 'Payment details not found' };
     }
@@ -14,19 +19,19 @@ class PaymentService {
   }
 
   async createStripeSession(uid, planId) {
-    const webPrivate = await webRepository.getWebPrivate();
+    const webPrivate = await this.webRepository.getWebPrivate();
     if (!webPrivate?.pay_stripe_key || !webPrivate?.pay_stripe_id) {
       return { success: false, msg: 'Opss.. payment keys found not found' };
     }
     const stripeClient = new Stripe(webPrivate.pay_stripe_key);
-    const plan = await orderRepository.findPlanById(planId);
+    const plan = await this.orderRepository.findPlanById(planId);
     if (!plan) {
       return { success: false, msg: 'No plan found with the id' };
     }
     const randomSt = randomstring.generate();
     const orderID = `STRIPE_${randomSt}`;
-    await orderRepository.createOrder({ uid, payment_mode: 'STRIPE', amount: plan.price, data: orderID });
-    const webPublic = await webRepository.getWebPublic();
+    await this.orderRepository.createOrder({ uid, payment_mode: 'STRIPE', amount: plan.price, data: orderID });
+    const webPublic = await this.webRepository.getWebPublic();
     const session = await stripeClient.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [{
@@ -42,7 +47,7 @@ class PaymentService {
       cancel_url: `${process.env.BACKURI}/api/user/stripe_payment?order=${orderID}&plan=${plan.id}`,
       locale: process.env.STRIPE_LANG || 'en'
     });
-    await orderRepository.updateOrder(orderID, { s_token: session.id });
+    await this.orderRepository.updateOrder(orderID, { s_token: session.id });
     return { success: true, session };
   }
 
@@ -50,12 +55,12 @@ class PaymentService {
     if (!rz_payment_id || !plan || !amount) {
       return { success: false, msg: 'Please send required fields' };
     }
-    const getPlan = await orderRepository.findPlanById(plan.id);
+    const getPlan = await this.orderRepository.findPlanById(plan.id);
     if (!getPlan) {
       return { success: false, msg: 'Invalid plan found' };
     }
-    const webPrivate = await webRepository.getWebPrivate();
-    const webPublic = await webRepository.getWebPublic();
+    const webPrivate = await this.webRepository.getWebPrivate();
+    const webPublic = await this.webRepository.getWebPublic();
     const rzId = webPrivate?.rz_id;
     const rzKey = webPrivate?.rz_key;
     if (!rzId || !rzKey) {
@@ -67,7 +72,7 @@ class PaymentService {
       return { success: false, msg: resp.description };
     }
     await updateUserPlan(getPlan, uid);
-    await orderRepository.createOrder({ uid, payment_mode: 'RAZORPAY', amount: plan.price, data: JSON.stringify(resp) });
+    await this.orderRepository.createOrder({ uid, payment_mode: 'RAZORPAY', amount: plan.price, data: JSON.stringify(resp) });
     return { success: true, msg: 'Thank for your payment you are good to go now.' };
   }
 
@@ -75,11 +80,11 @@ class PaymentService {
     if (!orderID || !plan) {
       return { success: false, msg: 'Order id and plan required' };
     }
-    const getPlan = await orderRepository.findPlanById(plan.id);
+    const getPlan = await this.orderRepository.findPlanById(plan.id);
     if (!getPlan) {
       return { success: false, msg: 'Invalid plan found' };
     }
-    const webPrivate = await webRepository.getWebPrivate();
+    const webPrivate = await this.webRepository.getWebPrivate();
     const paypalClientId = webPrivate?.pay_paypal_id;
     const paypalClientSecret = webPrivate?.pay_paypal_key;
     if (!paypalClientId || !paypalClientSecret) {
@@ -100,23 +105,23 @@ class PaymentService {
     const order_details = await resp_order.json();
     if (order_details.status === 'COMPLETED') {
       await updateUserPlan(getPlan, uid);
-      await orderRepository.createOrder({ uid, payment_mode: 'PAYPAL', amount: plan.price, data: JSON.stringify(order_details) });
+      await this.orderRepository.createOrder({ uid, payment_mode: 'PAYPAL', amount: plan.price, data: JSON.stringify(order_details) });
       return { success: true, msg: 'Thank for your payment you are good to go now.' };
     }
     return { success: false, msg: 'Error in payment processing' };
   }
 
   async stripePayment(order, plan) {
-    const getOrder = await orderRepository.findOrderByData(order);
-    const getPlan = await orderRepository.findPlanById(plan);
+    const getOrder = await this.orderRepository.findOrderByData(order);
+    const getPlan = await this.orderRepository.findPlanById(plan);
     if (!getOrder || !getPlan) {
       return 'Invalid request';
     }
-    const webPrivate = await webRepository.getWebPrivate();
+    const webPrivate = await this.webRepository.getWebPrivate();
     const stripeClient = new Stripe(webPrivate?.pay_stripe_key);
     const getPay = await stripeClient.checkout.sessions.retrieve(getOrder.s_token);
     if (getPay?.payment_status === 'paid') {
-      await orderRepository.updateOrder(order, { data: JSON.stringify(getPay) });
+      await this.orderRepository.updateOrder(order, { data: JSON.stringify(getPay) });
       await updateUserPlan(getPlan, getOrder.uid);
       return this.returnHtmlRes('Payment Success! Redirecting...');
     }
@@ -128,21 +133,21 @@ class PaymentService {
     if (user.trial > 0) {
       return { success: false, msg: 'You have already taken Trial once. You can not enroll for trial again.' };
     }
-    const plan = await orderRepository.findPlanById(planId);
+    const plan = await this.orderRepository.findPlanById(planId);
     if (!plan) {
       return { success: false, msg: 'Invalid plan found' };
     }
     if (plan.price > 0) {
       return { success: false, msg: 'This plan is not a trial plan.' };
     }
-    await orderRepository.createOrder({ uid, payment_mode: 'OFFLINE', amount: 0, data: JSON.stringify({ plan }) });
+    await this.orderRepository.createOrder({ uid, payment_mode: 'OFFLINE', amount: 0, data: JSON.stringify({ plan }) });
     await updateUserPlan(plan, uid);
     await userRepository.update(uid, { trial: 1 });
     return { success: true, msg: 'Your trial plan has been activated. You are redirecting to the panel...' };
   }
 
   async getPlanDetails(id) {
-    const plan = await orderRepository.findPlanById(id);
+    const plan = await this.orderRepository.findPlanById(id);
     return { success: !!plan, data: plan || null };
   }
 
@@ -164,4 +169,4 @@ class PaymentService {
   }
 }
 
-module.exports = new PaymentService();
+module.exports = PaymentService;

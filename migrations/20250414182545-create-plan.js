@@ -19,15 +19,15 @@ module.exports = {
       },
       allow_tag: {
         type: Sequelize.BOOLEAN,
-        defaultValue:"0"
+        defaultValue:false
       },
       allow_note: {
         type: Sequelize.BOOLEAN,
-        defaultValue:"0"
+        defaultValue:false
       },
       allow_chatbot: {
         type: Sequelize.BOOLEAN,
-        defaultValue:"0"
+        defaultValue:false
       },
       contact_limit: {
         type: Sequelize.INTEGER,
@@ -35,11 +35,11 @@ module.exports = {
       },
       allow_api: {
         type: Sequelize.BOOLEAN,
-        defaultValue:"0"
+        defaultValue:false
       },
       is_trial: {
-        type: Sequelize.INTEGER,
-        defaultValue:"0"
+        type: Sequelize.BOOLEAN,
+        defaultValue:false
       },
       price: {
         type: Sequelize.BIGINT,

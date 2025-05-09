@@ -2,13 +2,17 @@ const AuthService = require("../services/authService");
 const AdminRepository = require("../repositories/adminRepository");
 
 class AdminController {
+  adminRepository;
+  constructor() {
+    this.adminRepository = new AdminRepository();
+  }
    async login(req, res) {
     try {
       const { email, password } = req.body;
       if (!email || !password) {
         return res.json({ success: false, msg: "Please fill email and password" });
       }
-      const user = await AdminRepository.findByEmail(email);
+      const user = await this.adminRepository.findByEmail(email);
       if (!user) {
         return res.json({ msg: "Invalid credentials found" });
       }
@@ -56,7 +60,7 @@ class AdminController {
 
    async getAdmin(req, res) {
     try {
-      const admin = await AdminRepository.findById(req.decode.uid);
+      const admin = await this.adminRepository.findById(req.decode.uid);
       res.json({ data: admin, success: true });
     } catch (err) {
       console.error(err);
@@ -67,7 +71,7 @@ class AdminController {
    async updateAdmin(req, res) {
     try {
       const { email, newpass } = req.body;
-      await AdminRepository.updateAdmin(req.decode.uid, email, newpass);
+      await this.adminRepository.updateAdmin(req.decode.uid, email, newpass);
       res.json({ success: true, msg: "Admin was updated refresh the page" });
     } catch (err) {
       console.error(err);

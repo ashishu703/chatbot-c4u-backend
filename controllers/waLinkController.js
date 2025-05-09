@@ -1,9 +1,13 @@
-const waLinkService = require('../services/waLinkService');
+const WaLinkService = require('../services/WaLinkService');
 
 class WaLinkController {
+  waLinkService;
+  constructor() {
+    this.waLinkService = new WaLinkService();
+  }
   async generateWaLink(req, res) {
     try {
-      const link = await waLinkService.generateWaLink(req.body);
+      const link = await this.waLinkService.generateWaLink(req.body);
       res.json({ success: true, data: link });
     } catch (error) {
       res.json({ success: false, msg: error.message });
@@ -12,4 +16,4 @@ class WaLinkController {
   }
 }
 
-module.exports = new WaLinkController();
+module.exports = WaLinkController;

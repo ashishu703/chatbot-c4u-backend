@@ -1,9 +1,15 @@
 const OrderRepository = require("../repositories/orderRepository");
 
 class OrderController {
-  static async getOrders(req, res) {
+  orderRepository;
+
+  constructor() {
+    this.orderRepository = new OrderRepository();
+  }
+
+  async getOrders(req, res) {
     try {
-      const orders = await OrderRepository.getOrders();
+      const orders = await this.orderRepository.getOrders();
       res.json({ data: orders, success: true });
     } catch (err) {
       console.error(err);

@@ -15,7 +15,7 @@ module.exports = {
       },
       title: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull:true  
       },
       image: {
         type: Sequelize.STRING,
@@ -26,7 +26,7 @@ module.exports = {
         allowNull:true
       },
       permanent: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.BOOLEAN,
         defaultValue:"0"
       },
       createdAt: {

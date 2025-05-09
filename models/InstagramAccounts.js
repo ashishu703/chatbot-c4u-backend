@@ -1,30 +1,48 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class InstagramAccounts extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      // define associations if any
     }
   }
-  InstagramAccounts.init({
-    uid: DataTypes.STRING,
-    instagram_user_id: DataTypes.STRING,
-    account_id: DataTypes.STRING,
-    name: DataTypes.STRING,
-    username: DataTypes.STRING,
-    avatar: DataTypes.STRING,
-    token: DataTypes.TEXT,
-  }, {
-    sequelize,
-    modelName: 'InstagramAccounts',
-    tableName:'instagram_accounts'
-  });
+  InstagramAccounts.init(
+    {
+      uid: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      instagram_user_id: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      account_id: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      username: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      avatar: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      token: {
+        type: DataTypes.TEXT,
+        allowNull: false
+      }
+    },
+    {
+      sequelize,
+      modelName: 'InstagramAccounts',
+      tableName: 'instagram_accounts',
+      timestamps: true
+    }
+  );
   return InstagramAccounts;
 };

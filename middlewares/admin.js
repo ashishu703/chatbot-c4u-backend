@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { Admin } = require('../models'); 
+const { Admin } = require('../models');
 const HttpException = require('./HttpException');
 
 const adminValidator = async (req, res, next) => {
@@ -24,13 +24,11 @@ const adminValidator = async (req, res, next) => {
         return res.status(403).json({ msg: 'Admin not found or unauthorized', logout: true });
       }
 
-
       if (decoded.role !== 'admin') {
         return res.status(403).json({ msg: 'Unauthorized token', logout: true });
       }
-
-
       req.decode = decoded;
+      req.user = decoded;
       next();
     });
 

@@ -1,7 +1,11 @@
 const ChatbotRepository = require("../repositories/chatbotRepository");
 
 class ChatbotService {
-  static async addChatbot({ title, chats, flow, for_all, user }) {
+  chatbotRepository;
+  constructor() {
+    this.chatbotRepository = new ChatbotRepository();
+  }
+   async addChatbot({ title, chats, flow, for_all, user }) {
     if (!user.plan?.allow_chatbot) {
       throw new Error("Your plan does not allow you to set a chatbot");
     }
@@ -16,11 +20,11 @@ class ChatbotService {
       active: true,
     };
 
-    await ChatbotRepository.create(chatbot);
+    await this.chatbotRepository.create(chatbot);
     return { success: true, msg: "Chatbot was added" };
   }
 
-  static async updateChatbot({ id, title, chats, flow, for_all, user }) {
+   async updateChatbot({ id, title, chats, flow, for_all, user }) {
     if (!user.plan?.allow_chatbot) {
       throw new Error("Your plan does not allow you to set a chatbot");
     }
@@ -33,29 +37,29 @@ class ChatbotService {
       flow_id: flow?.id,
     };
 
-    await ChatbotRepository.update(id, chatbot, user.uid);
+    await this.chatbotRepository.update(id, chatbot, user.uid);
     return { success: true, msg: "Chatbot was updated" };
   }
 
-  static async getChatbots(uid) {
-    return await ChatbotRepository.findByUid(uid);
+   async getChatbots(uid) {
+    return await this.chatbotRepository.findByUid(uid);
   }
 
-  static async changeBotStatus(id, status, user) {
+   async changeBotStatus(id, status, user) {
     if (!user.plan?.allow_chatbot) {
       throw new Error("Your plan does not allow you to set a chatbot");
     }
 
-    await ChatbotRepository.updateStatus(id, !!status, user.uid);
+    await this.chatbotRepository.updateStatus(id, !!status, user.uid);
     return { success: true, msg: "Chatbot was updated" };
   }
 
-  static async deleteChatbot(id, uid) {
-    await ChatbotRepository.delete(id, uid);
+   async deleteChatbot(id, uid) {
+    await this.chatbotRepository.delete(id, uid);
     return { success: true, msg: "Chatbot was deleted" };
   }
 
-  static async makeRequestApi({ url, body, headers, type }) {
+   async makeRequestApi({ url, body, headers, type }) {
     const { makeRequest } = require("../functions/function");
     return await makeRequest({ method: type, url, body, headers });
   }

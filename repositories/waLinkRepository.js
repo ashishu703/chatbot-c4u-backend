@@ -6,4 +6,4 @@ class WaLinkRepository {
   }
 }
 
-module.exports = new WaLinkRepository();
+module.exports = WaLinkRepository;

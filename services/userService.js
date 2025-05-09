@@ -1,21 +1,23 @@
 const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const contactRepository = require('../repositories/contactRepository');
-const chatRepository = require('../repositories/chatRepository');
-const chatbotRepository = require('../repositories/chatbotRepository');
-const agentTaskRepository = require('../repositories/agentTaskRepository');
-const metaRepository = require('../repositories/metaRepository');
-const { fetchProfileFun } = require('../utils/metaUtils');
+const { Agents } = require("../models");
+const contactRepository = require('../repositories/ContactRepository');
+const chatRepository = require('../repositories/ChatRepository');
+const chatbotRepository = require('../repositories/ChatbotRepository');
+const AgentTaskRepository = require('../repositories/AgentTaskRepository');
+const metaRepository = require('../repositories/MetaRepository');
+const { fetchProfileFun } = require('../utils/metaApi');
 const { uploadFile } = require('../utils/fileUtils');
 const HttpException = require('../utils/HttpException');
 const UserRepository = require('../repositories/UserRepository');
-
 class UserService {
   userRepository;
+  agentTaskRepository;
  
   constructor(){
     this.userRepository = new UserRepository();
+    this.agentTaskRepository = new AgentTaskRepository();
   }
 
   async getUsers() {
@@ -230,7 +232,7 @@ class UserService {
       return { success: false, msg: 'Please select an agent' };
     }
 
-    await agentTaskRepository.create({
+    await this.agentTaskRepository.create({
       owner_uid: ownerUid,
       uid: agent_uid,
       title,
@@ -241,15 +243,32 @@ class UserService {
     return { success: true, msg: 'Task was added' };
   }
 
-   async getMyAgentTasks(ownerUid) {
-    const tasks = await agentTaskRepository.findByOwnerUid(ownerUid);
-    return { success: true, data: tasks };
+  async getMyAgentTasks(ownerUid) {
+    try {
+      const tasks = await this.agentTaskRepository.findByOwnerUid(ownerUid);
+      return { success: true, data: tasks };
+    } catch (error) {
+      throw new Error("Something went wrong while fetching tasks: " + error.message);
+    }
   }
+  
+  
+  
 
-   async deleteTaskForAgent(ownerUid, id) {
-    await agentTaskRepository.delete(id, ownerUid);
-    return { success: true, msg: 'Task was deleted' };
+  async deleteAgentTask(id, ownerUid) {
+    try {
+      const deleted = await this.agentTaskRepository.deleteByIdAndOwner(id, ownerUid);
+  
+      if (deleted) {
+        return { success: true, msg: "Task was deleted" };
+      } else {
+        return { success: false, msg: "Task not found or unauthorized" };
+      }
+    } catch (error) {
+      throw new Error("Something went wrong while deleting task: " + error.message);
+    }
   }
+  
 
    async updateAgentProfile({ email, name, mobile, newPas, uid }) {
     if (!email || !name || !mobile) {
@@ -261,7 +280,7 @@ class UserService {
       updateData.password = await bcrypt.hash(newPas, 10);
     }
 
-    await agentTaskRepository.updateAgent(uid, updateData);
+    await this.agentTaskRepository.updateAgent(uid, updateData);
     return { success: true, msg: 'Agent profile was updated' };
   }
 

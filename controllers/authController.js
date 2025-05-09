@@ -41,14 +41,14 @@ class AuthController {
 
   async loginWithGoogle(req, res) {
     try {
-      const { token } = req.body;
-      const result = await this.authService.loginWithGoogle(token);
-      res.json(result);
+      const response = await this.authService.loginWithGoogle(req.body.token);
+      res.json(response);
     } catch (error) {
-      res.json({ success: false, msg: 'Something went wrong', err: error.message });
-      console.log(error);
+      console.error(error);
+      res.status(500).json({ success: false, msg: error.message });
     }
   }
+
 
   async signup(req, res) {
     try {

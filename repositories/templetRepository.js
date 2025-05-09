@@ -1,16 +1,16 @@
-const { Templet } = require("../models");
+const { Templets } = require("../models");
 
 class TempletRepository {
-  static async create(template) {
-    return await Templet.create(template);
+   async create(template) {
+    return await Templets.create(template);
   }
 
-  static async findByUid(uid) {
-    return await Templet.findAll({ where: { uid } });
+   async findByUid(uid) {
+    return await Templets.findAll({ where: { uid } });
   }
 
-  static async deleteByIds(ids) {
-    return await Templet.destroy({ where: { id: ids } });
+   async deleteByIds(ids) {
+    return await Templets.destroy({ where: { id: ids } });
   }
 }
 

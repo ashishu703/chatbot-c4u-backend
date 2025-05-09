@@ -2,16 +2,20 @@ const path = require("path");
 const AgentChatRepository = require("../repositories/AgentChatRepository");
 const ChatRepository = require("../repositories/chatRepository");
 const ContactRepository = require("../repositories/contactRepository");
-const AgentRepository = require("../repositories/agentRepository");
+const AgentRepository = require("../repositories/AgentRepository");
 const { mergeArrays, readJSONFile, sendMetaMsg } = require("../functions/function");
 
 class ChatService {
-  static async getAgentChatsOwner(owner_uid, agent_uid) {
+  constructor() {
+    this.chatRepository = new ChatRepository();
+  }
+
+   async getAgentChatsOwner(owner_uid, agent_uid) {
     const chats = await AgentChatRepository.findChatsByAgent(owner_uid, agent_uid);
     return chats;
   }
 
-  static async getAssignedChatAgent(owner_uid, chat_id) {
+   async getAssignedChatAgent(owner_uid, chat_id) {
     const agentChat = await AgentChatRepository.findByChatId(owner_uid, chat_id);
     if (!agentChat) {
       return {};
@@ -27,7 +31,7 @@ class ChatService {
     };
   }
 
-  static async updateAgentInChat(owner_uid, assignAgent, chat_id) {
+   async updateAgentInChat(owner_uid, assignAgent, chat_id) {
     if (assignAgent?.uid) {
       await AgentChatRepository.deleteByChatId(owner_uid, chat_id);
       await AgentChatRepository.create({
@@ -40,11 +44,11 @@ class ChatService {
     }
   }
 
-  static async deleteAssignedChat(owner_uid, uid, chat_id) {
+   async deleteAssignedChat(owner_uid, uid, chat_id) {
     await AgentChatRepository.delete(owner_uid, uid, chat_id);
   }
 
-  static async getMyAssignedChats(agent_uid, owner_uid) {
+   async getMyAssignedChats(agent_uid, owner_uid) {
     const agentChats = await AgentChatRepository.findByAgentId(agent_uid);
     if (!agentChats.length) {
       return [];
@@ -55,12 +59,12 @@ class ChatService {
     return mergeArrays(contacts, chats);
   }
 
-  static async getConversation(owner_uid, chatId) {
+   async getConversation(owner_uid, chatId) {
     const filePath = path.join(__dirname, `../conversations/inbox/${owner_uid}/${chatId}.json`);
     return readJSONFile(filePath, 100);
   }
 
-  static async sendMessage({ ownerUid, type, content, toNumber, toName, chatId, agentEmail }) {
+   async sendMessage({ ownerUid, type, content, toNumber, toName, chatId, agentEmail }) {
     const msgObj = { type, [type]: content };
     const savObj = {
       type,
@@ -78,8 +82,31 @@ class ChatService {
     return await sendMetaMsg(ownerUid, msgObj, toNumber, savObj, chatId);
   }
 
-  static async changeChatTicketStatus(chatId, status) {
+   async changeChatTicketStatus(chatId, status) {
     await ChatRepository.updateStatus(chatId, status);
+  }
+  async saveNote(chatId, note) {
+    return this.chatRepository.updateNote(chatId, note);
+  }
+
+  async pushTag(chatId, tag) {
+    const chat = await this.chatRepository.findById(chatId);
+    if (!chat) throw new Error("Chat not found");
+
+    const tags = chat.chat_tags ? JSON.parse(chat.chat_tags) : [];
+    tags.push(tag);
+
+    return this.chatRepository.updateTags(chatId, JSON.stringify(tags));
+  }
+
+  async deleteTag(chatId, tag) {
+    const chat = await this.chatRepository.findById(chatId);
+    if (!chat) throw new Error("Chat not found");
+
+    const tags = chat.chat_tags ? JSON.parse(chat.chat_tags) : [];
+    const filteredTags = tags.filter((t) => t !== tag);
+
+    return this.chatRepository.updateTags(chatId, JSON.stringify(filteredTags));
   }
 }
 

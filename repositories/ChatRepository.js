@@ -1,7 +1,8 @@
 const { Chat } = require('../models');
+const db = require("../utils/db");
 
 class ChatRepository {
-  static async findByUid(uid) {
+   async findByUid(uid) {
     try {
       if (!uid) {
         throw new Error('Invalid parameter: uid is missing');
@@ -13,7 +14,7 @@ class ChatRepository {
     }
   }
 
-  static async findByChatStatus(uid, chat_status) {
+   async findByChatStatus(uid, chat_status) {
     try {
       if (!uid || !chat_status) {
         throw new Error('Invalid parameters: uid or chat_status is missing');
@@ -30,7 +31,7 @@ class ChatRepository {
     }
   }
 
-  static async updateStatus(chat_id, chat_status) {
+   async updateStatus(chat_id, chat_status) {
     try {
       await Chat.update({ chat_status }, { where: { chat_id } });
     } catch (err) {
@@ -39,7 +40,7 @@ class ChatRepository {
     }
   }
 
-  static async delete(uid, chat_id) {
+   async delete(uid, chat_id) {
     try {
       return await Chat.destroy({ where: { uid, chat_id } });
     } catch (err) {
@@ -48,7 +49,7 @@ class ChatRepository {
     }
   }
 
-  static async findByChatId(chatId) {
+   async findByChatId(chatId) {
     try {
       return await Chat.findOne({ where: { chat_id: chatId } });
     } catch (err) {
@@ -57,7 +58,7 @@ class ChatRepository {
     }
   }
 
-  static async update(chatId, updateData) {
+   async update(chatId, updateData) {
     try {
       const chat = await Chat.findOne({ where: { chat_id: chatId } });
       if (chat) {
@@ -70,7 +71,7 @@ class ChatRepository {
     }
   }
 
-  static async countByUid(uid) {
+   async countByUid(uid) {
     try {
       return await Chat.count({ where: { uid } });
     } catch (err) {
@@ -78,6 +79,25 @@ class ChatRepository {
       throw new Error('Error counting chats by UID');
     }
   }
+  async findById(chatId) {
+    const [result] = await db.query("SELECT * FROM chats WHERE chat_id = $1", {
+      bind: [chatId],
+    });
+    return result[0] || null;
+  }
+
+  async updateNote(chatId, note) {
+    return db.query("UPDATE chats SET chat_note = $1 WHERE chat_id = $2", {
+      bind: [note, chatId],
+    });
+  }
+
+  async updateTags(chatId, tags) {
+    return db.query("UPDATE chats SET chat_tags = $1 WHERE chat_id = $2", {
+      bind: [tags, chatId],
+    });
+  }
+
 }
 
 module.exports = ChatRepository;

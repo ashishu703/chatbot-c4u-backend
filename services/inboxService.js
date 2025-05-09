@@ -17,7 +17,19 @@ const {
 const { getIOInstance } = require("../socket");
 
 class InboxService {
-  static async handleWebhook(uid, body) {
+  metaApiRepository;
+  userRepository;
+  chatsRepository;
+  contactRepository;
+  roomsRepository;
+  constructor() {
+    this.metaApiRepository = new MetaApiRepository();
+    this.userRepository = new UserRepository();
+    this.chatsRepository = new ChatsRepository();
+    this.contactRepository = new ContactRepository();
+    this.roomsRepository = new RoomsRepository();
+  }
+   async handleWebhook(uid, body) {
     try {
       console.log('Handling Webhook - UID:', uid);
       console.log('Webhook Body:', JSON.stringify(body, null, 2));
@@ -27,7 +39,7 @@ class InboxService {
       }
 
       if (body?.entry?.[0]?.changes?.[0]?.value?.metadata?.phone_number_id) {
-        const metaApi = await MetaApiRepository.findByUid(uid);
+        const metaApi = await this.metaApiRepository.findByUid(uid);
         if (metaApi) {
           const checkNumber = body.entry[0].changes[0].value.metadata.phone_number_id;
           if (checkNumber !== metaApi.business_phone_number_id) {
@@ -43,10 +55,10 @@ class InboxService {
     }
   }
 
-  static async getChats(uid) {
+   async getChats(uid) {
     try {
-      const chats = await ChatsRepository.findByUid(uid);
-      const contacts = await ContactRepository.findByUid(uid);
+      const chats = await this.chatsRepository.findByUid(uid);
+      const contacts = await this.contactRepository.findByUid(uid);
       return contacts.length ? mergeArrays(contacts, chats) : chats;
     } catch (err) {
       console.error('Error in getChats:', err);
@@ -54,7 +66,7 @@ class InboxService {
     }
   }
 
-  static async getConversation(uid, chatId) {
+   async getConversation(uid, chatId) {
     try {
       const filePath = path.join(__dirname, `../conversations/inbox/${uid}/${chatId}.json`);
       return await readJSONFile(filePath, 100);
@@ -64,9 +76,9 @@ class InboxService {
     }
   }
 
-  static async verifyWebhook(uid, mode, token, challenge) {
+   async verifyWebhook(uid, mode, token, challenge) {
     try {
-      const user = await UserRepository.findById(uid);
+      const user = await this.userRepository.findById(uid);
       if (!user) {
         return { success: false, msg: "Token not verified", webhook: uid, token: "NOT FOUND" };
       }
@@ -81,10 +93,10 @@ class InboxService {
     }
   }
 
-  static async testSocket() {
+   async testSocket() {
     try {
       const uid = "lWvj6K0xI0FlSKJoyV7ak9DN0mzvKJK8";
-      const room = await RoomsRepository.findByUid(uid);
+      const room = await this.roomsRepository.findByUid(uid);
       if (!room) {
         throw new Error("Room not found");
       }
@@ -97,7 +109,7 @@ class InboxService {
     }
   }
 
-  static async sendMessage(uid, { content, toName, toNumber, chatId, msgType, type, url, caption, text }) {
+   async sendMessage(uid, { content, toName, toNumber, chatId, msgType, type, url, caption, text }) {
     try {
       let msgObj, savObj;
 
@@ -178,9 +190,9 @@ class InboxService {
     }
   }
 
-  static async sendMetaTemplate(uid, { template, toNumber, toName, chatId, example }) {
+   async sendMetaTemplate(uid, { template, toNumber, toName, chatId, example }) {
     try {
-      const metaApi = await MetaApiRepository.findByUid(uid);
+      const metaApi = await this.metaApiRepository.findByUid(uid);
       if (!metaApi) {
         throw new Error("Please check your Meta API keys");
       }
@@ -221,7 +233,7 @@ class InboxService {
     }
   }
 
-  static async deleteChat(uid, chatId) {
+   async deleteChat(uid, chatId) {
     try {
       await ChatsRepository.delete(uid, chatId);
       const filePath = path.join(__dirname, `../conversations/inbox/${uid}/${chatId}.json`);

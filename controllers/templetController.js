@@ -1,14 +1,18 @@
 const TempletService = require("../services/templetService");
 
 class TempletController {
-  static async addTemplate(req, res) {
+  templetService;
+  constructor() {
+    this.templetService = new TempletService();
+  }
+   async addTemplate(req, res) {
     try {
       const { title, type, content } = req.body;
       const user = req.decode;
       if (!title || !type || !content) {
         return res.json({ success: false, msg: "Please provide title, type, and content" });
       }
-      const result = await TempletService.addTemplate(user.uid, { title, type, content });
+      const result = await this.templetService.addTemplate(user.uid, { title, type, content });
       res.json(result);
     } catch (err) {
       console.error(err);
@@ -16,10 +20,10 @@ class TempletController {
     }
   }
 
-  static async getTemplates(req, res) {
+   async getTemplates(req, res) {
     try {
       const user = req.decode;
-      const templates = await TempletService.getTemplates(user.uid);
+      const templates = await this.templetService.getTemplates(user.uid);
       res.json({ data: templates, success: true });
     } catch (err) {
       console.error(err);
@@ -27,10 +31,10 @@ class TempletController {
     }
   }
 
-  static async deleteTemplates(req, res) {
+   async deleteTemplates(req, res) {
     try {
       const { selected } = req.body;
-      const result = await TempletService.deleteTemplates(selected);
+      const result = await this.templetService.deleteTemplates(selected);
       res.json(result);
     } catch (err) {
       console.error(err);

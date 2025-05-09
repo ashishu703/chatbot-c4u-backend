@@ -27,6 +27,10 @@ class UserRepository {
     return await User.create(userData);
   }
 
+  async createUser({ name, uid, email, password }) {
+    return await User.create({ name, uid, email, password });
+  }
+
   async findByEmail(email) {
     return await User.findOne({ where: { email } });
   }
@@ -45,7 +49,7 @@ class UserRepository {
     return await user.update(data);
   }
 
-  async deleteUser(id) {
+  async deleteById(id) {
     const user = await User.findOne({ where: { id } });
     if (!user) {
       const err = new Error("User not found");
@@ -55,6 +59,7 @@ class UserRepository {
     await user.destroy();
     return user;
   }
+  
 
   async findByApiKey(api_key) {
     return await User.findOne({ where: { api_key } });

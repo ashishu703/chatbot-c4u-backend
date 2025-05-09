@@ -34,4 +34,4 @@ class WebRepository {
   }
 }
 
-module.exports = new WebRepository();
+module.exports = WebRepository;

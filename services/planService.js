@@ -37,7 +37,7 @@ class PlanService {
     });
   }
 
-   async getPlans() {
+  async getPlans() {
     return await PlanRepository.getPlans();
   }
 

@@ -1,9 +1,13 @@
 const WebPublicRepository = require("../repositories/webPublicRepository");
 
 class SocialController {
-  static async getWebPublic(req, res) {
+  webPublicRepository;
+  constructor(){
+    this.webPublicRepository = new WebPublicRepository();
+  }
+   async getWebPublic(req, res) {
     try {
-      const data = await WebPublicRepository.getWebPublic();
+      const data = await this.webPublicRepository.getWebPublic();
       res.json({ data: data || {}, success: true });
     } catch (err) {
       console.error(err);
@@ -11,9 +15,9 @@ class SocialController {
     }
   }
 
-  static async getSocialLogin(req, res) {
+   async getSocialLogin(req, res) {
     try {
-      const data = await WebPublicRepository.getWebPublic();
+      const data = await this.webPublicRepository.getWebPublic();
       res.json({ data: data || {}, success: true });
     } catch (err) {
       console.error(err);
@@ -21,10 +25,10 @@ class SocialController {
     }
   }
 
-  static async updateSocialLogin(req, res) {
+   async updateSocialLogin(req, res) {
     try {
       const { google_client_id, google_login_active } = req.body;
-      await WebPublicRepository.updateSocialLogin(google_client_id, google_login_active);
+      await this.webPublicRepository.updateSocialLogin(google_client_id, google_login_active);
       res.json({ msg: "Settings updated", success: true });
     } catch (err) {
       console.error(err);
@@ -32,10 +36,10 @@ class SocialController {
     }
   }
 
-  static async updateRtl(req, res) {
+   async updateRtl(req, res) {
     try {
       const { rtl } = req.body;
-      await WebPublicRepository.updateRtl(rtl);
+      await this.webPublicRepository.updateRtl(rtl);
       res.json({ success: true, msg: "RTL was updated" });
     } catch (err) {
       console.error(err);

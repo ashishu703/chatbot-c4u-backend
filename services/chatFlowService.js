@@ -3,7 +3,11 @@ const FlowRepository = require("../repositories/chatFlowRepository");
 const { writeJsonToFile, readJsonFromFile, deleteFileIfExists } = require("../functions/function");
 
 class FlowService {
-  static async addFlow({ title, nodes, edges, flowId, user }) {
+
+  constructor() {
+    this.flowRepository = new FlowRepository();
+  }
+   async addFlow({ title, nodes, edges, flowId, user }) {
     const basePath = path.join(__dirname, "../flow-json");
     const nodePath = `${basePath}/nodes/${user.uid}/${flowId}.json`;
     const edgePath = `${basePath}/edges/${user.uid}/${flowId}.json`;
@@ -11,45 +15,45 @@ class FlowService {
     await writeJsonToFile(nodePath, nodes);
     await writeJsonToFile(edgePath, edges);
 
-    const existingFlow = await FlowRepository.findByFlowId(flowId);
+    const existingFlow = await this.flowRepository.findByFlowId(flowId);
     if (existingFlow) {
-      await FlowRepository.updateTitle(flowId, title);
+      await this.flowRepository.updateTitle(flowId, title);
     } else {
-      await FlowRepository.create({ uid: user.uid, flow_id: flowId, title });
+      await this.flowRepository.create({ uid: user.uid, flow_id: flowId, title });
     }
 
     return { success: true, msg: "Flow was saved" };
   }
-
-  static async getFlows(uid) {
-    return await FlowRepository.findByUid(uid);
+  async getFlows(uid) {
+    return await this.flowRepository.findByUid(uid);
   }
 
-  static async deleteFlow(id, flowId, uid) {
+
+   async deleteFlow(id, flowId, uid) {
     const basePath = path.join(__dirname, "../flow-json");
     const nodePath = `${basePath}/nodes/${uid}/${flowId}.json`;
     const edgePath = `${basePath}/edges/${uid}/${flowId}.json`;
 
-    await FlowRepository.delete(id, uid);
+    await this.flowRepository.delete(id, uid);
     deleteFileIfExists(nodePath);
     deleteFileIfExists(edgePath);
 
     return { success: true, msg: "Flow was deleted" };
   }
 
-  static async getFlowById(flowId, uid) {
-    const basePath = path.join(__dirname, "../flow-json");
-    const nodePath = `${basePath}/nodes/${uid}/${flowId}.json`;
-    const edgePath = `${basePath}/edges/${uid}/${flowId}.json`;
+   async getFlowById(flowId, uid) {
+const basePath = path.join(__dirname, "../flow-json");
+    const nodePath = `${basePath}/nodes/${flowId}/${uid}.json`;
+    const edgePath = `${basePath}/edges/${flowId}/${uid}.json`;
 
-    const nodes = readJsonFromFile(nodePath);
-    const edges = readJsonFromFile(edgePath);
+    const nodes = await readJsonFromFile(nodePath);
+    const edges = await readJsonFromFile(edgePath);
 
     return { nodes, edges, success: true };
   }
 
-  static async getActivity(flowId, uid) {
-    const flow = await FlowRepository.findByFlowIdAndUid(flowId, uid);
+   async getActivity(flowId, uid) {
+    const flow = await this.flowRepository.findByFlowIdAndUid(flowId, uid);
     if (!flow) throw new Error("Flow not found");
 
     const prevent = flow.prevent_list || [];
@@ -61,18 +65,18 @@ class FlowService {
     return { success: true, prevent: preventWithIds, ai: aiWithIds };
   }
 
-  static async removeNumberFromActivity(type, number, flowId, uid) {
-    const flow = await FlowRepository.findByFlowId(flowId);
+   async removeNumberFromActivity(type, number, flowId, uid) {
+    const flow = await this.flowRepository.findByFlowId(flowId);
     if (!flow) throw new Error("Flow not found");
 
     if (type === "AI") {
       const aiArr = flow.ai_list || [];
       const updatedArr = aiArr.filter((x) => x.senderNumber !== number);
-      await FlowRepository.updateAiList(flowId, updatedArr);
+      await this.flowRepository.updateAiList(flowId, updatedArr);
     } else if (type === "DISABLED") {
       const preventArr = flow.prevent_list || [];
       const updatedArr = preventArr.filter((x) => x.senderNumber !== number);
-      await FlowRepository.updatePreventList(flowId, updatedArr);
+      await this.flowRepository.updatePreventList(flowId, updatedArr);
     }
 
     return { success: true, msg: "Number was removed" };

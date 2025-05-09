@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const moment = require("moment");
 const { isValidEmail, sendEmail } = require("../functions/function");
 const { generateToken, decodeGoogleToken } = require('../utils/authUtils');
-const { validateFacebookToken } = require('../utils/metaUtils');
+const { validateFacebookToken } = require('../utils/metaApi');
 const randomstring = require('randomstring');
 const { welcomeEmail, recoverEmail } = require('../emails/returnEmails');
 const HttpException = require('../middlewares/HttpException');
@@ -60,24 +60,37 @@ class AuthService {
 
   async loginWithGoogle(token) {
     if (!token) {
-      return { success: false, msg: 'Please check your token, it is not valid' };
+      throw new Error("Please check your token, it's not valid");
     }
-    const decoded = decodeGoogleToken(token);
+
+    const decoded = jwt.decode(token, { complete: true });
     if (!decoded?.payload?.email || !decoded?.payload?.email_verified) {
-      return { success: false, msg: 'Could not complete google login' };
+      throw new Error("Could not complete Google login");
     }
+
     const email = decoded.payload.email;
     const name = decoded.payload.name;
-    let user = await User.findOne({ where: { email } });
+    const user = await this.authRepository.findByEmail(email);
+
     if (!user) {
       const uid = randomstring.generate();
       const password = decoded.header?.kid;
-      const hasPass = await bcrypt.hash(password, 10);
-      user = await User.create({ name, uid, email, password: hasPass });
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      await this.authRepository.createUser({ name, uid, email, password: hashedPassword });
+
+      const loginToken = jwt.sign({ uid, role: "user", email, password: hashedPassword }, process.env.JWTKEY);
+      return { success: true, token: loginToken };
     }
-    const loginToken = generateToken({ uid: user.uid, role: 'user' });
+
+    const loginToken = jwt.sign(
+      { uid: user.uid, role: "user", password: user.password, email: user.email },
+      process.env.JWTKEY
+    );
+
     return { success: true, token: loginToken };
   }
+
 
   async signup({ email, name, password, mobile_with_country_code, acceptPolicy }) {
     if (!email || !name || !password || !mobile_with_country_code) {

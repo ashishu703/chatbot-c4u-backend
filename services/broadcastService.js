@@ -1,6 +1,6 @@
 const randomstring = require("randomstring");
 const UserRepository = require("../repositories/userRepository");
-const AdminRepository = require("../repositories/adminRepository"); // Assuming you have an admin repository
+const AdminRepository = require("../repositories/AdminRepository");
 const MetaApiRepository = require("../repositories/metaApiRepository");
 const ContactRepository = require("../repositories/contactRepository");
 const BroadcastRepository = require("../repositories/broadcastRepository");
@@ -8,14 +8,28 @@ const BroadcastLogRepository = require("../repositories/broadcastLogRepository")
 const { getMetaNumberDetail } = require("../functions/function");
 
 class DashboardService {
-  static async getUserDashboardData(userUid) {
-    const metaApi = await MetaApiRepository.findByUid(userUid);
+  userRepository;
+  adminRepository;
+  metaApiRepository;
+  contactRepository;
+  broadcastRepository;
+  broadcastLogRepository;
+  constructor() {
+    this.userRepository = new UserRepository();
+    this.adminRepository = new AdminRepository();
+    this.metaApiRepository = new MetaApiRepository();
+    this.contactRepository = new ContactRepository();
+    this.broadcastRepository = new BroadcastRepository();
+    this.broadcastLogRepository = new BroadcastLogRepository();
+  }
+   async getUserDashboardData(userUid) {
+    const metaApi = await this.metaApiRepository.findByUid(userUid);
     if (!metaApi) {
       throw new Error("We could not find your Meta API keys");
     }
-    const totalBroadcasts = await BroadcastRepository.count({ where: { uid: userUid } });
-    const totalBroadcastLogs = await BroadcastLogRepository.count({ where: { uid: userUid } });
-    const userData = await UserRepository.findById(userUid);
+    const totalBroadcasts = await this.broadcastRepository.count({ where: { uid: userUid } });
+    const totalBroadcastLogs = await this.broadcastLogRepository.count({ where: { uid: userUid } });
+    const userData = await this.userRepository.findById(userUid);
     
     return {
       totalBroadcasts,
@@ -24,14 +38,14 @@ class DashboardService {
     };
   }
 
-  static async getAdminDashboardData(adminUid) {
-    const admin = await AdminRepository.findById(adminUid);
+   async getAdminDashboardData(adminUid) {
+    const admin = await this.adminRepository.findById(adminUid);
     if (!admin) {
       throw new Error("Admin not found");
     }
-    const totalUsers = await UserRepository.count();
-    const totalBroadcasts = await BroadcastRepository.count({ where: { uid: adminUid } });
-    const totalBroadcastLogs = await BroadcastLogRepository.count({ where: { uid: adminUid } });
+    const totalUsers = await this.userRepository.count();
+    const totalBroadcasts = await this.broadcastRepository.count({ where: { uid: adminUid } });
+    const totalBroadcastLogs = await this.broadcastLogRepository.count({ where: { uid: adminUid } });
 
     return {
       totalUsers,
@@ -40,11 +54,11 @@ class DashboardService {
       adminDetails: admin,
     };
   }
-  static async getAdminBroadcastLogs(adminUid) {
-    const broadcasts = await BroadcastRepository.findByAdminUid(adminUid);
+   async getAdminBroadcastLogs(adminUid) {
+    const broadcasts = await this.broadcastRepository.findByAdminUid(adminUid);
     const broadcastLogs = [];
     for (const broadcast of broadcasts) {
-      const logs = await BroadcastLogRepository.findByBroadcastId(broadcast.broadcast_id, adminUid);
+      const logs = await this.broadcastLogRepository.findByBroadcastId(broadcast.broadcast_id, adminUid);
       const stats = {
         broadcast_id: broadcast.broadcast_id,
         totalLogs: logs.length,
@@ -65,13 +79,13 @@ class DashboardService {
     return broadcastLogs;
   }
 
-  static async addBroadcast({ title, templet, phonebook, scheduleTimestamp, example, user }) {
-    const metaApi = await MetaApiRepository.findByUid(user.uid);
+   async addBroadcast({ title, templet, phonebook, scheduleTimestamp, example, user }) {
+    const metaApi = await this.metaApiRepository.findByUid(user.uid);
     if (!metaApi) {
       throw new Error("We could not find your Meta API keys");
     }
 
-    const contacts = await ContactRepository.findByPhonebookId(phonebook.id, user.uid);
+    const contacts = await this.contactRepository.findByPhonebookId(phonebook.id, user.uid);
     if (!contacts.length) {
       throw new Error("The phonebook you have selected does not have any mobile number in it");
     }
@@ -82,7 +96,7 @@ class DashboardService {
     }
 
     const broadcast_id = randomstring.generate();
-    const userData = await UserRepository.findById(user.uid);
+    const userData = await this.userRepository.findById(user.uid);
 
     const broadcastLogs = contacts.map((contact) => ({
       uid: user.uid,
@@ -94,7 +108,7 @@ class DashboardService {
       example,
       contact,
     }));
-    await BroadcastLogRepository.bulkCreate(broadcastLogs);
+    await this.broadcastLogRepository.bulkCreate(broadcastLogs);
 
     const broadcast = {
       broadcast_id,
@@ -107,19 +121,19 @@ class DashboardService {
       timezone: userData.timezone || "Asia/Kolkata",
     };
 
-    await BroadcastRepository.create(broadcast);
+    await this.broadcastRepository.create(broadcast);
 
     return { success: true, msg: "Your broadcast has been added" };
   }
 
-  static async changeBroadcastStatus(broadcast_id, status, uid) {
-    await BroadcastRepository.updateStatus(broadcast_id, status, uid);
+   async changeBroadcastStatus(broadcast_id, status, uid) {
+    await this.broadcastRepository.updateStatus(broadcast_id, status, uid);
     return { success: true, msg: "Campaign status updated" };
   }
 
-  static async deleteBroadcast(broadcast_id, uid) {
-    await BroadcastRepository.delete(broadcast_id, uid);
-    await BroadcastLogRepository.deleteByBroadcastId(broadcast_id, uid);
+   async deleteBroadcast(broadcast_id, uid) {
+    await this.broadcastRepository.delete(broadcast_id, uid);
+    await this.broadcastLogRepository.deleteByBroadcastId(broadcast_id, uid);
     return { success: true, msg: "Broadcast was deleted" };
   }
 }

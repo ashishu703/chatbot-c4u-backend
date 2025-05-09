@@ -1,8 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const ApiController = require("../controllers/apiv2Controller");
+const ApiV2Controller = require("../controllers/apiv2Controller");
 
-router.post("/send-message", ApiController.sendMessage);
-router.post("/send_templet", ApiController.sendTemplate);
+const apiv2Controller = new ApiV2Controller();
+
+router.post("/send-message", apiv2Controller.sendMessage.bind(apiv2Controller));
+router.post("/send_templet", apiv2Controller.sendTemplate.bind(apiv2Controller));
 
 module.exports = router;

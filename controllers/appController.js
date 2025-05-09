@@ -1,7 +1,11 @@
-const appService = require('../services/appService');
+const AppService = require('../services/AppService');
 const { appVersion, addON } = require('../env');
 
 class AppController {
+   appService;
+   constructor() {
+    this.appService = new AppService();
+  }
   async returnModule(req, res) {
     try {
       res.json({ success: true, data: addON || [] });
@@ -13,7 +17,7 @@ class AppController {
 
   async checkInstall(req, res) {
     try {
-      const installed = await appService.checkInstall();
+      const installed = await this.appService.checkInstall();
       res.json({ success: installed });
     } catch (error) {
       res.json({ success: false, msg: 'Server error' });
@@ -32,7 +36,7 @@ class AppController {
 
   async installApp(req, res) {
     try {
-      const result = await appService.installApp(req.files);
+      const result = await this.appService.installApp(req.files);
       res.json(result);
     } catch (error) {
       res.json({ success: false, msg: 'Server error' });
@@ -42,7 +46,7 @@ class AppController {
 
   async updateApp(req, res) {
     try {
-      const result = await appService.updateApp(req.body, req.files);
+      const result = await this.appService.updateApp(req.body, req.files);
       res.json(result);
     } catch (error) {
       res.json({ success: false, msg: error.message });
@@ -60,4 +64,4 @@ class AppController {
   }
 }
 
-module.exports = new AppController();
+module.exports = AppController;

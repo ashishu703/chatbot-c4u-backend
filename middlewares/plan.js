@@ -40,14 +40,14 @@ const checkPlan = async (req, res, next) => {
 
 const checkContactLimit = async (req, res, next) => {
   try {
-    const contact_limit = req.plan?.contact_limit;
+    const contact_limit = req.plan?.contact_limit || 0;
 
-    // Use $1 placeholder for contact query
-    const getContacts = await query(`SELECT * FROM contact WHERE uid = $1`, [
+    const getContacts = await query(`SELECT * FROM contacts WHERE uid = $1`, [
       req.decode.uid,
     ]);
 
-    if (getContacts.rows.length >= contact_limit) {
+    
+    if (getContacts.length >= contact_limit) {
       return res.json({
         success: false,
         msg: `Your plan allows you to add only ${contact_limit} contacts. Delete some to add new.`,
@@ -60,6 +60,7 @@ const checkContactLimit = async (req, res, next) => {
     res.status(500).json({ success: false, msg: "Server error", error: err.message });
   }
 };
+
 
 const checkNote = async (req, res, next) => {
   try {

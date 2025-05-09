@@ -1,9 +1,13 @@
-const webConfigService = require('../services/webConfigService');
+const WebConfigService = require('../services/WebConfigService');
 
 class WebConfigController {
+  webConfigService;
+  constructor() {
+    this.webConfigService = WebConfigService;
+  }
   async updateWebConfig(req, res) {
     try {
-      const result = await webConfigService.updateWebConfig(req);
+      const result = await this.webConfigService .updateWebConfig(req);
       res.json({ success: true, msg: 'Web config updated', data: result });
     } catch (error) {
       console.error('Update error:', error);
@@ -13,7 +17,7 @@ class WebConfigController {
 
   async getWebPublic(req, res) {
     try {
-      const config = await webConfigService.getWebPublic();
+      const config = await this.webConfigService .getWebPublic();
       res.json({ success: true, data: config });
     } catch (error) {
       console.error('Fetch error:', error);
@@ -22,4 +26,4 @@ class WebConfigController {
   }
 }
 
-module.exports = new WebConfigController();
+module.exports = WebConfigController;

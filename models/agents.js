@@ -4,9 +4,15 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Agents extends Model {
+    
     static associate(models) {
-
+      Agents.hasMany(models.AgentTask, {
+        foreignKey: 'uid',
+        sourceKey: 'uid',
+        as: 'tasks',
+      });
     }
+    
   }
   Agents.init({
     owner_uid: DataTypes.STRING,

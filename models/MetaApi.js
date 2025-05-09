@@ -1,30 +1,48 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class MetaApi extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      // define associations if any
     }
   }
-  MetaApi.init({
-    uid: DataTypes.STRING,
-    waba_id: DataTypes.STRING,
-    business_account_id: DataTypes.STRING,
-    access_token: DataTypes.STRING,
-    business_phone_number_id: DataTypes.STRING,
-    app_id: DataTypes.STRING,
-    pin: DataTypes.STRING,
-  }, {
-    sequelize,
-    modelName: 'MetaApi',
-    tableName:'meta_apis'
-  });
+  MetaApi.init(
+    {
+      uid: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      waba_id: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      business_account_id: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      access_token: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      business_phone_number_id: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      app_id: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      pin: {
+        type: DataTypes.STRING,
+        allowNull: true
+      }
+    },
+    {
+      sequelize,
+      modelName: 'MetaApi',
+      tableName: 'meta_apis',
+      timestamps: true
+    }
+  );
   return MetaApi;
 };

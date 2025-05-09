@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const randomstring = require("randomstring");
 const { sign } = require("jsonwebtoken");
 const AgentRepository = require("../repositories/agentRepository");
-const AgentTaskRepository = require("../repositories/agentTaskRepository");
+const AgentTaskRepository = require("../repositories/AgentTaskRepository");
 
 class AgentService {
   constructor() {

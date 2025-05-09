@@ -1,7 +1,14 @@
 function addDaysToCurrentTimestamp(days) {
-    const date = new Date();
-    date.setDate(date.getDate() + parseInt(days || 0));
-    return date.toISOString();
+  const currentTimestamp = Date.now();
+  const millisecondsToAdd = parseInt(days || 0) * 24 * 60 * 60 * 1000;
+
+  const futureDate = new Date(currentTimestamp + millisecondsToAdd);
+
+  if (isNaN(futureDate.getTime())) {
+    throw new Error('Invalid date calculation');
   }
-  
-  module.exports = { addDaysToCurrentTimestamp };
+
+  return futureDate.getTime();
+}
+
+module.exports = { addDaysToCurrentTimestamp };

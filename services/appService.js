@@ -1,4 +1,4 @@
-const adminRepository = require('../repositories/adminRepository');
+const AdminRepository = require('../repositories/AdminRepository');
 const bcrypt = require('bcrypt');
 const { folderExists, downloadAndExtractFile } = require('../utils/fileUtils');
 const { executeQueries } = require('../utils/validation');
@@ -6,6 +6,10 @@ const path = require('path');
 const mysql = require('mysql2/promise');
 
 class AppService {
+  adminRepository;
+  constructor() {
+    this.adminRepository = new AdminRepository();
+  }
   async checkInstall() {
     const filePath = path.join(__dirname, '..', 'client', 'public', 'static');
     return folderExists(filePath);
@@ -24,7 +28,7 @@ class AppService {
     if (!password) {
       throw new Error('Admin password missing');
     }
-    const admin = await adminRepository.findFirst();
+    const admin = await this.adminRepository.findFirst();
     if (!admin || !(await bcrypt.compare(password, admin.password))) {
       throw new Error('Invalid admin password. Please give a correct admin password');
     }
@@ -65,4 +69,4 @@ class AppService {
   }
 }
 
-module.exports = new AppService();
+module.exports = AppService;

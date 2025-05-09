@@ -4,8 +4,10 @@ const TempletController = require("../controllers/templetController");
 const validateUser = require("../middlewares/user");
 const { checkPlan } = require("../middlewares/plan");
 
-router.post("/add_new", validateUser, checkPlan, TempletController.addTemplate);
-router.get("/get_templets", validateUser, TempletController.getTemplates);
-router.post("/del_templets", validateUser, TempletController.deleteTemplates);
+const templateController = new TempletController();
+
+router.post("/add_new", validateUser, checkPlan, templateController.addTemplate.bind(templateController));
+router.get("/get_templets", validateUser, templateController.getTemplates.bind(templateController));
+router.post("/del_templets", validateUser, templateController.deleteTemplates.bind(templateController));
 
 module.exports = router;

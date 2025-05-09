@@ -1,7 +1,7 @@
 const { query } = require("../database/dbpromise");
 
 module.exports = class QuickReplyRepository {
-    static async createIfNotExist({
+     async createIfNotExist({
         uid, message
     }) {
         const isExisting = await this.findChatByMessageAndUid(uid, message);
@@ -12,7 +12,7 @@ module.exports = class QuickReplyRepository {
         }
 
     }
-    static async createQuickReply({
+     async createQuickReply({
         uid,
         message
     }) {
@@ -20,17 +20,17 @@ module.exports = class QuickReplyRepository {
         VALUES (?, ?)`, [uid, message]);
     }
 
-    static async findChatByMessageAndUid(uid, message) {
+     async findChatByMessageAndUid(uid, message) {
         const quick_replies = await query(`SELECT * FROM quick_replies WHERE message = ? AND uid = ?`, [message, uid]);
         return quick_replies.length > 0 ? quick_replies[0] : null;
     }
 
-    static async findUidId(uid) {
+     async findUidId(uid) {
         return query(`SELECT * FROM quick_replies WHERE uid = ?`, [uid]);
     }
 
 
-    static async removeById(id) {
+     async removeById(id) {
         return query(`DELETE FROM quick_replies WHERE id = ?`, [id]);
     }
 

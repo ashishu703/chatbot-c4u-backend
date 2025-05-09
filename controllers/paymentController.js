@@ -1,9 +1,15 @@
 const PaymentRepository = require("../repositories/paymentRepository");
-
+const PaymentService = require("../services/PaymentService");
 class PaymentController {
-  static async getPaymentGateway(req, res) {
+  paymentRepository;
+  paymentService;
+  constructor(){
+    this.paymentRepository = new PaymentRepository();
+    this.paymentService =new PaymentService();
+  }
+   async getPaymentGateway(req, res) {
     try {
-      const data = await PaymentRepository.getPaymentGateway();
+      const data = await this.paymentRepository.getPaymentGateway();
       res.json({ data: data || {}, success: true });
     } catch (err) {
       console.error(err);
@@ -11,10 +17,10 @@ class PaymentController {
     }
   }
 
-  static async updatePaymentGateway(req, res) {
+   async updatePaymentGateway(req, res) {
     try {
       const gatewayData = req.body;
-      await PaymentRepository.updatePaymentGateway(gatewayData);
+      await this.paymentRepository.updatePaymentGateway(gatewayData);
       res.json({ success: true, msg: "Payment gateway updated" });
     } catch (err) {
       console.error(err);
@@ -22,10 +28,10 @@ class PaymentController {
     }
   }
 
- static async getPlanDetails(req, res) {
+  async getPlanDetails(req, res) {
     try {
       const { id } = req.body;
-      const result = await paymentService.getPlanDetails(id);
+      const result = await this.paymentService.getPlanDetails(id);
       res.json(result);
     } catch (error) {
       res.json({ success: false, msg: 'Something went wrong', err: error.message });
@@ -33,9 +39,9 @@ class PaymentController {
     }
   }
 
- static async getPaymentDetails(req, res) {
+  async getPaymentDetails(req, res) {
     try {
-      const result = await paymentService.getPaymentDetails();
+      const result = await this.paymentService.getPaymentDetails();
       res.json(result);
     } catch (error) {
       res.json({ success: false, msg: 'Something went wrong', err: error.message });
@@ -43,10 +49,10 @@ class PaymentController {
     }
   }
 
- static async createStripeSession(req, res) {
+  async createStripeSession(req, res) {
     try {
       const { planId } = req.body;
-      const result = await paymentService.createStripeSession(req.decode.uid, planId);
+      const result = await this.paymentService.createStripeSession(req.decode.uid, planId);
       res.json(result);
     } catch (error) {
       res.json({ msg: error.toString(), err: error.message });
@@ -54,10 +60,10 @@ class PaymentController {
     }
   }
 
- static async payWithRazorpay(req, res) {
+  async payWithRazorpay(req, res) {
     try {
       const { rz_payment_id, plan, amount } = req.body;
-      const result = await paymentService.payWithRazorpay(req.decode.uid, { rz_payment_id, plan, amount });
+      const result = await this.paymentService.payWithRazorpay(req.decode.uid, { rz_payment_id, plan, amount });
       res.json(result);
     } catch (error) {
       res.json({ msg: error.toString(), err: error.message });
@@ -65,10 +71,10 @@ class PaymentController {
     }
   }
 
- static async payWithPaypal(req, res) {
+  async payWithPaypal(req, res) {
     try {
       const { orderID, plan } = req.body;
-      const result = await paymentService.payWithPaypal(req.decode.uid, { orderID, plan });
+      const result = await this.paymentService.payWithPaypal(req.decode.uid, { orderID, plan });
       res.json(result);
     } catch (error) {
       res.json({ msg: 'Something went wrong', err: error.message });
@@ -76,10 +82,10 @@ class PaymentController {
     }
   }
 
- static async stripePayment(req, res) {
+  async stripePayment(req, res) {
     try {
       const { order, plan } = req.query;
-      const result = await paymentService.stripePayment(order, plan);
+      const result = await this.paymentService.stripePayment(order, plan);
       res.send(result);
     } catch (error) {
       res.json({ msg: 'Something went wrong', err: error.message, success: false });
@@ -87,10 +93,10 @@ class PaymentController {
     }
   }
 
- static async startFreeTrial(req, res) {
+  async startFreeTrial(req, res) {
     try {
       const { planId } = req.body;
-      const result = await paymentService.startFreeTrial(req.decode.uid, planId);
+      const result = await this.paymentService.startFreeTrial(req.decode.uid, planId);
       res.json(result);
     } catch (error) {
       res.json({ msg: 'Something went wrong', err: error.message, success: false });

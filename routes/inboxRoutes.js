@@ -4,18 +4,20 @@ const InboxController = require("../controllers/inboxController");
 const validateUser = require("../middlewares/user");
 const { checkPlan } = require("../middlewares/plan");
 
-router.post("/webhook/:uid", InboxController.handleWebhook);
-router.get("/get_chats", validateUser, InboxController.getChats);
-router.post("/get_convo", validateUser, InboxController.getConversation);
-router.get("/webhook/:uid", InboxController.verifyWebhook);
-router.get("/", InboxController.testSocket);
-router.post("/send_templet", validateUser, checkPlan, InboxController.sendTemplate);
-router.post("/send_image", validateUser, checkPlan, InboxController.sendImage);
-router.post("/send_video", validateUser, checkPlan, InboxController.sendVideo);
-router.post("/send_doc", validateUser, checkPlan, InboxController.sendDocument);
-router.post("/send_audio", validateUser, checkPlan, InboxController.sendAudio);
-router.post("/send_text", validateUser, checkPlan, InboxController.sendText);
-router.post("/send_meta_templet", validateUser, checkPlan, InboxController.sendMetaTemplate);
-router.post("/del_chat", validateUser, InboxController.deleteChat);
+const inboxController = new InboxController();
+
+router.post("/webhook/:uid", inboxController.handleWebhook.bind(inboxController));
+router.get("/get_chats", validateUser, inboxController.getChats.bind(inboxController));
+router.post("/get_convo", validateUser, inboxController.getConversation.bind(inboxController));
+router.get("/webhook/:uid", inboxController.verifyWebhook.bind(inboxController));
+router.get("/", inboxController.testSocket.bind(inboxController));
+router.post("/send_templet", validateUser, checkPlan, inboxController.sendTemplate.bind(inboxController));
+router.post("/send_image", validateUser, checkPlan, inboxController.sendImage.bind(inboxController));
+router.post("/send_video", validateUser, checkPlan, inboxController.sendVideo.bind(inboxController));
+router.post("/send_doc", validateUser, checkPlan, inboxController.sendDocument.bind(inboxController));
+router.post("/send_audio", validateUser, checkPlan, inboxController.sendAudio.bind(inboxController));
+router.post("/send_text", validateUser, checkPlan, inboxController.sendText.bind(inboxController));
+router.post("/send_meta_templet", validateUser, checkPlan, inboxController.sendMetaTemplate.bind(inboxController));
+router.post("/del_chat", validateUser, inboxController.deleteChat.bind(inboxController));
 
 module.exports = router;

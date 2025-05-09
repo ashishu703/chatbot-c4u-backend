@@ -9,32 +9,35 @@ const AgentMessageController = require("../controllers/agentMessageController");
 const AgentTaskController = require("../controllers/agentTaskController"); 
 
 const agentController = new AgentController();
+const agentChatController = new AgentChatController();
+const agentMessageController = new AgentMessageController();
+const agentTaskController = new AgentTaskController();
 
 router.post("/add_agent", validateUser, checkPlan, agentController.addAgent.bind(agentController));
 router.get("/get_my_agents", validateUser, agentController.getMyAgents.bind(agentController));
 router.post("/change_agent_activeness", validateUser, agentController.changeAgentActiveness.bind(agentController));
 router.post("/del_agent", validateUser, agentController.deleteAgent.bind(agentController));
 
-router.post("/get_agent_chats_owner", validateUser, AgentChatController.getAgentChatsOwner);
-router.post("/get_assigned_chat_agent", validateUser, AgentChatController.getAssignedChatAgent);
-router.post("/update_agent_in_chat", validateUser, AgentChatController.updateAgentInChat);
-router.post("/del_assign_chat_by_owner", validateUser, AgentChatController.deleteAssignedChat);
+router.post("/get_agent_chats_owner", validateUser, agentChatController.getAgentChatsOwner.bind(agentChatController));
+router.post("/get_assigned_chat_agent", validateUser, agentChatController.getAssignedChatAgent.bind(agentChatController));
+router.post("/update_agent_in_chat", validateUser, agentChatController.updateAgentInChat.bind(agentChatController));
+router.post("/del_assign_chat_by_owner", validateUser, agentChatController.deleteAssignedChat.bind(agentChatController));
 
 router.post("/login", agentController.login.bind(agentController));
 router.get("/get_me", validateAgent, agentController.getMe.bind(agentController));
 
-router.get("/get_my_assigned_chats", validateAgent, AgentChatController.getMyAssignedChats);
-router.post("/get_convo", validateAgent, AgentChatController.getConversation);
+router.get("/get_my_assigned_chats", validateAgent, agentChatController.getMyAssignedChats.bind(agentChatController));
+router.post("/get_convo", validateAgent, agentChatController.getConversation.bind(agentChatController));
 
-router.post("/send_text", validateAgent, checkPlan, AgentMessageController.sendText);
-router.post("/send_audio", validateAgent, checkPlan, AgentMessageController.sendAudio);
-router.post("/return_media_url", validateAgent, AgentMessageController.returnMediaUrl);
-router.post("/send_doc", validateAgent, checkPlan, AgentMessageController.sendDocument);
-router.post("/send_video", validateAgent, checkPlan, AgentMessageController.sendVideo);
-router.post("/send_image", validateAgent, checkPlan, AgentMessageController.sendImage);
+router.post("/send_text", validateAgent, checkPlan, agentMessageController.sendText.bind(agentMessageController));
+router.post("/send_audio", validateAgent, checkPlan, agentMessageController.sendAudio.bind(agentMessageController));
+router.post("/return_media_url", validateAgent, agentMessageController.returnMediaUrl.bind(agentMessageController));
+router.post("/send_doc", validateAgent, checkPlan, agentMessageController.sendDocument.bind(agentMessageController));
+router.post("/send_video", validateAgent, checkPlan, agentMessageController.sendVideo.bind(agentMessageController));
+router.post("/send_image", validateAgent, checkPlan, agentMessageController.sendImage.bind(agentMessageController));
 
-router.get("/get_my_task", validateAgent, AgentTaskController.getMyTasks);
-router.post("/mark_task_complete", validateAgent, AgentTaskController.markTaskComplete);
-router.post("/change_chat_ticket_status", validateAgent, AgentChatController.changeChatTicketStatus);
+router.get("/get_my_task", validateAgent, agentTaskController.getMyTasks.bind(agentTaskController));
+router.post("/mark_task_complete", validateAgent, agentTaskController.markTaskComplete.bind(agentTaskController));
+router.post("/change_chat_ticket_status", validateAgent, agentChatController.changeChatTicketStatus.bind(agentChatController));
 
 module.exports = router;

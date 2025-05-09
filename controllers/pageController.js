@@ -2,12 +2,23 @@ const PageRepository = require("../repositories/pageRepository");
 const FileService = require("../services/fileService");
 
 class PageController {
-  static async addPage(req, res) {
+  fileService;
+  constructor() {
+    this.fileService = new FileService();
+  }
+
+  async addPage(req, res) {
     try {
       const { title, content, slug } = req.body;
       const file = req.files?.file;
-      const filename = await FileService.uploadFile(file);
-      await PageRepository.addPage({ title, content, slug, filename });
+
+      if (!file) {
+        return res.status(400).json({ success: false, msg: "No file uploaded" });
+      }
+
+      const filename = await this.fileService.uploadFile(file);
+      await PageRepository.addPage({ title, content, slug, image: filename });
+
       res.json({ success: true, msg: "Page was added" });
     } catch (err) {
       console.error(err);
@@ -15,7 +26,7 @@ class PageController {
     }
   }
 
-  static async getPages(req, res) {
+  async getPages(req, res) {
     try {
       const pages = await PageRepository.getPages();
       res.json({ data: pages, success: true });
@@ -25,7 +36,7 @@ class PageController {
     }
   }
 
-  static async deletePage(req, res) {
+  async deletePage(req, res) {
     try {
       const { id } = req.body;
       await PageRepository.deletePage(id);
@@ -36,7 +47,7 @@ class PageController {
     }
   }
 
-  static async getPageBySlug(req, res) {
+  async getPageBySlug(req, res) {
     try {
       const { slug } = req.body;
       const page = await PageRepository.getPageBySlug(slug);
@@ -47,7 +58,7 @@ class PageController {
     }
   }
 
-  static async updateTerms(req, res) {
+  async updateTerms(req, res) {
     try {
       const { title, content } = req.body;
       await PageRepository.updateTerms(title, content);
@@ -58,7 +69,7 @@ class PageController {
     }
   }
 
-  static async updatePrivacyPolicy(req, res) {
+  async updatePrivacyPolicy(req, res) {
     try {
       const { title, content } = req.body;
       await PageRepository.updatePrivacyPolicy(title, content);

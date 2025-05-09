@@ -4,10 +4,12 @@ const BroadcastController = require("../controllers/broadcastController");
 const validateUser = require("../middlewares/user");
 const { checkPlan } = require("../middlewares/plan");
 
-router.post("/add_new", validateUser, checkPlan, BroadcastController.addBroadcast);
-router.get("/get_broadcast", validateUser, BroadcastController.getBroadcasts);
-router.post("/get_broadcast_logs", validateUser, BroadcastController.getBroadcastLogs);
-router.post("/change_broadcast_status", validateUser, BroadcastController.changeBroadcastStatus);
-router.post("/del_broadcast", validateUser, BroadcastController.deleteBroadcast);
+const broadcastController = new BroadcastController();
+
+router.post("/add_new", validateUser, checkPlan, broadcastController.addBroadcast.bind(broadcastController));
+router.get("/get_broadcast", validateUser, broadcastController.getBroadcasts.bind(broadcastController));
+router.post("/get_broadcast_logs", validateUser, broadcastController.getBroadcastLogs.bind(broadcastController));
+router.post("/change_broadcast_status", validateUser, broadcastController.changeBroadcastStatus.bind(broadcastController));
+router.post("/del_broadcast", validateUser, broadcastController.deleteBroadcast.bind(broadcastController));
 
 module.exports = router;

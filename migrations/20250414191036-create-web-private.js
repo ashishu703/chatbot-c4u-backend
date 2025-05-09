@@ -18,8 +18,8 @@ module.exports = {
         allowNull:true
       },
       offline_active: {
-        type: Sequelize.INTEGER,
-        defaultValue:"0"
+        type: Sequelize.BOOLEAN,
+        defaultValue:false
       },
       pay_stripe_id: {
         type: Sequelize.STRING,
@@ -30,8 +30,8 @@ module.exports = {
         allowNull:true
       },
       stripe_active: {
-        type: Sequelize.INTEGER,
-        defaultValue:"0"
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       pay_paypal_id: {
         type: Sequelize.STRING,
@@ -42,8 +42,8 @@ module.exports = {
         allowNull:true
       },
       paypal_active: {
-        type: Sequelize.STRING,
-        allowNull:true
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       rz_id: {
         type: Sequelize.STRING,
@@ -54,8 +54,8 @@ module.exports = {
         allowNull:true
       },
       rz_active: {
-        type: Sequelize.STRING,
-        allowNull:true
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       createdAt: {
         allowNull: false,

@@ -1,9 +1,13 @@
 const LinkRepository = require("../repositories/linkRepository");
 
 class LinkController {
-  static async getGeneratedLinks(req, res) {
+  linkRepository;
+  constructor(){
+    this.linkRepository = new LinkRepository();
+  }
+   async getGeneratedLinks(req, res) {
     try {
-      const links = await LinkRepository.getGeneratedLinks();
+      const links = await this.linkRepository.getGeneratedLinks();
       res.json({ data: links, success: true });
     } catch (err) {
       console.error(err);
@@ -11,10 +15,10 @@ class LinkController {
     }
   }
 
-  static async deleteGeneratedLink(req, res) {
+   async deleteGeneratedLink(req, res) {
     try {
       const { id } = req.body;
-      await LinkRepository.deleteGeneratedLink(id);
+      await this.linkRepository.deleteGeneratedLink(id);
       res.json({ msg: "Generated link was deleted", success: true });
     } catch (err) {
       console.error(err);

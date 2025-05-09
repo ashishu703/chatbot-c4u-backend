@@ -1,11 +1,15 @@
 const InboxService = require("../services/inboxService");
 
 class InboxController {
-  static async handleWebhook(req, res) {
+  inboxService;
+  constructor() {
+    this.inboxService = new InboxService();
+  }
+   async handleWebhook(req, res) {
     try {
       const { uid } = req.params;
       const body = req.body;
-      await InboxService.handleWebhook(uid, body);
+      await this.inboxService.handleWebhook(uid, body);
       res.sendStatus(200);
     } catch (err) {
       console.error(err);
@@ -13,10 +17,10 @@ class InboxController {
     }
   }
 
-  static async getChats(req, res) {
+   async getChats(req, res) {
     try {
       const user = req.decode;
-      const chats = await InboxService.getChats(user.uid);
+      const chats = await this.inboxService.getChats(user.uid);
       res.json({ data: chats, success: true });
     } catch (err) {
       console.error(err);
@@ -24,11 +28,11 @@ class InboxController {
     }
   }
 
-  static async getConversation(req, res) {
+   async getConversation(req, res) {
     try {
       const { chatId } = req.body;
       const user = req.decode;
-      const conversation = await InboxService.getConversation(user.uid, chatId);
+      const conversation = await this.inboxService.getConversation(user.uid, chatId);
       res.json({ data: conversation, success: true });
     } catch (err) {
       console.error(err);
@@ -36,11 +40,11 @@ class InboxController {
     }
   }
 
-  static async verifyWebhook(req, res) {
+   async verifyWebhook(req, res) {
     try {
       const { uid } = req.params;
       const { "hub.mode": mode, "hub.verify_token": token, "hub.challenge": challenge } = req.query;
-      const result = await InboxService.verifyWebhook(uid, mode, token, challenge);
+      const result = await this.inboxService.verifyWebhook(uid, mode, token, challenge);
       if (result.challenge) {
         res.status(200).send(result.challenge);
       } else {
@@ -52,10 +56,10 @@ class InboxController {
     }
   }
 
-  static async testSocket(req, res) {
+   async testSocket(req, res) {
     try {
       const { msg } = req.query;
-      const result = await InboxService.testSocket();
+      const result = await this.inboxService.testSocket();
       res.json(result);
     } catch (err) {
       console.error(err);
@@ -63,14 +67,14 @@ class InboxController {
     }
   }
 
-  static async sendTemplate(req, res) {
+   async sendTemplate(req, res) {
     try {
       const { content, toName, toNumber, chatId, msgType } = req.body;
       const user = req.decode;
       if (!content || !toName || !toNumber || !msgType) {
         return res.json({ success: false, msg: "Invalid request" });
       }
-      const result = await InboxService.sendMessage(user.uid, {
+      const result = await this.inboxService.sendMessage(user.uid, {
         content,
         toName,
         toNumber,
@@ -85,14 +89,14 @@ class InboxController {
     }
   }
 
-  static async sendImage(req, res) {
+   async sendImage(req, res) {
     try {
       const { url, toNumber, toName, chatId, caption } = req.body;
       const user = req.decode;
       if (!url || !toNumber || !toName || !chatId) {
         return res.json({ success: false, msg: "Not enough input provided" });
       }
-      const result = await InboxService.sendMessage(user.uid, {
+      const result = await this.inboxService.sendMessage(user.uid, {
         url,
         toNumber,
         toName,
@@ -107,14 +111,14 @@ class InboxController {
     }
   }
 
-  static async sendVideo(req, res) {
+   async sendVideo(req, res) {
     try {
       const { url, toNumber, toName, chatId, caption } = req.body;
       const user = req.decode;
       if (!url || !toNumber || !toName || !chatId) {
         return res.json({ success: false, msg: "Not enough input provided" });
       }
-      const result = await InboxService.sendMessage(user.uid, {
+      const result = await this.inboxService.sendMessage(user.uid, {
         url,
         toNumber,
         toName,
@@ -129,14 +133,14 @@ class InboxController {
     }
   }
 
-  static async sendDocument(req, res) {
+   async sendDocument(req, res) {
     try {
       const { url, toNumber, toName, chatId, caption } = req.body;
       const user = req.decode;
       if (!url || !toNumber || !toName || !chatId) {
         return res.json({ success: false, msg: "Not enough input provided" });
       }
-      const result = await InboxService.sendMessage(user.uid, {
+      const result = await this.inboxService.sendMessage(user.uid, {
         url,
         toNumber,
         toName,
@@ -151,14 +155,14 @@ class InboxController {
     }
   }
 
-  static async sendAudio(req, res) {
+   async sendAudio(req, res) {
     try {
       const { url, toNumber, toName, chatId } = req.body;
       const user = req.decode;
       if (!url || !toNumber || !toName || !chatId) {
         return res.json({ success: false, msg: "Not enough input provided" });
       }
-      const result = await InboxService.sendMessage(user.uid, {
+      const result = await this.inboxService.sendMessage(user.uid, {
         url,
         toNumber,
         toName,
@@ -172,14 +176,14 @@ class InboxController {
     }
   }
 
-  static async sendText(req, res) {
+   async sendText(req, res) {
     try {
       const { text, toNumber, toName, chatId } = req.body;
       const user = req.decode;
       if (!text || !toNumber || !toName || !chatId) {
         return res.json({ success: false, msg: "Not enough input provided" });
       }
-      const result = await InboxService.sendMessage(user.uid, {
+      const result = await this.inboxService.sendMessage(user.uid, {
         text,
         toNumber,
         toName,
@@ -193,14 +197,14 @@ class InboxController {
     }
   }
 
-  static async sendMetaTemplate(req, res) {
+   async sendMetaTemplate(req, res) {
     try {
       const { template, toNumber, toName, chatId, example } = req.body;
       const user = req.decode;
       if (!template) {
         return res.json({ success: false, msg: "Please provide template" });
       }
-      const result = await InboxService.sendMetaTemplate(user.uid, {
+      const result = await this.inboxService.sendMetaTemplate(user.uid, {
         template,
         toNumber,
         toName,
@@ -214,11 +218,11 @@ class InboxController {
     }
   }
 
-  static async deleteChat(req, res) {
+   async deleteChat(req, res) {
     try {
       const { chatId } = req.body;
       const user = req.decode;
-      const result = await InboxService.deleteChat(user.uid, chatId);
+      const result = await this.inboxService.deleteChat(user.uid, chatId);
       res.json(result);
     } catch (err) {
       console.error(err);

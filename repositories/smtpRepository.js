@@ -1,11 +1,11 @@
 const { Smtp } = require("../models");
 
 class SmtpRepository {
-  static async getSmtp() {
+   async getSmtp() {
     return await Smtp.findOne();
   }
 
-  static async updateSmtp({ email, port, password, host }) {
+   async updateSmtp({ email, port, password, host }) {
     if (!email || !port || !password || !host) {
       throw new Error("Please fill all the fields");
     }

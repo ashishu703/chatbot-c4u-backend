@@ -1,5 +1,4 @@
-
-const {Contact,Phonebook} =  require("../models");
+const { Contact, Phonebook } = require("../models");
 
 class ContactRepository {
   async getPhonebooksByUid(uid) {
@@ -23,7 +22,7 @@ class ContactRepository {
   }
 
   async findByUid(uid) {
-    return await Contact.findAll({ where: { uid } });
+    return await Contact.findAll({ where: { uid } }); 
   }
 
   async deleteByPhonebookId(phonebook_id, uid) {
@@ -47,4 +46,4 @@ class ContactRepository {
   }
 }
 
-module.exports = new ContactRepository();
+module.exports = ContactRepository;

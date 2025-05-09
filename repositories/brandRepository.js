@@ -1,15 +1,15 @@
 const { Partner } = require("../models");
 
 class BrandRepository {
-  static async addBrand(filename) {
+   async addBrand(filename) {
     await Partner.create({ filename });
   }
 
-  static async getBrands() {
+   async getBrands() {
     return await Partner.findAll();
   }
 
-  static async deleteBrand(id) {
+   async deleteBrand(id) {
     await Partner.destroy({ where: { id } });
   }
 }

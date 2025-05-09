@@ -1,7 +1,11 @@
 const BroadcastService = require("../services/broadcastService");
 
 class BroadcastController {
-  static async addBroadcast(req, res) {
+  broadcastService;
+  constructor() { 
+    this.broadcastService = new BroadcastService();
+  }
+   async addBroadcast(req, res) {
     try {
       const { title, templet, phonebook, scheduleTimestamp, example } = req.body;
       const user = req.decode;
@@ -14,7 +18,7 @@ class BroadcastController {
         return res.json({ success: false, msg: "Invalid phonebook provided" });
       }
 
-      const result = await BroadcastService.addBroadcast({
+      const result = await this.broadcastService.addBroadcast({
         title,
         templet,
         phonebook,
@@ -30,10 +34,10 @@ class BroadcastController {
     }
   }
 
-  static async getBroadcasts(req, res) {
+   async getBroadcasts(req, res) {
     try {
       const user = req.decode;
-      const broadcasts = await BroadcastService.getBroadcasts(user.uid);
+      const broadcasts = await this.broadcastService.getBroadcasts(user.uid);
       res.json({ data: broadcasts, success: true });
     } catch (err) {
       console.error(err);
@@ -41,12 +45,12 @@ class BroadcastController {
     }
   }
 
-  static async getBroadcastLogs(req, res) {
+   async getBroadcastLogs(req, res) {
     try {
       const { id } = req.body;
       const user = req.decode;
 
-      const result = await BroadcastService.getBroadcastLogs(id, user.uid);
+      const result = await this.broadcastService.getBroadcastLogs(id, user.uid);
       res.json(result);
     } catch (err) {
       console.error(err);
@@ -54,7 +58,7 @@ class BroadcastController {
     }
   }
 
-  static async changeBroadcastStatus(req, res) {
+   async changeBroadcastStatus(req, res) {
     try {
       const { status, broadcast_id } = req.body;
       const user = req.decode;
@@ -63,7 +67,7 @@ class BroadcastController {
         return res.json({ success: false, msg: "Invalid request" });
       }
 
-      const result = await BroadcastService.changeBroadcastStatus(broadcast_id, status, user.uid);
+      const result = await this.broadcastService.changeBroadcastStatus(broadcast_id, status, user.uid);
       res.json(result);
     } catch (err) {
       console.error(err);
@@ -71,12 +75,12 @@ class BroadcastController {
     }
   }
 
-  static async deleteBroadcast(req, res) {
+   async deleteBroadcast(req, res) {
     try {
       const { broadcast_id } = req.body;
       const user = req.decode;
 
-      const result = await BroadcastService.deleteBroadcast(broadcast_id, user.uid);
+      const result = await this.broadcastService.deleteBroadcast(broadcast_id, user.uid);
       res.json(result);
     } catch (err) {
       console.error(err);

@@ -1,36 +1,62 @@
 const { Flow } =  require("../models");
 
 class FlowRepository {
-  static async create(flow) {
+   async create(flow) {
     return await Flow.create(flow);
   }
 
-  static async findByUid(uid) {
+   async findByUid(uid) {
     return await Flow.findAll({ where: { uid } });
   }
 
-  static async findByFlowId(flow_id) {
+   async findByFlowId(flow_id) {
     return await Flow.findOne({ where: { flow_id } });
   }
 
-  static async findByFlowIdAndUid(flow_id, uid) {
+   async findByFlowIdAndUid(flow_id, uid) {
     return await Flow.findOne({ where: { flow_id, uid } });
   }
 
-  static async updateTitle(flow_id, title) {
+   async updateTitle(flow_id, title) {
     return await Flow.update({ title }, { where: { flow_id } });
   }
 
-  static async updateAiList(flow_id, ai_list) {
+   async updateAiList(flow_id, ai_list) {
     return await Flow.update({ ai_list }, { where: { flow_id } });
   }
 
-  static async updatePreventList(flow_id, prevent_list) {
+   async updatePreventList(flow_id, prevent_list) {
     return await Flow.update({ prevent_list }, { where: { flow_id } });
   }
 
-  static async delete(id, uid) {
+   async delete(id, uid) {
     return await Flow.destroy({ where: { id, uid } });
+  }
+
+  async getNodesByFlowId(userId, flowId) {
+    try {
+      const query = `
+        SELECT data FROM nodes 
+        WHERE user_id = $1 AND flow_id = $2
+      `;
+      const result = await this.pool.query(query, [userId, flowId]);
+      return result.rows.map((row) => row.data); 
+    } catch (err) {
+      throw new Error("Error fetching nodes: " + err.message);
+    }
+  }
+
+  async getEdgesByFlowId(userId, flowId) {
+    try {
+      const query = `
+        SELECT data FROM edges 
+        WHERE user_id = $1 AND flow_id = $2
+      `;
+      const result = await this.pool.query(query, [userId, flowId]);
+      return result.rows.map((row) => row.data); 
+    } catch (err) {
+      throw new Error("Error fetching edges: " + err.message);
+    }
   }
 }
 

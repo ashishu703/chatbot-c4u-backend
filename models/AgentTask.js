@@ -10,8 +10,13 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      AgentTask.belongsTo(models.Agents, {
+        foreignKey: 'uid',
+        targetKey: 'uid',
+        as: 'agent',
+      });
     }
+    
   }
   AgentTask.init({
     owner_uid: DataTypes.STRING,

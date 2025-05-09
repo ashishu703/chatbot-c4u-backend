@@ -23,6 +23,15 @@ const planController = new PlanController();
 const contactController = new ContactController();
 const testimonialController = new TestimonialController();
 const userController = new UserController();
+const pageController = new PageController();
+const orderController = new OrderController();
+const paymentController = new PaymentController();
+const brandController = new BrandController();
+const faqController = new FaqController();
+const smtpController = new SmtpController();
+const dashboardController = new DashboardController();
+const linkController = new LinkController();
+const socialController = new SocialController();
 
 router.post('/login', authController.adminlogin.bind(authController));
 router.post("/send_resovery", adminController.sendRecovery.bind(adminController));
@@ -40,45 +49,45 @@ router.post("/update_user", adminValidator, userController.updateUser.bind(userC
 router.post("/del_user", adminValidator, userController.deleteUser.bind(userController));
 router.post("/auto_login", adminValidator, userController.autoLogin.bind(userController));
 
-router.get("/get_payment_gateway_admin", adminValidator, PaymentController.getPaymentGateway);
-router.post("/update_pay_gateway", adminValidator, PaymentController.updatePaymentGateway);
+router.get("/get_payment_gateway_admin", adminValidator, paymentController.getPaymentGateway.bind(paymentController));
+router.post("/update_pay_gateway", adminValidator, paymentController.updatePaymentGateway.bind(paymentController));
 
-router.post("/add_brand_image", adminValidator, BrandController.addBrandImage);
-router.get("/get_brands", BrandController.getBrands);
-router.post("/del_brand_logo", adminValidator, BrandController.deleteBrandLogo);
+router.post("/add_brand_image", adminValidator, brandController.addBrandImage.bind(brandController));
+router.get("/get_brands", brandController.getBrands.bind(brandController));
+router.post("/del_brand_logo", adminValidator, brandController.deleteBrandLogo.bind(brandController));
 
-router.post("/add_faq", adminValidator, FaqController.addFaq);
-router.get("/get_faq", FaqController.getFaqs);
-router.post("/del_faq", adminValidator, FaqController.deleteFaq);
+router.post("/add_faq", adminValidator, faqController.addFaq.bind(faqController));
+router.get("/get_faq", faqController.getFaqs.bind(faqController));
+router.post("/del_faq", adminValidator, faqController.deleteFaq.bind(faqController));
 
-router.post("/add_page", adminValidator, PageController.addPage);
-router.get("/get_pages", PageController.getPages);
-router.post("/del_page", adminValidator, PageController.deletePage);
-router.post("/get_page_slug", PageController.getPageBySlug);
-router.post("/update_terms", adminValidator, PageController.updateTerms);
-router.post("/update_privacy_policy", adminValidator, PageController.updatePrivacyPolicy);
+router.post("/add_page", adminValidator, pageController.addPage.bind(pageController));
+router.get("/get_pages", pageController.getPages.bind(pageController));
+router.post("/del_page", adminValidator, pageController.deletePage.bind(pageController));
+router.post("/get_page_slug", pageController.getPageBySlug.bind(pageController));
+router.post("/update_terms", adminValidator, pageController.updateTerms.bind(pageController));
+router.post("/update_privacy_policy", adminValidator, pageController.updatePrivacyPolicy.bind(pageController));
 
 router.post("/add_testimonial", adminValidator, testimonialController.addTestimonial.bind(testimonialController));
 router.get("/get_testi", testimonialController.getTestimonials.bind(testimonialController));
 router.post("/del_testi", adminValidator, testimonialController.deleteTestimonial.bind(testimonialController));
 
-router.get("/get_orders", adminValidator, OrderController.getOrders);
+router.get("/get_orders", adminValidator, orderController.getOrders.bind(orderController));
 
 router.get("/get_contact_leads", adminValidator, contactController.getContactLeads.bind(contactController));
 router.post("/del_cotact_entry", adminValidator, contactController.deleteContactEntry.bind(contactController));
 
-router.get("/get_smtp", adminValidator, SmtpController.getSmtp);
-router.post("/update_smtp", adminValidator, SmtpController.updateSmtp);
-router.post("/send_test_email", adminValidator, SmtpController.sendTestEmail);
+router.get("/get_smtp", adminValidator, smtpController.getSmtp.bind(smtpController));
+router.post("/update_smtp", adminValidator, smtpController.updateSmtp.bind(smtpController));
+router.post("/send_test_email", adminValidator, smtpController.sendTestEmail.bind(smtpController));
 
-router.get("/dashboard", adminValidator, DashboardController.getAdminDashboard);
+router.get("/dashboard", adminValidator, dashboardController.getAdminDashboard.bind(dashboardController));
 
-router.get("/get_wa_gen", adminValidator, LinkController.getGeneratedLinks);
-router.post("/de_wa_den_link", adminValidator, LinkController.deleteGeneratedLink);
+router.get("/get_wa_gen", adminValidator, linkController.getGeneratedLinks.bind(linkController));
+router.post("/de_wa_den_link", adminValidator, linkController.deleteGeneratedLink.bind(linkController));
 
-router.get("/get_web_public", SocialController.getWebPublic);
-router.get("/get_social_login", SocialController.getSocialLogin);
-router.post("/update_social_login", adminValidator, SocialController.updateSocialLogin);
-router.post("/update_rtl", adminValidator, SocialController.updateRtl);
+router.get("/get_web_public", socialController.getWebPublic.bind(socialController));
+router.get("/get_social_login", socialController.getSocialLogin.bind(socialController));
+router.post("/update_social_login", adminValidator, socialController.updateSocialLogin.bind(socialController));
+router.post("/update_rtl", adminValidator, socialController.updateRtl.bind(socialController));
 
 module.exports = router;

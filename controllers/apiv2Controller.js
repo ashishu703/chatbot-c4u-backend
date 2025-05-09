@@ -1,7 +1,11 @@
 const MetaService = require("../services/metaService");
 
-class ApiController {
-  static async sendMessage(req, res) {
+class ApiV2Controller {
+  metaService;
+  constructor() { 
+    this.metaService = new MetaService();
+  }
+   async sendMessage(req, res) {
     try {
       const { token } = req.query;
       const { messageObject } = req.body;
@@ -17,7 +21,7 @@ class ApiController {
         });
       }
 
-      const result = await MetaService.sendMessage(token, messageObject);
+      const result = await this.metaService.sendMessage(token, messageObject);
       res.json(result);
     } catch (err) {
       console.error(err);
@@ -25,7 +29,7 @@ class ApiController {
     }
   }
 
-  static async sendTemplate(req, res) {
+   async sendTemplate(req, res) {
     try {
       const { sendTo, templetName, exampleArr, token, mediaUri } = req.body;
 
@@ -45,7 +49,7 @@ class ApiController {
         return res.json({ success: false, message: "Please provide exampleArr array" });
       }
 
-      const result = await MetaService.sendTemplate({
+      const result = await this.metaService.sendTemplate({
         token,
         sendTo,
         templetName,
@@ -60,4 +64,4 @@ class ApiController {
   }
 }
 
-module.exports = ApiController;
+module.exports = ApiV2Controller;

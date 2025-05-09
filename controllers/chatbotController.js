@@ -1,7 +1,11 @@
 const ChatbotService = require("../services/chatbotService");
 
 class ChatbotController {
-  static async addChatbot(req, res) {
+  chatbotService;
+  constructor() {
+    this.chatbotService = new ChatbotService();
+  }
+   async addChatbot(req, res) {
     try {
       const { title, chats, flow, for_all } = req.body;
       const user = req.decode;
@@ -13,7 +17,7 @@ class ChatbotController {
         });
       }
 
-      const result = await ChatbotService.addChatbot({
+      const result = await this.chatbotService.addChatbot({
         title,
         chats,
         flow,
@@ -27,7 +31,7 @@ class ChatbotController {
     }
   }
 
-  static async updateChatbot(req, res) {
+   async updateChatbot(req, res) {
     try {
       const { title, chats, flow, for_all, id } = req.body;
       const user = req.decode;
@@ -39,7 +43,7 @@ class ChatbotController {
         });
       }
 
-      const result = await ChatbotService.updateChatbot({
+      const result = await this.chatbotService.updateChatbot({
         id,
         title,
         chats,
@@ -54,10 +58,10 @@ class ChatbotController {
     }
   }
 
-  static async getChatbots(req, res) {
+   async getChatbots(req, res) {
     try {
       const user = req.decode;
-      const chatbots = await ChatbotService.getChatbots(user.uid);
+      const chatbots = await this.chatbotService.getChatbots(user.uid);
       res.json({ data: chatbots, success: true });
     } catch (err) {
       console.error(err);
@@ -65,12 +69,12 @@ class ChatbotController {
     }
   }
 
-  static async changeBotStatus(req, res) {
+   async changeBotStatus(req, res) {
     try {
       const { id, status } = req.body;
       const user = req.decode;
 
-      const result = await ChatbotService.changeBotStatus(id, status, user);
+      const result = await this.chatbotService.changeBotStatus(id, status, user);
       res.json(result);
     } catch (err) {
       console.error(err);
@@ -78,12 +82,12 @@ class ChatbotController {
     }
   }
 
-  static async deleteChatbot(req, res) {
+   async deleteChatbot(req, res) {
     try {
       const { id } = req.body;
       const user = req.decode;
 
-      const result = await ChatbotService.deleteChatbot(id, user.uid);
+      const result = await this.chatbotService.deleteChatbot(id, user.uid);
       res.json(result);
     } catch (err) {
       console.error(err);
@@ -91,7 +95,7 @@ class ChatbotController {
     }
   }
 
-  static async makeRequestApi(req, res) {
+   async makeRequestApi(req, res) {
     try {
       const { url, body, headers, type } = req.body;
 
@@ -99,7 +103,7 @@ class ChatbotController {
         return res.json({ success: false, msg: "Url and type are required" });
       }
 
-      const result = await ChatbotService.makeRequestApi({ url, body, headers, type });
+      const result = await this.chatbotService.makeRequestApi({ url, body, headers, type });
       res.json(result);
     } catch (err) {
       console.error(err);

@@ -1,178 +1,121 @@
-const UserRepository = require("../repositories/userRepository");
-const MetaApiRepository = require("../repositories/metaApiRepository");
-const {
-  sendAPIMessage,
-  sendMetatemplet,
-  getMetaTempletByName,
-  getNumberOfDaysFromTimestamp,
-} = require("../functions/function");
-
-const { getBusinessPhoneNumber, createMetaTemplet, getAllTempletsMeta, delMetaTemplet, getSessionUploadMediaMeta, uploadFileMeta } = require('../utils/metaUtils');
-const { uploadFile, getFileInfo } = require('../utils/fileUtils');
+const MetaRepository = require('../repositories/MetaRepository');
+const { getBusinessPhoneNumber, createMetaTemplet, getAllTempletsMeta, delMetaTemplet, getSessionUploadMediaMeta, uploadFileMeta } = require('../utils/metaApi');
+const randomstring = require('randomstring');
 const path = require('path');
 
 class MetaService {
-  static async decodeToken(token) {
-    const user = await UserRepository.findByApiKey(token);
-    if (!user) {
-      throw new Error("Invalid API keys");
-    }
-    return user;
+  metaRepository;
+  constructor() {
+    this.metaRepository = new MetaRepository();
   }
-
-  static async sendMessage(token, messageObject) {
-    const user = await this.decodeToken(token);
-
-    if (!user.plan || !user.plan_expire) {
-      throw new Error("You don't have any plan, please buy one.");
+  async updateMetaApi(uid, data) {
+    const { waba_id, business_account_id, access_token, business_phone_number_id, app_id } = data;
+    if (!waba_id || !business_account_id || !access_token || !app_id) {
+      throw new Error('Please fill all the fields');
     }
 
-    const daysLeft = getNumberOfDaysFromTimestamp(user.plan_expire);
-    if (daysLeft < 1) {
-      throw new Error("Your plan was expired, please renew your plan.");
-    }
-
-    const plan = user.plan;
-    if (!plan.allow_api) {
-      throw new Error("Your plan does not allow you to use API feature. Please get another plan");
-    }
-
-    const metaApi = await MetaApiRepository.findByUid(user.uid);
-    if (!metaApi || !metaApi.access_token || !metaApi.business_phone_number_id) {
-      throw new Error("Please provide your META API keys in the profile section");
-    }
-
-    return await sendAPIMessage(messageObject, metaApi.business_phone_number_id, metaApi.access_token);
-  }
-
-  static async sendTemplate({ token, sendTo, templetName, exampleArr, mediaUri }) {
-    const user = await this.decodeToken(token);
-
-    if (!user.plan || !user.plan_expire) {
-      throw new Error("You don't have any plan, please buy one.");
-    }
-
-    const daysLeft = getNumberOfDaysFromTimestamp(user.plan_expire);
-    if (daysLeft < 1) {
-      throw new Error("Your plan was expired, please renew your plan.");
-    }
-
-    const plan = user.plan;
-    if (!plan.allow_api) {
-      throw new Error("Your plan does not allow you to use API feature. Please get another plan");
-    }
-
-    const metaApi = await MetaApiRepository.findByUid(user.uid);
-    if (!metaApi || !metaApi.access_token || !metaApi.business_phone_number_id) {
-      throw new Error("Please update Api Settings in your user panel");
-    }
-
-    const templet = await getMetaTempletByName(templetName, metaApi);
-    if (templet.error || !templet?.data?.length) {
-      return {
-        success: false,
-        message: templet.error?.message || "Unable to fetch templet from meta",
-        metaResponse: templet,
-      };
-    }
-
-    const dynamicMedia = mediaUri || null;
-    const resp = await sendMetatemplet(
-      sendTo.replace("+", ""),
-      metaApi.business_phone_number_id,
-      metaApi.access_token,
-      templet.data[0],
-      exampleArr,
-      dynamicMedia
-    );
-
-    return resp.error
-      ? { success: false, metaResponse: resp }
-      : { success: true, metaResponse: resp };
-  }
-
- static async updateMeta(uid, { waba_id, business_account_id, access_token, business_phone_number_id, app_id }) {
-    if (!waba_id || !business_account_id || !access_token || !business_phone_number_id || !app_id) {
-      return { success: false, msg: 'Please fill all the fields' };
-    }
     const resp = await getBusinessPhoneNumber('v18.0', business_phone_number_id, access_token);
-    if (resp?.error) {
-      return { success: false, msg: resp?.error?.message || 'Please check your details' };
+    if (resp?.error || !resp?.success) {
+      throw new Error(resp?.error?.message || 'Please check your details');
     }
-    const existingMeta = await metaRepository.findMetaApiByUid(uid);
-    const metaData = { waba_id, business_account_id, access_token, business_phone_number_id, app_id, uid };
-    if (existingMeta) {
-      await metaRepository.updateMetaApi(uid, metaData);
+
+    const existing = await this.metaRepository.findMetaApiByUid(uid);
+    if (existing.length > 0) {
+      await this.metaRepository.updateMetaApi(uid, data);
     } else {
-      await metaRepository.createMetaApi(metaData);
+      await this.metaRepository.insertMetaApi({ uid, ...data });
     }
+
     return { success: true, msg: 'Your meta settings were updated successfully!' };
   }
 
- static async getMetaKeys(uid) {
-    const meta = await metaRepository.findMetaApiByUid(uid);
-    return { success: true, data: meta || {} };
+  async getMetaKeys(uid) {
+    const data = await this.metaRepository.findMetaApiByUid(uid);
+    return { success: true, data: data[0] || {} };
   }
 
- static async addMetaTemplet(uid, body) {
-    const meta = await metaRepository.findMetaApiByUid(uid);
-    if (!meta) {
-      return { success: false, msg: 'Please fill your meta API keys' };
+  async addMetaTemplet(uid, body) {
+    const apiKeys = await this.metaRepository.findMetaApiByUid(uid);
+    if (apiKeys.length < 1) {
+      throw new Error('Please fill your meta API keys');
     }
-    const resp = await createMetaTemplet('v18.0', meta.waba_id, meta.access_token, body);
-    if (resp.error) {
-      return { success: false, msg: resp?.error?.error_user_msg || resp?.error?.message };
+
+    const resp = await createMetaTemplet('v18.0', apiKeys[0].waba_id, apiKeys[0].access_token, body);
+    if (resp?.error || !resp?.success) {
+      throw new Error(resp?.error?.error_user_msg || resp?.error?.message || 'Failed to create template');
     }
+
     return { success: true, msg: 'Templet was added and waiting for the review' };
   }
 
- static async getMyMetaTemplets(uid) {
-    const meta = await metaRepository.findMetaApiByUid(uid);
-    if (!meta) {
-      return { success: false, msg: 'Please check your meta API keys' };
+  async getMyMetaTemplets(uid) {
+    const meta = await this.metaRepository.findMetaApiByUid(uid);
+    if (meta.length < 1) {
+      throw new Error('Please check your meta API keys');
     }
-    const resp = await getAllTempletsMeta('v18.0', meta.waba_id, meta.access_token);
-    if (resp?.error) {
-      return { success: false, msg: resp?.error?.message || 'Please check your API' };
+
+    const resp = await getAllTempletsMeta('v18.0', meta[0].waba_id, meta[0].access_token);
+    if (resp?.error || !resp?.success) {
+      throw new Error(resp?.error?.message || 'Please check your API');
     }
+
     return { success: true, data: resp?.data || [] };
   }
 
- static async deleteMetaTemplet(uid, name) {
-    const meta = await metaRepository.findMetaApiByUid(uid);
-    if (!meta) {
-      return { success: false, msg: 'Please check your meta API keys' };
+  async deleteMetaTemplet(uid, name) {
+    const meta = await this.metaRepository.findMetaApiByUid(uid);
+    if (meta.length < 1) {
+      throw new Error('Please check your meta API keys');
     }
-    const resp = await delMetaTemplet('v18.0', meta.waba_id, meta.access_token, name);
-    if (resp.error) {
-      return { success: false, msg: resp?.error?.error_user_title || 'Please check your API' };
+
+    const resp = await delMetaTemplet('v18.0', meta[0].waba_id, meta[0].access_token, name);
+    if (resp?.error || !resp?.success) {
+      throw new Error(resp?.error?.error_user_title || 'Please check your API');
     }
+
     return { success: true, data: resp?.data || [], msg: 'Templet was deleted' };
   }
 
- static async returnMediaUrlMeta(uid, templet_name, files) {
+  async returnMediaUrlMeta(uid, templet_name, file, getFileInfo) {
     if (!templet_name) {
-      return { success: false, msg: 'Please give a templet name first' };
+      throw new Error('Please give a templet name first');
     }
-    if (!files || !files.file) {
-      return { success: false, msg: 'No files were uploaded' };
+    if (!file) {
+      throw new Error('No files were uploaded');
     }
-    const meta = await metaRepository.findMetaApiByUid(uid);
-    if (!meta) {
-      return { success: false, msg: 'Please check your meta API keys' };
-    }
-    const { filename, filePath } = await uploadFile(files.file, path.join(__dirname, '..', 'client', 'public', 'media'));
-    const { fileSizeInBytes, mimeType } = await getFileInfo(filePath);
-    const session = await getSessionUploadMediaMeta('v18.0', meta.app_id, meta.access_token, fileSizeInBytes, mimeType);
-    const uploadResult = await uploadFileMeta(session.id, filePath, 'v18.0', meta.access_token);
-    if (!uploadResult?.success) {
-      return { success: false, msg: 'Please check your meta API' };
-    }
-    const url = `${process.env.BACKURI}/media/${filename}`;
-    await metaRepository.createMetaTempletMedia({ uid, templet_name, meta_hash: uploadResult.data.h, file_name: filename });
-    return { success: true, url, hash: uploadResult.data.h };
-  }
 
+    const meta = await this.metaRepository.findMetaApiByUid(uid);
+    if (meta.length < 1) {
+      throw new Error('Please check your meta API keys');
+    }
+
+    const randomString = randomstring.generate();
+    const filename = `${randomString}.${file.name.split('.').pop()}`;
+    const filePath = path.join(__dirname, '../../client/public/media', filename);
+
+    await new Promise((resolve, reject) => {
+      file.mv(filePath, err => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+
+    const { fileSizeInBytes, mimeType } = await getFileInfo(filePath);
+    const session = await getSessionUploadMediaMeta('v18.0', meta[0].app_id, meta[0].access_token, fileSizeInBytes, mimeType);
+    if (!session?.id) {
+      throw new Error('Failed to start upload session');
+    }
+
+    const upload = await uploadFileMeta(session.id, filePath, 'v18.0', meta[0].access_token);
+    if (!upload?.success) {
+      throw new Error('Please check your meta API');
+    }
+
+    const url = `${process.env.BACKURI}/media/${filename}`;
+    await this.metaRepository.insertMetaTempletMedia(uid, templet_name, upload?.data?.h, filename);
+
+    return { success: true, url, hash: upload?.data?.h };
+  }
 }
 
 module.exports = MetaService;

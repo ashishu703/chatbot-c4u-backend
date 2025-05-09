@@ -1,7 +1,11 @@
 const FlowService = require("../services/chatFlowService");
 
 class FlowController {
-  static async addFlow(req, res) {
+  flowService;
+  constructor() {
+    this.flowService = new FlowService();
+  }
+   async addFlow(req, res) {
     try {
       const { title, nodes, edges, flowId } = req.body;
       const user = req.decode;
@@ -10,7 +14,7 @@ class FlowController {
         return res.json({ success: false, msg: "Missing required fields" });
       }
 
-      const result = await FlowService.addFlow({ title, nodes, edges, flowId, user });
+      const result = await this.flowService.addFlow({ title, nodes, edges, flowId, user });
       res.json(result);
     } catch (err) {
       console.error(err);
@@ -18,10 +22,10 @@ class FlowController {
     }
   }
 
-  static async getFlows(req, res) {
+   async getFlows(req, res) {
     try {
       const user = req.decode;
-      const flows = await FlowService.getFlows(user.uid);
+      const flows = await this.flowService.getFlows(user.uid);
       res.json({ data: flows, success: true });
     } catch (err) {
       console.error(err);
@@ -29,11 +33,11 @@ class FlowController {
     }
   }
 
-  static async deleteFlow(req, res) {
+   async deleteFlow(req, res) {
     try {
       const { id, flowId } = req.body;
       const user = req.decode;
-      const result = await FlowService.deleteFlow(id, flowId, user.uid);
+      const result = await this.flowService.deleteFlow(id, flowId, user.uid);
       res.json(result);
     } catch (err) {
       console.error(err);
@@ -41,14 +45,32 @@ class FlowController {
     }
   }
 
-  static async getFlowById(req, res) {
+  async getByFlowId(req, res) {
+    try {
+      const { flowId } = req.body;
+
+      if (!flowId) {
+        return res.status(400).json({ success: false, msg: "Flow id missing" });
+      }
+
+      const { nodes, edges } = await this.flowService.getFlowById(
+        req.decode.uid,
+        flowId
+      );
+
+      res.json({ nodes, edges, success: true });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ success: false, msg: "Something went wrong" });
+    }
+  }
+
+
+   async getActivity(req, res) {
     try {
       const { flowId } = req.body;
       const user = req.decode;
-
-      if (!flowId) return res.json({ success: false, msg: "Flow id missing" });
-
-      const result = await FlowService.getFlowById(flowId, user.uid);
+      const result = await this.flowService.getActivity(flowId, user.uid);
       res.json(result);
     } catch (err) {
       console.error(err);
@@ -56,23 +78,11 @@ class FlowController {
     }
   }
 
-  static async getActivity(req, res) {
-    try {
-      const { flowId } = req.body;
-      const user = req.decode;
-      const result = await FlowService.getActivity(flowId, user.uid);
-      res.json(result);
-    } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
-    }
-  }
-
-  static async removeNumberFromActivity(req, res) {
+   async removeNumberFromActivity(req, res) {
     try {
       const { type, number, flowId } = req.body;
       const user = req.decode;
-      const result = await FlowService.removeNumberFromActivity(type, number, flowId, user.uid);
+      const result = await this.flowService.removeNumberFromActivity(type, number, flowId, user.uid);
       res.json(result);
     } catch (err) {
       console.error(err);

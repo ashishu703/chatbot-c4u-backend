@@ -158,15 +158,19 @@ class UserController {
       res.status(500).json({ success: false, msg: error.message });
     }
   }
+  
+  
 
-  async deleteTaskForAgent(req, res) {
+  async deleteAgentTask(req, res) {
     try {
-      const result = await this.userService.deleteTaskForAgent(req.decode.uid, req.body.id);
+      const { id } = req.body;
+      const result = await this.userService.deleteAgentTask(id, req.decode.uid);
       res.json(result);
     } catch (error) {
       res.status(500).json({ success: false, msg: error.message });
     }
   }
+  
 
   async updateAgentProfile(req, res) {
     try {

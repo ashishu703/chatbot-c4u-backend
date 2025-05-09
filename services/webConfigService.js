@@ -1,4 +1,4 @@
-const webConfigRepository = require('../repositories/webConfigRepository');
+const webConfigRepository = require('../repositories/WebConfigRepository');
 const { getFileExtension } = require('../utils/validation');
 const path = require('path');
 const randomstring = require('randomstring');
@@ -95,4 +95,4 @@ class WebConfigService {
   }
 }
 
-module.exports = new WebConfigService();
+module.exports = WebConfigService;

@@ -1,5 +1,6 @@
-const fs = require('fs');
 const path = require('path');
+const fs = require('fs').promises;
+const mime = require('mime-types');
 
 const folderExists = (folderPath) => {
   return fs.existsSync(folderPath);
@@ -22,13 +23,20 @@ const uploadFile = async (file, destination) => {
   return { filename, filePath };
 };
 
-// Placeholder for getFileInfo
+
+
 const getFileInfo = async (filePath) => {
-  // Replace with your implementation from function.js
-  return { fileSizeInBytes: 0, mimeType: 'application/octet-stream' };
+  const stats = await fs.stat(filePath);
+  const mimeType = mime.lookup(filePath) || 'application/octet-stream';
+  return {
+    fileSizeInBytes: stats.size,
+    mimeType
+  };
 };
 
-// Placeholder for downloadAndExtractFile
+module.exports = { getFileInfo };
+
+
 const downloadAndExtractFile = async (files, outputPath) => {
   if (!files?.file) {
     return { success: false, msg: 'No file provided' };
@@ -46,5 +54,7 @@ const downloadAndExtractFile = async (files, outputPath) => {
   });
   return { success: true, msg: 'File extracted successfully' };
 };
+
+
 
 module.exports = { folderExists, downloadAndExtractFile, getFileExtension, uploadFile, getFileInfo };

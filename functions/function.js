@@ -1,4 +1,4 @@
-const fs = require('fs').promises;
+const fs = require('fs/promises');
 const path = require('path');
 const moment = require('moment-timezone');
 const axios = require('axios');
@@ -750,12 +750,12 @@ async function deleteFileIfExists(filePath) {
 // Read JSON from file (made async)
 async function readJsonFromFile(filePath) {
   try {
-    const jsonData = await fs.readFile(filePath, 'utf8');
-    const parsedData = JSON.parse(jsonData);
-    return Array.isArray(parsedData) ? parsedData : [];
+    await fs.access(filePath); 
+    const data = await fs.readFile(filePath, 'utf-8');
+    return JSON.parse(data);
   } catch (err) {
     console.error(`Error reading JSON file ${filePath}:`, err);
-    return [];
+    return null; 
   }
 }
 
@@ -1251,7 +1251,7 @@ function addDaysToCurrentTimestamp(days) {
 }
 
 // Update user plan (updated to use Sequelize)
-async function updateUserPlan(plan, uid) {
+async function updateUserPlan(plan, uid) { 
   try {
     console.log({ plan });
     const planDays = parseInt(plan?.plan_duration_in_days || 0);

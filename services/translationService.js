@@ -100,4 +100,4 @@ class TranslationService {
   }
 }
 
-module.exports = new TranslationService();
+module.exports = TranslationService;

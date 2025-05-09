@@ -1,11 +1,11 @@
 const { GenLink } = require("../models");
 
 class LinkRepository {
-  static async getGeneratedLinks() {
+   async getGeneratedLinks() {
     return await GenLink.findAll();
   }
 
-  static async deleteGeneratedLink(id) {
+   async deleteGeneratedLink(id) {
     await GenLink.destroy({ where: { id } });
   }
 }

@@ -1,25 +1,31 @@
 
 const PhonebookRepository = require('../repositories/phonebookRepository');
-const ContactRepository = require('../repositories/contactRepository');
+const ContactRepository = require('../repositories/ContactRepository');
 const { parseCSVFile, areMobileNumbersFilled } = require('../functions/function');
 
 class PhonebookService {
+  phonebookRepository;
+  contactRepository;
+  constructor() {
+    this.phonebookRepository = new PhonebookRepository();
+    this.contactRepository = new ContactRepository();
+  }
   async addPhonebook(uid, name) {
-    const existing = await PhonebookRepository.findByUidAndName(uid, name);
+    const existing = await this.phonebookRepository.findByUidAndName(uid, name);
     if (existing) {
       throw new Error('Duplicate phonebook name found');
     }
-    await PhonebookRepository.create({ uid, name });
+    await this.phonebookRepository.create({ uid, name });
     return { success: true, msg: 'Phonebook was added' };
   }
 
   async getPhonebooks(uid) {
-    return await PhonebookRepository.findByUid(uid);
+    return await this.phonebookRepository.findByUid(uid);
   }
 
   async deletePhonebook(uid, id) {
-    await PhonebookRepository.delete(id);
-    await ContactRepository.deleteByPhonebookId(id, uid);
+    await this.phonebookRepository.delete(id);
+    await this.contactRepository.deleteByPhonebookId(id, uid);
     return { success: true, msg: 'Phonebook was deleted' };
   }
 
@@ -45,23 +51,23 @@ class PhonebookService {
       var5: item.var5,
     }));
 
-    await ContactRepository.bulkCreate(contacts);
+    await this.contactRepository.bulkCreate(contacts);
     return { success: true, msg: 'Contacts were inserted' };
   }
 
   async addSingleContact(uid, contact) {
-    await ContactRepository.create({ ...contact, uid });
+    await this.contactRepository.create({ ...contact, uid });
     return { success: true, msg: 'Contact was inserted' };
   }
 
   async getContacts(uid) {
-    return await ContactRepository.findByUid(uid);
+    return await this.contactRepository.findByUid(uid);
   }
 
   async deleteContacts(ids) {
-    await ContactRepository.deleteByIds(ids);
+    await this.contactRepository.deleteByIds(ids);
     return { success: true, msg: 'Contact(s) were deleted' };
   }
 }
 
-module.exports = new PhonebookService();
+module.exports = PhonebookService;
