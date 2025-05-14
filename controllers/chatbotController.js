@@ -1,3 +1,5 @@
+const FillAllFieldsException = require("../exceptions/CustomExceptions/FIllAllFieldsException");
+const UrlAndTypeRequiredException = require("../exceptions/CustomExceptions/UrlAndTypeRequiredException");
 const ChatbotService = require("../services/chatbotService");
 
 class ChatbotController {
@@ -5,16 +7,13 @@ class ChatbotController {
   constructor() {
     this.chatbotService = new ChatbotService();
   }
-   async addChatbot(req, res) {
+   async addChatbot(req, res, next) {
     try {
       const { title, chats, flow, for_all } = req.body;
       const user = req.decode;
 
       if (!title || !chats?.length || !flow) {
-        return res.json({
-          success: false,
-          msg: "Please provide all fields! title, chats, flow are required",
-        });
+        throw new FillAllFieldsException();
       }
 
       const result = await this.chatbotService.addChatbot({
@@ -26,21 +25,17 @@ class ChatbotController {
       });
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+     next(err);
     }
   }
 
-   async updateChatbot(req, res) {
+   async updateChatbot(req, res, next) {
     try {
       const { title, chats, flow, for_all, id } = req.body;
       const user = req.decode;
 
       if (!title || !chats?.length || !flow) {
-        return res.json({
-          success: false,
-          msg: "Please provide all fields! title, chats, flow are required",
-        });
+        throw new FillAllFieldsException();
       }
 
       const result = await this.chatbotService.updateChatbot({
@@ -53,23 +48,21 @@ class ChatbotController {
       });
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async getChatbots(req, res) {
+   async getChatbots(req, res, next) {
     try {
       const user = req.decode;
       const chatbots = await this.chatbotService.getChatbots(user.uid);
       res.json({ data: chatbots, success: true });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async changeBotStatus(req, res) {
+   async changeBotStatus(req, res, next) {
     try {
       const { id, status } = req.body;
       const user = req.decode;
@@ -77,12 +70,11 @@ class ChatbotController {
       const result = await this.chatbotService.changeBotStatus(id, status, user);
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async deleteChatbot(req, res) {
+   async deleteChatbot(req, res, next) {
     try {
       const { id } = req.body;
       const user = req.decode;
@@ -90,24 +82,22 @@ class ChatbotController {
       const result = await this.chatbotService.deleteChatbot(id, user.uid);
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+     next(err);
     }
   }
 
-   async makeRequestApi(req, res) {
+   async makeRequestApi(req, res, next) {
     try {
       const { url, body, headers, type } = req.body;
 
       if (!url || !type) {
-        return res.json({ success: false, msg: "Url and type are required" });
+        throw new UrlAndTypeRequiredException();
       }
 
       const result = await this.chatbotService.makeRequestApi({ url, body, headers, type });
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 }

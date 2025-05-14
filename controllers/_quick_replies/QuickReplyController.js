@@ -8,7 +8,7 @@ module.exports = class QuickReplyController {
     }
 
 
-    async createQuickReplies(req, res) {
+    async createQuickReplies(req, res, next) {
 
         try {
             const uid = req.decode.uid;
@@ -18,15 +18,12 @@ module.exports = class QuickReplyController {
                 success: true,
                 message: "Quick reply created successfully"
             })
-        } catch (error) {
-            return res.status(200).json({
-                success: false,
-                error
-            })
+        } catch (err) {
+            next(err);
         }
     }
 
-    async getQuickReplies(req, res) {
+    async getQuickReplies(req, res, next) {
 
         try {
             const uid = req.decode.uid;
@@ -37,15 +34,12 @@ module.exports = class QuickReplyController {
                 success: true,
                 quickReplies
             })
-        } catch (error) {
-            return res.status(200).json({
-                success: false,
-                error
-            })
+        } catch (err) {
+            next(err);
         }
     }
 
-    async deleteQuickReplies(req, res) {
+    async deleteQuickReplies(req, res, next) {
         try {
             const id = req.params.id;
             await this.quickReplyService.destroy(id);
@@ -53,11 +47,8 @@ module.exports = class QuickReplyController {
                 success: true,
                 message: "Quick reply deleted successfully"
             })
-        } catch (error) {
-            return res.status(200).json({
-                success: false,
-                error
-            })
+        } catch (err) {
+            next(err);
         }
     }
 }

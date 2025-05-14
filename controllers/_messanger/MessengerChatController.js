@@ -7,7 +7,7 @@ const MessangerController = require("./MessangerController");
 
 module.exports = class MessengerChatController extends MessangerController {
 
-    async send(req, res) {
+    async send(req, res, next) {
         try {
             const {
                 text,
@@ -25,13 +25,13 @@ module.exports = class MessengerChatController extends MessangerController {
             })
             return res.status(200).json({ msg: "success" });
         } catch (err) {
-            return res.status(500).json({ msg: "something went wrong", err });
+           next(err);
         }
 
     }
 
 
-    async sendImage(req, res) {
+    async sendImage(req, res, next) {
         try {
             const {
                 chatId,
@@ -49,11 +49,10 @@ module.exports = class MessengerChatController extends MessangerController {
             })
             return res.status(200).json({ msg: "success" });
         } catch (err) {
-            console.log(err);
-            return res.status(500).json({ msg: "something went wrong", err });
+            next(err);
         }
     }
-    async sendVideo(req, res) {
+    async sendVideo(req, res, next) {
         try {
             const {
                 chatId,
@@ -71,10 +70,10 @@ module.exports = class MessengerChatController extends MessangerController {
             })
             return res.status(200).json({ msg: "success" });
         } catch (err) {
-            return res.status(500).json({ msg: "something went wrong", err });
+            next(err);
         }
     }
-    async sendDoc(req, res) {
+    async sendDoc(req, res, next) {
         try {
             const {
                 chatId,
@@ -92,10 +91,10 @@ module.exports = class MessengerChatController extends MessangerController {
             })
             return res.status(200).json({ msg: "success" });
         } catch (err) {
-            return res.status(500).json({ msg: "something went wrong", err });
+            next(err);
         }
     }
-    async sendAudio(req, res) {
+    async sendAudio(req, res, next) {
         try {
             const {
                 chatId,
@@ -113,7 +112,7 @@ module.exports = class MessengerChatController extends MessangerController {
             })
             return res.status(200).json({ msg: "success" });
         } catch (err) {
-            return res.status(500).json({ msg: "something went wrong", err });
+            next(err);
         }
     }
 

@@ -5,53 +5,53 @@ class MetaController {
   constructor(){
     this.metaService = new MetaService();
   }
-  async updateMetaApi(req, res) {
+  async updateMetaApi(req, res, next) {
     try {
       const result = await this.metaService.updateMetaApi(req.decode.uid, req.body);
       res.json(result);
     } catch (err) {
-      res.json({ success: false, msg: err.message || 'Something went wrong', err });
+      next(err);
     }
   }
 
-  async getMetaKeys(req, res) {
+  async getMetaKeys(req, res, next) {
     try {
       const result = await this.metaService.getMetaKeys(req.decode.uid);
       res.json(result);
     } catch (err) {
-      res.json({ success: false, msg: err.message || 'Something went wrong', err });
+      next(err);
     }
   }
 
-  async addMetaTemplet(req, res) {
+  async addMetaTemplet(req, res, next) {
     try {
       const result = await this.metaService.addMetaTemplet(req.decode.uid, req.body);
       res.json(result);
     } catch (err) {
-      res.json({ success: false, msg: err.message || 'Something went wrong', err });
+      next(err);
     }
   }
 
-  async getMyMetaTemplets(req, res) {
+  async getMyMetaTemplets(req, res, next) {
     try {
       const result = await this.metaService.getMyMetaTemplets(req.decode.uid);
       res.json(result);
     } catch (err) {
-      res.json({ success: false, msg: err.message || 'Something went wrong', err });
+      next(err);
     }
   }
 
-  async deleteMetaTemplet(req, res) {
+  async deleteMetaTemplet(req, res, next) {
     try {
       const { name } = req.body;
       const result = await this.metaService.deleteMetaTemplet(req.decode.uid, name);
       res.json(result);
     } catch (err) {
-      res.json({ success: false, msg: err.message || 'Something went wrong', err });
+      next(err);
     }
   }
 
-  async returnMediaUrlMeta(req, res) {
+  async returnMediaUrlMeta(req, res, next) {
     try {
       const { templet_name } = req.body;
       const file = req.files?.file;
@@ -62,7 +62,7 @@ class MetaController {
       const result = await this.metaService.returnMediaUrlMeta(req.decode.uid, templet_name, file, getFileInfo);
       res.json(result);
     } catch (err) {
-      res.json({ success: false, msg: err.message || 'Something went wrong', err });
+      next(err);
     }
   }
 }

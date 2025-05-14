@@ -5,7 +5,7 @@ const MessangerController = require("./MessangerController");
 
 
 module.exports = class InstagramWebhookController extends MessangerController {
-    async handleWebhook(req, res) {
+    async handleWebhook(req, res, next) {
         try {
             const webhookPayload = req.body;
             const chatService = new MessangerChatService();
@@ -14,11 +14,7 @@ module.exports = class InstagramWebhookController extends MessangerController {
             res.status(200).json({ msg: "success" });
         }
         catch (err) {
-            console.log(err);
-            if (err instanceof FacebookException) {
-                return res.status(400).json(err);
-            }
-            return res.status(500).json({ msg: "something went wrong", err });
+            next(err);
         }
     }
 

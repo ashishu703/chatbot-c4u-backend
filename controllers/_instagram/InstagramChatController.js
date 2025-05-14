@@ -7,7 +7,7 @@ const InstagramController = require("./InstagramController");
 
 module.exports = class InstagramChatController extends InstagramController {
 
-    async send(req, res) {
+    async send(req, res, next) {
         try {
             const {
                 text,
@@ -29,14 +29,14 @@ module.exports = class InstagramChatController extends InstagramController {
             })
     
             return res.status(200).json({ msg: "success" });
-        } catch (error) {
-            return res.status(500).json({ msg: "something went wrong", error });
+        } catch (err) {
+            next(err);
         }
 
     }
 
 
-    async  sendImage(req, res){
+    async  sendImage(req, res, next) {
         try {
             const {
                 url,
@@ -58,12 +58,11 @@ module.exports = class InstagramChatController extends InstagramController {
             })
     
             return res.status(200).json({ msg: "success" });
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({ msg: "something went wrong", error });
+        } catch (err) {
+            next(err);
         }
     }
-    async  sendVideo(req, res){
+    async  sendVideo(req, res, next) {
         try {
             const {
                 url,
@@ -85,11 +84,11 @@ module.exports = class InstagramChatController extends InstagramController {
             })
     
             return res.status(200).json({ msg: "success" });
-        } catch (error) {
-            return res.status(500).json({ msg: "something went wrong", error });
+        } catch (err) {
+           next(err);
         }
     }
-    async  sendDoc(req, res){
+    async  sendDoc(req, res, next) {
         try {
             const {
                 url,
@@ -111,11 +110,11 @@ module.exports = class InstagramChatController extends InstagramController {
             })
     
             return res.status(200).json({ msg: "success" });
-        } catch (error) {
-            return res.status(500).json({ msg: "something went wrong", error });
+        } catch (err) {
+           next(err);
         }
     }
-    async  sendAudio(req, res){
+    async  sendAudio(req, res, next) {
         try {
             const {
                 url,
@@ -137,8 +136,8 @@ module.exports = class InstagramChatController extends InstagramController {
             })
     
             return res.status(200).json({ msg: "success" });
-        } catch (error) {
-            return res.status(500).json({ msg: "something went wrong", error });
+        } catch (err) {
+           next(err);
         }
     }
 

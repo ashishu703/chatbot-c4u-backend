@@ -1,21 +1,24 @@
 const BroadcastService = require("../services/broadcastService");
+const FillAllFieldsException = require("../exceptions/CustomExceptions/FIllAllFieldsException");
+const InvalidPhonebookException = require("../exceptions/CustomExceptions/InvalidPhonebookException");
+const InvalidRequestException = require("../exceptions/CustomExceptions/InvalidRequestException");
 
 class BroadcastController {
   broadcastService;
   constructor() { 
     this.broadcastService = new BroadcastService();
   }
-   async addBroadcast(req, res) {
+   async addBroadcast(req, res, next) {
     try {
       const { title, templet, phonebook, scheduleTimestamp, example } = req.body;
       const user = req.decode;
 
       if (!title || !templet?.name || !phonebook || !scheduleTimestamp) {
-        return res.json({ success: false, msg: "Please enter all details" });
+        throw new FillAllFieldsException();
       }
 
       if (!phonebook.id) {
-        return res.json({ success: false, msg: "Invalid phonebook provided" });
+        throw new InvalidPhonebookException();
       }
 
       const result = await this.broadcastService.addBroadcast({
@@ -29,23 +32,21 @@ class BroadcastController {
 
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async getBroadcasts(req, res) {
+   async getBroadcasts(req, res, next) {
     try {
       const user = req.decode;
       const broadcasts = await this.broadcastService.getBroadcasts(user.uid);
       res.json({ data: broadcasts, success: true });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+     next(err);
     }
   }
 
-   async getBroadcastLogs(req, res) {
+   async getBroadcastLogs(req, res, next) {
     try {
       const { id } = req.body;
       const user = req.decode;
@@ -53,29 +54,27 @@ class BroadcastController {
       const result = await this.broadcastService.getBroadcastLogs(id, user.uid);
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async changeBroadcastStatus(req, res) {
+   async changeBroadcastStatus(req, res, next) {
     try {
       const { status, broadcast_id } = req.body;
       const user = req.decode;
 
       if (!status) {
-        return res.json({ success: false, msg: "Invalid request" });
+       throw new InvalidRequestException();
       }
 
       const result = await this.broadcastService.changeBroadcastStatus(broadcast_id, status, user.uid);
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async deleteBroadcast(req, res) {
+   async deleteBroadcast(req, res, next) {
     try {
       const { broadcast_id } = req.body;
       const user = req.decode;
@@ -83,8 +82,7 @@ class BroadcastController {
       const result = await this.broadcastService.deleteBroadcast(broadcast_id, user.uid);
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 }

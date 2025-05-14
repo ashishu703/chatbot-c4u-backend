@@ -1,31 +1,29 @@
 const AgentService = require("../services/agentService");
-
+const TypeCommentException = require("../exceptions/CustomExceptions/TypeCommentException");
 class AgentTaskController {
   agentService;
   constructor() {
     this.agentService = new AgentService(); 
   }
-   async getMyTasks(req, res) {
+   async getMyTasks(req, res, next) {
     try {
       const tasks = await this.agentService.getAgentTasks(req.decode.uid);
       res.json({ data: tasks, success: true });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async markTaskComplete(req, res) {
+   async markTaskComplete(req, res, next) {
     try {
       const { id, comment } = req.body;
       if (!comment) {
-        return res.json({ msg: "Please type your comments." });
+        throw new TypeCommentException();
       }
       await this.agentService.markTaskComplete(id, comment);
       res.json({ msg: "Task updated", success: true });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 }

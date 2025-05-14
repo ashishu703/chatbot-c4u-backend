@@ -1,6 +1,7 @@
 const PlanService = require("../services/planService");
 const { addDaysToCurrentTimestamp } = require("../utils/dateUtils");
 const { User } = require("../models");
+const UidandPlanRequiredException = require("../exceptions/CustomExceptions/UidandPlanRequiredException");
 
 class PlanController {
   planService;
@@ -9,45 +10,42 @@ class PlanController {
     this.planService = new PlanService();
   }
 
-  async addPlan(req, res) {
+  async addPlan(req, res, next) {
     try {
       const planData = req.body;
       await this.planService.addPlan(planData);
       res.json({ success: true, msg: "Plan has been updated" });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-  async getPlans(req, res) {
+  async getPlans(req, res, next) {
     try {
       const plans = await this.planService.getPlans();
       res.json({ success: true, data: plans });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({ success: false, msg: "Something went wrong" });
+      next(err);
     }
   }
 
-  async deletePlan(req, res) {
+  async deletePlan(req, res, next) {
     try {
       const { id } = req.body;
       await this.planService.deletePlan(id);
       res.json({ success: true, msg: "Plan was deleted" });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: "Something went wrong" });
+      next(err);
     }
   }
 
-  async updatePlan(req, res) {
+  async updatePlan(req, res, next) {
     try {
       const { plan, uid } = req.body;
       console.log({ plan });
 
       if (!uid || !plan || !plan.id) {
-        return res.status(400).json({ success: false, msg: "UID and valid plan data required" });
+        throw new UidandPlanRequiredException();
       }
 
       const planDays = parseInt(plan?.plan_duration_in_days || 0);
@@ -63,8 +61,7 @@ class PlanController {
 
       res.json({ success: true, msg: "User plan was updated" });
     } catch (err) {
-      console.error('Error updating user plan:', err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 }

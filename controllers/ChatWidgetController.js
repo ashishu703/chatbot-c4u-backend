@@ -6,31 +6,30 @@ class ChatWidgetController {
     this.chatWidgetService = new ChatWidgetService();
   }
 
-  async addWidget(req, res) {
+  async addWidget(req, res, next) {
     try {
       const result = await this.chatWidgetService.addWidget(req);
       res.json(result);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, msg: error.message });
+    } catch (err) {
+      next(err);
     }
   }
-  async getMyWidgets(req, res) {
+  async getMyWidgets(req, res, next) {
     try {
       const result = await this.chatWidgetService.getMyWidgets(req.decode.uid);
       res.json(result);
-    } catch (error) {
-      res.status(500).json({ success: false, msg: error.message });
+    } catch (err) {
+      next(err);
     }
   }
 
-  async deleteWidget(req, res) {
+  async deleteWidget(req, res, next) {
     try {
       const { id } = req.body;
       const result = await this.chatWidgetService.deleteWidget(id);
       res.json(result);
-    } catch (error) {
-      res.status(500).json({ success: false, msg: error.message });
+    } catch (err) {
+      next(err);
     }
   }
 }

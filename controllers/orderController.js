@@ -7,13 +7,12 @@ class OrderController {
     this.orderRepository = new OrderRepository();
   }
 
-  async getOrders(req, res) {
+  async getOrders(req, res, next) {
     try {
       const orders = await this.orderRepository.getOrders();
       res.json({ data: orders, success: true });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: "Server error" });
+      next(err);
     }
   }
 }

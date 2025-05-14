@@ -6,7 +6,7 @@ const MessangerPageService = require("../../services/_messanger/MessangerPageSer
 const MessangerController = require("../_messanger/MessangerController");
 
 module.exports = class MessangerAuthController extends MessangerController {
-    async initiateUserAuth(req, res) {
+    async initiateUserAuth(req, res, next) {
         try {
             const { accessToken } = req.body
             const user = req.decode;
@@ -20,15 +20,11 @@ module.exports = class MessangerAuthController extends MessangerController {
             res.status(200).json({ msg: "success" });
         }
         catch (err) {
-            console.log(err);
-            if (err instanceof FacebookException) {
-                return res.status(400).json(err);
-            }
-            return res.status(500).json({ msg: "something went wrong", err });
+            next(err);
         }
     }
 
-    async getAccounts(req, res) {
+    async getAccounts(req, res, next) {
         try {
             const user = req.decode;
             const profileService = new FacebookProfileService(user, null);
@@ -36,16 +32,12 @@ module.exports = class MessangerAuthController extends MessangerController {
             res.status(200).json({ msg: "success", profiles });
         }
         catch (err) {
-            console.log(err);
-            if (err instanceof FacebookException) {
-                return res.status(400).json(err);
-            }
-            return res.status(500).json({ msg: "something went wrong", err });
+            next(err);
         }
     }
 
 
-    async getAuthParams(req, res) {
+    async getAuthParams(req, res, next) {
         try {
             const {
                 facebook_client_id,
@@ -60,13 +52,13 @@ module.exports = class MessangerAuthController extends MessangerController {
                 version: facebook_graph_version
             });
         } catch (err) {
-            return res.status(500).json({ msg: "something went wrong", err });
+            next(err);
         }
     }
 
 
 
-    async deleteAccount(req, res) {
+    async deleteAccount(req, res, next) {
         try {
             const { id } = req.params;
             const user = req.decode;
@@ -75,11 +67,7 @@ module.exports = class MessangerAuthController extends MessangerController {
             res.status(200).json({ msg: "success" });
         }
         catch (err) {
-            console.log(err);
-            if (err instanceof FacebookException) {
-                return res.status(400).json(err);
-            }
-            return res.status(500).json({ msg: "something went wrong", err });
+            next(err);
         }
     }
 }

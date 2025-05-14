@@ -5,7 +5,7 @@ const WhatsappProfileService = require("../../services/_whatsapp/WhatsappProfile
 const WhatsappController = require("./WhatsappController");
 
 module.exports = class MessangerAuthController extends WhatsappController {
-    async initiateUserAuth(req, res) {
+    async initiateUserAuth(req, res, next) {
         try {
             const {
                 code,
@@ -26,15 +26,11 @@ module.exports = class MessangerAuthController extends WhatsappController {
             res.status(200).json({ msg: "success" });
         }
         catch (err) {
-            console.log(err);
-            if (err instanceof FacebookException) {
-                return res.status(400).json(err);
-            }
-            return res.status(500).json({ msg: "something went wrong", err });
+            next(err);
         }
     }
 
-    async getAccounts(req, res) {
+    async getAccounts(req, res, next) {
         try {
             const user = req.decode;
             const profileService = new WhatsappProfileService(user, null);
@@ -42,16 +38,12 @@ module.exports = class MessangerAuthController extends WhatsappController {
             res.status(200).json({ msg: "success", profiles });
         }
         catch (err) {
-            console.log(err);
-            if (err instanceof FacebookException) {
-                return res.status(400).json(err);
-            }
-            return res.status(500).json({ msg: "something went wrong", err });
+           next(err);
         }
     }
 
 
-    async getAuthParams(req, res) {
+    async getAuthParams(req, res, next) {
         try {
             const {
                 whatsapp_client_id,
@@ -66,13 +58,13 @@ module.exports = class MessangerAuthController extends WhatsappController {
                 version: whatsapp_graph_version
             });
         } catch (err) {
-            return res.status(500).json({ msg: "something went wrong", err });
+           next(err);
         }
     }
 
 
 
-    async deleteAccount(req, res) {
+    async deleteAccount(req, res, next) {
         try {
             const { id } = req.params;
             const user = req.decode;
@@ -81,11 +73,7 @@ module.exports = class MessangerAuthController extends WhatsappController {
             res.status(200).json({ msg: "success" });
         }
         catch (err) {
-            console.log(err);
-            if (err instanceof FacebookException) {
-                return res.status(400).json(err);
-            }
-            return res.status(500).json({ msg: "something went wrong", err });
+           next(err);
         }
     }
 }

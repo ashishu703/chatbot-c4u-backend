@@ -1,20 +1,23 @@
-const widgetService = require('../services/widgetService');
+const WidgetService = require('../services/widgetService');
 
 class WidgetController {
-  async returnMediaUrl(req, res) {
+  widgetService;
+  constructor() {
+    this.widgetService = new WidgetService();
+  }
+  async returnMediaUrl(req, res, next) {
     try {
-      const result = await widgetService.returnMediaUrl(req.files);
+      const result = await this.widgetService.returnMediaUrl(req.files);
       res.json(result);
-    } catch (error) {
-      res.json({ success: false, msg: 'Something went wrong', err: error.message });
-      console.log(error);
+    } catch (err) {
+      next(err);
     }
   }
 
-  async addWidget(req, res) {
+  async addWidget(req, res, next) {
     try {
       const { title, whatsapp_number, place, selectedIcon, logoType, size } = req.body;
-      const result = await widgetService.addWidget(req.decode.uid, {
+      const result = await this.widgetService.addWidget(req.decode.uid, {
         title,
         whatsapp_number,
         place,
@@ -23,43 +26,39 @@ class WidgetController {
         size
       }, req.files);
       res.json(result);
-    } catch (error) {
-      res.json({ success: false, msg: 'Something went wrong', err: error.message });
-      console.log(error);
+    } catch (err) {
+      next(err);
     }
   }
 
-  async getMyWidget(req, res) {
+  async getMyWidget(req, res, next) {
     try {
-      const result = await widgetService.getMyWidget(req.decode.uid);
+      const result = await this.widgetService.getMyWidget(req.decode.uid);
       res.json(result);
-    } catch (error) {
-      res.json({ success: false, msg: 'Something went wrong', err: error.message });
-      console.log(error);
+    } catch (err) {
+      next(err);
     }
   }
 
-  async deleteWidget(req, res) {
+  async deleteWidget(req, res, next) {
     try {
       const { id } = req.body;
-      const result = await widgetService.deleteWidget(id);
+      const result = await this.widgetService.deleteWidget(id);
       res.json(result);
-    } catch (error) {
-      res.json({ success: false, msg: 'Something went wrong', err: error.message });
-      console.log(error);
+    } catch (err) {
+      next(err);
     }
   }
 
-  async getWidget(req, res) {
+  async getWidget(req, res, next) {
     try {
       const { id } = req.query;
-      const result = await widgetService.getWidget(id);
+      const result = await this.widgetService.getWidget(id);
       res.send(result);
-    } catch (error) {
-      res.json({ success: false, msg: 'Something went wrong', err: error.message });
-      console.log(error);
+    } catch (err) {
+      next(err);
     }
   }
 }
 
-module.exports = new WidgetController();
+module.exports = WidgetController;

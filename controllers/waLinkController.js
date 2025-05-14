@@ -5,13 +5,12 @@ class WaLinkController {
   constructor() {
     this.waLinkService = new WaLinkService();
   }
-  async generateWaLink(req, res) {
+  async generateWaLink(req, res, next) {
     try {
       const link = await this.waLinkService.generateWaLink(req.body);
       res.json({ success: true, data: link });
-    } catch (error) {
-      res.json({ success: false, msg: error.message });
-      console.log(error);
+    } catch (err) {
+      next(err);
     }
   }
 }

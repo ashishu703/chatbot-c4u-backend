@@ -1,52 +1,53 @@
+const ApiKeysNotFoundException = require("../exceptions/CustomExceptions/ApiKeysNotFoundException");
+const MessageObjectKeyIsRequiredException = require("../exceptions/CustomExceptions/MessageObjectKeyIsRequiredException");
 const MetaService = require("../services/metaService");
+const ProvideSendToKeyException = require("../exceptions/CustomExceptions/ProvideSendToKeyException");
+const ProvideTempletNameException = require("../exceptions/CustomExceptions/ProvideTempletNameException");
+const ProvideExampleArrArrayException = require("../exceptions/CustomExceptions/ProvideExampleArrArrayException");
 
 class ApiV2Controller {
   metaService;
   constructor() { 
     this.metaService = new MetaService();
   }
-   async sendMessage(req, res) {
+   async sendMessage(req, res, next) {
     try {
       const { token } = req.query;
       const { messageObject } = req.body;
 
       if (!token) {
-        return res.json({ success: false, message: "API keys not found" });
+        throw new ApiKeysNotFoundException();
       }
 
       if (!messageObject) {
-        return res.json({
-          success: false,
-          message: "messageObject key is required as body response.",
-        });
+       throw new MessageObjectKeyIsRequiredException();
       }
 
       const result = await this.metaService.sendMessage(token, messageObject);
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async sendTemplate(req, res) {
+   async sendTemplate(req, res, next) {
     try {
       const { sendTo, templetName, exampleArr, token, mediaUri } = req.body;
 
       if (!token) {
-        return res.json({ success: false, message: "API keys not found" });
+        throw new ApiKeysNotFoundException();
       }
 
       if (!sendTo) {
-        return res.json({ success: false, message: "Please provide `sendTo` key" });
+       throw new ProvideSendToKeyException();
       }
 
       if (!templetName) {
-        return res.json({ success: false, message: "Please provide `templetName`" });
+        throw new ProvideTempletNameException();
       }
 
       if (!exampleArr) {
-        return res.json({ success: false, message: "Please provide exampleArr array" });
+        throw new ProvideExampleArrArrayException();
       }
 
       const result = await this.metaService.sendTemplate({
@@ -58,8 +59,7 @@ class ApiV2Controller {
       });
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 }

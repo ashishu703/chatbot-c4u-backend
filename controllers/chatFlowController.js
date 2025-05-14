@@ -1,3 +1,5 @@
+const FillAllFieldsException = require("../exceptions/CustomExceptions/FIllAllFieldsException");
+const FlowIdException = require("../exceptions/CustomExceptions/FlowIdException");
 const FlowService = require("../services/chatFlowService");
 
 class FlowController {
@@ -5,52 +7,49 @@ class FlowController {
   constructor() {
     this.flowService = new FlowService();
   }
-   async addFlow(req, res) {
+   async addFlow(req, res, next) {
     try {
       const { title, nodes, edges, flowId } = req.body;
       const user = req.decode;
 
       if (!title || !nodes || !edges || !flowId) {
-        return res.json({ success: false, msg: "Missing required fields" });
+        throw new FillAllFieldsException();
       }
 
       const result = await this.flowService.addFlow({ title, nodes, edges, flowId, user });
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async getFlows(req, res) {
+   async getFlows(req, res, next) {
     try {
       const user = req.decode;
       const flows = await this.flowService.getFlows(user.uid);
       res.json({ data: flows, success: true });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async deleteFlow(req, res) {
+   async deleteFlow(req, res, next) {
     try {
       const { id, flowId } = req.body;
       const user = req.decode;
       const result = await this.flowService.deleteFlow(id, flowId, user.uid);
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-  async getByFlowId(req, res) {
+  async getByFlowId(req, res, next) {
     try {
       const { flowId } = req.body;
 
       if (!flowId) {
-        return res.status(400).json({ success: false, msg: "Flow id missing" });
+        throw new FlowIdException();
       }
 
       const { nodes, edges } = await this.flowService.getFlowById(
@@ -60,33 +59,30 @@ class FlowController {
 
       res.json({ nodes, edges, success: true });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({ success: false, msg: "Something went wrong" });
+      next(err);
     }
   }
 
 
-   async getActivity(req, res) {
+   async getActivity(req, res, next) {
     try {
       const { flowId } = req.body;
       const user = req.decode;
       const result = await this.flowService.getActivity(flowId, user.uid);
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async removeNumberFromActivity(req, res) {
+   async removeNumberFromActivity(req, res, next) {
     try {
       const { type, number, flowId } = req.body;
       const user = req.decode;
       const result = await this.flowService.removeNumberFromActivity(type, number, flowId, user.uid);
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 }

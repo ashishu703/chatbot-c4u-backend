@@ -5,45 +5,41 @@ class SocialController {
   constructor(){
     this.webPublicRepository = new WebPublicRepository();
   }
-   async getWebPublic(req, res) {
+   async getWebPublic(req, res, next) {
     try {
       const data = await this.webPublicRepository.getWebPublic();
       res.json({ data: data || {}, success: true });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: "Something went wrong" });
+      next(err);
     }
   }
 
-   async getSocialLogin(req, res) {
+   async getSocialLogin(req, res, next) {
     try {
       const data = await this.webPublicRepository.getWebPublic();
       res.json({ data: data || {}, success: true });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: "Something went wrong" });
+      next(err);
     }
   }
 
-   async updateSocialLogin(req, res) {
+   async updateSocialLogin(req, res, next) {
     try {
       const { google_client_id, google_login_active } = req.body;
       await this.webPublicRepository.updateSocialLogin(google_client_id, google_login_active);
       res.json({ msg: "Settings updated", success: true });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: "Something went wrong" });
+      next(err);
     }
   }
 
-   async updateRtl(req, res) {
+   async updateRtl(req, res, next) {
     try {
       const { rtl } = req.body;
       await this.webPublicRepository.updateRtl(rtl);
       res.json({ success: true, msg: "RTL was updated" });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: "Something went wrong" });
+      next(err);
     }
   }
 }

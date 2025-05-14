@@ -5,13 +5,12 @@ class MediaController {
     this.mediaService = new MediaService();
   }
 
-  async returnMediaUrl(req, res) {
+  async returnMediaUrl(req, res, next) {
     try {
       const result = await this.mediaService.handleMediaUpload(req.files);
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.status(500).json({ success: false, msg: "something went wrong", err });
+      next(err);
     }
   }
 }

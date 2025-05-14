@@ -18,4 +18,4 @@ class WidgetRepository {
   }
 }
 
-module.exports = new WidgetRepository();
+module.exports = WidgetRepository;

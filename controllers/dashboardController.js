@@ -1,3 +1,5 @@
+const AdminNotFoundException = require('../exceptions/CustomExceptions/AdminNotFoundException');
+const UserNotFoundException = require('../exceptions/CustomExceptions/UserNotFoundException');
 const DashboardService = require('../services/dashboardService');
 
 class DashboardController {
@@ -5,33 +7,31 @@ class DashboardController {
   constructor(){
     this.dashboardService = new DashboardService();
   }
-   async getUserDashboard(req, res) {
+   async getUserDashboard(req, res, next) {
     try {
       const user = req.user;  
       if (!user || !user.id) {
-        return res.status(400).json({ message: "User not found or invalid user data" });
+        throw new UserNotFoundException();
       }
 
       const dashboardData = await this.dashboardService.getDashboardData(user.id, 'user');
       return res.json(dashboardData);
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Failed to get dashboard data", error: error.message });
+    } catch (err) {
+      next(err);
     }
   }
 
-   async getAdminDashboard(req, res) {
+   async getAdminDashboard(req, res, next) {
     try {
       const admin = req.user;
       if (!admin || !admin.id || admin.role !== 'admin') {
-        return res.status(400).json({ message: "Admin not found or invalid admin data" });
+       throw new AdminNotFoundException();
       }
 
       const dashboardData = await this.dashboardService.getDashboardData(admin.id, 'admin');
       return res.json(dashboardData);
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Failed to get dashboard data", error: error.message });
+    } catch (err) {
+      next(err);
     }
   }
 

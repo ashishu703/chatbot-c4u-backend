@@ -1,10 +1,14 @@
-const widgetRepository = require('../repositories/widgetRepository');
+const WidgetRepository = require('../repositories/widgetRepository');
 const { uploadFile, getFileExtension } = require('../utils/fileUtils');
 const { generateWhatsAppURL, returnWidget } = require('../utils/widgetUtils');
 const randomstring = require('randomstring');
 const path = require('path');
 
 class WidgetService {
+  widgetRepository;
+  constructor() {
+    this.widgetRepository = new WidgetRepository();
+  }
   async addWidget(uid, { title, whatsapp_number, place, selectedIcon, logoType, size }, files) {
     if (!title || !whatsapp_number || !place) {
       return { success: false, msg: 'Please fill the details' };
@@ -22,19 +26,19 @@ class WidgetService {
       filename = selectedIcon;
     }
     const unique_id = randomstring.generate(10);
-    await widgetRepository.create({
+    await this.widgetRepository.create({
       unique_id, uid, title, whatsapp_number, logo: filename, place, size: size || 50
     });
     return { success: true, msg: 'Widget was added' };
   }
 
   async getMyWidget(uid) {
-    const widgets = await widgetRepository.findByUid(uid);
+    const widgets = await this.widgetRepository.findByUid(uid);
     return { success: true, data: widgets };
   }
 
   async deleteWidget(id) {
-    await widgetRepository.delete(id);
+    await this.widgetRepository.delete(id);
     return { success: true, msg: 'Widget was deleted' };
   }
 
@@ -42,7 +46,7 @@ class WidgetService {
     if (!id) {
       return '';
     }
-    const widget = await widgetRepository.findByUniqueId(id);
+    const widget = await this.widgetRepository.findByUniqueId(id);
     if (!widget) {
       return '';
     }
@@ -51,4 +55,4 @@ class WidgetService {
   }
 }
 
-module.exports = new WidgetService();
+module.exports = WidgetService;

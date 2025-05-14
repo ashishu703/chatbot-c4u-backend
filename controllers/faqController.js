@@ -5,35 +5,32 @@ class FaqController {
   constructor(){
     this.faqRepository = new FaqRepository();
   }
-   async addFaq(req, res) {
+   async addFaq(req, res, next) {
     try {
       const { question, answer } = req.body;
       await this.faqRepository.addFaq(question, answer);
       res.json({ success: true, msg: "Faq was added" });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async getFaqs(req, res) {
+   async getFaqs(req, res, next) {
     try {
       const faqs = await this.faqRepository.getFaqs();
       res.json({ data: faqs, success: true });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: "Something went wrong" });
+     next(err);
     }
   }
 
-   async deleteFaq(req, res) {
+   async deleteFaq(req, res, next) {
     try {
       const { id } = req.body;
       await this.faqRepository.deleteFaq(id);
       res.json({ success: true, msg: "Faq was deleted" });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: "Something went wrong" });
+     next(err);
     }
   }
 }

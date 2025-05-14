@@ -6,60 +6,54 @@ class AppController {
    constructor() {
     this.appService = new AppService();
   }
-  async returnModule(req, res) {
+  async returnModule(req, res, next) {
     try {
       res.json({ success: true, data: addON || [] });
-    } catch (error) {
-      res.json({ err: error.message, msg: 'server error' });
-      console.log(error);
+    } catch (err) {
+      next(err);
     }
   }
 
-  async checkInstall(req, res) {
+  async checkInstall(req, res, next) {
     try {
       const installed = await this.appService.checkInstall();
       res.json({ success: installed });
-    } catch (error) {
-      res.json({ success: false, msg: 'Server error' });
-      console.log(error);
+    } catch (err) {
+      next(err);
     }
   }
 
-  async getAppVersion(req, res) {
+  async getAppVersion(req, res, next) {
     try {
       res.json({ success: true, version: appVersion });
-    } catch (error) {
-      res.json({ success: false, msg: 'Server error' });
-      console.log(error);
+    } catch (err) {
+      next(err);
     }
   }
 
-  async installApp(req, res) {
+  async installApp(req, res, next) {
     try {
       const result = await this.appService.installApp(req.files);
       res.json(result);
-    } catch (error) {
-      res.json({ success: false, msg: 'Server error' });
-      console.log(error);
+    } catch (err) {
+      next(err);
     }
   }
 
-  async updateApp(req, res) {
+  async updateApp(req, res, next) {
     try {
       const result = await this.appService.updateApp(req.body, req.files);
       res.json(result);
-    } catch (error) {
-      res.json({ success: false, msg: error.message });
-      console.log(error);
+    } catch (err) {
+      next(err);
     }
   }
 
-  async updateToBeShown(req, res) {
+  async updateToBeShown(req, res, next) {
     try {
       res.json({ success: true, show: true });
-    } catch (error) {
-      res.json({ success: false, msg: 'Server error' });
-      console.log(error);
+    } catch (err) {
+      next(err);
     }
   }
 }

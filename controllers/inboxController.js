@@ -1,46 +1,47 @@
 const InboxService = require("../services/inboxService");
+const InvalidRequestException = require("../exceptions/CustomExceptions/InvalidRequestException");
+const NotEnoughInputProvidedException = require("../exceptions/CustomExceptions/NotEnoughInputProvidedException");
+const ProvideTemplateException = require("../exceptions/CustomExceptions/ProvideTemplateException");
+
 
 class InboxController {
   inboxService;
   constructor() {
     this.inboxService = new InboxService();
   }
-   async handleWebhook(req, res) {
+   async handleWebhook(req, res, next) {
     try {
       const { uid } = req.params;
       const body = req.body;
       await this.inboxService.handleWebhook(uid, body);
       res.sendStatus(200);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async getChats(req, res) {
+   async getChats(req, res, next) {
     try {
       const user = req.decode;
       const chats = await this.inboxService.getChats(user.uid);
       res.json({ data: chats, success: true });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async getConversation(req, res) {
+   async getConversation(req, res, next) {
     try {
       const { chatId } = req.body;
       const user = req.decode;
       const conversation = await this.inboxService.getConversation(user.uid, chatId);
       res.json({ data: conversation, success: true });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async verifyWebhook(req, res) {
+   async verifyWebhook(req, res, next) {
     try {
       const { uid } = req.params;
       const { "hub.mode": mode, "hub.verify_token": token, "hub.challenge": challenge } = req.query;
@@ -51,28 +52,26 @@ class InboxController {
         res.sendStatus(403);
       }
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async testSocket(req, res) {
+   async testSocket(req, res, next) {
     try {
       const { msg } = req.query;
       const result = await this.inboxService.testSocket();
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async sendTemplate(req, res) {
+   async sendTemplate(req, res, next) {
     try {
       const { content, toName, toNumber, chatId, msgType } = req.body;
       const user = req.decode;
       if (!content || !toName || !toNumber || !msgType) {
-        return res.json({ success: false, msg: "Invalid request" });
+        throw new InvalidRequestException();
       }
       const result = await this.inboxService.sendMessage(user.uid, {
         content,
@@ -84,17 +83,16 @@ class InboxController {
       });
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async sendImage(req, res) {
+   async sendImage(req, res, next) {
     try {
       const { url, toNumber, toName, chatId, caption } = req.body;
       const user = req.decode;
       if (!url || !toNumber || !toName || !chatId) {
-        return res.json({ success: false, msg: "Not enough input provided" });
+        throw new NotEnoughInputProvidedException();
       }
       const result = await this.inboxService.sendMessage(user.uid, {
         url,
@@ -106,17 +104,16 @@ class InboxController {
       });
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async sendVideo(req, res) {
+   async sendVideo(req, res, next) {
     try {
       const { url, toNumber, toName, chatId, caption } = req.body;
       const user = req.decode;
       if (!url || !toNumber || !toName || !chatId) {
-        return res.json({ success: false, msg: "Not enough input provided" });
+        throw new NotEnoughInputProvidedException();
       }
       const result = await this.inboxService.sendMessage(user.uid, {
         url,
@@ -128,17 +125,16 @@ class InboxController {
       });
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async sendDocument(req, res) {
+   async sendDocument(req, res, next) {
     try {
       const { url, toNumber, toName, chatId, caption } = req.body;
       const user = req.decode;
       if (!url || !toNumber || !toName || !chatId) {
-        return res.json({ success: false, msg: "Not enough input provided" });
+        throw new NotEnoughInputProvidedException();
       }
       const result = await this.inboxService.sendMessage(user.uid, {
         url,
@@ -150,17 +146,16 @@ class InboxController {
       });
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async sendAudio(req, res) {
+   async sendAudio(req, res, next) {
     try {
       const { url, toNumber, toName, chatId } = req.body;
       const user = req.decode;
       if (!url || !toNumber || !toName || !chatId) {
-        return res.json({ success: false, msg: "Not enough input provided" });
+        throw new NotEnoughInputProvidedException();
       }
       const result = await this.inboxService.sendMessage(user.uid, {
         url,
@@ -171,17 +166,16 @@ class InboxController {
       });
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async sendText(req, res) {
+   async sendText(req, res, next) {
     try {
       const { text, toNumber, toName, chatId } = req.body;
       const user = req.decode;
       if (!text || !toNumber || !toName || !chatId) {
-        return res.json({ success: false, msg: "Not enough input provided" });
+        throw new NotEnoughInputProvidedException();
       }
       const result = await this.inboxService.sendMessage(user.uid, {
         text,
@@ -192,17 +186,16 @@ class InboxController {
       });
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async sendMetaTemplate(req, res) {
+   async sendMetaTemplate(req, res, next) {
     try {
       const { template, toNumber, toName, chatId, example } = req.body;
       const user = req.decode;
       if (!template) {
-        return res.json({ success: false, msg: "Please provide template" });
+        throw new ProvideTemplateException();
       }
       const result = await this.inboxService.sendMetaTemplate(user.uid, {
         template,
@@ -213,20 +206,18 @@ class InboxController {
       });
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-   async deleteChat(req, res) {
+   async deleteChat(req, res, next) {
     try {
       const { chatId } = req.body;
       const user = req.decode;
       const result = await this.inboxService.deleteChat(user.uid, chatId);
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 }

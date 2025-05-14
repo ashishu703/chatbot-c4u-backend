@@ -1,19 +1,19 @@
 const PageRepository = require("../repositories/pageRepository");
 const FileService = require("../services/fileService");
-
+const NoFilesWereUploadedException = require("../exceptions/CustomExceptions/NoFilesWereUploadedException");
 class PageController {
   fileService;
   constructor() {
     this.fileService = new FileService();
   }
 
-  async addPage(req, res) {
+  async addPage(req, res, next) {
     try {
       const { title, content, slug } = req.body;
       const file = req.files?.file;
 
       if (!file) {
-        return res.status(400).json({ success: false, msg: "No file uploaded" });
+        throw new NoFilesWereUploadedException();
       }
 
       const filename = await this.fileService.uploadFile(file);
@@ -21,62 +21,56 @@ class PageController {
 
       res.json({ success: true, msg: "Page was added" });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: err.message || "Something went wrong" });
+      next(err);
     }
   }
 
-  async getPages(req, res) {
+  async getPages(req, res, next) {
     try {
       const pages = await PageRepository.getPages();
       res.json({ data: pages, success: true });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: "Something went wrong" });
+      next(err);
     }
   }
 
-  async deletePage(req, res) {
+  async deletePage(req, res, next) {
     try {
       const { id } = req.body;
       await PageRepository.deletePage(id);
       res.json({ success: true, msg: "Page was deleted" });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: "Something went wrong" });
+      next(err);
     }
   }
 
-  async getPageBySlug(req, res) {
+  async getPageBySlug(req, res, next) {
     try {
       const { slug } = req.body;
       const page = await PageRepository.getPageBySlug(slug);
       res.json({ data: page || {}, success: true, page: !!page });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: "Server error" });
+      next(err);
     }
   }
 
-  async updateTerms(req, res) {
+  async updateTerms(req, res, next) {
     try {
       const { title, content } = req.body;
       await PageRepository.updateTerms(title, content);
       res.json({ success: true, msg: "Page updated" });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: "Server error" });
+      next(err);
     }
   }
 
-  async updatePrivacyPolicy(req, res) {
+  async updatePrivacyPolicy(req, res, next) {
     try {
       const { title, content } = req.body;
       await PageRepository.updatePrivacyPolicy(title, content);
       res.json({ success: true, msg: "Page updated" });
     } catch (err) {
-      console.error(err);
-      res.json({ success: false, msg: "Server error" });
+      next(err);
     }
   }
 }

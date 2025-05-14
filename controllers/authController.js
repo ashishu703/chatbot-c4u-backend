@@ -1,5 +1,7 @@
 const AuthService = require('../services/authService');
 const HttpException = require('../middlewares/HttpException');
+const TokenMissingOrInvalidExecption = require('../exceptions/CustomExceptions/TokenMissingOrInvalidExecption');
+const TokenMalformedExecption = require('../exceptions/CustomExceptions/TokenMalformedExecption');
 
 class AuthController {
   authService;
@@ -8,127 +10,112 @@ class AuthController {
     this.authService = new AuthService(); 
   }
  
-  async verify(req, res) {
+  async verify(req, res, next) {
     try {
       let token = req.headers.authorization;
       if (!token) {
-        return res.status(400).json({ message: 'Token is missing or invalid' });
+        throw new TokenMissingOrInvalidExecption();
       }
       token = token.split(' ')[1]; 
       if (!token) {
-        return res.status(400).json({ message: 'Token is malformed' });
+        throw new TokenMalformedExecption();
       }
       const user = await this.authService.verifyToken(token);
       res.status(200).json({ user });
-    } catch (error) {
+    } catch (err) {
     
-      res.status(400).json({ message: 'Token expired or invalid', error: error.message });
+      next(err);
     }
   }
   
   
 
-  async loginWithFacebook(req, res) {
+  async loginWithFacebook(req, res, next) {
     try {
       const { token, userId, email, name } = req.body;
       const result = await this.authService.loginWithFacebook({ token, userId, email, name });
       res.json(result);
-    } catch (error) {
-      res.json({ success: false, msg: 'Something went wrong', err: error.message });
-      console.log(error);
+    } catch (err) {
+      next(err);
     }
   }
 
-  async loginWithGoogle(req, res) {
+  async loginWithGoogle(req, res, next) {
     try {
       const response = await this.authService.loginWithGoogle(req.body.token);
       res.json(response);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, msg: error.message });
+    } catch (err) {
+     next(err);
     }
   }
 
 
-  async signup(req, res) {
+  async signup(req, res, next) {
     try {
       const { email, name, password, mobile_with_country_code, acceptPolicy } = req.body;
       const result = await this.authService.signup({ email, name, password, mobile_with_country_code, acceptPolicy });
       res.json(result);
-    } catch (error) {
-      res.json({ success: false, msg: 'Something went wrong', err: error.message });
-      console.log(error);
+    } catch (err) {
+      next(err);
     }
   }
 
-  async userlogin(req, res) {
+  async userlogin(req, res, next) {
     try {
       const { email, password } = req.body;
       const result = await this.authService.userlogin({ email, password });
       res.status(200).json(result);
-    } catch (error) {
-      if (error instanceof HttpException) {
-        res.status(error.status).json({ message: error.message });
-      } else {
-        res.status(500).json({ message: 'Something went wrong' });
-      }
+    } catch (err) {
+      next(err);
     }
   }
 
-  async adminlogin(req, res) {
+  async adminlogin(req, res, next) {
     try {
       const { email, password } = req.body;
       const result = await this.authService.adminlogin({ email, password });
       res.status(200).json(result);
-    } catch (error) {
-      if (error instanceof HttpException) {
-        res.status(error.status).json({ message: error.message });
-      } else {
-        res.status(500).json({ message: 'Something went wrong' });
-      }
+    } catch (err) {
+      next(err);
     }
   }
 
-  async sendRecovery(req, res) {
+  async sendRecovery(req, res, next) {
     try {
       const { email } = req.body;
       const result = await this.authService.sendRecovery(email);
       res.json(result);
-    } catch (error) {
-      res.json({ success: false, msg: 'Something went wrong', err: error.message });
-      console.log(error);
+    } catch (err) {
+      next(err);
     }
   }
 
-  async modifyPassword(req, res) {
+  async modifyPassword(req, res, next) {
     try {
       const { pass } = req.query;
       const result = await this.authService.modifyPassword(req.decode, pass);
       res.json(result);
-    } catch (error) {
-      res.json({ success: false, msg: 'Something went wrong', err: error.message });
-      console.log(error);
+    } catch (err) {
+      next(err);
     }
   }
 
-  async generateApiKeys(req, res) {
+  async generateApiKeys(req, res, next) {
     try {
       const result = await this.authService.generateApiKeys(req.decode.uid);
       res.json(result);
-    } catch (error) {
-      res.json({ success: false, msg: 'Something went wrong', err: error.message });
-      console.log(error);
+    } catch (err) {
+      next(err);
     }
   }
 
-  async autoAgentLogin(req, res) {
+  async autoAgentLogin(req, res, next) {
     try {
       const { uid } = req.body;
       const result = await this.authService.autoAgentLogin(uid);
       res.json(result);
-    } catch (error) {
-      res.json({ success: false, msg: 'Something went wrong', err: error.message });
-      console.log(error);
+    } catch (err) {
+      next(err);
     }
   }
 }
