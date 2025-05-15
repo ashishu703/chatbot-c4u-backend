@@ -5,6 +5,7 @@ const MessangerAuthService = require("../../services/_messanger/MessangerAuthSer
 const MessangerPageService = require("../../services/_messanger/MessangerPageService");
 const { formSuccess } = require("../../utils/response.utils");
 const MessangerController = require("../_messanger/MessangerController");
+const AuthenticationFailedException = require("../../exceptions/CustomExceptions/AuthenticationFailedException")
 
 module.exports = class MessangerAuthController extends MessangerController {
     async initiateUserAuth(req, res, next) {
