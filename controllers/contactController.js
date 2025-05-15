@@ -1,6 +1,7 @@
 const UidRequiredException = require("../exceptions/CustomExceptions/UidRequiredException");
 const ContactService = require("../services/ContactService");
 const {formSuccess} = require("../utils/response.utils");
+const { __t } = require("../utils/locale.utils");
 class ContactController {
   contactService;
 
@@ -28,7 +29,9 @@ class ContactController {
         throw new UidRequiredException();
       }
       await this.contactService.deleteContactEntry(id);
-      return formSuccess({ msg: "Entry was deleted" });
+      return formSuccess({ msg: __t("entry_was_deleted"),
+
+       });
     } catch (err) {
       next(err);
     }
@@ -37,7 +40,9 @@ class ContactController {
   async submitContactForm(req, res, next) {
     try {
       await this.contactService.submitContactForm(req.body);
-      return formSuccess({ msg: 'Your form has been submitted. We will contact you asap' });
+      return formSuccess({ msg: __t("form_submitted"),
+        
+       });
     } catch (err) {
       next(err);
     }

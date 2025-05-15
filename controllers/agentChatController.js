@@ -1,6 +1,7 @@
 const ChatService = require("../services/chatService");
 const InvalidRequestException = require("../exceptions/CustomExceptions/InvalidRequestException");
 const {formSuccess} = require("../utils/response.utils");
+const { __t } = require("../utils/locale.utils");
 class AgentChatController {
   chatService;
   constructor() {
@@ -30,7 +31,9 @@ class AgentChatController {
     try {
       const { assignAgent, chatId } = req.body;
       await this.chatService.updateAgentInChat(req.decode.uid, assignAgent, chatId);
-      return formSuccess({msg: "Updated"});
+      return formSuccess({msg: __t("updated"),
+
+      });
     } catch (err) {
       next(err);
     }
@@ -40,7 +43,10 @@ class AgentChatController {
     try {
       const { uid, chat_id } = req.body;
       await this.chatService.deleteAssignedChat(req.decode.uid, uid, chat_id);
-       return formSuccess({msg: "Chat was removed from the agent"});
+       return formSuccess({msg:__t(
+       "chat_removed_from_agent"
+       ),
+      });
     } catch (err) {
      next(err);
     }
@@ -72,7 +78,7 @@ class AgentChatController {
         throw new InvalidRequestException();
       }
       await this.chatService.changeChatTicketStatus(chatId, status);
-       return formSuccess({ msg: "Chat status updated" });
+       return formSuccess({ msg: __t("chat_status_updated"), });
     } catch (err) {
       next(err);
     }

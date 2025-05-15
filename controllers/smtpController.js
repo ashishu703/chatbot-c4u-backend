@@ -1,6 +1,7 @@
 const EmailService = require("../services/emailService");
 const SmtpRepository = require("../repositories/smtpRepository");
 const { formSuccess } = require("../utils/response.utils");
+const{ __t }=require("../utils/locale.utils")
 
 class SmtpController {
   emailService;
@@ -22,7 +23,9 @@ class SmtpController {
     try {
       const smtpData = req.body;
       await this.smtpRepository.updateSmtp(smtpData);
-      return formSuccess({  msg: "Email settings was updated" });
+      return formSuccess({  msg: __t("email_settings_updated"),
+
+       });
     } catch (err) {
       next(err);
     }

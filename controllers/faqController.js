@@ -1,5 +1,6 @@
 const FaqRepository = require("../repositories/faqRepository");
 const {formSuccess} = require("../utils/response.utils");
+const{ __t } = require("../utils/locale.utils")
 class FaqController {
   faqRepository;
   constructor(){
@@ -9,7 +10,9 @@ class FaqController {
     try {
       const { question, answer } = req.body;
       await this.faqRepository.addFaq(question, answer);
-      return formSuccess({ msg: "Faq was added" });
+      return formSuccess({ msg:__t("faq_was_added"),
+
+       });
     } catch (err) {
       next(err);
     }
@@ -28,7 +31,9 @@ class FaqController {
     try {
       const { id } = req.body;
       await this.faqRepository.deleteFaq(id);
-      return formSuccess({ msg: "Faq was deleted" });
+      return formSuccess({ msg: __t("faq_was_deleted"),
+        
+      });
     } catch (err) {
      next(err);
     }

@@ -1,6 +1,7 @@
 const FileService = require("../services/fileService");
 const BrandRepository = require("../repositories/brandRepository");
 const {formSuccess} = require("../utils/response.utils");
+const { __t } = require("../utils/locale.utils");
 class BrandController {
   brandRepository;
   fileService;
@@ -14,7 +15,7 @@ class BrandController {
       const file = req.files?.file;
       const filename = await this.fileService.uploadFile(file);
       await this.brandRepository.addBrand(filename);
-      return formSuccess({ msg: "Logo was uploaded" });
+      return formSuccess({ msg: __t("logo_was_uploaded"), });
     } catch (err) {
       next(err);
     }
@@ -33,7 +34,9 @@ class BrandController {
     try {
       const { id } = req.body;
       await this.brandRepository.deleteBrand(id);
-      return formSuccess({ msg: "Brand was deleted" });
+      return formSuccess({ msg: __t("brand_was_deleted"),
+        
+       });
     } catch (err) {
       next(err);
     }

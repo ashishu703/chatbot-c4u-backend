@@ -3,8 +3,8 @@ const AdminRepository = require("../repositories/AdminRepository");
 const PasswordNotProvidedException = require("../exceptions/CustomExceptions/PasswordNotProvidedException");
 const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
-const {formSuccess} = require("../utils/response.utils");
-
+const { formSuccess } = require("../utils/response.utils");
+const { __t } = require("../utils/locale.utils");
 
 class AdminController {
   adminRepository;
@@ -23,9 +23,9 @@ class AdminController {
       }
       const token = await AuthService.login(user, password);
       if (!token) {
-       throw new InvalidCredentialsException();
+        throw new InvalidCredentialsException();
       }
-      return formSuccess({token});
+      return formSuccess({ token });
     } catch (err) {
       next(err);
     }
@@ -35,8 +35,10 @@ class AdminController {
     try {
       const { email } = req.body;
       await AuthService.sendRecoveryEmail(email);
-     return formSuccess({
-        msg: "We have sent a recovery link if this email is associated with admin account.",
+      return formSuccess({
+        msg: __t(
+          "password_recovery_email_sent"
+        ),
       });
     } catch (err) {
       next(err);
@@ -51,7 +53,9 @@ class AdminController {
       }
       await AuthService.modifyPassword(req.decode, pass);
       return formSuccess({
-        msg: "Your password has been changed. You may login now! Redirecting...",
+        msg: __t(
+          "password_changed"
+        ),
       });
     } catch (err) {
       next(err);
@@ -61,7 +65,7 @@ class AdminController {
   async getAdmin(req, res, next) {
     try {
       const admin = await this.adminRepository.findById(req.decode.uid);
-      return formSuccess({data: admin });
+      return formSuccess({ data: admin });
     } catch (err) {
       next(err);
     }
@@ -71,7 +75,10 @@ class AdminController {
     try {
       const { email, newpass } = req.body;
       await this.adminRepository.updateAdmin(req.decode.uid, email, newpass);
-    return formSuccess({ msg: "Admin was updated refresh the page" });
+      return formSuccess({ msg:__t(
+        "admin_updated"
+      ),
+     });
     } catch (err) {
       next(err);
     }

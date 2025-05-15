@@ -2,6 +2,7 @@ const PageRepository = require("../repositories/pageRepository");
 const FileService = require("../services/fileService");
 const NoFilesWereUploadedException = require("../exceptions/CustomExceptions/NoFilesWereUploadedException");
 const { formSuccess } = require("../utils/response.utils");
+const{ __t } = require("../utils/locale.utils")
 class PageController {
   fileService;
   constructor() {
@@ -20,7 +21,9 @@ class PageController {
       const filename = await this.fileService.uploadFile(file);
       await PageRepository.addPage({ title, content, slug, image: filename });
 
-      return formSuccess({  msg: "Page was added" });
+      return formSuccess({  msg: __t("page_was_added"),
+
+       });
     } catch (err) {
       next(err);
     }
@@ -39,7 +42,9 @@ class PageController {
     try {
       const { id } = req.body;
       await PageRepository.deletePage(id);
-      return formSuccess({ msg: "Page was deleted" });
+      return formSuccess({ msg: __t("page_was_deleted"),
+
+       });
     } catch (err) {
       next(err);
     }
@@ -59,7 +64,9 @@ class PageController {
     try {
       const { title, content } = req.body;
       await PageRepository.updateTerms(title, content);
-      return formSuccess({ msg: "Page updated" });
+      return formSuccess({ msg: __t("page_updated"),
+        
+       });
     } catch (err) {
       next(err);
     }
@@ -69,7 +76,9 @@ class PageController {
     try {
       const { title, content } = req.body;
       await PageRepository.updatePrivacyPolicy(title, content);
-      return formSuccess({ msg: "Page updated" });
+      return formSuccess({ msg: __t("page_updated"),
+        
+       });
     } catch (err) {
       next(err);
     }

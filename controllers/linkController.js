@@ -1,5 +1,6 @@
 const LinkRepository = require("../repositories/linkRepository");
 const { formSuccess } = require("../utils/response.utils");
+const { __t }= require("../utils/locale.utils")
 
 class LinkController {
   linkRepository;
@@ -19,7 +20,9 @@ class LinkController {
     try {
       const { id } = req.body;
       await this.linkRepository.deleteGeneratedLink(id);
-      return formSuccess({ msg: "Generated link was deleted"});
+      return formSuccess({ msg: __t("generated_link_was_deleted"),
+        
+      });
     } catch (err) {
       next(err);
     }

@@ -1,6 +1,6 @@
 const WebConfigService = require('../services/WebConfigService');
 const { formSuccess } = require('../utils/response.utils');
-
+const { __t }= require("../utils/locale.utils")
 class WebConfigController {
   webConfigService;
   constructor() {
@@ -9,7 +9,7 @@ class WebConfigController {
   async updateWebConfig(req, res, next) {
     try {
       const result = await this.webConfigService .updateWebConfig(req);
-      return formSuccess({ msg: 'Web config updated', data: result });
+      return formSuccess({ msg: __t("web_config_updated"), data: result });
     } catch (err) {
       next(err);
     }

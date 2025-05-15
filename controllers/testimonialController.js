@@ -1,5 +1,6 @@
 const TestimonialRepository = require("../repositories/testimonialRepository");
 const { formSuccess } = require("../utils/response.utils");
+const{ __t }=require("../utils/locale.utils")
 
 class TestimonialController {
 
@@ -7,7 +8,9 @@ class TestimonialController {
     try {
       const testimonialData = req.body;
       await TestimonialRepository.addTestimonial(testimonialData);
-      return formSuccess({  msg: "Testimonial was added" });
+      return formSuccess({  msg: __t("testimonial_was_added"),
+
+       });
     } catch (err) {
       next(err);
     }
@@ -28,7 +31,9 @@ class TestimonialController {
     console.log("Deleting testimonial with ID:", id);  
     const deleted = await TestimonialRepository.deleteTestimonial(id);
     console.log("Deleted?", deleted);  
-    return formSuccess({  msg: "Testimonial was deleted" });
+    return formSuccess({  msg: __t("testimonial_was_deleted"),
+      
+     });
   } catch (err) {
    next(err);
   }

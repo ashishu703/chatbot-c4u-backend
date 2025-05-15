@@ -1,6 +1,7 @@
 const PaymentRepository = require("../repositories/paymentRepository");
 const PaymentService = require("../services/PaymentService");
 const { formSuccess } = require("../utils/response.utils");
+const { __t }= require("../utils/locale.utils")
 class PaymentController {
   paymentRepository;
   paymentService;
@@ -21,7 +22,9 @@ class PaymentController {
     try {
       const gatewayData = req.body;
       await this.paymentRepository.updatePaymentGateway(gatewayData);
-      return formSuccess({ msg: "Payment gateway updated" });
+      return formSuccess({ msg: __t("payment_gateway_updated"),
+
+       });
     } catch (err) {
       next(err);
     }

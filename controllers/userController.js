@@ -2,6 +2,7 @@ const UserService = require('../services/userService');
 const HttpException = require('../middlewares/HttpException');
 const TokenMissingOrInvalidExecption = require('../exceptions/CustomExceptions/TokenMissingOrInvalidExecption');
 const { formSuccess } = require('../utils/response.utils');
+const{ __t }= require("../utils/locale.utils")
 class UserController {
   userService;
 
@@ -21,7 +22,9 @@ class UserController {
   async updateUser(req, res, next) {
     try {
       await this.userService.updateUser(req.body);
-      return formSuccess({ msg: 'User was updated' });
+      return formSuccess({ msg: __t("user_was_updated"),
+
+       });
     } catch (err) {
       next(err);
     }
@@ -39,7 +42,9 @@ class UserController {
   async deleteUser(req, res, next) {
     try {
       await this.userService.deleteUser(req.body.id);
-      return formSuccess({ msg: 'User was deleted' });
+      return formSuccess({ msg: __t("user_was_deleted"),
+
+       });
     } catch (err) {
       next(err);
     }

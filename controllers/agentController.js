@@ -3,7 +3,7 @@ const { isValidEmail } = require("../functions/function");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException");
 const {formSuccess} = require("../utils/response.utils");
-
+const { __t } = require("../utils/locale.utils");
 class AgentController {
   constructor() {
     this.agentService = new AgentService();
@@ -30,7 +30,9 @@ class AgentController {
         comments,
       });
 
-      return formSuccess({msg: "Agent account was created"});
+      return formSuccess({msg: __t("agent_account_created"),
+
+      });
     } catch (err) {
      next(err);
     }
@@ -49,7 +51,9 @@ class AgentController {
     try {
       const { agentUid, activeness } = req.body;
       await this.agentService.changeAgentActiveness(agentUid, activeness);
-      return formSuccess({msg: "Success" });
+      return formSuccess({msg: __t(success),
+
+       });
     } catch (err) {
      next(err);
     }
@@ -59,7 +63,9 @@ class AgentController {
     try {
       const { uid } = req.body;
       await this.agentService.deleteAgent(uid, req.decode.uid);
-      return formSuccess({msg: "Agent was deleted" });
+      return formSuccess({msg:__t(agent_was_deleted),
+        
+       });
     } catch (err) {
       next(err);
     }
