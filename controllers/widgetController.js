@@ -1,4 +1,5 @@
 const WidgetService = require('../services/widgetService');
+const { formSuccess } = require('../utils/response.utils');
 
 class WidgetController {
   widgetService;
@@ -8,7 +9,7 @@ class WidgetController {
   async returnMediaUrl(req, res, next) {
     try {
       const result = await this.widgetService.returnMediaUrl(req.files);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -25,7 +26,7 @@ class WidgetController {
         logoType,
         size
       }, req.files);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -34,7 +35,7 @@ class WidgetController {
   async getMyWidget(req, res, next) {
     try {
       const result = await this.widgetService.getMyWidget(req.decode.uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -44,7 +45,7 @@ class WidgetController {
     try {
       const { id } = req.body;
       const result = await this.widgetService.deleteWidget(id);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -54,7 +55,7 @@ class WidgetController {
     try {
       const { id } = req.query;
       const result = await this.widgetService.getWidget(id);
-      res.send(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }

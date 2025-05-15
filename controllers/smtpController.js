@@ -1,5 +1,6 @@
 const EmailService = require("../services/emailService");
 const SmtpRepository = require("../repositories/smtpRepository");
+const { formSuccess } = require("../utils/response.utils");
 
 class SmtpController {
   emailService;
@@ -11,7 +12,7 @@ class SmtpController {
    async getSmtp(req, res, next) {
     try {
       const smtp = await this.smtpRepository.getSmtp();
-      res.json({ data: smtp || { id: "ID" }, success: true });
+      return formSuccess({ data: smtp || { id: "ID" }});
     } catch (err) {
       next(err);
     }
@@ -21,7 +22,7 @@ class SmtpController {
     try {
       const smtpData = req.body;
       await this.smtpRepository.updateSmtp(smtpData);
-      res.json({ success: true, msg: "Email settings was updated" });
+      return formSuccess({  msg: "Email settings was updated" });
     } catch (err) {
       next(err);
     }
@@ -31,7 +32,7 @@ class SmtpController {
     try {
       const { email, port, password, host, to } = req.body;
       const result = await this.emailService.sendTestEmail({ email, port, password, host, to });
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }

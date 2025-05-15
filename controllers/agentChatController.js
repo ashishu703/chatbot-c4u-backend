@@ -1,5 +1,6 @@
 const ChatService = require("../services/chatService");
 const InvalidRequestException = require("../exceptions/CustomExceptions/InvalidRequestException");
+const {formSuccess} = require("../utils/response.utils");
 class AgentChatController {
   chatService;
   constructor() {
@@ -9,7 +10,7 @@ class AgentChatController {
     try {
       const { uid } = req.body;
       const chats = await this.chatService.getAgentChatsOwner(req.decode.uid, uid);
-      res.json({ data: chats, success: true });
+      return formSuccess({ data: chats});
     } catch (err) {
      next(err);
     }
@@ -19,7 +20,7 @@ class AgentChatController {
     try {
       const { chatId } = req.body;
       const agent = await this.chatService.getAssignedChatAgent(req.decode.uid, chatId);
-      res.json({ data: agent, success: true });
+      return formSuccess({data: agent });
     } catch (err) {
       next(err);
     }
@@ -29,7 +30,7 @@ class AgentChatController {
     try {
       const { assignAgent, chatId } = req.body;
       await this.chatService.updateAgentInChat(req.decode.uid, assignAgent, chatId);
-      res.json({ msg: "Updated", success: true });
+      return formSuccess({msg: "Updated"});
     } catch (err) {
       next(err);
     }
@@ -39,7 +40,7 @@ class AgentChatController {
     try {
       const { uid, chat_id } = req.body;
       await this.chatService.deleteAssignedChat(req.decode.uid, uid, chat_id);
-       res.json({ msg: "Chat was removed from the agent", success: true });
+       return formSuccess({msg: "Chat was removed from the agent"});
     } catch (err) {
      next(err);
     }
@@ -48,7 +49,7 @@ class AgentChatController {
    async getMyAssignedChats(req, res, next) {
     try {
       const chats = await this.chatService.getMyAssignedChats(req.decode.uid, req.owner.uid);
-      res.json({ data: chats, success: true });
+      return formSuccess({data: chats});
     } catch (err) {
      next(err);
     }
@@ -58,7 +59,7 @@ class AgentChatController {
     try {
       const { chatId } = req.body;
       const data = await this.chatService.getConversation(req.owner.uid, chatId);
-      res.json({ data, success: true });
+      return formSuccess({data});
     } catch (err) {
      next(err);
     }
@@ -71,7 +72,7 @@ class AgentChatController {
         throw new InvalidRequestException();
       }
       await this.chatService.changeChatTicketStatus(chatId, status);
-       res.json({ success: true, msg: "Chat status updated" });
+       return formSuccess({ msg: "Chat status updated" });
     } catch (err) {
       next(err);
     }

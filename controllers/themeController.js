@@ -1,4 +1,5 @@
 const ThemeService = require('../services/ThemeService');
+const { formSuccess } = require('../utils/response.utils');
 
 class ThemeController {
   themeService;
@@ -8,7 +9,7 @@ class ThemeController {
   async getTheme(req, res, next) {
     try {
       const result = await this.themeService.getTheme();
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -17,7 +18,7 @@ class ThemeController {
   async saveTheme(req, res, next) {
     try {
       const result = await this.themeService.saveTheme(req.body.updatedJson);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }

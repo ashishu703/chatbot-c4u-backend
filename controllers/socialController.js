@@ -1,4 +1,5 @@
 const WebPublicRepository = require("../repositories/webPublicRepository");
+const { formSuccess } = require("../utils/response.utils");
 
 class SocialController {
   webPublicRepository;
@@ -8,7 +9,7 @@ class SocialController {
    async getWebPublic(req, res, next) {
     try {
       const data = await this.webPublicRepository.getWebPublic();
-      res.json({ data: data || {}, success: true });
+      return formSuccess({ data: data || {} });
     } catch (err) {
       next(err);
     }
@@ -17,7 +18,7 @@ class SocialController {
    async getSocialLogin(req, res, next) {
     try {
       const data = await this.webPublicRepository.getWebPublic();
-      res.json({ data: data || {}, success: true });
+      return formSuccess({ data: data || {} });
     } catch (err) {
       next(err);
     }
@@ -27,7 +28,7 @@ class SocialController {
     try {
       const { google_client_id, google_login_active } = req.body;
       await this.webPublicRepository.updateSocialLogin(google_client_id, google_login_active);
-      res.json({ msg: "Settings updated", success: true });
+      return formSuccess({ msg: "Settings updated" });
     } catch (err) {
       next(err);
     }
@@ -37,7 +38,7 @@ class SocialController {
     try {
       const { rtl } = req.body;
       await this.webPublicRepository.updateRtl(rtl);
-      res.json({ success: true, msg: "RTL was updated" });
+      return formSuccess({ msg: "RTL was updated" });
     } catch (err) {
       next(err);
     }

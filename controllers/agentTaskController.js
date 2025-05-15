@@ -1,5 +1,6 @@
 const AgentService = require("../services/agentService");
 const TypeCommentException = require("../exceptions/CustomExceptions/TypeCommentException");
+const {formSuccess} = require("../utils/response.utils");
 class AgentTaskController {
   agentService;
   constructor() {
@@ -8,7 +9,7 @@ class AgentTaskController {
    async getMyTasks(req, res, next) {
     try {
       const tasks = await this.agentService.getAgentTasks(req.decode.uid);
-      res.json({ data: tasks, success: true });
+      return formSuccess({ data: tasks });
     } catch (err) {
       next(err);
     }
@@ -21,7 +22,7 @@ class AgentTaskController {
         throw new TypeCommentException();
       }
       await this.agentService.markTaskComplete(id, comment);
-      res.json({ msg: "Task updated", success: true });
+      return formSuccess({ msg: "Task updated" });
     } catch (err) {
       next(err);
     }

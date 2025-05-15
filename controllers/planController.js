@@ -2,6 +2,7 @@ const PlanService = require("../services/planService");
 const { addDaysToCurrentTimestamp } = require("../utils/dateUtils");
 const { User } = require("../models");
 const UidandPlanRequiredException = require("../exceptions/CustomExceptions/UidandPlanRequiredException");
+const { formSuccess } = require("../utils/response.utils");
 
 class PlanController {
   planService;
@@ -14,7 +15,7 @@ class PlanController {
     try {
       const planData = req.body;
       await this.planService.addPlan(planData);
-      res.json({ success: true, msg: "Plan has been updated" });
+      return formSuccess({ msg: "Plan has been updated" });
     } catch (err) {
       next(err);
     }
@@ -23,7 +24,7 @@ class PlanController {
   async getPlans(req, res, next) {
     try {
       const plans = await this.planService.getPlans();
-      res.json({ success: true, data: plans });
+      return formSuccess({ data: plans });
     } catch (err) {
       next(err);
     }
@@ -33,7 +34,7 @@ class PlanController {
     try {
       const { id } = req.body;
       await this.planService.deletePlan(id);
-      res.json({ success: true, msg: "Plan was deleted" });
+      return formSuccess({ msg: "Plan was deleted" });
     } catch (err) {
       next(err);
     }
@@ -59,7 +60,7 @@ class PlanController {
       );
       
 
-      res.json({ success: true, msg: "User plan was updated" });
+      return formSuccess({ msg: "User plan was updated" });
     } catch (err) {
       next(err);
     }

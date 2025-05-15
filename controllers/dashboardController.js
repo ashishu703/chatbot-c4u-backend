@@ -1,7 +1,7 @@
 const AdminNotFoundException = require('../exceptions/CustomExceptions/AdminNotFoundException');
 const UserNotFoundException = require('../exceptions/CustomExceptions/UserNotFoundException');
 const DashboardService = require('../services/dashboardService');
-
+const {formSuccess} = require("../utils/response.utils");
 class DashboardController {
   dashboardService;
   constructor(){
@@ -15,7 +15,7 @@ class DashboardController {
       }
 
       const dashboardData = await this.dashboardService.getDashboardData(user.id, 'user');
-      return res.json(dashboardData);
+      return formSuccess(dashboardData);
     } catch (err) {
       next(err);
     }
@@ -29,7 +29,7 @@ class DashboardController {
       }
 
       const dashboardData = await this.dashboardService.getDashboardData(admin.id, 'admin');
-      return res.json(dashboardData);
+      return formSuccess(dashboardData);
     } catch (err) {
       next(err);
     }

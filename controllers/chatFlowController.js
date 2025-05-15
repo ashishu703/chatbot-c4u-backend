@@ -1,7 +1,7 @@
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FIllAllFieldsException");
 const FlowIdException = require("../exceptions/CustomExceptions/FlowIdException");
 const FlowService = require("../services/chatFlowService");
-
+const {formSuccess} = require("../utils/response.utils");
 class FlowController {
   flowService;
   constructor() {
@@ -17,7 +17,7 @@ class FlowController {
       }
 
       const result = await this.flowService.addFlow({ title, nodes, edges, flowId, user });
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -27,7 +27,7 @@ class FlowController {
     try {
       const user = req.decode;
       const flows = await this.flowService.getFlows(user.uid);
-      res.json({ data: flows, success: true });
+      return formSuccess({ data: flows });
     } catch (err) {
       next(err);
     }
@@ -38,7 +38,7 @@ class FlowController {
       const { id, flowId } = req.body;
       const user = req.decode;
       const result = await this.flowService.deleteFlow(id, flowId, user.uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -57,7 +57,7 @@ class FlowController {
         flowId
       );
 
-      res.json({ nodes, edges, success: true });
+      return formSuccess({ nodes, edges });
     } catch (err) {
       next(err);
     }
@@ -69,7 +69,7 @@ class FlowController {
       const { flowId } = req.body;
       const user = req.decode;
       const result = await this.flowService.getActivity(flowId, user.uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -80,7 +80,7 @@ class FlowController {
       const { type, number, flowId } = req.body;
       const user = req.decode;
       const result = await this.flowService.removeNumberFromActivity(type, number, flowId, user.uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }

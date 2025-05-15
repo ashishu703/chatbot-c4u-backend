@@ -4,7 +4,7 @@ const MetaService = require("../services/metaService");
 const ProvideSendToKeyException = require("../exceptions/CustomExceptions/ProvideSendToKeyException");
 const ProvideTempletNameException = require("../exceptions/CustomExceptions/ProvideTempletNameException");
 const ProvideExampleArrArrayException = require("../exceptions/CustomExceptions/ProvideExampleArrArrayException");
-
+const {formSuccess} = require("../utils/response.utils");
 class ApiV2Controller {
   metaService;
   constructor() { 
@@ -24,7 +24,7 @@ class ApiV2Controller {
       }
 
       const result = await this.metaService.sendMessage(token, messageObject);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -57,7 +57,7 @@ class ApiV2Controller {
         exampleArr,
         mediaUri,
       });
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }

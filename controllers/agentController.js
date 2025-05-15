@@ -2,6 +2,8 @@ const AgentService = require("../services/agentService");
 const { isValidEmail } = require("../functions/function");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException");
+const {formSuccess} = require("../utils/response.utils");
+
 class AgentController {
   constructor() {
     this.agentService = new AgentService();
@@ -28,7 +30,7 @@ class AgentController {
         comments,
       });
 
-      res.json({ msg: "Agent account was created", success: true });
+      return formSuccess({msg: "Agent account was created"});
     } catch (err) {
      next(err);
     }
@@ -37,7 +39,7 @@ class AgentController {
   async getMyAgents(req, res, next) {
     try {
       const agents = await this.agentService.getMyAgents(req.decode.uid);
-      res.json({ data: agents, success: true });
+      return formSuccess({data: agents});
     } catch (err) {
       next(err);
     }
@@ -47,7 +49,7 @@ class AgentController {
     try {
       const { agentUid, activeness } = req.body;
       await this.agentService.changeAgentActiveness(agentUid, activeness);
-      res.json({ success: true, msg: "Success" });
+      return formSuccess({msg: "Success" });
     } catch (err) {
      next(err);
     }
@@ -57,7 +59,7 @@ class AgentController {
     try {
       const { uid } = req.body;
       await this.agentService.deleteAgent(uid, req.decode.uid);
-res.json({ success: true, msg: "Agent was deleted" });
+      return formSuccess({msg: "Agent was deleted" });
     } catch (err) {
       next(err);
     }
@@ -72,7 +74,7 @@ res.json({ success: true, msg: "Agent was deleted" });
       }
 
       const token = await this.agentService.login(email, password);
-      res.json({ success: true, token });
+      return formSuccess({token });
     } catch (err) {
       next(err);
     }
@@ -81,7 +83,7 @@ res.json({ success: true, msg: "Agent was deleted" });
   async getMe(req, res, next) {
     try {
       const agent = await this.agentService.getAgentById(req.decode.uid);
-      res.json({ data: agent, success: true });
+      return formSuccess({data: agent});
     } catch (err) {
       next(err);
     }

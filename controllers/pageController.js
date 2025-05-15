@@ -1,6 +1,7 @@
 const PageRepository = require("../repositories/pageRepository");
 const FileService = require("../services/fileService");
 const NoFilesWereUploadedException = require("../exceptions/CustomExceptions/NoFilesWereUploadedException");
+const { formSuccess } = require("../utils/response.utils");
 class PageController {
   fileService;
   constructor() {
@@ -19,7 +20,7 @@ class PageController {
       const filename = await this.fileService.uploadFile(file);
       await PageRepository.addPage({ title, content, slug, image: filename });
 
-      res.json({ success: true, msg: "Page was added" });
+      return formSuccess({  msg: "Page was added" });
     } catch (err) {
       next(err);
     }
@@ -28,7 +29,7 @@ class PageController {
   async getPages(req, res, next) {
     try {
       const pages = await PageRepository.getPages();
-      res.json({ data: pages, success: true });
+      return formSuccess({ data: pages });
     } catch (err) {
       next(err);
     }
@@ -38,7 +39,7 @@ class PageController {
     try {
       const { id } = req.body;
       await PageRepository.deletePage(id);
-      res.json({ success: true, msg: "Page was deleted" });
+      return formSuccess({ msg: "Page was deleted" });
     } catch (err) {
       next(err);
     }
@@ -48,7 +49,7 @@ class PageController {
     try {
       const { slug } = req.body;
       const page = await PageRepository.getPageBySlug(slug);
-      res.json({ data: page || {}, success: true, page: !!page });
+      return formSuccess({ data: page || {}, page: !!page });
     } catch (err) {
       next(err);
     }
@@ -58,7 +59,7 @@ class PageController {
     try {
       const { title, content } = req.body;
       await PageRepository.updateTerms(title, content);
-      res.json({ success: true, msg: "Page updated" });
+      return formSuccess({ msg: "Page updated" });
     } catch (err) {
       next(err);
     }
@@ -68,7 +69,7 @@ class PageController {
     try {
       const { title, content } = req.body;
       await PageRepository.updatePrivacyPolicy(title, content);
-      res.json({ success: true, msg: "Page updated" });
+      return formSuccess({ msg: "Page updated" });
     } catch (err) {
       next(err);
     }

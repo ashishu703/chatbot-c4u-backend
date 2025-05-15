@@ -2,7 +2,7 @@ const BroadcastService = require("../services/broadcastService");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FIllAllFieldsException");
 const InvalidPhonebookException = require("../exceptions/CustomExceptions/InvalidPhonebookException");
 const InvalidRequestException = require("../exceptions/CustomExceptions/InvalidRequestException");
-
+const {formSuccess} = require("../utils/response.utils");
 class BroadcastController {
   broadcastService;
   constructor() { 
@@ -30,7 +30,7 @@ class BroadcastController {
         user,
       });
 
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -40,7 +40,7 @@ class BroadcastController {
     try {
       const user = req.decode;
       const broadcasts = await this.broadcastService.getBroadcasts(user.uid);
-      res.json({ data: broadcasts, success: true });
+      return formSuccess({ data: broadcasts});
     } catch (err) {
      next(err);
     }
@@ -52,7 +52,7 @@ class BroadcastController {
       const user = req.decode;
 
       const result = await this.broadcastService.getBroadcastLogs(id, user.uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -68,7 +68,7 @@ class BroadcastController {
       }
 
       const result = await this.broadcastService.changeBroadcastStatus(broadcast_id, status, user.uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -80,7 +80,7 @@ class BroadcastController {
       const user = req.decode;
 
       const result = await this.broadcastService.deleteBroadcast(broadcast_id, user.uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }

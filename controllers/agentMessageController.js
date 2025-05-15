@@ -2,6 +2,7 @@ const ChatService = require("../services/chatService");
 const FileService = require("../services/fileService");
 const NotEnoughInputProvidedException = require("../exceptions/CustomExceptions/NotEnoughInputProvidedException");
 const NoFilesWereUploadedException = require("../exceptions/CustomExceptions/NoFilesWereUploadedException");
+const { formSuccess } = require("../utils/response.utils");
 
 class AgentMessageController {
   chatService;
@@ -25,7 +26,7 @@ class AgentMessageController {
         chatId,
         agentEmail: req.decode.email,
       });
-      res.json(resp);
+      return formSuccess(resp);
     } catch (err) {
       next(err);
     }
@@ -46,7 +47,7 @@ class AgentMessageController {
         chatId,
         agentEmail: req.decode.email,
       });
-      res.json(resp);
+      return formSuccess(resp);
     } catch (err) {
       next(err);
     }
@@ -59,7 +60,7 @@ class AgentMessageController {
       }
       const file = req.files.file;
       const url = await this.fileService.uploadMedia(file);
-      res.json({ success: true, url });
+      return formSuccess({ url });
     } catch (err) {
       next(err);
     }
@@ -80,7 +81,7 @@ class AgentMessageController {
         chatId,
         agentEmail: req.decode.email,
       });
-      res.json(resp);
+      return formSuccess(resp);
     } catch (err) {
       next(err);
     }
@@ -101,7 +102,7 @@ class AgentMessageController {
         chatId,
         agentEmail: req.decode.email,
       });
-      res.json(resp);
+      return formSuccess(resp);
     } catch (err) {
       next(err);
     }
@@ -122,7 +123,7 @@ class AgentMessageController {
         chatId,
         agentEmail: req.decode.email,
       });
-      res.json(resp);
+      return formSuccess(resp);
     } catch (err) {
       next(err);
     }

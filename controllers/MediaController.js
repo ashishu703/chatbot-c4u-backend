@@ -1,4 +1,5 @@
 const MediaService = require("../services/mediaService");
+const { formSuccess } = require("../utils/response.utils");
 
 class MediaController {
   constructor() {
@@ -8,7 +9,7 @@ class MediaController {
   async returnMediaUrl(req, res, next) {
     try {
       const result = await this.mediaService.handleMediaUpload(req.files);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }

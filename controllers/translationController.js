@@ -1,14 +1,15 @@
 const TranslationService = require('../services/TranslationService');
+const { formSuccess } = require('../utils/response.utils');
 
 class TranslationController {
   translationService;
   constructor() {
-    this.translationService = TranslationService;
+    this.translationService = new TranslationService();
   }
   async getOneTranslation(req, res, next) {
     try {
       const result = await this.translationService.getOneTranslation(req.query.code);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -17,7 +18,7 @@ class TranslationController {
   async getAllTranslationNames(req, res, next) {
     try {
       const result = await this.translationService.getAllTranslationNames();
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -26,7 +27,7 @@ class TranslationController {
   async updateTranslation(req, res, next) {
     try {
       const result = await this.translationService.updateTranslation(req.body.code, req.body.updatedjson);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -35,7 +36,7 @@ class TranslationController {
   async addNewTranslation(req, res, next) {
     try {
       const result = await this.translationService.addNewTranslation(req.body.newcode);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -44,7 +45,7 @@ class TranslationController {
   async deleteTranslation(req, res, next) {
     try {
       const result = await this.translationService.deleteTranslation(req.body.code);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }

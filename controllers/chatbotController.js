@@ -1,7 +1,7 @@
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FIllAllFieldsException");
 const UrlAndTypeRequiredException = require("../exceptions/CustomExceptions/UrlAndTypeRequiredException");
 const ChatbotService = require("../services/chatbotService");
-
+const {formSuccess} = require("../utils/response.utils");
 class ChatbotController {
   chatbotService;
   constructor() {
@@ -23,7 +23,7 @@ class ChatbotController {
         for_all,
         user,
       });
-      res.json(result);
+     return formSuccess(result);
     } catch (err) {
      next(err);
     }
@@ -46,7 +46,7 @@ class ChatbotController {
         for_all,
         user,
       });
-      res.json(result);
+     return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -56,7 +56,7 @@ class ChatbotController {
     try {
       const user = req.decode;
       const chatbots = await this.chatbotService.getChatbots(user.uid);
-      res.json({ data: chatbots, success: true });
+     return formSuccess({ data: chatbots });
     } catch (err) {
       next(err);
     }
@@ -68,7 +68,7 @@ class ChatbotController {
       const user = req.decode;
 
       const result = await this.chatbotService.changeBotStatus(id, status, user);
-      res.json(result);
+     return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -80,7 +80,7 @@ class ChatbotController {
       const user = req.decode;
 
       const result = await this.chatbotService.deleteChatbot(id, user.uid);
-      res.json(result);
+     return formSuccess(result);
     } catch (err) {
      next(err);
     }
@@ -95,7 +95,7 @@ class ChatbotController {
       }
 
       const result = await this.chatbotService.makeRequestApi({ url, body, headers, type });
-      res.json(result);
+     return formSuccess(result);
     } catch (err) {
       next(err);
     }

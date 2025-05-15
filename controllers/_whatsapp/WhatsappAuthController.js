@@ -23,7 +23,7 @@ module.exports = class MessangerAuthController extends WhatsappController {
                 waba_id
             );
             if (!accountInfo) throw new Error("Authentication Failed");
-            res.status(200).json({ msg: "success" });
+            return formSuccess({ msg: "success" });
         }
         catch (err) {
             next(err);
@@ -35,7 +35,7 @@ module.exports = class MessangerAuthController extends WhatsappController {
             const user = req.decode;
             const profileService = new WhatsappProfileService(user, null);
             const profiles = await profileService.getProfiles();
-            res.status(200).json({ msg: "success", profiles });
+            return formSuccess({ msg: "success", profiles });
         }
         catch (err) {
            next(err);
@@ -51,7 +51,7 @@ module.exports = class MessangerAuthController extends WhatsappController {
                 whatsapp_graph_version
             } = await WebPublicRepository.getSetting();
 
-            res.status(200).json({
+            return formSuccess({
                 msg: "success",
                 clientId: whatsapp_client_id,
                 config_id: config_id,
@@ -70,7 +70,7 @@ module.exports = class MessangerAuthController extends WhatsappController {
             const user = req.decode;
             const profileService = new WhatsappProfileService(user, null);
             await profileService.deleteProfile(id);
-            res.status(200).json({ msg: "success" });
+            return formSuccess({ msg: "success" });
         }
         catch (err) {
            next(err);

@@ -2,7 +2,7 @@ const InboxService = require("../services/inboxService");
 const InvalidRequestException = require("../exceptions/CustomExceptions/InvalidRequestException");
 const NotEnoughInputProvidedException = require("../exceptions/CustomExceptions/NotEnoughInputProvidedException");
 const ProvideTemplateException = require("../exceptions/CustomExceptions/ProvideTemplateException");
-
+const {formSuccess} = require("../utils/response.utils");
 
 class InboxController {
   inboxService;
@@ -14,7 +14,7 @@ class InboxController {
       const { uid } = req.params;
       const body = req.body;
       await this.inboxService.handleWebhook(uid, body);
-      res.sendStatus(200);
+      return formSuccess({  });
     } catch (err) {
       next(err);
     }
@@ -24,7 +24,7 @@ class InboxController {
     try {
       const user = req.decode;
       const chats = await this.inboxService.getChats(user.uid);
-      res.json({ data: chats, success: true });
+      return formSuccess({ data: chats });
     } catch (err) {
       next(err);
     }
@@ -35,7 +35,7 @@ class InboxController {
       const { chatId } = req.body;
       const user = req.decode;
       const conversation = await this.inboxService.getConversation(user.uid, chatId);
-      res.json({ data: conversation, success: true });
+      return formSuccess({ data: conversation });
     } catch (err) {
       next(err);
     }
@@ -60,7 +60,7 @@ class InboxController {
     try {
       const { msg } = req.query;
       const result = await this.inboxService.testSocket();
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -81,7 +81,7 @@ class InboxController {
         msgType,
         type: "template",
       });
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -102,7 +102,7 @@ class InboxController {
         caption,
         type: "image",
       });
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -123,7 +123,7 @@ class InboxController {
         caption,
         type: "video",
       });
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -144,7 +144,7 @@ class InboxController {
         caption,
         type: "document",
       });
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -164,7 +164,7 @@ class InboxController {
         chatId,
         type: "audio",
       });
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -184,7 +184,7 @@ class InboxController {
         chatId,
         type: "text",
       });
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -204,7 +204,7 @@ class InboxController {
         chatId,
         example,
       });
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -215,7 +215,7 @@ class InboxController {
       const { chatId } = req.body;
       const user = req.decode;
       const result = await this.inboxService.deleteChat(user.uid, chatId);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }

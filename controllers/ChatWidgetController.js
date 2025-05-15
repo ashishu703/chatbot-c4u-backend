@@ -1,5 +1,5 @@
 const ChatWidgetService = require("../services/chatWidgetService");
-
+const {formSuccess} = require("../utils/response.utils");
 class ChatWidgetController {
     chatWidgetService;
   constructor() {
@@ -9,7 +9,7 @@ class ChatWidgetController {
   async addWidget(req, res, next) {
     try {
       const result = await this.chatWidgetService.addWidget(req);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -17,7 +17,7 @@ class ChatWidgetController {
   async getMyWidgets(req, res, next) {
     try {
       const result = await this.chatWidgetService.getMyWidgets(req.decode.uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -27,7 +27,7 @@ class ChatWidgetController {
     try {
       const { id } = req.body;
       const result = await this.chatWidgetService.deleteWidget(id);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }

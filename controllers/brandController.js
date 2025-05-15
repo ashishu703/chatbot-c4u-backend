@@ -1,6 +1,6 @@
 const FileService = require("../services/fileService");
 const BrandRepository = require("../repositories/brandRepository");
-
+const {formSuccess} = require("../utils/response.utils");
 class BrandController {
   brandRepository;
   fileService;
@@ -14,7 +14,7 @@ class BrandController {
       const file = req.files?.file;
       const filename = await this.fileService.uploadFile(file);
       await this.brandRepository.addBrand(filename);
-      res.json({ success: true, msg: "Logo was uploaded" });
+      return formSuccess({ msg: "Logo was uploaded" });
     } catch (err) {
       next(err);
     }
@@ -23,7 +23,7 @@ class BrandController {
    async getBrands(req, res, next) {
     try {
       const brands = await this.brandRepository.getBrands();
-      res.json({ data: brands, success: true });
+      return formSuccess({data: brands });
     } catch (err) {
       next(err);
     }
@@ -33,7 +33,7 @@ class BrandController {
     try {
       const { id } = req.body;
       await this.brandRepository.deleteBrand(id);
-      res.json({ success: true, msg: "Brand was deleted" });
+      return formSuccess({ msg: "Brand was deleted" });
     } catch (err) {
       next(err);
     }

@@ -1,4 +1,5 @@
 const TestimonialRepository = require("../repositories/testimonialRepository");
+const { formSuccess } = require("../utils/response.utils");
 
 class TestimonialController {
 
@@ -6,7 +7,7 @@ class TestimonialController {
     try {
       const testimonialData = req.body;
       await TestimonialRepository.addTestimonial(testimonialData);
-      res.json({ success: true, msg: "Testimonial was added" });
+      return formSuccess({  msg: "Testimonial was added" });
     } catch (err) {
       next(err);
     }
@@ -15,7 +16,7 @@ class TestimonialController {
    async getTestimonials(req, res, next) {
     try {
       const testimonials = await TestimonialRepository.getTestimonials();
-      res.json({ success: true, data: testimonials });
+      return formSuccess({  data: testimonials });
     } catch (err) {
       next(err);
     }
@@ -27,7 +28,7 @@ class TestimonialController {
     console.log("Deleting testimonial with ID:", id);  
     const deleted = await TestimonialRepository.deleteTestimonial(id);
     console.log("Deleted?", deleted);  
-    res.json({ success: true, msg: "Testimonial was deleted" });
+    return formSuccess({  msg: "Testimonial was deleted" });
   } catch (err) {
    next(err);
   }

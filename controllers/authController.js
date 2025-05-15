@@ -2,7 +2,7 @@ const AuthService = require('../services/authService');
 const HttpException = require('../middlewares/HttpException');
 const TokenMissingOrInvalidExecption = require('../exceptions/CustomExceptions/TokenMissingOrInvalidExecption');
 const TokenMalformedExecption = require('../exceptions/CustomExceptions/TokenMalformedExecption');
-
+const {formSuccess} = require("../utils/response.utils");
 class AuthController {
   authService;
 
@@ -21,7 +21,7 @@ class AuthController {
         throw new TokenMalformedExecption();
       }
       const user = await this.authService.verifyToken(token);
-      res.status(200).json({ user });
+      return formSuccess({ user });
     } catch (err) {
     
       next(err);
@@ -34,7 +34,7 @@ class AuthController {
     try {
       const { token, userId, email, name } = req.body;
       const result = await this.authService.loginWithFacebook({ token, userId, email, name });
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -43,7 +43,7 @@ class AuthController {
   async loginWithGoogle(req, res, next) {
     try {
       const response = await this.authService.loginWithGoogle(req.body.token);
-      res.json(response);
+      return formSuccess(response);
     } catch (err) {
      next(err);
     }
@@ -54,7 +54,7 @@ class AuthController {
     try {
       const { email, name, password, mobile_with_country_code, acceptPolicy } = req.body;
       const result = await this.authService.signup({ email, name, password, mobile_with_country_code, acceptPolicy });
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -64,7 +64,7 @@ class AuthController {
     try {
       const { email, password } = req.body;
       const result = await this.authService.userlogin({ email, password });
-      res.status(200).json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -74,7 +74,7 @@ class AuthController {
     try {
       const { email, password } = req.body;
       const result = await this.authService.adminlogin({ email, password });
-      res.status(200).json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -84,7 +84,7 @@ class AuthController {
     try {
       const { email } = req.body;
       const result = await this.authService.sendRecovery(email);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -94,7 +94,7 @@ class AuthController {
     try {
       const { pass } = req.query;
       const result = await this.authService.modifyPassword(req.decode, pass);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -103,7 +103,7 @@ class AuthController {
   async generateApiKeys(req, res, next) {
     try {
       const result = await this.authService.generateApiKeys(req.decode.uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -113,7 +113,7 @@ class AuthController {
     try {
       const { uid } = req.body;
       const result = await this.authService.autoAgentLogin(uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }

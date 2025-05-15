@@ -114,6 +114,10 @@ module.exports = class CustomExceptionMessages {
          message: "UID and valid plan data required",
          statusCode: 400,
        },
+       EnterPhonebookNameException: {
+         message: "Please enter a phonebook name",
+         statusCode: 400,
+       },
 
 
 

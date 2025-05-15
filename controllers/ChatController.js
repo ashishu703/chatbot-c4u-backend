@@ -1,6 +1,6 @@
 const TypeTagException = require("../exceptions/CustomExceptions/TypeTagException");
 const ChatService = require("../services/chatService");
-
+const {formSuccess} = require("../utils/response.utils");
 class ChatController {
   constructor() {
     this.chatService = new ChatService();
@@ -10,7 +10,7 @@ class ChatController {
     try {
       const { chatId, note } = req.body;
       await this.chatService.saveNote(chatId, note);
-      res.json({ success: true, msg: "Notes were updated" });
+      return formSuccess({ msg: "Notes were updated" });
     } catch (err) {
       next(err);
     }
@@ -25,7 +25,7 @@ class ChatController {
       }
 
       await this.chatService.pushTag(chatId, tag);
-      res.json({ success: true, msg: "Tag was added" });
+      return formSuccess({ msg: "Tag was added" });
     } catch (err) {
       next(err);
     }
@@ -35,7 +35,7 @@ class ChatController {
     try {
       const { chatId, tag } = req.body;
       await this.chatService.deleteTag(chatId, tag);
-      res.json({ success: true, msg: "Tag was deleted" });
+      return formSuccess({ msg: "Tag was deleted" });
     } catch (err) {
       next(err);
     }

@@ -1,6 +1,7 @@
 const UserService = require('../services/userService');
 const HttpException = require('../middlewares/HttpException');
 const TokenMissingOrInvalidExecption = require('../exceptions/CustomExceptions/TokenMissingOrInvalidExecption');
+const { formSuccess } = require('../utils/response.utils');
 class UserController {
   userService;
 
@@ -11,7 +12,7 @@ class UserController {
     try {
       console.log('req.decode:', req.decode);
       const users = await this.userService.getUsers(req.decode.uid);
-      res.json({ success: true, data: users });
+      return formSuccess({ data: users });
     } catch (err) {
       next(err);
     }
@@ -20,7 +21,7 @@ class UserController {
   async updateUser(req, res, next) {
     try {
       await this.userService.updateUser(req.body);
-      res.json({ success: true, msg: 'User was updated' });
+      return formSuccess({ msg: 'User was updated' });
     } catch (err) {
       next(err);
     }
@@ -29,7 +30,7 @@ class UserController {
   async autoLogin(req, res, next) {
     try {
       const token = await this.userService.autoLogin(req.body.uid);
-      res.json({ success: true, token });
+      return formSuccess({ token });
     } catch (err) {
       next(err);
     }
@@ -38,7 +39,7 @@ class UserController {
   async deleteUser(req, res, next) {
     try {
       await this.userService.deleteUser(req.body.id);
-      res.json({ success: true, msg: 'User was deleted' });
+      return formSuccess({ msg: 'User was deleted' });
     } catch (err) {
       next(err);
     }
@@ -48,7 +49,7 @@ class UserController {
     try {
       const files = req.files;
       const result = await this.userService.returnMediaUrl(req.decode.uid, files);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
      next(err);
     }
@@ -57,7 +58,7 @@ class UserController {
   async getMe(req, res, next) {
     try {
       const data = await this.userService.getMe(req.decode.uid);
-      res.json(data);
+      return formSuccess(data);
     } catch (err) {
       next(err);
     }
@@ -67,7 +68,7 @@ class UserController {
     try {
       const { chatId, note } = req.body;
       const result = await this.userService.saveNote(req.decode.uid, chatId, note);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -77,7 +78,7 @@ class UserController {
     try {
       const { tag, chatId } = req.body;
       const result = await this.userService.pushTag(req.decode.uid, tag, chatId);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -87,7 +88,7 @@ class UserController {
     try {
       const { tag, chatId } = req.body;
       const result = await this.userService.deleteTag(req.decode.uid, tag, chatId);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -97,7 +98,7 @@ class UserController {
     try {
       const { mobile } = req.body;
       const result = await this.userService.checkContact(req.decode.uid, mobile);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -106,7 +107,7 @@ class UserController {
   async saveContact(req, res, next) {
     try {
       const result = await this.userService.saveContact(req.decode.uid, req.body);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -115,7 +116,7 @@ class UserController {
   async deleteContact(req, res, next) {
     try {
       const result = await this.userService.deleteContact(req.body.id);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -124,7 +125,7 @@ class UserController {
   async updateProfile(req, res, next) {
     try {
       const result = await this.userService.updateProfile(req.decode.uid, req.body);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -133,7 +134,7 @@ class UserController {
   async getDashboard(req, res, next) {
     try {
       const result = await this.userService.getDashboard(req.decode.uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -143,7 +144,7 @@ class UserController {
     try {
       const { title, des, agent_uid } = req.body;
       const result = await this.userService.addTaskForAgent(req.decode.uid, title, des, agent_uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -152,7 +153,7 @@ class UserController {
   async getMyAgentTasks(req, res, next) {
     try {
       const result = await this.userService.getMyAgentTasks(req.decode.uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -164,7 +165,7 @@ class UserController {
     try {
       const { id } = req.body;
       const result = await this.userService.deleteAgentTask(id, req.decode.uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -174,7 +175,7 @@ class UserController {
   async updateAgentProfile(req, res, next) {
     try {
       const result = await this.userService.updateAgentProfile(req.body);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -183,7 +184,7 @@ class UserController {
   async fetchProfile(req, res, next) {
     try {
       const result = await this.userService.fetchProfile(req.decode.uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -195,7 +196,7 @@ class UserController {
       if (!token) 
         throw new TokenMissingOrInvalidExecption();
       const user = await this.userService.verifyToken(token);
-      res.status(200).json({ user });
+      return formSuccess({ user });
     } catch (err) {
      next(err);
     }
@@ -204,7 +205,7 @@ class UserController {
   async loginWithFacebook(req, res, next) {
     try {
       const result = await this.userService.loginWithFacebook(req.body);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -213,7 +214,7 @@ class UserController {
   async loginWithGoogle(req, res, next) {
     try {
       const result = await this.userService.loginWithGoogle(req.body.token);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -222,7 +223,7 @@ class UserController {
   async signup(req, res, next) {
     try {
       const result = await this.userService.signup(req.body);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -231,7 +232,7 @@ class UserController {
   async login(req, res, next) {
     try {
       const result = await this.userService.login(req.body);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
      next(err);
     }
@@ -240,7 +241,7 @@ class UserController {
   async sendRecovery(req, res, next) {
     try {
       const result = await this.userService.sendRecovery(req.body.email);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -249,7 +250,7 @@ class UserController {
   async modifyPassword(req, res, next) {
     try {
       const result = await this.userService.modifyPassword(req.decode, req.query.pass);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -258,7 +259,7 @@ class UserController {
   async generateApiKeys(req, res, next) {
     try {
       const result = await this.userService.generateApiKeys(req.decode.uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -267,7 +268,7 @@ class UserController {
   async autoAgentLogin(req, res, next) {
     try {
       const result = await this.userService.autoAgentLogin(req.body.uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }

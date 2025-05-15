@@ -1,8 +1,11 @@
 const AuthService = require("../services/authService");
-const AdminRepository = require("../repositories/adminRepository");
+const AdminRepository = require("../repositories/AdminRepository");
 const PasswordNotProvidedException = require("../exceptions/CustomExceptions/PasswordNotProvidedException");
 const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
+const {formSuccess} = require("../utils/response.utils");
+
+
 class AdminController {
   adminRepository;
   constructor() {
@@ -22,7 +25,7 @@ class AdminController {
       if (!token) {
        throw new InvalidCredentialsException();
       }
-      res.json({ success: true, token });
+      return formSuccess({token});
     } catch (err) {
       next(err);
     }
@@ -32,8 +35,7 @@ class AdminController {
     try {
       const { email } = req.body;
       await AuthService.sendRecoveryEmail(email);
-      res.json({
-        success: true,
+     return formSuccess({
         msg: "We have sent a recovery link if this email is associated with admin account.",
       });
     } catch (err) {
@@ -48,8 +50,7 @@ class AdminController {
         throw new PasswordNotProvidedException();
       }
       await AuthService.modifyPassword(req.decode, pass);
-      res.json({
-        success: true,
+      return formSuccess({
         msg: "Your password has been changed. You may login now! Redirecting...",
       });
     } catch (err) {
@@ -60,7 +61,7 @@ class AdminController {
   async getAdmin(req, res, next) {
     try {
       const admin = await this.adminRepository.findById(req.decode.uid);
-      res.json({ data: admin, success: true });
+      return formSuccess({data: admin });
     } catch (err) {
       next(err);
     }
@@ -70,7 +71,7 @@ class AdminController {
     try {
       const { email, newpass } = req.body;
       await this.adminRepository.updateAdmin(req.decode.uid, email, newpass);
-     res.json({ success: true, msg: "Admin was updated refresh the page" });
+    return formSuccess({ msg: "Admin was updated refresh the page" });
     } catch (err) {
       next(err);
     }

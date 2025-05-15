@@ -1,5 +1,6 @@
 const TempletService = require("../services/templetService");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
+const { formSuccess } = require("../utils/response.utils");
 class TempletController {
   templetService;
   constructor() {
@@ -13,7 +14,7 @@ class TempletController {
        throw new FillAllFieldsException();
       }
       const result = await this.templetService.addTemplate(user.uid, { title, type, content });
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -23,7 +24,7 @@ class TempletController {
     try {
       const user = req.decode;
       const templates = await this.templetService.getTemplates(user.uid);
-      res.json({ data: templates, success: true });
+      return formSuccess({ data: templates });
     } catch (err) {
       next(err);
     }
@@ -33,7 +34,7 @@ class TempletController {
     try {
       const { selected } = req.body;
       const result = await this.templetService.deleteTemplates(selected);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }

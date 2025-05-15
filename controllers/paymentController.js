@@ -1,5 +1,6 @@
 const PaymentRepository = require("../repositories/paymentRepository");
 const PaymentService = require("../services/PaymentService");
+const { formSuccess } = require("../utils/response.utils");
 class PaymentController {
   paymentRepository;
   paymentService;
@@ -10,7 +11,7 @@ class PaymentController {
    async getPaymentGateway(req, res, next) {
     try {
       const data = await this.paymentRepository.getPaymentGateway();
-      res.json({ data: data || {}, success: true });
+      return formSuccess({ data: data || {} });
     } catch (err) {
       next(err);
     }
@@ -20,7 +21,7 @@ class PaymentController {
     try {
       const gatewayData = req.body;
       await this.paymentRepository.updatePaymentGateway(gatewayData);
-      res.json({ success: true, msg: "Payment gateway updated" });
+      return formSuccess({ msg: "Payment gateway updated" });
     } catch (err) {
       next(err);
     }
@@ -30,7 +31,7 @@ class PaymentController {
     try {
       const { id } = req.body;
       const result = await this.paymentService.getPlanDetails(id);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -39,7 +40,7 @@ class PaymentController {
   async getPaymentDetails(req, res, next) {
     try {
       const result = await this.paymentService.getPaymentDetails();
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -49,7 +50,7 @@ class PaymentController {
     try {
       const { planId } = req.body;
       const result = await this.paymentService.createStripeSession(req.decode.uid, planId);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -59,7 +60,7 @@ class PaymentController {
     try {
       const { rz_payment_id, plan, amount } = req.body;
       const result = await this.paymentService.payWithRazorpay(req.decode.uid, { rz_payment_id, plan, amount });
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -69,7 +70,7 @@ class PaymentController {
     try {
       const { orderID, plan } = req.body;
       const result = await this.paymentService.payWithPaypal(req.decode.uid, { orderID, plan });
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -79,7 +80,7 @@ class PaymentController {
     try {
       const { order, plan } = req.query;
       const result = await this.paymentService.stripePayment(order, plan);
-      res.send(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -89,7 +90,7 @@ class PaymentController {
     try {
       const { planId } = req.body;
       const result = await this.paymentService.startFreeTrial(req.decode.uid, planId);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }

@@ -1,6 +1,7 @@
 const FacebookException = require("../../exceptions/FacebookException");
 const InstagramAuthService = require("../../services/_instagram/InstagramAuthService");
 const InstagramProfileService = require("../../services/_instagram/InstagramProfileService");
+const { formSuccess } = require("../../utils/response.utils");
 const InstagramController = require("./InstagramController");
 
 module.exports = class InstagramAuthController extends InstagramController {
@@ -11,7 +12,7 @@ module.exports = class InstagramAuthController extends InstagramController {
             const authService = new InstagramAuthService(user, null);
             await authService.initMeta();
             await authService.initiateUserAuth(code);
-            res.status(200).json({ msg: "success" });
+            return formSuccess({ msg: "success" });
         }
         catch (err) {
             next(err);
@@ -24,7 +25,7 @@ module.exports = class InstagramAuthController extends InstagramController {
             const authService = new InstagramAuthService(null, null)
             await authService.initMeta();
             const authURI = authService.prepareAuthUri();
-            res.status(200).json({ msg: "success", authURI });
+            return formSuccess({ msg: "success", authURI });
         } catch (err) {
             next(err);
         }
@@ -36,7 +37,7 @@ module.exports = class InstagramAuthController extends InstagramController {
             const user = req.decode;
             const profileService = new InstagramProfileService(user, null);
             const profiles = await profileService.getProfiles();
-            res.status(200).json({ msg: "success", profiles });
+            return formSuccess({ msg: "success", profiles });
         }
         catch (err) {
             next(err);
@@ -51,7 +52,7 @@ module.exports = class InstagramAuthController extends InstagramController {
             const user = req.decode;
             const profileService = new InstagramProfileService(user, null);
             await profileService.deleteProfile(id);
-            res.status(200).json({ msg: "success" });
+            return formSuccess({ msg: "success" });
         }
         catch (err) {
             next(err);

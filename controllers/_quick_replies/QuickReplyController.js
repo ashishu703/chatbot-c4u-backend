@@ -1,4 +1,5 @@
-const QuickReplyService = require("../../services/QuickReplyService")
+const QuickReplyService = require("../../services/QuickReplyService");
+const { formSuccess } = require("../../utils/response.utils");
 
 module.exports = class QuickReplyController {
     quickReplyService;
@@ -14,8 +15,7 @@ module.exports = class QuickReplyController {
             const uid = req.decode.uid;
             const message = req.body.message;
             await this.quickReplyService.create({ uid, message });
-            return res.send({
-                success: true,
+           return formSuccess({
                 message: "Quick reply created successfully"
             })
         } catch (err) {
@@ -30,8 +30,7 @@ module.exports = class QuickReplyController {
 
             const quickReplies = await this.quickReplyService.list(uid);
 
-            return res.send({
-                success: true,
+            return formSuccess({
                 quickReplies
             })
         } catch (err) {
@@ -43,8 +42,7 @@ module.exports = class QuickReplyController {
         try {
             const id = req.params.id;
             await this.quickReplyService.destroy(id);
-            return res.send({
-                success: true,
+            return formSuccess({
                 message: "Quick reply deleted successfully"
             })
         } catch (err) {

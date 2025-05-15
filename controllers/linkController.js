@@ -1,4 +1,5 @@
 const LinkRepository = require("../repositories/linkRepository");
+const { formSuccess } = require("../utils/response.utils");
 
 class LinkController {
   linkRepository;
@@ -8,7 +9,7 @@ class LinkController {
    async getGeneratedLinks(req, res, next) {
     try {
       const links = await this.linkRepository.getGeneratedLinks();
-      res.json({ data: links, success: true });
+      return formSuccess({ data: links});
     } catch (err) {
       next(err);
     }
@@ -18,7 +19,7 @@ class LinkController {
     try {
       const { id } = req.body;
       await this.linkRepository.deleteGeneratedLink(id);
-      res.json({ msg: "Generated link was deleted", success: true });
+      return formSuccess({ msg: "Generated link was deleted"});
     } catch (err) {
       next(err);
     }

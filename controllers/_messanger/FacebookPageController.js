@@ -1,6 +1,7 @@
-const ChatRepository = require("../../repositories/chatRepository");
+const ChatRepository = require("../../repositories/ChatRepository");
 const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
 const MessangerPageService = require("../../services/_messanger/MessangerPageService");
+const { formSuccess } = require("../../utils/response.utils");
 const MessangerController = require("./MessangerController");
 
 module.exports = class FacebookPageController extends MessangerController {
@@ -14,14 +15,14 @@ module.exports = class FacebookPageController extends MessangerController {
     async getInactivePages(req, res) {
         const user = req.decode;
         const pages = await FacebookPageRepository.findInactiveByUserId(user.uid);
-        res.json({ success: true, pages });
+        return formSuccess({ pages });
     }
 
 
     async getActivePages(req, res) {
         const user = req.decode;
         const pages = await FacebookPageRepository.findActiveByUserId(user.uid);
-        res.json({ success: true, pages });
+        return formSuccess({ pages });
     }
 
 
@@ -32,7 +33,7 @@ module.exports = class FacebookPageController extends MessangerController {
             await this.pageService.activatePage(page);
         });
 
-        res.json({ success: true });
+        return formSuccess({ });
     }
 
 
@@ -41,12 +42,12 @@ module.exports = class FacebookPageController extends MessangerController {
 
         await this.pageService.removePage(id);
 
-        res.json({ success: true });
+        return formSuccess({ });
     }
 
     async discardInactivePages(req, res) {
         const user = req.decode;
         await FacebookPageRepository.deleteInActiveByUserId(user.uid);
-        res.json({ success: true });
+        return formSuccess({ });
     }
 }

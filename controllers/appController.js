@@ -1,6 +1,6 @@
 const AppService = require('../services/AppService');
 const { appVersion, addON } = require('../env');
-
+const {formSuccess} = require("../utils/response.utils");
 class AppController {
    appService;
    constructor() {
@@ -8,7 +8,7 @@ class AppController {
   }
   async returnModule(req, res, next) {
     try {
-      res.json({ success: true, data: addON || [] });
+      return formSuccess({ data: addON || [] });
     } catch (err) {
       next(err);
     }
@@ -17,7 +17,7 @@ class AppController {
   async checkInstall(req, res, next) {
     try {
       const installed = await this.appService.checkInstall();
-      res.json({ success: installed });
+      return formSuccess({ success: installed });
     } catch (err) {
       next(err);
     }
@@ -25,7 +25,7 @@ class AppController {
 
   async getAppVersion(req, res, next) {
     try {
-      res.json({ success: true, version: appVersion });
+      return formSuccess({ version: appVersion });
     } catch (err) {
       next(err);
     }
@@ -34,7 +34,7 @@ class AppController {
   async installApp(req, res, next) {
     try {
       const result = await this.appService.installApp(req.files);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -43,7 +43,7 @@ class AppController {
   async updateApp(req, res, next) {
     try {
       const result = await this.appService.updateApp(req.body, req.files);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -51,7 +51,7 @@ class AppController {
 
   async updateToBeShown(req, res, next) {
     try {
-      res.json({ success: true, show: true });
+      return formSuccess({ show: true });
     } catch (err) {
       next(err);
     }

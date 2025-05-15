@@ -2,7 +2,8 @@
 const PhonebookService = require('../services/phonebookService');
 const NoFilesWereUploadedException = require('../exceptions/CustomExceptions/NoFilesWereUploadedException');
 const MobileNumberRequiredException = require('../exceptions/CustomExceptions/MobileNumberRequiredException');
-
+const { formSuccess } = require('../utils/response.utils');
+const EnterPhonebookNameException = require('../exceptions/CustomExceptions/EnterPhonebookNameException');
 class PhonebookController {
   phonebookService;
   constructor() {
@@ -13,10 +14,10 @@ class PhonebookController {
       const { name } = req.body;
       const user = req.decode;
       if (!name) {
-        return res.json({ success: false, msg: 'Please enter a phonebook name' });
+        throw new EnterPhonebookNameException();
       }
       const result = await this.phonebookService.addPhonebook(user.uid, name);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -26,7 +27,7 @@ class PhonebookController {
     try {
       const user = req.decode;
       const phonebooks = await this.phonebookService.getPhonebooks(user.uid);
-      res.json({ data: phonebooks, success: true });
+      return formSuccess({ data: phonebooks });
     } catch (err) {
       next(err);
     }
@@ -37,7 +38,7 @@ class PhonebookController {
       const { id } = req.body;
       const user = req.decode;
       const result = await this.phonebookService.deletePhonebook(user.uid, id);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -51,7 +52,7 @@ class PhonebookController {
       const { id, phonebook_name } = req.body;
       const user = req.decode;
       const result = await this.phonebookService.importContacts(user.uid, id, phonebook_name, req.files.file.data);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -75,7 +76,7 @@ class PhonebookController {
         var4,
         var5,
       });
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -85,7 +86,7 @@ class PhonebookController {
     try {
       const user = req.decode;
       const contacts = await this.phonebookService.getContacts(user.uid);
-      res.json({ data: contacts, success: true });
+      return formSuccess({ data: contacts });
     } catch (err) {
       next(err);
     }
@@ -95,7 +96,7 @@ class PhonebookController {
     try {
       const { selected } = req.body;
       const result = await this.phonebookService.deleteContacts(selected);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }

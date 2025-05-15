@@ -1,7 +1,8 @@
 
-const ChatRepository = require("../../repositories/chatRepository");
+const ChatRepository = require("../../repositories/ChatRepository");
 const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
 const MessangerChatService = require("../../services/_messanger/MessangerChatService");
+const { formSuccess } = require("../../utils/response.utils");
 const MessangerController = require("./MessangerController");
 
 
@@ -23,7 +24,7 @@ module.exports = class MessengerChatController extends MessangerController {
                 text,
                 toNumber
             })
-            return res.status(200).json({ msg: "success" });
+            return formSuccess({ msg: "success" });
         } catch (err) {
            next(err);
         }
@@ -47,7 +48,7 @@ module.exports = class MessengerChatController extends MessangerController {
                 url,
                 toNumber
             })
-            return res.status(200).json({ msg: "success" });
+            return formSuccess({ msg: "success" });
         } catch (err) {
             next(err);
         }
@@ -68,7 +69,7 @@ module.exports = class MessengerChatController extends MessangerController {
                 url,
                 toNumber
             })
-            return res.status(200).json({ msg: "success" });
+            return formSuccess({ msg: "success" });
         } catch (err) {
             next(err);
         }
@@ -89,7 +90,7 @@ module.exports = class MessengerChatController extends MessangerController {
                 url,
                 toNumber
             })
-            return res.status(200).json({ msg: "success" });
+            return formSuccess({ msg: "success" });
         } catch (err) {
             next(err);
         }
@@ -110,7 +111,7 @@ module.exports = class MessengerChatController extends MessangerController {
                 url,
                 toNumber
             })
-            return res.status(200).json({ msg: "success" });
+            return formSuccess({ msg: "success" });
         } catch (err) {
             next(err);
         }

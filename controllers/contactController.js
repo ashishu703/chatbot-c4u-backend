@@ -1,6 +1,6 @@
 const UidRequiredException = require("../exceptions/CustomExceptions/UidRequiredException");
 const ContactService = require("../services/ContactService");
-
+const {formSuccess} = require("../utils/response.utils");
 class ContactController {
   contactService;
 
@@ -15,7 +15,7 @@ class ContactController {
         throw new UidRequiredException();
       }
       const leads = await this.contactService.getContactLeads(uid);
-      res.json({ data: leads, success: true });
+      return formSuccess({ data: leads });
     } catch (err) {
       next(err);
     }
@@ -28,7 +28,7 @@ class ContactController {
         throw new UidRequiredException();
       }
       await this.contactService.deleteContactEntry(id);
-      res.json({ success: true, msg: "Entry was deleted" });
+      return formSuccess({ msg: "Entry was deleted" });
     } catch (err) {
       next(err);
     }
@@ -37,7 +37,7 @@ class ContactController {
   async submitContactForm(req, res, next) {
     try {
       await this.contactService.submitContactForm(req.body);
-      res.json({ success: true, msg: 'Your form has been submitted. We will contact you asap' });
+      return formSuccess({ msg: 'Your form has been submitted. We will contact you asap' });
     } catch (err) {
       next(err);
     }

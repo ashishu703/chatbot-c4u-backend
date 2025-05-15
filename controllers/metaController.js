@@ -1,4 +1,5 @@
 const MetaService = require('../services/metaService');
+const { formSuccess } = require('../utils/response.utils');
 
 class MetaController {
   metaService;
@@ -8,7 +9,7 @@ class MetaController {
   async updateMetaApi(req, res, next) {
     try {
       const result = await this.metaService.updateMetaApi(req.decode.uid, req.body);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -17,7 +18,7 @@ class MetaController {
   async getMetaKeys(req, res, next) {
     try {
       const result = await this.metaService.getMetaKeys(req.decode.uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -26,7 +27,7 @@ class MetaController {
   async addMetaTemplet(req, res, next) {
     try {
       const result = await this.metaService.addMetaTemplet(req.decode.uid, req.body);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -35,7 +36,7 @@ class MetaController {
   async getMyMetaTemplets(req, res, next) {
     try {
       const result = await this.metaService.getMyMetaTemplets(req.decode.uid);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -45,7 +46,7 @@ class MetaController {
     try {
       const { name } = req.body;
       const result = await this.metaService.deleteMetaTemplet(req.decode.uid, name);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
@@ -60,7 +61,7 @@ class MetaController {
         return { fileSizeInBytes: 1000, mimeType: file.mimetype };
       };
       const result = await this.metaService.returnMediaUrlMeta(req.decode.uid, templet_name, file, getFileInfo);
-      res.json(result);
+      return formSuccess(result);
     } catch (err) {
       next(err);
     }
