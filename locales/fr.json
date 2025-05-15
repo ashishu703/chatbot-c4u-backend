@@ -61,5 +61,7 @@
     "provide_template": "Veuillez fournir un modèle",
     "mobile_number_required": "Le numéro de portable est requis",
     "uid_and_valid_plan_required": "UID et données de plan valides requises",
-    "enter_phonebook_name": "Veuillez saisir un nom de carnet d’adresses"
+    "enter_phonebook_name": "Veuillez saisir un nom de carnet d’adresses",
+    "authentication_failed":"Échec de l'authentification"
+    
 }

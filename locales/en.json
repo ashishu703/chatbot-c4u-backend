@@ -62,5 +62,6 @@
     "provide_template": "Please provide template",
     "mobile_number_required": "Mobile number is required",
     "uid_and_valid_plan_required": "UID and valid plan data required",
-    "enter_phonebook_name": "Please enter a phonebook name"
+    "enter_phonebook_name": "Please enter a phonebook name",
+    "authentication_failed":"Authentication Failed"
 }

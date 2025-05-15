@@ -3,6 +3,7 @@ const InstagramAuthService = require("../../services/_instagram/InstagramAuthSer
 const InstagramProfileService = require("../../services/_instagram/InstagramProfileService");
 const { formSuccess } = require("../../utils/response.utils");
 const InstagramController = require("./InstagramController");
+const {__t } = require("../../utils/locale.utils")
 
 module.exports = class InstagramAuthController extends InstagramController {
     async initiateUserAuth(req, res, next) {
@@ -12,7 +13,7 @@ module.exports = class InstagramAuthController extends InstagramController {
             const authService = new InstagramAuthService(user, null);
             await authService.initMeta();
             await authService.initiateUserAuth(code);
-            return formSuccess({ msg: "success" });
+            return formSuccess({ msg: __t("success"), });
         }
         catch (err) {
             next(err);
@@ -25,7 +26,7 @@ module.exports = class InstagramAuthController extends InstagramController {
             const authService = new InstagramAuthService(null, null)
             await authService.initMeta();
             const authURI = authService.prepareAuthUri();
-            return formSuccess({ msg: "success", authURI });
+            return formSuccess({ msg: __t("success"), authURI });
         } catch (err) {
             next(err);
         }
@@ -37,7 +38,7 @@ module.exports = class InstagramAuthController extends InstagramController {
             const user = req.decode;
             const profileService = new InstagramProfileService(user, null);
             const profiles = await profileService.getProfiles();
-            return formSuccess({ msg: "success", profiles });
+            return formSuccess({ msg: __t("success"), profiles });
         }
         catch (err) {
             next(err);
@@ -52,7 +53,7 @@ module.exports = class InstagramAuthController extends InstagramController {
             const user = req.decode;
             const profileService = new InstagramProfileService(user, null);
             await profileService.deleteProfile(id);
-            return formSuccess({ msg: "success" });
+            return formSuccess({ msg: __t("success") });
         }
         catch (err) {
             next(err);

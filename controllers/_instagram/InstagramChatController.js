@@ -29,7 +29,7 @@ module.exports = class InstagramChatController extends InstagramController {
                 toNumber
             })
     
-            return formSuccess({ msg: "success" });
+            return formSuccess({ msg: __t("success") });
         } catch (err) {
             next(err);
         }
@@ -58,7 +58,7 @@ module.exports = class InstagramChatController extends InstagramController {
                 toNumber
             })
     
-            return formSuccess({ msg: "success" });
+            return formSuccess({ msg: __t("success") });
         } catch (err) {
             next(err);
         }
@@ -84,7 +84,7 @@ module.exports = class InstagramChatController extends InstagramController {
                 toNumber
             })
     
-            return formSuccess({ msg: "success" });
+            return formSuccess({ msg: __t("success") });
         } catch (err) {
            next(err);
         }
@@ -110,7 +110,7 @@ module.exports = class InstagramChatController extends InstagramController {
                 toNumber
             })
     
-            return formSuccess({ msg: "success" });
+            return formSuccess({ msg: __t("success") });
         } catch (err) {
            next(err);
         }
@@ -136,7 +136,7 @@ module.exports = class InstagramChatController extends InstagramController {
                 toNumber
             })
     
-            return formSuccess({ msg: "success" });
+            return formSuccess({ msg: __t("success") });
         } catch (err) {
            next(err);
         }

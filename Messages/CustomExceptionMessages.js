@@ -120,6 +120,10 @@ module.exports = class CustomExceptionMessages {
         message:__t("enter_phonebook_name"),
         statusCode: 400,
       },
+      AuthenticationFailedException: {
+        message:__t("authentication_failed"),
+        statusCode: 403,
+      }
     }[type];
   }
 };

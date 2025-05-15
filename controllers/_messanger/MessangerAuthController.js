@@ -14,11 +14,11 @@ module.exports = class MessangerAuthController extends MessangerController {
             const authService = new MessangerAuthService(user, accessToken);
             await authService.initMeta();
             const accountInfo = await authService.initiateUserAuth();
-            if (!accountInfo) throw new Error("Authentication Failed");
+            if (!accountInfo) throw new AuthenticationFailedException();
             const pageService = new MessangerPageService(user, accountInfo.accessToken)
             await pageService.initMeta();
             await pageService.fetchAndSavePages(accountInfo.accountId);
-            return formSuccess({ msg: "success" });
+            return formSuccess({msg: __t("success") });
         }
         catch (err) {
             next(err);
@@ -30,7 +30,7 @@ module.exports = class MessangerAuthController extends MessangerController {
             const user = req.decode;
             const profileService = new FacebookProfileService(user, null);
             const profiles = await profileService.getProfiles();
-            return formSuccess({ msg: "success", profiles });
+            return formSuccess({ msg: __t("success"), profiles });
         }
         catch (err) {
             next(err);
@@ -47,7 +47,7 @@ module.exports = class MessangerAuthController extends MessangerController {
             } = await WebPublicRepository.getSetting();
 
             return formSuccess({
-                msg: "success",
+                msg: __t("success"),
                 clientId: facebook_client_id,
                 scopes: facebook_auth_scopes,
                 version: facebook_graph_version
@@ -65,7 +65,7 @@ module.exports = class MessangerAuthController extends MessangerController {
             const user = req.decode;
             const profileService = new FacebookProfileService(user, null);
             await profileService.deleteProfile(id);
-            return formSuccess({ msg: "success" });
+            return formSuccess({ msg: __t("success") });
         }
         catch (err) {
             next(err);
