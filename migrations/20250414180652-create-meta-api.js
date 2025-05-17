@@ -1,53 +1,53 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('meta_apis', {
+    await queryInterface.createTable("meta_apis", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       uid: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       waba_id: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       business_account_id: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       access_token: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
-      business_phone_number_id	: {
+      business_phone_number_id: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       app_id: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       pin: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('meta_apis');
-  }
+    await queryInterface.dropTable("meta_apis");
+  },
 };

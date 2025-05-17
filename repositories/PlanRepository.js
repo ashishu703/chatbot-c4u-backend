@@ -1,4 +1,4 @@
-const {Plan} = require("../models");            
+const { Plan } = require("../models");
 
 class PlanRepository {
   static async addPlan(plan) {
@@ -8,22 +8,22 @@ class PlanRepository {
   static async getPlans() {
     return await Plan.findAll({
       attributes: [
-        'id',
-        'title',
-        'short_description',
-        'allow_tag',
-        'allow_note',
-        'allow_chatbot',
-        'contact_limit',
-        'allow_api',
-        'is_trial',
-        'price',
-        'price_strike',
-        'plan_duration_in_days',
-        'createdAt',
-        'updatedAt'
+        "id",
+        "title",
+        "short_description",
+        "allow_tag",
+        "allow_note",
+        "allow_chatbot",
+        "contact_limit",
+        "allow_api",
+        "is_trial",
+        "price",
+        "price_strike",
+        "plan_duration_in_days",
+        "createdAt",
+        "updatedAt",
       ],
-      order: [['id', 'DESC']]
+      order: [["id", "DESC"]],
     });
   }
 

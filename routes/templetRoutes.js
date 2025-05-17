@@ -6,8 +6,21 @@ const { checkPlan } = require("../middlewares/plan");
 
 const templateController = new TempletController();
 
-router.post("/add_new", validateUser, checkPlan, templateController.addTemplate.bind(templateController));
-router.get("/get_templets", validateUser, templateController.getTemplates.bind(templateController));
-router.post("/del_templets", validateUser, templateController.deleteTemplates.bind(templateController));
+router.post(
+  "/add_new",
+  validateUser,
+  checkPlan,
+  templateController.addTemplate.bind(templateController)
+);
+router.get(
+  "/get_templets",
+  validateUser,
+  templateController.getTemplates.bind(templateController)
+);
+router.post(
+  "/del_templets",
+  validateUser,
+  templateController.deleteTemplates.bind(templateController)
+);
 
 module.exports = router;

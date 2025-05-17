@@ -1,4 +1,1 @@
-
-module.exports = class MessangerController {
-  
-}
+module.exports = class MessangerController {};

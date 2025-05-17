@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class ChatWidget extends Model {
     /**
@@ -13,18 +11,21 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  ChatWidget.init({
-    unique_id: DataTypes.STRING,
-    uid: DataTypes.STRING,
-    title: DataTypes.STRING,
-    whatsapp_number: DataTypes.STRING,
-    logo: DataTypes.STRING,
-    place: DataTypes.STRING,
-    size: DataTypes.STRING,
-  }, {
-    sequelize,
-    modelName: 'ChatWidget',
-     tableName:'chat_widgets'
-  });
+  ChatWidget.init(
+    {
+      unique_id: DataTypes.STRING,
+      uid: DataTypes.STRING,
+      title: DataTypes.STRING,
+      whatsapp_number: DataTypes.STRING,
+      logo: DataTypes.STRING,
+      place: DataTypes.STRING,
+      size: DataTypes.STRING,
+    },
+    {
+      sequelize,
+      modelName: "ChatWidget",
+      tableName: "chat_widgets",
+    }
+  );
   return ChatWidget;
 };

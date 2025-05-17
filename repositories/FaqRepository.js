@@ -1,18 +1,18 @@
-const {Faq} = require("../models");
+const { Faq } = require("../models");
 
 class FaqRepository {
-   async addFaq(question, answer) {
+  async addFaq(question, answer) {
     if (!question || !answer) {
       throw new Error("Please provide question and answer both");
     }
     await Faq.create({ question, answer });
   }
 
-   async getFaqs() {
+  async getFaqs() {
     return await Faq.findAll();
   }
 
-   async deleteFaq(id) {
+  async deleteFaq(id) {
     await Faq.destroy({ where: { id } });
   }
 }

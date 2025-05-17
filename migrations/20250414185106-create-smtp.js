@@ -1,41 +1,41 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('smtps', {
+    await queryInterface.createTable("smtps", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       email: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       host: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       port: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       password: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('smtps');
-  }
+    await queryInterface.dropTable("smtps");
+  },
 };

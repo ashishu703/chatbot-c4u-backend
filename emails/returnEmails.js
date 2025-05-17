@@ -1,5 +1,5 @@
 function recoverEmail(appName, recoveryLink) {
-    return `<!DOCTYPE html>
+  return `<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -58,10 +58,10 @@ function recoverEmail(appName, recoveryLink) {
         </div>
     </body>
     </html>
-    `
+    `;
 }
 function welcomeEmail(appName, username) {
-    return `<!DOCTYPE html>
+  return `<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -126,5 +126,4 @@ function welcomeEmail(appName, username) {
     `;
 }
 
-
-module.exports = { recoverEmail, welcomeEmail }
+module.exports = { recoverEmail, welcomeEmail };

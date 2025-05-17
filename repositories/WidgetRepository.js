@@ -1,7 +1,8 @@
-const {ChatWidget} = require('../models');
+const { ChatWidget } = require("../models");
 
 class WidgetRepository {
-  async create(widgetData) {x
+  async create(widgetData) {
+    x;
     return await ChatWidget.create(widgetData);
   }
 

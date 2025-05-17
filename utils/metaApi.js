@@ -22,16 +22,22 @@ const delMetaTemplet = async (version, wabaId, accessToken, name) => {
   return { success: true }; // Replace with actual response
 };
 
-const getSessionUploadMediaMeta = async (version, appId, accessToken, fileSize, mimeType) => {
+const getSessionUploadMediaMeta = async (
+  version,
+  appId,
+  accessToken,
+  fileSize,
+  mimeType
+) => {
   // Placeholder: Replace with actual Meta API call
   console.log(`Starting upload session for app ID: ${appId}`);
-  return { id: 'placeholder-session-id' }; // Replace with actual response
+  return { id: "placeholder-session-id" }; // Replace with actual response
 };
 
 const uploadFileMeta = async (sessionId, filePath, version, accessToken) => {
   // Placeholder: Replace with actual Meta API call
   console.log(`Uploading file for session: ${sessionId}`);
-  return { success: true, data: { h: 'placeholder-hash' } }; // Replace with actual response
+  return { success: true, data: { h: "placeholder-hash" } }; // Replace with actual response
 };
 
 module.exports = {
@@ -40,5 +46,5 @@ module.exports = {
   getAllTempletsMeta,
   delMetaTemplet,
   getSessionUploadMediaMeta,
-  uploadFileMeta
+  uploadFileMeta,
 };

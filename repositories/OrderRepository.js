@@ -1,13 +1,31 @@
 const { Orders, User } = require("../models");
 
 class OrderRepository {
-   async getOrders() {
+  async getOrders() {
     return await Orders.findAll({
-      include: [{ model: User, attributes: ["uid", "role", "name", "email", "password", "mobile_with_country_code", "timezone", "plan", "plan_expire", "trial", "api_key", "createdAt"] }],
+      include: [
+        {
+          model: User,
+          attributes: [
+            "uid",
+            "role",
+            "name",
+            "email",
+            "password",
+            "mobile_with_country_code",
+            "timezone",
+            "plan",
+            "plan_expire",
+            "trial",
+            "api_key",
+            "createdAt",
+          ],
+        },
+      ],
     });
   }
 
-   async getRawOrders() {
+  async getRawOrders() {
     return await Orders.findAll();
   }
 
@@ -31,11 +49,11 @@ class OrderRepository {
     return await Plan.findByPk(id);
   }
 
-   async findActiveOrderByUid(uid) {
+  async findActiveOrderByUid(uid) {
     const order = await Orders.findOne({
       where: { uid },
-      include: [{ model: Plan, as: 'plan' }],
-      order: [['createdAt', 'DESC']]
+      include: [{ model: Plan, as: "plan" }],
+      order: [["createdAt", "DESC"]],
     });
     return order;
   }

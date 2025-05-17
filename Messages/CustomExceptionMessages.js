@@ -136,7 +136,7 @@ module.exports = class CustomExceptionMessages {
         message: __t("token_expired"),
         statusCode: 401,
       },
-      TokenVerificationFailed: {
+      TokenVerificationFailedException: {
         message: __t("token_verification_failed"),
         statusCode: 401,
       },
@@ -284,34 +284,102 @@ module.exports = class CustomExceptionMessages {
         message: __t("plan_not_found_with_id"),
         statusCode: 400,
       },
-      InvalidPlanFoundException:{
+      InvalidPlanFoundException: {
         message: __t("invalid_plan_found"),
-        statusCode: 400
+        statusCode: 400,
       },
       FillRazorpayCredentialsException: {
         message: __t("fill_razorpay_credentials"),
-        statusCode: 400
+        statusCode: 400,
       },
-      OrderIdAndPlanRequiredException:{
+      OrderIdAndPlanRequiredException: {
         message: __t("order_id_and_plan_required"),
-        statusCode: 400
+        statusCode: 400,
       },
       PaypalCredentialsRequiredException: {
         message: __t("paypal_credentials_required"),
-        statusCode: 400
+        statusCode: 400,
       },
-      PaymentProcessingErrorException:{
+      PaymentProcessingErrorException: {
         message: __t("payment_processing_error"),
-        statusCode: 400
+        statusCode: 400,
       },
-      TrialAlreadyTakenException :{
+      TrialAlreadyTakenException: {
         message: __t("trial_already_taken"),
-        statusCode: 400
+        statusCode: 400,
       },
       NotATrialPlanException: {
-        message : __t("not_a_trial_plan"),
-        statusCode: 400
-      }
+        message: __t("not_a_trial_plan"),
+        statusCode: 400,
+      },
+      DuplicatePhonebookNameException: {
+        message: __t("duplicate_phonebook_name"),
+        statusCode: 409,
+      },
+      InvalidCsvProvidedException: {
+        message: __t("invalid_csv_provided"),
+        statusCode: 400,
+      },
+      CsvMobileMissingException: {
+        message: __t("csv_mobile_missing"),
+        statusCode: 400,
+      },
+      InvalidUidOrPlanException: {
+        message: __t("invalid_uid_or_plan"),
+        statusCode: 400,
+      },
+      ThemeSettingErrorException: {
+        message: __t("theme_setting_error"),
+        statusCode: 400,
+      },
+      DestinationFileExistsException: {
+        message: __t("destination_file_exists"),
+        statusCode: 400,
+      },
+      CannotDeleteAllLanguagesException: {
+        message: __t("cannot_delete_all_languages"),
+        statusCode: 400,
+      },
+      EmailAlreadyTakenException: {
+        message: __t("email_already_taken"),
+        statusCode: 400,
+      },
+      ContactNotFoundInPhonebookException: {
+        message: __t("contact_not_found_in_phonebook"),
+        statusCode: 400,
+      },
+      ContactAlreadyExistedException: {
+        message: __t("contact_already_existed"),
+        statusCode: 400,
+      },
+      PleaseSelectAgentException: {
+        message: __t("please_select_agent"),
+        statusCode: 400,
+      },
+      TaskNotFoundOrUnauthorizedException: {
+        message: __t("task_not_found_or_unauthorized"),
+        statusCode: 400,
+      },
+      CannotRemoveAgentDetailException: {
+        message: __t("cannot_remove_agent_detail"),
+        statusCode: 400,
+      },
+      PleaseProvideAppNameException: {
+        message: __t("please_provide_app_name"),
+        statusCode: 400,
+      },
+      WebConfigNotFoundException: {
+        message: __t("web_config_not_found"),
+        statusCode: 400,
+      },
+      ProfileNotFoundException: {
+        message: __t("profile_not_found"),
+        statusCode: 400,
+      },
+      PageNotFoundException: {
+        message: __t("page_not_found"),
+        statusCode: 400,
+      },
     }[type];
   }
 };

@@ -1,5 +1,5 @@
-'use strict';
-const { Model } = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class MetaApi extends Model {
     static associate(models) {
@@ -10,38 +10,38 @@ module.exports = (sequelize, DataTypes) => {
     {
       uid: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       waba_id: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       business_account_id: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       access_token: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       business_phone_number_id: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       app_id: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       pin: {
         type: DataTypes.STRING,
-        allowNull: true
-      }
+        allowNull: true,
+      },
     },
     {
       sequelize,
-      modelName: 'MetaApi',
-      tableName: 'meta_apis',
-      timestamps: true
+      modelName: "MetaApi",
+      tableName: "meta_apis",
+      timestamps: true,
     }
   );
   return MetaApi;

@@ -1,7 +1,9 @@
-const webConfigRepository = require('../repositories/WebConfigRepository');
-const { getFileExtension } = require('../utils/validation');
-const path = require('path');
-const randomstring = require('randomstring');
+const PleaseProvideAppNameException = require("../exceptions/CustomExceptions/PleaseProvideAppNameException");
+const WebConfigNotFoundException = require("../exceptions/CustomExceptions/WebConfigNotFoundException");
+const webConfigRepository = require("../repositories/WebConfigRepository");
+const { getFileExtension } = require("../utils/validation");
+const path = require("path");
+const randomstring = require("randomstring");
 
 class WebConfigService {
   async updateWebConfig(req) {
@@ -29,16 +31,23 @@ class WebConfigService {
       whatsapp_client_id,
       whatsapp_client_secret,
       whatsapp_graph_version,
-      config_id
+      config_id,
     } = req.body;
 
-    let filename = req.body.logo || '';
+    let filename = req.body.logo || "";
 
     if (req.files?.file) {
       const file = req.files.file;
       const randomName = randomstring.generate();
       filename = `${randomName}.${getFileExtension(file.name)}`;
-      const savePath = path.join(__dirname, '..', 'client', 'public', 'media', filename);
+      const savePath = path.join(
+        __dirname,
+        "..",
+        "client",
+        "public",
+        "media",
+        filename
+      );
 
       await new Promise((resolve, reject) => {
         file.mv(savePath, (err) => {
@@ -48,7 +57,7 @@ class WebConfigService {
       });
     }
 
-    if (!app_name) throw new Error('Please provide app name');
+    if (!app_name) throw new PleaseProvideAppNameException();
 
     const configData = {
       logo: filename,
@@ -62,7 +71,7 @@ class WebConfigService {
       chatbot_screen_tutorial,
       broadcast_screen_tutorial,
       login_header_footer: parseInt(login_header_footer) || 0,
-      exchange_rate: exchange_rate || '',
+      exchange_rate: exchange_rate || "",
       facebook_client_id,
       facebook_client_secret,
       facebook_graph_version,
@@ -75,7 +84,7 @@ class WebConfigService {
       whatsapp_client_id,
       whatsapp_client_secret,
       whatsapp_graph_version,
-      config_id
+      config_id,
     };
 
     // ✅ Remove undefined values to prevent PostgreSQL errors
@@ -84,13 +93,13 @@ class WebConfigService {
     );
 
     const updated = await webConfigRepository.update(1, cleanedData);
-    if (!updated) throw new Error('Web config not found');
+    if (!updated) throw new WebConfigNotFoundException();
     return updated;
   }
 
   async getWebPublic() {
     const config = await webConfigRepository.findFirst();
-    if (!config) throw new Error('Web config not found');
+    if (!config) throw new WebConfigNotFoundException();
     return config;
   }
 }

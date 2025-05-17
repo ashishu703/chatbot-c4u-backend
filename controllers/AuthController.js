@@ -30,7 +30,7 @@ class AuthController {
   
   
 
-  async loginWithFacebook(req, res, next) {
+  async loginWithFacebook(req, res, next) {  
     try {
       const { token, userId, email, name } = req.body;
       const loginToken = await this.authService.loginWithFacebook({ token, userId, email, name });

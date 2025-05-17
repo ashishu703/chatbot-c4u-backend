@@ -11,7 +11,6 @@ const AdminNotFoundException = require("../exceptions/CustomExceptions/AdminNotF
 const PhonebookNoMobileException = require("../exceptions/CustomExceptions/PhonebookNoMobileException");
 const MetaKeysOrTokenInvalid = require("../exceptions/CustomExceptions/MetaKeysOrTokenInvalid");
 
-
 class DashboardService {
   userRepository;
   adminRepository;
@@ -27,15 +26,19 @@ class DashboardService {
     this.broadcastRepository = new BroadcastRepository();
     this.broadcastLogRepository = new BroadcastLogRepository();
   }
-   async getUserDashboardData(userUid) {
+  async getUserDashboardData(userUid) {
     const metaApi = await this.metaApiRepository.findByUid(userUid);
     if (!metaApi) {
       throw new MetaApiKeysNotfoundException();
     }
-    const totalBroadcasts = await this.broadcastRepository.count({ where: { uid: userUid } });
-    const totalBroadcastLogs = await this.broadcastLogRepository.count({ where: { uid: userUid } });
+    const totalBroadcasts = await this.broadcastRepository.count({
+      where: { uid: userUid },
+    });
+    const totalBroadcastLogs = await this.broadcastLogRepository.count({
+      where: { uid: userUid },
+    });
     const userData = await this.userRepository.findById(userUid);
-    
+
     return {
       totalBroadcasts,
       totalBroadcastLogs,
@@ -43,14 +46,18 @@ class DashboardService {
     };
   }
 
-   async getAdminDashboardData(adminUid) {
+  async getAdminDashboardData(adminUid) {
     const admin = await this.adminRepository.findById(adminUid);
     if (!admin) {
       throw new AdminNotFoundException();
     }
     const totalUsers = await this.userRepository.count();
-    const totalBroadcasts = await this.broadcastRepository.count({ where: { uid: adminUid } });
-    const totalBroadcastLogs = await this.broadcastLogRepository.count({ where: { uid: adminUid } });
+    const totalBroadcasts = await this.broadcastRepository.count({
+      where: { uid: adminUid },
+    });
+    const totalBroadcastLogs = await this.broadcastLogRepository.count({
+      where: { uid: adminUid },
+    });
 
     return {
       totalUsers,
@@ -59,19 +66,26 @@ class DashboardService {
       adminDetails: admin,
     };
   }
-   async getAdminBroadcastLogs(adminUid) {
+  async getAdminBroadcastLogs(adminUid) {
     const broadcasts = await this.broadcastRepository.findByAdminUid(adminUid);
     const broadcastLogs = [];
     for (const broadcast of broadcasts) {
-      const logs = await this.broadcastLogRepository.findByBroadcastId(broadcast.broadcast_id, adminUid);
+      const logs = await this.broadcastLogRepository.findByBroadcastId(
+        broadcast.broadcast_id,
+        adminUid
+      );
       const stats = {
         broadcast_id: broadcast.broadcast_id,
         totalLogs: logs.length,
         getSent: logs.filter((log) => log.delivery_status === "sent").length,
-        totalDelivered: logs.filter((log) => log.delivery_status === "delivered").length,
+        totalDelivered: logs.filter(
+          (log) => log.delivery_status === "delivered"
+        ).length,
         totalRead: logs.filter((log) => log.delivery_status === "read").length,
-        totalFailed: logs.filter((log) => log.delivery_status === "failed").length,
-        totalPending: logs.filter((log) => log.delivery_status === "PENDING").length,
+        totalFailed: logs.filter((log) => log.delivery_status === "failed")
+          .length,
+        totalPending: logs.filter((log) => log.delivery_status === "PENDING")
+          .length,
       };
 
       broadcastLogs.push({
@@ -84,18 +98,32 @@ class DashboardService {
     return broadcastLogs;
   }
 
-   async addBroadcast({ title, templet, phonebook, scheduleTimestamp, example, user }) {
+  async addBroadcast({
+    title,
+    templet,
+    phonebook,
+    scheduleTimestamp,
+    example,
+    user,
+  }) {
     const metaApi = await this.metaApiRepository.findByUid(user.uid);
     if (!metaApi) {
       throw new MetaApiKeysNotfoundException();
     }
 
-    const contacts = await this.contactRepository.findByPhonebookId(phonebook.id, user.uid);
+    const contacts = await this.contactRepository.findByPhonebookId(
+      phonebook.id,
+      user.uid
+    );
     if (!contacts.length) {
       throw new PhonebookNoMobileException();
     }
 
-    const metaDetails = await getMetaNumberDetail("v18.0", metaApi.business_phone_number_id, metaApi.access_token);
+    const metaDetails = await getMetaNumberDetail(
+      "v18.0",
+      metaApi.business_phone_number_id,
+      metaApi.access_token
+    );
     if (metaDetails.error) {
       throw new MetaKeysOrTokenInvalid();
     }
@@ -131,12 +159,12 @@ class DashboardService {
     return true;
   }
 
-   async changeBroadcastStatus(broadcast_id, status, uid) {
+  async changeBroadcastStatus(broadcast_id, status, uid) {
     await this.broadcastRepository.updateStatus(broadcast_id, status, uid);
-    return true
+    return true;
   }
 
-   async deleteBroadcast(broadcast_id, uid) {
+  async deleteBroadcast(broadcast_id, uid) {
     await this.broadcastRepository.delete(broadcast_id, uid);
     await this.broadcastLogRepository.deleteByBroadcastId(broadcast_id, uid);
     return true;

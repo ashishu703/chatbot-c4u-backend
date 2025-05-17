@@ -2,49 +2,46 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
 const { isValidEmail, sendEmail } = require("../functions/function");
-const { generateToken, decodeGoogleToken } = require('../utils/authUtils');
-const { validateFacebookToken } = require('../utils/metaApi');
-const randomstring = require('randomstring');
-const { welcomeEmail, recoverEmail } = require('../emails/returnEmails');
-const HttpException = require('../middlewares/HttpException');
-const { User,Admin } = require('../models'); 
-const WebRepository = require('../repositories/webRepository'); 
+const { generateToken, decodeGoogleToken } = require("../utils/authUtils");
+const { validateFacebookToken } = require("../utils/metaApi");
+const randomstring = require("randomstring");
+const { welcomeEmail, recoverEmail } = require("../emails/returnEmails");
+const HttpException = require("../middlewares/HttpException");
+const { User, Admin } = require("../models");
+const WebRepository = require("../repositories/webRepository");
 const TokenExpiredEXception = require("../exceptions/CustomExceptions/TokenExpiredEXception");
-const TokenMissingOrInvalidExecption = require("../exceptions/CustomExceptions/TokenMissingOrInvalidExecption")
-const TokenVerificationFailedException = require ("../exceptions/CustomExceptions/TokenVerificationFailedException")
-const LoginInputMissingException = require ("../exceptions/CustomExceptions/LoginInputMissingException")
-const FacebookAppCredentialsMissingException = require ("../exceptions/CustomExceptions/FacebookAppCredentialsMissingException")
-const FacebookLoginParamMismatchException = require ("../exceptions/CustomExceptions/FacebookLoginParamMismatchException")
-const InvalidLoginTokenException = require ("../exceptions/CustomExceptions/InvalidLoginTokenException")
-const GoogleLoginFailedException = require ("../exceptions/CustomExceptions/GoogleLoginFailedException")
-const FillAllFieldsException = require ("../exceptions/CustomExceptions/FillAllFieldsException")
-const PrivacyTermsUncheckedException = require ("../exceptions/CustomExceptions/PrivacyTermsUncheckedException")
-const EmailAlreadyInUseException = require ("../exceptions/CustomExceptions/EmailAlreadyInUseException")
-const InvalidCredentialsException = require ("../exceptions/CustomExceptions/InvalidCredentialsException");
-const RecoveryUserNotFoundException = require ("../exceptions/CustomExceptions/RecoveryUserNotFoundException")
-const SmtpConnectionNotFoundException = require ("../exceptions/CustomExceptions/SmtpConnectionNotFoundException");
-const PasswordRequiredException = require ("../exceptions/CustomExceptions/PasswordRequiredException")
-
-
+const TokenMissingOrInvalidExecption = require("../exceptions/CustomExceptions/TokenMissingOrInvalidExecption");
+const TokenVerificationFailedException = require("../exceptions/CustomExceptions/TokenVerificationFailedException");
+const LoginInputMissingException = require("../exceptions/CustomExceptions/LoginInputMissingException");
+const FacebookAppCredentialsMissingException = require("../exceptions/CustomExceptions/FacebookAppCredentialsMissingException");
+const FacebookLoginParamMismatchException = require("../exceptions/CustomExceptions/FacebookLoginParamMismatchException");
+const InvalidLoginTokenException = require("../exceptions/CustomExceptions/InvalidLoginTokenException");
+const GoogleLoginFailedException = require("../exceptions/CustomExceptions/GoogleLoginFailedException");
+const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
+const PrivacyTermsUncheckedException = require("../exceptions/CustomExceptions/PrivacyTermsUncheckedException");
+const EmailAlreadyInUseException = require("../exceptions/CustomExceptions/EmailAlreadyInUseException");
+const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException");
+const RecoveryUserNotFoundException = require("../exceptions/CustomExceptions/RecoveryUserNotFoundException");
+const SmtpConnectionNotFoundException = require("../exceptions/CustomExceptions/SmtpConnectionNotFoundException");
+const PasswordRequiredException = require("../exceptions/CustomExceptions/PasswordRequiredException");
 
 class AuthService {
   async verifyToken(token) {
     return new Promise((resolve, reject) => {
       jwt.verify(token, process.env.JWTKEY, (err, decoded) => {
         if (err) {
-          console.error('JWT Verification failed:', err.message);
-          if (err.name === 'TokenExpiredError') {
+          console.error("JWT Verification failed:", err.message);
+          if (err.name === "TokenExpiredError") {
             return reject(new TokenExpiredEXception());
-          } else if (err.name === 'JsonWebTokenError') {
+          } else if (err.name === "JsonWebTokenError") {
             return reject(new TokenMissingOrInvalidExecption());
           }
           return reject(new TokenVerificationFailedException());
         }
-        resolve(decoded); 
+        resolve(decoded);
       });
     });
   }
-
 
   async loginWithFacebook({ token, userId, email, name }) {
     if (!token || !userId || !email || !name) {
@@ -62,7 +59,7 @@ class AuthService {
     }
     const resp = checkToken?.response?.data;
     if (resp?.user_id !== userId || !resp?.is_valid) {
-    throw new InvalidLoginTokenException();
+      throw new InvalidLoginTokenException();
     }
     let user = await User.findOne({ where: { email } });
     if (!user) {
@@ -71,7 +68,7 @@ class AuthService {
       const hasPass = await bcrypt.hash(password, 10);
       user = await User.create({ name, uid, email, password: hasPass });
     }
-    const loginToken = generateToken({ uid: user.uid, role: 'user' });
+    const loginToken = generateToken({ uid: user.uid, role: "user" });
     return loginToken;
   }
 
@@ -94,27 +91,45 @@ class AuthService {
       const password = decoded.header?.kid;
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      await this.authRepository.createUser({ name, uid, email, password: hashedPassword });
+      await this.authRepository.createUser({
+        name,
+        uid,
+        email,
+        password: hashedPassword,
+      });
 
-      const loginToken = jwt.sign({ uid, role: "user", email, password: hashedPassword }, process.env.JWTKEY);
+      const loginToken = jwt.sign(
+        { uid, role: "user", email, password: hashedPassword },
+        process.env.JWTKEY
+      );
       return loginToken;
     }
 
     const loginToken = jwt.sign(
-      { uid: user.uid, role: "user", password: user.password, email: user.email },
+      {
+        uid: user.uid,
+        role: "user",
+        password: user.password,
+        email: user.email,
+      },
       process.env.JWTKEY
     );
 
     return loginToken;
   }
 
-
-  async signup({ email, name, password, mobile_with_country_code, acceptPolicy }) {
+  async signup({
+    email,
+    name,
+    password,
+    mobile_with_country_code,
+    acceptPolicy,
+  }) {
     if (!email || !name || !password || !mobile_with_country_code) {
-     throw new FillAllFieldsException();
+      throw new FillAllFieldsException();
     }
     if (!acceptPolicy) {
-     throw new PrivacyTermsUncheckedException();
+      throw new PrivacyTermsUncheckedException();
     }
     if (!isValidEmail(email)) {
       throw new InvalidCredentialsException();
@@ -125,63 +140,75 @@ class AuthService {
     }
     const haspass = await bcrypt.hash(password, 10);
     const uid = randomstring.generate();
-    await User.create({ name, uid, email, password: haspass, mobile_with_country_code });
+    await User.create({
+      name,
+      uid,
+      email,
+      password: haspass,
+      mobile_with_country_code,
+    });
     const web = await WebRepository.getWebPublic();
-    const appName = web?.app_name || 'App';
+    const appName = web?.app_name || "App";
     const smtp = await WebRepository.getSmtp();
     if (smtp?.email && smtp?.host && smtp?.port && smtp?.password) {
       const html = welcomeEmail(appName, name);
-      await sendEmail(smtp.host, smtp.port, smtp.email, smtp.password, html, `${appName} - Welcome`, smtp.email, email);
+      await sendEmail(
+        smtp.host,
+        smtp.port,
+        smtp.email,
+        smtp.password,
+        html,
+        `${appName} - Welcome`,
+        smtp.email,
+        email
+      );
     }
     return true;
   }
 
   async userlogin({ email, password }) {
-  
-      if (!email || !password) {
-        throw new FillAllFieldsException();
-      }
-  
-      const user = await User.findOne({ where: { email } });
-      if (!user) {
-        throw new InvalidCredentialsException();
-      }
-  
-      const compare = await bcrypt.compare(password, user.password);
-      if (!compare) {
-        throw new InvalidCredentialsException();
-      }
-  
-      const token = generateToken({ uid: user.uid, role: 'user' });
-      return {
-        token,
-        user: { id: user.uid, name: user.name, email: user.email }
-      };
+    if (!email || !password) {
+      throw new FillAllFieldsException();
+    }
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      throw new InvalidCredentialsException();
+    }
+
+    const compare = await bcrypt.compare(password, user.password);
+    if (!compare) {
+      throw new InvalidCredentialsException();
+    }
+
+    const token = generateToken({ uid: user.uid, role: "user" });
+    return {
+      token,
+      user: { id: user.uid, name: user.name, email: user.email },
+    };
   }
 
   async adminlogin({ email, password }) {
-  
-      if (!email || !password) {
-          throw new FillAllFieldsException();
-      }
+    if (!email || !password) {
+      throw new FillAllFieldsException();
+    }
 
-      const admin = await Admin.findOne({ where: { email } });
-      if (!admin) {
-       throw new InvalidCredentialsException();
-      }
-  
-      const compare = await bcrypt.compare(password, admin.password);
-      if (!compare) {
-       throw new InvalidCredentialsException();
-      }
-  
-      const token = generateToken({ uid: admin.uid, role: 'admin' });
-      console.log("🟢 Token Generated:", token);
-  
-      return {
-        token,
-        admin: { id: admin.uid,email: admin.email }
-      };
+    const admin = await Admin.findOne({ where: { email } });
+    if (!admin) {
+      throw new InvalidCredentialsException();
+    }
+
+    const compare = await bcrypt.compare(password, admin.password);
+    if (!compare) {
+      throw new InvalidCredentialsException();
+    }
+
+    const token = generateToken({ uid: admin.uid, role: "admin" });
+
+    return {
+      token,
+      admin: { id: admin.uid, email: admin.email },
+    };
   }
   async sendRecovery(email) {
     if (!isValidEmail(email)) {
@@ -192,43 +219,53 @@ class AuthService {
       throw new RecoveryUserNotFoundException();
     }
     const web = await WebRepository.getWebPublic();
-    const appName = web?.app_name || 'App';
+    const appName = web?.app_name || "App";
     const token = generateToken({
       old_email: email,
       email,
       time: moment(new Date()),
       password: user.password,
-      role: 'user'
+      role: "user",
     });
     const recoveryUrl = `${process.env.FRONTENDURI}/recovery-user/${token}`;
     const html = recoverEmail(appName, recoveryUrl);
     const smtp = await WebRepository.getSmtp();
     if (!smtp?.email || !smtp?.host || !smtp?.port || !smtp?.password) {
-     throw new SmtpConnectionNotFoundException();
+      throw new SmtpConnectionNotFoundException();
     }
-    await sendEmail(smtp.host, smtp.port, smtp.email, smtp.password, html, `${appName} - Password Recovery`, smtp.email, email);
+    await sendEmail(
+      smtp.host,
+      smtp.port,
+      smtp.email,
+      smtp.password,
+      html,
+      `${appName} - Password Recovery`,
+      smtp.email,
+      email
+    );
     return true;
   }
 
   async modifyPassword(decoded, pass) {
     if (!pass) {
-     throw new PasswordRequiredException();
+      throw new PasswordRequiredException();
     }
-    if (moment(decoded.time).diff(moment(new Date()), 'hours') > 1) {
+    if (moment(decoded.time).diff(moment(new Date()), "hours") > 1) {
       throw new TokenExpiredEXception();
     }
     const hashpassword = await bcrypt.hash(pass, 10);
-    const result = await User.update({ password: hashpassword }, { where: { email: decoded.old_email } });
-    return result; 
+    const result = await User.update(
+      { password: hashpassword },
+      { where: { email: decoded.old_email } }
+    );
+    return result;
   }
 
   async generateApiKeys(uid) {
-    const token = generateToken({ uid, role: 'user' });
+    const token = generateToken({ uid, role: "user" });
     await User.update({ api_key: token }, { where: { uid } });
     return true;
   }
-
-
 }
 
 module.exports = AuthService;

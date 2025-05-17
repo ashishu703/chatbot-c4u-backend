@@ -8,7 +8,7 @@ const isValidEmail = (email) => {
 };
 
 const getFileExtension = (filename) => {
-  return filename.split('.').pop();
+  return filename.split(".").pop();
 };
 
 // Placeholder for executeQueries
@@ -18,4 +18,9 @@ const executeQueries = async (queries, connection) => {
   }
 };
 
-module.exports = { validateEmail, isValidEmail, getFileExtension, executeQueries };
+module.exports = {
+  validateEmail,
+  isValidEmail,
+  getFileExtension,
+  executeQueries,
+};

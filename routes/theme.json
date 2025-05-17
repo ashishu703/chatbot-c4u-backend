@@ -1,6 +1,14 @@
 {
-  "primary": { "main": "#35d472", "light": "#ECF2E6", "dark": "#1a8c40" },
-  "secondary": { "main": "#56d687", "light": "#E8F7E6", "dark": "#36a04c" },
+  "primary": {
+    "main": "#35d472",
+    "light": "#ECF2E6",
+    "dark": "#1a8c40"
+  },
+  "secondary": {
+    "main": "#56d687",
+    "light": "#E8F7E6",
+    "dark": "#36a04c"
+  },
   "success": {
     "main": "#22a454",
     "light": "#56d687",
@@ -25,7 +33,11 @@
     "dark": "#ae8e59",
     "contrastText": "#ffffff"
   },
-  "purple": { "A50": "#EBF3FE", "A100": "#6610f2", "A200": "#557fb9" },
+  "purple": {
+    "A50": "#EBF3FE",
+    "A100": "#6610f2",
+    "A200": "#557fb9"
+  },
   "grey": {
     "100": "#F2F6FA",
     "200": "#EAEFF4",
@@ -34,7 +46,10 @@
     "500": "#5A6A85",
     "600": "#2A3547"
   },
-  "text": { "primary": "#111f0f", "secondary": "#5A6A85" },
+  "text": {
+    "primary": "#111f0f",
+    "secondary": "#5A6A85"
+  },
   "action": {
     "disabledBackground": "rgba(73,82,88,0.12)",
     "hoverOpacity": 0.02,

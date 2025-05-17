@@ -1,13 +1,16 @@
 const path = require("path");
 const FlowRepository = require("../repositories/chatFlowRepository");
-const { writeJsonToFile, readJsonFromFile, deleteFileIfExists } = require("../functions/function");
+const {
+  writeJsonToFile,
+  readJsonFromFile,
+  deleteFileIfExists,
+} = require("../functions/function");
 const FlowNotfoundException = require("../exceptions/customExceptions/FlowNotfoundException");
 class FlowService {
-
   constructor() {
     this.flowRepository = new FlowRepository();
   }
-   async addFlow({ title, nodes, edges, flowId, user }) {
+  async addFlow({ title, nodes, edges, flowId, user }) {
     const basePath = path.join(__dirname, "../flow-json");
     const nodePath = `${basePath}/nodes/${user.uid}/${flowId}.json`;
     const edgePath = `${basePath}/edges/${user.uid}/${flowId}.json`;
@@ -19,7 +22,11 @@ class FlowService {
     if (existingFlow) {
       await this.flowRepository.updateTitle(flowId, title);
     } else {
-      await this.flowRepository.create({ uid: user.uid, flow_id: flowId, title });
+      await this.flowRepository.create({
+        uid: user.uid,
+        flow_id: flowId,
+        title,
+      });
     }
 
     return true;
@@ -28,8 +35,7 @@ class FlowService {
     return await this.flowRepository.findByUid(uid);
   }
 
-
-   async deleteFlow(id, flowId, uid) {
+  async deleteFlow(id, flowId, uid) {
     const basePath = path.join(__dirname, "../flow-json");
     const nodePath = `${basePath}/nodes/${uid}/${flowId}.json`;
     const edgePath = `${basePath}/edges/${uid}/${flowId}.json`;
@@ -41,8 +47,8 @@ class FlowService {
     return true;
   }
 
-   async getFlowById(flowId, uid) {
-const basePath = path.join(__dirname, "../flow-json");
+  async getFlowById(flowId, uid) {
+    const basePath = path.join(__dirname, "../flow-json");
     const nodePath = `${basePath}/nodes/${flowId}/${uid}.json`;
     const edgePath = `${basePath}/edges/${flowId}/${uid}.json`;
 
@@ -52,20 +58,23 @@ const basePath = path.join(__dirname, "../flow-json");
     return { nodes, edges };
   }
 
-   async getActivity(flowId, uid) {
+  async getActivity(flowId, uid) {
     const flow = await this.flowRepository.findByFlowIdAndUid(flowId, uid);
     if (!flow) throw new FlowNotfoundException();
 
     const prevent = flow.prevent_list || [];
     const ai = flow.ai_list || [];
 
-    const preventWithIds = prevent.map((item, index) => ({ ...item, id: `prevent-${index}` }));
+    const preventWithIds = prevent.map((item, index) => ({
+      ...item,
+      id: `prevent-${index}`,
+    }));
     const aiWithIds = ai.map((item, index) => ({ ...item, id: `ai-${index}` }));
 
-    return {prevent: preventWithIds, ai: aiWithIds };
+    return { prevent: preventWithIds, ai: aiWithIds };
   }
 
-   async removeNumberFromActivity(type, number, flowId, uid) {
+  async removeNumberFromActivity(type, number, flowId, uid) {
     const flow = await this.flowRepository.findByFlowId(flowId);
     if (!flow) throw new FlowNotfoundException();
 

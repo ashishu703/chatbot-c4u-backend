@@ -1,35 +1,35 @@
-const { Flow } =  require("../models");
+const { Flow } = require("../models");
 
 class FlowRepository {
-   async create(flow) {
+  async create(flow) {
     return await Flow.create(flow);
   }
 
-   async findByUid(uid) {
+  async findByUid(uid) {
     return await Flow.findAll({ where: { uid } });
   }
 
-   async findByFlowId(flow_id) {
+  async findByFlowId(flow_id) {
     return await Flow.findOne({ where: { flow_id } });
   }
 
-   async findByFlowIdAndUid(flow_id, uid) {
+  async findByFlowIdAndUid(flow_id, uid) {
     return await Flow.findOne({ where: { flow_id, uid } });
   }
 
-   async updateTitle(flow_id, title) {
+  async updateTitle(flow_id, title) {
     return await Flow.update({ title }, { where: { flow_id } });
   }
 
-   async updateAiList(flow_id, ai_list) {
+  async updateAiList(flow_id, ai_list) {
     return await Flow.update({ ai_list }, { where: { flow_id } });
   }
 
-   async updatePreventList(flow_id, prevent_list) {
+  async updatePreventList(flow_id, prevent_list) {
     return await Flow.update({ prevent_list }, { where: { flow_id } });
   }
 
-   async delete(id, uid) {
+  async delete(id, uid) {
     return await Flow.destroy({ where: { id, uid } });
   }
 
@@ -40,7 +40,7 @@ class FlowRepository {
         WHERE user_id = $1 AND flow_id = $2
       `;
       const result = await this.pool.query(query, [userId, flowId]);
-      return result.rows.map((row) => row.data); 
+      return result.rows.map((row) => row.data);
     } catch (err) {
       throw new Error("Error fetching nodes: " + err.message);
     }
@@ -53,7 +53,7 @@ class FlowRepository {
         WHERE user_id = $1 AND flow_id = $2
       `;
       const result = await this.pool.query(query, [userId, flowId]);
-      return result.rows.map((row) => row.data); 
+      return result.rows.map((row) => row.data);
     } catch (err) {
       throw new Error("Error fetching edges: " + err.message);
     }

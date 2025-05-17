@@ -1,4 +1,3 @@
-
 const CustomException = require("../CustomException");
 
 class OrderIdAndPlanRequiredException extends CustomException {

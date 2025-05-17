@@ -7,12 +7,12 @@ class TempletService {
   }
 
   async addTemplate(uid, { title, type, content }) {
-    if (typeof content !== 'string') {
+    if (typeof content !== "string") {
       content = JSON.stringify(content);
     }
 
     await this.templetRepository.create({ uid, title, type, content });
-    return { success: true, msg: "Template was added" };
+    return true;
   }
 
   async getTemplates(uid) {
@@ -21,7 +21,7 @@ class TempletService {
 
   async deleteTemplates(ids) {
     await this.templetRepository.deleteByIds(ids);
-    return { success: true, msg: "Template(s) were deleted" };
+    return true;
   }
 }
 

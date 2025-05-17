@@ -5,9 +5,9 @@ const getFileExtension = require("../functions/function");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const LogoRequiredException = require("../exceptions/CustomExceptions/LogoRequiredException");
 class ChatWidgetService {
-
   async addWidget(req) {
-    const { title, whatsapp_number, place, selectedIcon, logoType, size } = req.body;
+    const { title, whatsapp_number, place, selectedIcon, logoType, size } =
+      req.body;
     const uid = req.decode.uid;
 
     if (!title || !whatsapp_number || !place) {
@@ -26,10 +26,13 @@ class ChatWidgetService {
       filename = `${randomString}.${getFileExtension(file.name)}`;
 
       await new Promise((resolve, reject) => {
-        file.mv(path.join(__dirname, `../client/public/media/${filename}`), (err) => {
-          if (err) return reject(err);
-          resolve();
-        });
+        file.mv(
+          path.join(__dirname, `../client/public/media/${filename}`),
+          (err) => {
+            if (err) return reject(err);
+            resolve();
+          }
+        );
       });
     } else {
       filename = selectedIcon;
@@ -50,13 +53,11 @@ class ChatWidgetService {
     return true;
   }
   async getMyWidgets(uid) {
-      return await chatWidgetRepository.findByUid(uid);
-    
+    return await chatWidgetRepository.findByUid(uid);
   }
 
   async deleteWidget(id) {
-      return chatWidgetRepository.delete(id);
-
+    return chatWidgetRepository.delete(id);
   }
 }
 

@@ -1,41 +1,41 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('facebook_profiles', {
+    await queryInterface.createTable("facebook_profiles", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       uid: {
         type: Sequelize.STRING,
-        allowNull:false
+        allowNull: false,
       },
       account_id: {
         type: Sequelize.STRING,
-        allowNull:false
+        allowNull: false,
       },
       name: {
         type: Sequelize.STRING,
-        allowNull:false
+        allowNull: false,
       },
       token: {
         type: Sequelize.TEXT,
-        allowNull:false
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('facebook_profiles');
-  }
+    await queryInterface.dropTable("facebook_profiles");
+  },
 };

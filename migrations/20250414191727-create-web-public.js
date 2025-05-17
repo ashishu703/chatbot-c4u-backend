@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('web_publics', {
+    await queryInterface.createTable("web_publics", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       currency_code: Sequelize.STRING,
       logo: Sequelize.STRING,
@@ -15,7 +15,7 @@ module.exports = {
       custom_home: Sequelize.STRING,
       is_custom_home: {
         type: Sequelize.INTEGER,
-        defaultValue: 0
+        defaultValue: 0,
       },
       meta_description: Sequelize.TEXT,
       currency_symbol: Sequelize.STRING,
@@ -24,23 +24,23 @@ module.exports = {
       home_page_tutorial: Sequelize.STRING,
       login_header_footer: {
         type: Sequelize.INTEGER,
-        defaultValue: 1
+        defaultValue: 1,
       },
       exchange_rate: Sequelize.STRING,
       google_client_id: Sequelize.STRING,
       google_login_active: {
         type: Sequelize.INTEGER,
-        defaultValue: 1
+        defaultValue: 1,
       },
       rtl: {
         type: Sequelize.INTEGER,
-        defaultValue: 0
+        defaultValue: 0,
       },
       fb_login_app_id: Sequelize.STRING,
       fb_login_app_sec: Sequelize.STRING,
       fb_login_active: {
         type: Sequelize.INTEGER,
-        defaultValue: 0
+        defaultValue: 0,
       },
       facebook_client_id: Sequelize.STRING,
       facebook_client_secret: Sequelize.STRING,
@@ -61,17 +61,17 @@ module.exports = {
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
-      }
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
     });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('web_publics');
-  }
+    await queryInterface.dropTable("web_publics");
+  },
 };

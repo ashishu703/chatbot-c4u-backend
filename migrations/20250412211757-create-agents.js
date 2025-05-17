@@ -1,62 +1,62 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('agents', {
+    await queryInterface.createTable("agents", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       owner_uid: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       uid: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       role: {
         type: Sequelize.STRING,
-        defaultValue: "agent"
+        defaultValue: "agent",
       },
       email: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       password: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       name: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       mobile: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       comments: {
         type: Sequelize.TEXT,
-        allowNull:true
+        allowNull: true,
       },
       is_active: {
         type: Sequelize.INTEGER,
-        defaultValue: "1"
+        defaultValue: "1",
       },
-      
+
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('agents');
-  }
+    await queryInterface.dropTable("agents");
+  },
 };

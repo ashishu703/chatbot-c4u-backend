@@ -16,7 +16,7 @@ class PaymentController {
     } catch (err) {
       next(err);
     }
-  }
+  }  
 
    async updatePaymentGateway(req, res, next) {
     try {

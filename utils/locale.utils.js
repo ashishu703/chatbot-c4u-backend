@@ -1,5 +1,5 @@
 require("dotenv").config();
-const IntlMessageFormat = require('intl-messageformat').default;
+const IntlMessageFormat = require("intl-messageformat").default;
 
 const translations = {
   en: require("../locales/en.json"),

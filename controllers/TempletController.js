@@ -1,4 +1,4 @@
-const TempletService = require("../services/templetService");
+const TempletService = require("../services/TempletService");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const { formSuccess } = require("../utils/response.utils");
 class TempletController {
@@ -13,8 +13,8 @@ class TempletController {
       if (!title || !type || !content) {
        throw new FillAllFieldsException();
       }
-      const result = await this.templetService.addTemplate(user.uid, { title, type, content });
-      return formSuccess(result);
+      await this.templetService.addTemplate(user.uid, { title, type, content });
+      return formSuccess({ msg: __t("template_added") });
     } catch (err) {
       next(err);
     }
@@ -33,8 +33,8 @@ class TempletController {
    async deleteTemplates(req, res, next) {
     try {
       const { selected } = req.body;
-      const result = await this.templetService.deleteTemplates(selected);
-      return formSuccess(result);
+       await this.templetService.deleteTemplates(selected);
+      return formSuccess({msg: __t("template_deleted")});
     } catch (err) {
       next(err);
     }

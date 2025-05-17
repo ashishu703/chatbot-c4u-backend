@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class QuickReplies extends Model {
     /**
@@ -13,13 +11,16 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  QuickReplies.init({
-    uid: DataTypes.STRING,
-    message: DataTypes.TEXT,
-  }, {
-    sequelize,
-    modelName: 'QuickReplies',
-    tableName:'quick_replies'
-  });
+  QuickReplies.init(
+    {
+      uid: DataTypes.STRING,
+      message: DataTypes.TEXT,
+    },
+    {
+      sequelize,
+      modelName: "QuickReplies",
+      tableName: "quick_replies",
+    }
+  );
   return QuickReplies;
 };

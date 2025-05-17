@@ -1,5 +1,5 @@
 
-const PhonebookService = require('../services/phonebookService');
+const PhonebookService = require('../services/PhonebookService');
 const NoFilesWereUploadedException = require('../exceptions/CustomExceptions/NoFilesWereUploadedException');
 const MobileNumberRequiredException = require('../exceptions/CustomExceptions/MobileNumberRequiredException');
 const { formSuccess } = require('../utils/response.utils');
@@ -16,8 +16,8 @@ class PhonebookController {
       if (!name) {
         throw new EnterPhonebookNameException();
       }
-      const result = await this.phonebookService.addPhonebook(user.uid, name);
-      return formSuccess(result);
+      await this.phonebookService.addPhonebook(user.uid, name);
+      return formSuccess({msg : __t("phonebook_added")});
     } catch (err) {
       next(err);
     }
@@ -37,8 +37,8 @@ class PhonebookController {
     try {
       const { id } = req.body;
       const user = req.decode;
-      const result = await this.phonebookService.deletePhonebook(user.uid, id);
-      return formSuccess(result);
+      await this.phonebookService.deletePhonebook(user.uid, id);
+      return formSuccess({msg : __t("phonebook_deleted")});
     } catch (err) {
       next(err);
     }
@@ -51,8 +51,8 @@ class PhonebookController {
       }
       const { id, phonebook_name } = req.body;
       const user = req.decode;
-      const result = await this.phonebookService.importContacts(user.uid, id, phonebook_name, req.files.file.data);
-      return formSuccess(result);
+       await this.phonebookService.importContacts(user.uid, id, phonebook_name, req.files.file.data);
+      return formSuccess({msg: __t("contacts_inserted")});
     } catch (err) {
       next(err);
     }
@@ -65,7 +65,7 @@ class PhonebookController {
       if (!mobile) {
        throw new MobileNumberRequiredException();
       }
-      const result = await this.phonebookService.addSingleContact(user.uid, {
+    await this.phonebookService.addSingleContact(user.uid, {
         phonebook_id: id,
         phonebook_name,
         mobile,
@@ -76,7 +76,7 @@ class PhonebookController {
         var4,
         var5,
       });
-      return formSuccess(result);
+      return formSuccess({msg: __t("contacts_inserted")});
     } catch (err) {
       next(err);
     }
@@ -95,8 +95,8 @@ class PhonebookController {
   async deleteContacts(req, res, next) {
     try {
       const { selected } = req.body;
-      const result = await this.phonebookService.deleteContacts(selected);
-      return formSuccess(result);
+       await this.phonebookService.deleteContacts(selected);
+      return formSuccess({msg: __t("contacts_deleted")});
     } catch (err) {
       next(err);
     }

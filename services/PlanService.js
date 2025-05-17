@@ -1,12 +1,14 @@
 const PlanRepository = require("../repositories/planRepository");
 const UserRepository = require("../repositories/UserRepository");
+const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
+const UserNotFoundException = require("../exceptions/CustomExceptions/UserNotFoundException");
+const InvalidUidOrPlanException = require("../exceptions/CustomExceptions/InvalidUidOrPlanException");
 
 class PlanService {
-  
   constructor() {
     this.userRepository = new UserRepository();
   }
-   async addPlan({
+  async addPlan({
     title,
     short_description,
     allow_tag,
@@ -20,7 +22,7 @@ class PlanService {
     plan_duration_in_days,
   }) {
     if (!title || !short_description || !plan_duration_in_days) {
-      throw new Error("Please fill details");
+      throw new FillAllFieldsException();
     }
     await PlanRepository.addPlan({
       title,
@@ -41,33 +43,25 @@ class PlanService {
     return await PlanRepository.getPlans();
   }
 
-   async deletePlan(id) {
+  async deletePlan(id) {
     await PlanRepository.deletePlan(id);
   }
 
   async updateUserPlan(uid, plan) {
     if (!uid || !plan || !plan.id) {
-      throw new Error("Invalid UID or Plan data");
+      throw new InvalidUidOrPlanException();
     }
-
-    try {
-      const user = await this.userRepository.findByUid(uid);
-      if (!user) {
-        throw new Error("User not found");
-      }
-      const updatedUser = await this.userRepository.updatePlan(uid, {
-        id: plan.id,
-        plan_duration_in_days: plan.plan_duration_in_days,
-        is_trial: plan.is_trial
-      });
-      return updatedUser;
-    } catch (error) {
-      console.error("Error in updateUserPlan:", error);
-      throw error;
+    const user = await this.userRepository.findByUid(uid);
+    if (!user) {
+      throw new UserNotFoundException();
     }
+    const updatedUser = await this.userRepository.updatePlan(uid, {
+      id: plan.id,
+      plan_duration_in_days: plan.plan_duration_in_days,
+      is_trial: plan.is_trial,
+    });
+    return updatedUser;
   }
-  
-  
 }
 
 module.exports = PlanService;

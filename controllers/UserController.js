@@ -1,4 +1,4 @@
-const UserService = require('../services/userService');
+const UserService = require('../services/UserService');
 const HttpException = require('../middlewares/HttpException');
 const TokenMissingOrInvalidExecption = require('../exceptions/CustomExceptions/TokenMissingOrInvalidExecption');
 const { formSuccess } = require('../utils/response.utils');
@@ -72,8 +72,8 @@ class UserController {
   async saveNote(req, res, next) {
     try {
       const { chatId, note } = req.body;
-      const result = await this.userService.saveNote(req.decode.uid, chatId, note);
-      return formSuccess(result);
+       await this.userService.saveNote(req.decode.uid, chatId, note);
+      return formSuccess({ msg: __t("notes_were_updated"),});
     } catch (err) {
       next(err);
     }
@@ -82,8 +82,8 @@ class UserController {
   async pushTag(req, res, next) {
     try {
       const { tag, chatId } = req.body;
-      const result = await this.userService.pushTag(req.decode.uid, tag, chatId);
-      return formSuccess(result);
+       await this.userService.pushTag(req.decode.uid, tag, chatId);
+      return formSuccess({msg : __t("tag_was_added"),});
     } catch (err) {
       next(err);
     }
@@ -92,8 +92,8 @@ class UserController {
   async deleteTag(req, res, next) {
     try {
       const { tag, chatId } = req.body;
-      const result = await this.userService.deleteTag(req.decode.uid, tag, chatId);
-      return formSuccess(result);
+       await this.userService.deleteTag(req.decode.uid, tag, chatId);
+      return formSuccess({msg : __t("tag_was_deleted"),});
     } catch (err) {
       next(err);
     }
@@ -111,8 +111,8 @@ class UserController {
 
   async saveContact(req, res, next) {
     try {
-      const result = await this.userService.saveContact(req.decode.uid, req.body);
-      return formSuccess(result);
+       await this.userService.saveContact(req.decode.uid, req.body);
+      return formSuccess({msg : __t("contact_added"),});
     } catch (err) {
       next(err);
     }
@@ -120,8 +120,8 @@ class UserController {
 
   async deleteContact(req, res, next) {
     try {
-      const result = await this.userService.deleteContact(req.body.id);
-      return formSuccess(result);
+       await this.userService.deleteContact(req.body.id);
+      return formSuccess({msg : __t("contacts_deleted"),});
     } catch (err) {
       next(err);
     }
@@ -129,8 +129,8 @@ class UserController {
 
   async updateProfile(req, res, next) {
     try {
-      const result = await this.userService.updateProfile(req.decode.uid, req.body);
-      return formSuccess(result);
+      await this.userService.updateProfile(req.decode.uid, req.body);
+      return formSuccess({msg : __t("profile_updated"),});
     } catch (err) {
       next(err);
     }
@@ -148,8 +148,8 @@ class UserController {
   async addTaskForAgent(req, res, next) {
     try {
       const { title, des, agent_uid } = req.body;
-      const result = await this.userService.addTaskForAgent(req.decode.uid, title, des, agent_uid);
-      return formSuccess(result);
+       await this.userService.addTaskForAgent(req.decode.uid, title, des, agent_uid);
+      return formSuccess({msg : __t("task_added"),});
     } catch (err) {
       next(err);
     }
@@ -169,8 +169,8 @@ class UserController {
   async deleteAgentTask(req, res, next) {
     try {
       const { id } = req.body;
-      const result = await this.userService.deleteAgentTask(id, req.decode.uid);
-      return formSuccess(result);
+       await this.userService.deleteAgentTask(id, req.decode.uid);
+      return formSuccess({ msg:__t("task_deleted")});
     } catch (err) {
       next(err);
     }
@@ -179,8 +179,8 @@ class UserController {
 
   async updateAgentProfile(req, res, next) {
     try {
-      const result = await this.userService.updateAgentProfile(req.body);
-      return formSuccess(result);
+       await this.userService.updateAgentProfile(req.body);
+      return formSuccess({msg : __t("agent_profile_updated"),});
     } catch (err) {
       next(err);
     }

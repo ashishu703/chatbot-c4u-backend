@@ -8,7 +8,7 @@ function getFileExtension(filename) {
 class MediaService {
   async handleMediaUpload(files) {
     if (!files || Object.keys(files).length === 0) {
-     throw new NoFilesWereUploadedException();
+      throw new NoFilesWereUploadedException();
     }
 
     const randomString = randomstring.generate();

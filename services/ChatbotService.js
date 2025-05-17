@@ -6,7 +6,7 @@ class ChatbotService {
   constructor() {
     this.chatbotRepository = new ChatbotRepository();
   }
-   async addChatbot({ title, chats, flow, for_all, user }) {
+  async addChatbot({ title, chats, flow, for_all, user }) {
     if (!user.plan?.allow_chatbot) {
       throw new PlanNoChatbotPermissionException();
     }
@@ -25,7 +25,7 @@ class ChatbotService {
     return true;
   }
 
-   async updateChatbot({ id, title, chats, flow, for_all, user }) {
+  async updateChatbot({ id, title, chats, flow, for_all, user }) {
     if (!user.plan?.allow_chatbot) {
       throw new PlanNoChatbotPermissionException();
     }
@@ -42,25 +42,25 @@ class ChatbotService {
     return true;
   }
 
-   async getChatbots(uid) {
+  async getChatbots(uid) {
     return await this.chatbotRepository.findByUid(uid);
   }
 
-   async changeBotStatus(id, status, user) {
+  async changeBotStatus(id, status, user) {
     if (!user.plan?.allow_chatbot) {
-      throw new new PlanNoChatbotPermissionException();
+      throw new new PlanNoChatbotPermissionException()();
     }
 
     await this.chatbotRepository.updateStatus(id, !!status, user.uid);
     return true;
   }
 
-   async deleteChatbot(id, uid) {
+  async deleteChatbot(id, uid) {
     await this.chatbotRepository.delete(id, uid);
     return true;
   }
 
-   async makeRequestApi({ url, body, headers, type }) {
+  async makeRequestApi({ url, body, headers, type }) {
     const { makeRequest } = require("../functions/function");
     return await makeRequest({ method: type, url, body, headers });
   }

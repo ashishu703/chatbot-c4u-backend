@@ -1,19 +1,19 @@
-const jwt = require('jsonwebtoken');
-const { query } = require('../database/dbpromise');
+const jwt = require("jsonwebtoken");
+const { query } = require("../database/dbpromise");
 
 const validateAgent = async (req, res, next) => {
   try {
-    const token = req.get('Authorization');
+    const token = req.get("Authorization");
     if (!token) {
       return res.json({ msg: "No token found", logout: true });
     }
 
-    jwt.verify(token.split(' ')[1], process.env.JWTKEY, async (err, decode) => {
+    jwt.verify(token.split(" ")[1], process.env.JWTKEY, async (err, decode) => {
       if (err) {
         return res.json({
           success: false,
           msg: "Invalid token found",
-          logout: true
+          logout: true,
         });
       }
 
@@ -23,12 +23,12 @@ const validateAgent = async (req, res, next) => {
         return res.json({
           success: false,
           msg: "Invalid token payload",
-          logout: true
+          logout: true,
         });
       }
 
       const getAgent = await query(
-        'SELECT * FROM agents WHERE email = $1 AND password = $2',
+        "SELECT * FROM agents WHERE email = $1 AND password = $2",
         [email, password]
       );
 
@@ -36,7 +36,7 @@ const validateAgent = async (req, res, next) => {
         return res.json({
           success: false,
           msg: "Invalid credentials or token",
-          logout: true
+          logout: true,
         });
       }
 
@@ -44,20 +44,22 @@ const validateAgent = async (req, res, next) => {
         return res.json({
           msg: "You are an inactive agent.",
           logout: true,
-          success: false
+          success: false,
         });
       }
 
-      const getOwner = await query('SELECT * FROM users WHERE uid = $1', [getAgent[0]?.owner_uid]);
+      const getOwner = await query("SELECT * FROM users WHERE uid = $1", [
+        getAgent[0]?.owner_uid,
+      ]);
 
       if (getOwner.length < 1) {
         return res.json({
           msg: "Agent Owner not found",
-          success: false
+          success: false,
         });
       }
 
-      if (getAgent[0].role === 'agent') {
+      if (getAgent[0].role === "agent") {
         req.owner = getOwner[0];
         req.decode = decode;
         next();
@@ -65,7 +67,7 @@ const validateAgent = async (req, res, next) => {
         return res.json({
           success: false,
           msg: "Unauthorized token",
-          logout: true
+          logout: true,
         });
       }
     });

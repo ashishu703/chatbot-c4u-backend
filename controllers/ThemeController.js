@@ -17,8 +17,8 @@ class ThemeController {
 
   async saveTheme(req, res, next) {
     try {
-      const result = await this.themeService.saveTheme(req.body.updatedJson);
-      return formSuccess(result);
+     await this.themeService.saveTheme(req.body.updatedJson);
+      return formSuccess({msg : __t("theme_updated")});
     } catch (err) {
       next(err);
     }

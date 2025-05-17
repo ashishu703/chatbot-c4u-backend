@@ -1,57 +1,57 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('broadcasts', {
+    await queryInterface.createTable("broadcasts", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       broadcast_id: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       uid: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       title: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       templet: {
         type: Sequelize.TEXT,
-        allowNull:true
+        allowNull: true,
       },
       phonebook: {
         type: Sequelize.TEXT,
-        allowNull:true
+        allowNull: true,
       },
       status: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       schedule: {
         type: Sequelize.DATE,
-        allowNull:true
+        allowNull: true,
       },
       timezone: {
         type: Sequelize.STRING,
-        defaultValue:"Asia/Kolkata"
+        defaultValue: "Asia/Kolkata",
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('broadcasts');
-  }
+    await queryInterface.dropTable("broadcasts");
+  },
 };

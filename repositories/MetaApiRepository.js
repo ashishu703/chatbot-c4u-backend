@@ -1,4 +1,4 @@
-const { MetaApi, MetaTempletMedia } = require('../models');
+const { MetaApi, MetaTempletMedia } = require("../models");
 
 class MetaRepository {
   async findMetaApiByUid(uid) {
@@ -27,4 +27,4 @@ class MetaRepository {
   }
 }
 
-module.exports = MetaRepository; 
+module.exports = MetaRepository;

@@ -1,69 +1,69 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('plans', {
+    await queryInterface.createTable("plans", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       title: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       short_description: {
         type: Sequelize.TEXT,
-        allowNull:true
+        allowNull: true,
       },
       allow_tag: {
         type: Sequelize.BOOLEAN,
-        defaultValue:false
+        defaultValue: false,
       },
       allow_note: {
         type: Sequelize.BOOLEAN,
-        defaultValue:false
+        defaultValue: false,
       },
       allow_chatbot: {
         type: Sequelize.BOOLEAN,
-        defaultValue:false
+        defaultValue: false,
       },
       contact_limit: {
         type: Sequelize.INTEGER,
-        allowNull:true
+        allowNull: true,
       },
       allow_api: {
         type: Sequelize.BOOLEAN,
-        defaultValue:false
+        defaultValue: false,
       },
       is_trial: {
         type: Sequelize.BOOLEAN,
-        defaultValue:false
+        defaultValue: false,
       },
       price: {
         type: Sequelize.BIGINT,
-        allowNull:true
+        allowNull: true,
       },
       price_strike: {
         type: Sequelize.BIGINT,
-        allowNull:true
+        allowNull: true,
       },
       plan_duration_in_days: {
         type: Sequelize.INTEGER,
-        allowNull:true
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('plans');
-  }
+    await queryInterface.dropTable("plans");
+  },
 };

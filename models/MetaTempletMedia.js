@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class MetaTempletMedia extends Model {
     /**
@@ -13,15 +11,18 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  MetaTempletMedia.init({
-    uid: DataTypes.STRING,
-    templet_name: DataTypes.STRING,
-    meta_hash: DataTypes.STRING,
-    file_name: DataTypes.STRING,
-  }, {
-    sequelize,
-    modelName: 'MetaTempletMedia',
-    tableName:'meta_templet_media'
-  });
+  MetaTempletMedia.init(
+    {
+      uid: DataTypes.STRING,
+      templet_name: DataTypes.STRING,
+      meta_hash: DataTypes.STRING,
+      file_name: DataTypes.STRING,
+    },
+    {
+      sequelize,
+      modelName: "MetaTempletMedia",
+      tableName: "meta_templet_media",
+    }
+  );
   return MetaTempletMedia;
 };

@@ -1,9 +1,9 @@
-const contactRepository = require('../repositories/contactRepository');
-const { validateEmail } = require('../utils/validation');
-const FillAllFieldsException = require('../exceptions/CustomExceptions/FillAllFieldsException');
-const InvalidEmailIdException = require('../exceptions/CustomExceptions/InvalidEmailIdException');
-const UidRequiredException = require('../exceptions/CustomExceptions/UidRequiredException');
-const IdRequiredException = require('../exceptions/CustomExceptions/IdRequiredException');
+const contactRepository = require("../repositories/contactRepository");
+const { validateEmail } = require("../utils/validation");
+const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
+const InvalidEmailIdException = require("../exceptions/CustomExceptions/InvalidEmailIdException");
+const UidRequiredException = require("../exceptions/CustomExceptions/UidRequiredException");
+const IdRequiredException = require("../exceptions/CustomExceptions/IdRequiredException");
 class ContactService {
   async submitContactForm({ name, mobile, email, content }) {
     if (!name || !mobile || !email || !content) {

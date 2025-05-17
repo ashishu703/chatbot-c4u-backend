@@ -1,6 +1,8 @@
-const WaLinkRepository = require('../repositories/waLinkRepository');
-const { isValidEmail } = require('../utils/validation');
-const { createWhatsAppLink } = require('../utils/whatsapp');
+const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
+const WaLinkRepository = require("../repositories/waLinkRepository");
+const { isValidEmail } = require("../utils/validation");
+const { createWhatsAppLink } = require("../utils/whatsapp");
+const InvalidEmailIdException = require("../exceptions/CustomExceptions/InvalidEmailIdException");
 
 class WaLinkService {
   waLinkRepository;
@@ -9,13 +11,13 @@ class WaLinkService {
   }
   async generateWaLink({ mobile, email, msg }) {
     if (!mobile || !email) {
-      throw new Error('Ops.. mobile and email fields are required');
+      throw new FillAllFieldsException();
     }
     if (!isValidEmail(email)) {
-      throw new Error('Please provide a valid email id');
+      throw new InvalidEmailIdException();
     }
     await this.waLinkRepository.create({ wa_mobile: mobile, email, msg });
-    return createWhatsAppLink(mobile.replace('+', ''), msg);
+    return createWhatsAppLink(mobile.replace("+", ""), msg);
   }
 }
 

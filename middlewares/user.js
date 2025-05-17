@@ -6,13 +6,16 @@ const validateUser = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       throw new HttpException("No token found", 400);
     }
 
-    const token = authHeader.split(' ')[1];
+    const token = authHeader.split(" ")[1];
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || process.env.JWTKEY);
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || process.env.JWTKEY
+    );
 
     const user = await User.findOne({ where: { uid: decoded.uid } });
 
@@ -27,12 +30,21 @@ const validateUser = async (req, res, next) => {
   } catch (err) {
     console.error(err);
     if (err.name === "TokenExpiredError") {
-      return res.status(401).json({ success: false, message: "Token has expired" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Token has expired" });
     }
     if (err instanceof HttpException) {
-      return res.status(err.status).json({ success: false, message: err.message });
+      return res
+        .status(err.status)
+        .json({ success: false, message: err.message });
     }
-    res.status(401).json({ success: false, message: err.message || "Authentication Failed" });
+    res
+      .status(401)
+      .json({
+        success: false,
+        message: err.message || "Authentication Failed",
+      });
   }
 };
 

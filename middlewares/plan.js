@@ -34,7 +34,9 @@ const checkPlan = async (req, res, next) => {
     next();
   } catch (err) {
     console.error("Error in checkPlan:", err);
-    res.status(500).json({ success: false, msg: "Server error", error: err.message });
+    res
+      .status(500)
+      .json({ success: false, msg: "Server error", error: err.message });
   }
 };
 
@@ -46,7 +48,6 @@ const checkContactLimit = async (req, res, next) => {
       req.decode.uid,
     ]);
 
-    
     if (getContacts.length >= contact_limit) {
       return res.json({
         success: false,
@@ -57,10 +58,11 @@ const checkContactLimit = async (req, res, next) => {
     next();
   } catch (err) {
     console.error("Error in checkContactLimit:", err);
-    res.status(500).json({ success: false, msg: "Server error", error: err.message });
+    res
+      .status(500)
+      .json({ success: false, msg: "Server error", error: err.message });
   }
 };
-
 
 const checkNote = async (req, res, next) => {
   try {
@@ -74,7 +76,9 @@ const checkNote = async (req, res, next) => {
     }
   } catch (err) {
     console.error("Error in checkNote:", err);
-    res.status(500).json({ success: false, msg: "Server error", error: err.message });
+    res
+      .status(500)
+      .json({ success: false, msg: "Server error", error: err.message });
   }
 };
 
@@ -90,7 +94,9 @@ const checkTags = async (req, res, next) => {
     }
   } catch (err) {
     console.error("Error in checkTags:", err);
-    res.status(500).json({ success: false, msg: "Server error", error: err.message });
+    res
+      .status(500)
+      .json({ success: false, msg: "Server error", error: err.message });
   }
 };
 

@@ -1,9 +1,9 @@
 const CustomException = require("../CustomException");
 
 class FacebookLoginParamMismatchException extends CustomException {
-    constructor() {
-        super("FacebookLoginParamMismatchException");
-    }
+  constructor() {
+    super("FacebookLoginParamMismatchException");
+  }
 }
 
 module.exports = FacebookLoginParamMismatchException;

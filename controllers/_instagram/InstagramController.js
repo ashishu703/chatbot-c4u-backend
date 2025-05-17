@@ -1,4 +1,1 @@
-
-module.exports = class InstagramController {
-  
-}
+module.exports = class InstagramController {};

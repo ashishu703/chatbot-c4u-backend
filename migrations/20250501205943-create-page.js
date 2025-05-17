@@ -1,45 +1,45 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('pages', {
+    await queryInterface.createTable("pages", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       slug: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       title: {
         type: Sequelize.STRING,
-        allowNull:true  
+        allowNull: true,
       },
       image: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       content: {
         type: Sequelize.TEXT,
-        allowNull:true
+        allowNull: true,
       },
       permanent: {
         type: Sequelize.BOOLEAN,
-        defaultValue:"0"
+        defaultValue: "0",
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('pages');
-  }
+    await queryInterface.dropTable("pages");
+  },
 };

@@ -1,28 +1,29 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
+const ThemeSettingErrorException = require("../exceptions/CustomExceptions/ThemeSettingErrorException");
 
 class ThemeService {
   async getTheme() {
-    const filePath = path.join(__dirname, '..', 'theme.json');
+    const filePath = path.join(__dirname, "..", "theme.json");
     return new Promise((resolve, reject) => {
-      fs.readFile(filePath, 'utf8', (err, lang) => {
+      fs.readFile(filePath, "utf8", (err, lang) => {
         if (err) {
-          reject(new Error('Something went wrong with the theme setting'));
+          reject(new ThemeSettingErrorException());
         } else {
-          resolve({ success: true, data: JSON.parse(lang) });
+          resolve({ data: JSON.parse(lang) });
         }
       });
     });
   }
 
   async saveTheme(updatedJson) {
-    const filePath = path.join(__dirname, '..', 'theme.json');
+    const filePath = path.join(__dirname, "..", "theme.json");
     return new Promise((resolve, reject) => {
-      fs.writeFile(filePath, JSON.stringify(updatedJson), 'utf8', (err) => {
+      fs.writeFile(filePath, JSON.stringify(updatedJson), "utf8", (err) => {
         if (err) {
           reject(err);
         } else {
-          resolve({ success: true, msg: 'Theme was updated' });
+          resolve(true);
         }
       });
     });

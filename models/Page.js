@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Page extends Model {
     /**
@@ -13,37 +11,40 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  Page.init({
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
+  Page.init(
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      slug: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      image: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      content: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      permanent: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
     },
-    slug: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    title: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    image: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    content: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    permanent: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-  }, {
-    sequelize,
-    modelName: 'Page',
-    tableName:'pages'
-  });
+    {
+      sequelize,
+      modelName: "Page",
+      tableName: "pages",
+    }
+  );
   return Page;
 };

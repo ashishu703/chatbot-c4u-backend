@@ -5,7 +5,7 @@ function addDaysToCurrentTimestamp(days) {
   const futureDate = new Date(currentTimestamp + millisecondsToAdd);
 
   if (isNaN(futureDate.getTime())) {
-    throw new Error('Invalid date calculation');
+    throw new Error("Invalid date calculation");
   }
 
   return futureDate.getTime();

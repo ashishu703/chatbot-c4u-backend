@@ -1,11 +1,13 @@
 const { json } = require("sequelize");
 
 function formSuccess(data, statusCode = 200) {
-  return json({
-    success: true,
-    ...data,
-  }, statusCode);
-
+  return json(
+    {
+      success: true,
+      ...data,
+    },
+    statusCode
+  );
 }
 
 function formRawResponse(data, statusCode = 200) {
@@ -14,5 +16,5 @@ function formRawResponse(data, statusCode = 200) {
 
 module.exports = {
   formSuccess,
-  formRawResponse
+  formRawResponse,
 };

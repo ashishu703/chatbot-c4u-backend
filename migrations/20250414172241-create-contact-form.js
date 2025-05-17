@@ -1,41 +1,41 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('contact_forms', {
+    await queryInterface.createTable("contact_forms", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       email: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       name: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       mobile: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       content: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('contact_forms');
-  }
+    await queryInterface.dropTable("contact_forms");
+  },
 };

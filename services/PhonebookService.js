@@ -1,7 +1,12 @@
-
-const PhonebookRepository = require('../repositories/phonebookRepository');
-const ContactRepository = require('../repositories/ContactRepository');
-const { parseCSVFile, areMobileNumbersFilled } = require('../functions/function');
+const PhonebookRepository = require("../repositories/phonebookRepository");
+const ContactRepository = require("../repositories/ContactRepository");
+const {
+  parseCSVFile,
+  areMobileNumbersFilled,
+} = require("../functions/function");
+const DuplicatePhonebookNameException = require("../exceptions/CustomExceptions/DuplicatePhonebookNameException");
+const InvalidCsvProvidedException = require("../exceptions/CustomExceptions/InvalidCsvProvidedException");
+const CsvMobileMissingException = require("../exceptions/CustomExceptions/CsvMobileMissingException");
 
 class PhonebookService {
   phonebookRepository;
@@ -13,10 +18,10 @@ class PhonebookService {
   async addPhonebook(uid, name) {
     const existing = await this.phonebookRepository.findByUidAndName(uid, name);
     if (existing) {
-      throw new Error('Duplicate phonebook name found');
+      throw new DuplicatePhonebookNameException();
     }
     await this.phonebookRepository.create({ uid, name });
-    return { success: true, msg: 'Phonebook was added' };
+    return true;
   }
 
   async getPhonebooks(uid) {
@@ -26,16 +31,16 @@ class PhonebookService {
   async deletePhonebook(uid, id) {
     await this.phonebookRepository.delete(id);
     await this.contactRepository.deleteByPhonebookId(id, uid);
-    return { success: true, msg: 'Phonebook was deleted' };
+    return true;
   }
 
   async importContacts(uid, phonebook_id, phonebook_name, fileData) {
     const csvData = await parseCSVFile(fileData);
     if (!csvData) {
-      throw new Error('Invalid CSV provided');
+      throw new InvalidCsvProvidedException();
     }
     if (!areMobileNumbersFilled(csvData)) {
-      throw new Error('Please check your CSV, one or more mobile numbers not filled');
+      throw new CsvMobileMissingException();
     }
 
     const contacts = csvData.map((item) => ({
@@ -52,12 +57,12 @@ class PhonebookService {
     }));
 
     await this.contactRepository.bulkCreate(contacts);
-    return { success: true, msg: 'Contacts were inserted' };
+    return true;
   }
 
   async addSingleContact(uid, contact) {
     await this.contactRepository.create({ ...contact, uid });
-    return { success: true, msg: 'Contact was inserted' };
+    return true;
   }
 
   async getContacts(uid) {
@@ -66,7 +71,7 @@ class PhonebookService {
 
   async deleteContacts(ids) {
     await this.contactRepository.deleteByIds(ids);
-    return { success: true, msg: 'Contact(s) were deleted' };
+    return true;
   }
 }
 

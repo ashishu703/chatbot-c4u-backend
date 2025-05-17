@@ -1,53 +1,53 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('chat_widgets', {
+    await queryInterface.createTable("chat_widgets", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       unique_id: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       uid: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       title: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       whatsapp_number: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       logo: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       place: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       size: {
         type: Sequelize.STRING,
-        allowNull:true
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('chat_widgets');
-  }
+    await queryInterface.dropTable("chat_widgets");
+  },
 };

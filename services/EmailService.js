@@ -4,10 +4,10 @@ const SmtpConnectionNotFoundException = require("../exceptions/CustomExceptions/
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 class EmailService {
   smtpRepository;
-  constructor(){
+  constructor() {
     this.smtpRepository = new SmtpRepository();
   }
-   async sendRecoveryEmail(html, appName, to) {
+  async sendRecoveryEmail(html, appName, to) {
     const smtp = await this.smtpRepository.getSmtp();
     if (!smtp?.email || !smtp?.host || !smtp?.port || !smtp?.password) {
       throw new SmtpConnectionNotFoundException();
@@ -24,7 +24,7 @@ class EmailService {
     );
   }
 
-   async sendTestEmail({ email, port, password, host, to }) {
+  async sendTestEmail({ email, port, password, host, to }) {
     if (!email || !port || !password || !host) {
       throw new FillAllFieldsException();
     }

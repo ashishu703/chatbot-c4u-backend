@@ -7,4 +7,3 @@ class TokenVerificationFailedException extends CustomException {
 }
 
 module.exports = TokenVerificationFailedException;
-

@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class FacebookProfiles extends Model {
     /**
@@ -13,15 +11,18 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  FacebookProfiles.init({
-    uid: DataTypes.STRING,
-    account_id: DataTypes.STRING,
-    name: DataTypes.STRING,
-    token: DataTypes.TEXT,
-  }, {
-    sequelize,
-    modelName: 'FacebookProfiles',
-    tableName:'facebook_profiles'
-  });
+  FacebookProfiles.init(
+    {
+      uid: DataTypes.STRING,
+      account_id: DataTypes.STRING,
+      name: DataTypes.STRING,
+      token: DataTypes.TEXT,
+    },
+    {
+      sequelize,
+      modelName: "FacebookProfiles",
+      tableName: "facebook_profiles",
+    }
+  );
   return FacebookProfiles;
 };

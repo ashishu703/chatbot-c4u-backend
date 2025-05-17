@@ -1,11 +1,11 @@
 const { WebPrivate } = require("../models");
 
 class PaymentRepository {
-   async getPaymentGateway() {
+  async getPaymentGateway() {
     return await WebPrivate.findOne();
   }
 
-   async updatePaymentGateway(data) {
+  async updatePaymentGateway(data) {
     const existing = await WebPrivate.findOne();
     if (existing) {
       await WebPrivate.update(data, { where: { id: existing.id } });

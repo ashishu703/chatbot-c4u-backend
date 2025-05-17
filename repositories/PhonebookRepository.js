@@ -1,4 +1,4 @@
-const {Phonebook} = require('../models');
+const { Phonebook } = require("../models");
 
 class PhonebookRepository {
   async findByUidAndName(uid, name) {

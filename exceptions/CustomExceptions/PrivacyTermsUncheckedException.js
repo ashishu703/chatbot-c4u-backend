@@ -1,9 +1,9 @@
 const CustomException = require("../CustomException");
 
 class PrivacyTermsUncheckedException extends CustomException {
-    constructor() {
-        super("PrivacyTermsUncheckedException");
-    }
+  constructor() {
+    super("PrivacyTermsUncheckedException");
+  }
 }
 
 module.exports = PrivacyTermsUncheckedException;

@@ -1,4 +1,4 @@
-const { ChatWidget } = require('../models');
+const { ChatWidget } = require("../models");
 
 class ChatWidgetRepository {
   static async findByUid(uid) {

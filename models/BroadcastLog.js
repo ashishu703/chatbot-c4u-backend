@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class BroadcastLog extends Model {
     /**
@@ -13,23 +11,26 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  BroadcastLog.init({
-    uid: DataTypes.STRING,
-    broadcast_id: DataTypes.STRING,
-    templet_name: DataTypes.STRING,
-    is_read: DataTypes.INTEGER,
-    meta_msg_id: DataTypes.STRING,
-    sender_mobile: DataTypes.STRING,
-    send_to: DataTypes.STRING,
-    delivery_status: DataTypes.STRING,
-    delivery_time: DataTypes.STRING,
-    err: DataTypes.TEXT,
-    example: DataTypes.TEXT,
-    contact: DataTypes.TEXT,
-  }, {
-    sequelize,
-    modelName: 'BroadcastLog',
-     tableName:'broadcast_logs'
-  });
+  BroadcastLog.init(
+    {
+      uid: DataTypes.STRING,
+      broadcast_id: DataTypes.STRING,
+      templet_name: DataTypes.STRING,
+      is_read: DataTypes.INTEGER,
+      meta_msg_id: DataTypes.STRING,
+      sender_mobile: DataTypes.STRING,
+      send_to: DataTypes.STRING,
+      delivery_status: DataTypes.STRING,
+      delivery_time: DataTypes.STRING,
+      err: DataTypes.TEXT,
+      example: DataTypes.TEXT,
+      contact: DataTypes.TEXT,
+    },
+    {
+      sequelize,
+      modelName: "BroadcastLog",
+      tableName: "broadcast_logs",
+    }
+  );
   return BroadcastLog;
 };

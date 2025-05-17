@@ -4,9 +4,9 @@ const { sign } = require("jsonwebtoken");
 const AgentRepository = require("../repositories/agentRepository");
 const AgentTaskRepository = require("../repositories/AgentTaskRepository");
 const { __t } = require("../utils/locale.utils");
-const EmailAlreadyInUseException = require ("../exceptions/CustomExceptions/EmailAlreadyInUseException")
-const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException")
-const AgentNotFoundException =require ("../exceptions/CustomExceptions/AgentNotFoundException")
+const EmailAlreadyInUseException = require("../exceptions/CustomExceptions/EmailAlreadyInUseException");
+const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException");
+const AgentNotFoundException = require("../exceptions/CustomExceptions/AgentNotFoundException");
 class AgentService {
   constructor() {
     this.agentRepository = new AgentRepository();
@@ -60,7 +60,7 @@ class AgentService {
         email: agent.email,
       },
       process.env.JWTKEY,
-      { expiresIn: "7d" } 
+      { expiresIn: "7d" }
     );
   }
 

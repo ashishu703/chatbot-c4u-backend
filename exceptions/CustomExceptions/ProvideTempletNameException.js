@@ -1,4 +1,3 @@
-
 const CustomException = require("../CustomException");
 
 class ProvideTempletNameException extends CustomException {

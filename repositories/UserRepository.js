@@ -3,20 +3,20 @@ const { addDaysToCurrentTimestamp } = require("../utils/dateUtils");
 class UserRepository {
   async findAll() {
     try {
-      return await User.findAll(); 
+      return await User.findAll();
     } catch (error) {
-      console.error('Error in userRepository.findAll:', error);
+      console.error("Error in userRepository.findAll:", error);
       throw error;
     }
   }
 
   async findById(id) {
     try {
-      return await User.findByPk(id); 
+      return await User.findByPk(id);
     } catch (error) {
-      console.error('Error in userRepository.findById:', error);
+      console.error("Error in userRepository.findById:", error);
       throw error;
-    } 
+    }
   }
 
   async getUsers() {
@@ -59,7 +59,6 @@ class UserRepository {
     await user.destroy();
     return user;
   }
-  
 
   async findByApiKey(api_key) {
     return await User.findOne({ where: { api_key } });
@@ -79,15 +78,15 @@ class UserRepository {
 
       return await user.update({
         plan: JSON.stringify(plan),
-        plan_expire: timeStamp,   
-        trial: plan.is_trial ? 1 : 0 
+        plan_expire: timeStamp,
+        trial: plan.is_trial ? 1 : 0,
       });
     } catch (error) {
       console.error("Error updating user plan in UserRepository:", error);
       throw error;
     }
   }
-  
+
   async update(uid, userData) {
     const user = await User.findOne({ where: { uid } });
     if (!user) {

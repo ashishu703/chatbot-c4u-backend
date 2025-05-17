@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class AgentTask extends Model {
     /**
@@ -11,24 +9,26 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       AgentTask.belongsTo(models.Agents, {
-        foreignKey: 'uid',
-        targetKey: 'uid',
-        as: 'agent',
+        foreignKey: "uid",
+        targetKey: "uid",
+        as: "agent",
       });
     }
-    
   }
-  AgentTask.init({
-    owner_uid: DataTypes.STRING,
-    uid: DataTypes.STRING,
-    title: DataTypes.STRING,
-    description: DataTypes.TEXT,
-    agent_comments: DataTypes.TEXT,
-    status: DataTypes.STRING,
-  }, {
-    sequelize,
-    modelName: 'AgentTask',
-    tableName:'agent_tasks'
-  });
+  AgentTask.init(
+    {
+      owner_uid: DataTypes.STRING,
+      uid: DataTypes.STRING,
+      title: DataTypes.STRING,
+      description: DataTypes.TEXT,
+      agent_comments: DataTypes.TEXT,
+      status: DataTypes.STRING,
+    },
+    {
+      sequelize,
+      modelName: "AgentTask",
+      tableName: "agent_tasks",
+    }
+  );
   return AgentTask;
 };

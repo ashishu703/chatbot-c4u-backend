@@ -17,8 +17,8 @@ class ChatWidgetController {
   }
   async getMyWidgets(req, res, next) {
     try {
-      const result = await this.chatWidgetService.getMyWidgets(req.decode.uid);
-      return formSuccess(result);
+     const widgets = await this.chatWidgetService.getMyWidgets(req.decode.uid);
+      return formSuccess({data:widgets});
     } catch (err) {
       next(err);
     }

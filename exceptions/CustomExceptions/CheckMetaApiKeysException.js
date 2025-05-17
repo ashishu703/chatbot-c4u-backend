@@ -1,5 +1,3 @@
-
-
 const CustomException = require("../CustomException");
 
 class CheckMetaApiKeysException extends CustomException {

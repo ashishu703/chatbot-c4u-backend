@@ -1,8 +1,4 @@
-const {
-  WebPublic,
-  WebPrivate,
-  Smtp
-} = require('../models');
+const { WebPublic, WebPrivate, Smtp } = require("../models");
 
 class WebRepository {
   // Fetches one record from the WebPublic model
@@ -10,7 +6,7 @@ class WebRepository {
     try {
       return await WebPublic.findOne();
     } catch (error) {
-      console.error('Error fetching WebPublic:', error);
+      console.error("Error fetching WebPublic:", error);
       throw error;
     }
   }
@@ -18,7 +14,7 @@ class WebRepository {
     try {
       return await WebPrivate.findOne();
     } catch (error) {
-      console.error('Error fetching WebPrivate:', error);
+      console.error("Error fetching WebPrivate:", error);
       throw error;
     }
   }
@@ -28,7 +24,7 @@ class WebRepository {
     try {
       return await Smtp.findOne();
     } catch (error) {
-      console.error('Error fetching Smtp:', error);
+      console.error("Error fetching Smtp:", error);
       throw error;
     }
   }

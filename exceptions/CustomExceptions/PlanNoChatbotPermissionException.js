@@ -1,10 +1,9 @@
-
 const CustomException = require("../CustomException");
 
 class PlanNoChatbotPermissionException extends CustomException {
-    constructor() {
-        super("PlanNoChatbotPermissionException");
-    }
+  constructor() {
+    super("PlanNoChatbotPermissionException");
+  }
 }
 
 module.exports = PlanNoChatbotPermissionException;

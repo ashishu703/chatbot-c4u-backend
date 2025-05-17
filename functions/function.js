@@ -1,20 +1,32 @@
-const fs = require('fs/promises');
-const path = require('path');
-const moment = require('moment-timezone');
-const axios = require('axios');
-const randomstring = require('randomstring');
-const { getIOInstance } = require('../socket');
-const fetch = require('node-fetch');
-const mime = require('mime-types');
-const nodemailer = require('nodemailer');
-const unzipper = require('unzipper');
-const { destributeTaskFlow } = require('./chatbot');
-const csv = require('csv-parse/sync');
-const { User, MetaApi, Chat, Room, AgentChat, BroadcastLog, Chatbot, MetaTempletMedia, Message } = require('../models');
+const fs = require("fs/promises");
+const path = require("path");
+const moment = require("moment-timezone");
+const axios = require("axios");
+const randomstring = require("randomstring");
+const { getIOInstance } = require("../socket");
+const fetch = require("node-fetch");
+const mime = require("mime-types");
+const nodemailer = require("nodemailer");
+const unzipper = require("unzipper");
+const { destributeTaskFlow } = require("./chatbot");
+const csv = require("csv-parse/sync");
+const {
+  User,
+  MetaApi,
+  Chat,
+  Room,
+  AgentChat,
+  BroadcastLog,
+  Chatbot,
+  MetaTempletMedia,
+  Message,
+} = require("../models");
 
 // Find target nodes (unchanged)
 function findTargetNodes(nodes, edges, incomingWord) {
-  const matchingEdges = edges.filter((edge) => edge.sourceHandle === incomingWord);
+  const matchingEdges = edges.filter(
+    (edge) => edge.sourceHandle === incomingWord
+  );
   const targetNodeIds = matchingEdges.map((edge) => edge.target);
   const targetNodes = nodes.filter((node) => targetNodeIds.includes(node.id));
   return targetNodes;
@@ -40,7 +52,7 @@ function getReply(nodes, edges, incomingWord) {
     const findAiNodes = checkAssignAi(nodes);
     return findAiNodes;
   } else {
-    const getOther = findTargetNodes(nodes, edges, '{{OTHER_MSG}}');
+    const getOther = findTargetNodes(nodes, edges, "{{OTHER_MSG}}");
     return getOther;
   }
 }
@@ -52,7 +64,7 @@ async function runChatbot(i, incomingMsg, uid, senderNumber, toName) {
 
   if (!forAll) {
     const numberArr = JSON.parse(chatbot?.chats);
-    const chatId = convertNumberToRandomString(senderNumber || '');
+    const chatId = convertNumberToRandomString(senderNumber || "");
     const flow = JSON.parse(i?.flow);
 
     if (numberArr.includes(senderNumber)) {
@@ -87,7 +99,7 @@ async function runChatbot(i, incomingMsg, uid, senderNumber, toName) {
       }
     }
   } else {
-    const chatId = convertNumberToRandomString(senderNumber || '');
+    const chatId = convertNumberToRandomString(senderNumber || "");
     const flow = JSON.parse(i?.flow);
 
     const nodePath = `${__dirname}/../flow-json/nodes/${uid}/${flow?.flow_id}.json`;
@@ -138,50 +150,54 @@ async function botWebhook(incomingMsg, uid, senderNumber, toName) {
 
       if (chatbots.length > 0) {
         await Promise.all(
-          chatbots.map((i) => runChatbot(i, incomingMsg, uid, senderNumber, toName))
+          chatbots.map((i) =>
+            runChatbot(i, incomingMsg, uid, senderNumber, toName)
+          )
         );
       }
     } else {
       await Chatbot.update({ active: false }, { where: { uid } });
     }
   } catch (err) {
-    console.error('Error in botWebhook:', err);
+    console.error("Error in botWebhook:", err);
   }
 }
 
 // Save message (updated to use Sequelize)
 async function saveMessage(body, uid, type, msgContext) {
   try {
-    console.log('CAME HERE IN saveMessage');
+    console.log("CAME HERE IN saveMessage");
     const user = await User.findOne({ where: { uid } });
     if (!user) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
 
-    const userTimezone = getCurrentTimestampInTimeZone(user.timezone || Date.now() / 1000);
+    const userTimezone = getCurrentTimestampInTimeZone(
+      user.timezone || Date.now() / 1000
+    );
     const chatId = convertNumberToRandomString(
       body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
       body?.entry[0]?.changes
         ? body?.entry[0]?.changes[0]?.value?.contacts[0]?.profile?.name
-        : 'NA'
+        : "NA"
     );
 
     const actualMsg = {
       type,
       metaChatId: body?.entry[0]?.changes[0]?.value?.messages[0]?.id,
       msgContext,
-      reaction: '',
+      reaction: "",
       timestamp: userTimezone,
       senderName: body?.entry[0]?.changes
         ? body?.entry[0]?.changes[0]?.value?.contacts[0]?.profile?.name
-        : 'NA',
+        : "NA",
       senderMobile: body?.entry[0]?.changes
         ? body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id
-        : 'NA',
-      status: '',
+        : "NA",
+      status: "",
       star: false,
-      route: 'INCOMING',
-      context: body?.entry[0]?.changes[0]?.value?.messages[0]?.context || '',
+      route: "INCOMING",
+      context: body?.entry[0]?.changes[0]?.value?.messages[0]?.context || "",
     };
 
     // Save to Message model
@@ -231,25 +247,34 @@ async function saveMessage(body, uid, type, msgContext) {
     const chats = await Chat.findAll({ where: { uid } });
 
     if (room) {
-      io.to(room.socket_id).emit('update_conversations', { chats });
-      io.to(room.socket_id).emit('push_new_msg', { msg: actualMsg, chatId });
+      io.to(room.socket_id).emit("update_conversations", { chats });
+      io.to(room.socket_id).emit("push_new_msg", { msg: actualMsg, chatId });
     }
 
     // Handle agent chats
-    const agentChat = await AgentChat.findOne({ where: { owner_uid: uid, chat_id: chatId } });
+    const agentChat = await AgentChat.findOne({
+      where: { owner_uid: uid, chat_id: chatId },
+    });
     if (agentChat) {
-      const agentChats = await AgentChat.findAll({ where: { uid: agentChat.uid } });
+      const agentChats = await AgentChat.findAll({
+        where: { uid: agentChat.uid },
+      });
       const chatIds = agentChats.map((i) => i.chat_id);
       const chatsNew = await Chat.findAll({ where: { chat_id: chatIds, uid } });
       const agentRoom = await Room.findOne({ where: { uid: agentChat.uid } });
 
       if (agentRoom) {
-        io.to(agentRoom.socket_id).emit('update_conversations', { chats: chatsNew || [] });
-        io.to(agentRoom.socket_id).emit('push_new_msg', { msg: actualMsg, chatId });
+        io.to(agentRoom.socket_id).emit("update_conversations", {
+          chats: chatsNew || [],
+        });
+        io.to(agentRoom.socket_id).emit("push_new_msg", {
+          msg: actualMsg,
+          chatId,
+        });
       }
     }
   } catch (err) {
-    console.error('Error in saveMessage:', err);
+    console.error("Error in saveMessage:", err);
     throw err;
   }
 }
@@ -260,10 +285,10 @@ async function saveWebhookConversation(body, uid) {
     // Save simple text
     if (
       body?.entry[0]?.changes[0]?.value?.messages &&
-      body?.entry[0]?.changes[0]?.value?.messages[0]?.type === 'text'
+      body?.entry[0]?.changes[0]?.value?.messages[0]?.type === "text"
     ) {
-      await saveMessage(body, uid, 'text', {
-        type: 'text',
+      await saveMessage(body, uid, "text", {
+        type: "text",
         text: {
           preview_url: true,
           body: body?.entry[0]?.changes[0]?.value?.messages[0]?.text?.body,
@@ -276,7 +301,7 @@ async function saveWebhookConversation(body, uid) {
         body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
         body?.entry[0]?.changes
           ? body?.entry[0]?.changes[0]?.value?.contacts[0]?.profile?.name
-          : 'NA'
+          : "NA"
       );
     }
     // Images
@@ -293,22 +318,25 @@ async function saveWebhookConversation(body, uid) {
           metaToken,
           body?.entry[0]?.changes[0]?.value?.messages[0]?.image?.id
         );
-        await saveMessage(body, uid, 'image', {
-          type: 'image',
+        await saveMessage(body, uid, "image", {
+          type: "image",
           image: {
             link: `${process.env.BACKURI}/meta-media/${fileName}`,
-            caption: body?.entry[0]?.changes[0]?.value?.messages[0]?.image?.caption || '',
+            caption:
+              body?.entry[0]?.changes[0]?.value?.messages[0]?.image?.caption ||
+              "",
           },
         });
       }
 
       await botWebhook(
-        body?.entry[0]?.changes[0]?.value?.messages[0]?.image?.caption || 'aU1uLzohPGMncyrwlPIb',
+        body?.entry[0]?.changes[0]?.value?.messages[0]?.image?.caption ||
+          "aU1uLzohPGMncyrwlPIb",
         uid,
         body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
         body?.entry[0]?.changes
           ? body?.entry[0]?.changes[0]?.value?.contacts[0]?.profile?.name
-          : 'NA'
+          : "NA"
       );
     }
     // Video
@@ -324,22 +352,24 @@ async function saveWebhookConversation(body, uid) {
           metaToken,
           body?.entry[0]?.changes[0]?.value?.messages[0]?.video?.id
         );
-        await saveMessage(body, uid, 'video', {
-          type: 'video',
+        await saveMessage(body, uid, "video", {
+          type: "video",
           video: {
             link: `${process.env.BACKURI}/meta-media/${fileName}`,
-            caption: body?.entry[0]?.changes[0]?.value?.messages[0]?.video?.caption,
+            caption:
+              body?.entry[0]?.changes[0]?.value?.messages[0]?.video?.caption,
           },
         });
       }
 
       await botWebhook(
-        body?.entry[0]?.changes[0]?.value?.messages[0]?.video?.caption || 'aU1uLzohPGMncyrwlPIb',
+        body?.entry[0]?.changes[0]?.value?.messages[0]?.video?.caption ||
+          "aU1uLzohPGMncyrwlPIb",
         uid,
         body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
         body?.entry[0]?.changes
           ? body?.entry[0]?.changes[0]?.value?.contacts[0]?.profile?.name
-          : 'NA'
+          : "NA"
       );
     }
     // Document
@@ -355,22 +385,24 @@ async function saveWebhookConversation(body, uid) {
           metaToken,
           body?.entry[0]?.changes[0]?.value?.messages[0]?.document?.id
         );
-        await saveMessage(body, uid, 'document', {
-          type: 'document',
+        await saveMessage(body, uid, "document", {
+          type: "document",
           document: {
             link: `${process.env.BACKURI}/meta-media/${fileName}`,
-            caption: body?.entry[0]?.changes[0]?.value?.messages[0]?.document?.caption,
+            caption:
+              body?.entry[0]?.changes[0]?.value?.messages[0]?.document?.caption,
           },
         });
       }
 
       await botWebhook(
-        body?.entry[0]?.changes[0]?.value?.messages[0]?.document?.caption || 'aU1uLzohPGMncyrwlPIb',
+        body?.entry[0]?.changes[0]?.value?.messages[0]?.document?.caption ||
+          "aU1uLzohPGMncyrwlPIb",
         uid,
         body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
         body?.entry[0]?.changes
           ? body?.entry[0]?.changes[0]?.value?.contacts[0]?.profile?.name
-          : 'NA'
+          : "NA"
       );
     }
     // Audio
@@ -386,8 +418,8 @@ async function saveWebhookConversation(body, uid) {
           metaToken,
           body?.entry[0]?.changes[0]?.value?.messages[0]?.audio?.id
         );
-        await saveMessage(body, uid, 'audio', {
-          type: 'audio',
+        await saveMessage(body, uid, "audio", {
+          type: "audio",
           audio: {
             link: `${process.env.BACKURI}/meta-media/${fileName}`,
           },
@@ -395,12 +427,12 @@ async function saveWebhookConversation(body, uid) {
       }
 
       await botWebhook(
-        'aU1uLzohPGMncyrwlPIb',
+        "aU1uLzohPGMncyrwlPIb",
         uid,
         body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
         body?.entry[0]?.changes
           ? body?.entry[0]?.changes[0]?.value?.contacts[0]?.profile?.name
-          : 'NA'
+          : "NA"
       );
     }
     // Reactions
@@ -412,13 +444,13 @@ async function saveWebhookConversation(body, uid) {
         body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
         body?.entry[0]?.changes
           ? body?.entry[0]?.changes[0]?.value?.contacts[0]?.profile?.name
-          : 'NA'
+          : "NA"
       );
       const filePath = `${__dirname}/../conversations/inbox/${uid}/${chatId}.json`;
       await updateMessageObjectInFile(
         filePath,
         body?.entry[0]?.changes[0]?.value?.messages[0]?.reaction?.message_id,
-        'reaction',
+        "reaction",
         body?.entry[0]?.changes[0]?.value?.messages[0]?.reaction?.emoji
       );
 
@@ -426,21 +458,29 @@ async function saveWebhookConversation(body, uid) {
       const room = await Room.findOne({ where: { uid } });
 
       if (room) {
-        io.to(room.socket_id).emit('push_new_reaction', {
-          reaction: body?.entry[0]?.changes[0]?.value?.messages[0]?.reaction?.emoji,
+        io.to(room.socket_id).emit("push_new_reaction", {
+          reaction:
+            body?.entry[0]?.changes[0]?.value?.messages[0]?.reaction?.emoji,
           chatId,
-          msgId: body?.entry[0]?.changes[0]?.value?.messages[0]?.reaction?.message_id,
+          msgId:
+            body?.entry[0]?.changes[0]?.value?.messages[0]?.reaction
+              ?.message_id,
         });
       }
 
-      const agentChat = await AgentChat.findOne({ where: { owner_uid: uid, chat_id: chatId } });
+      const agentChat = await AgentChat.findOne({
+        where: { owner_uid: uid, chat_id: chatId },
+      });
       if (agentChat) {
         const agentRoom = await Room.findOne({ where: { uid: agentChat.uid } });
         if (agentRoom) {
-          io.to(agentRoom.socket_id).emit('push_new_reaction', {
-            reaction: body?.entry[0]?.changes[0]?.value?.messages[0]?.reaction?.emoji,
+          io.to(agentRoom.socket_id).emit("push_new_reaction", {
+            reaction:
+              body?.entry[0]?.changes[0]?.value?.messages[0]?.reaction?.emoji,
             chatId,
-            msgId: body?.entry[0]?.changes[0]?.value?.messages[0]?.reaction?.message_id,
+            msgId:
+              body?.entry[0]?.changes[0]?.value?.messages[0]?.reaction
+                ?.message_id,
           });
         }
       }
@@ -450,8 +490,8 @@ async function saveWebhookConversation(body, uid) {
       body?.entry[0]?.changes[0]?.value?.messages &&
       body?.entry[0]?.changes[0]?.value?.messages[0]?.button?.text
     ) {
-      await saveMessage(body, uid, 'text', {
-        type: 'text',
+      await saveMessage(body, uid, "text", {
+        type: "text",
         text: {
           preview_url: true,
           body: body?.entry[0]?.changes[0]?.value?.messages[0]?.button?.text,
@@ -459,12 +499,13 @@ async function saveWebhookConversation(body, uid) {
       });
 
       await botWebhook(
-        body?.entry[0]?.changes[0]?.value?.messages[0]?.button?.text || 'aU1uLzohPGMncyrwlPIb',
+        body?.entry[0]?.changes[0]?.value?.messages[0]?.button?.text ||
+          "aU1uLzohPGMncyrwlPIb",
         uid,
         body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
         body?.entry[0]?.changes
           ? body?.entry[0]?.changes[0]?.value?.contacts[0]?.profile?.name
-          : 'NA'
+          : "NA"
       );
     }
     // Quick reply button
@@ -472,21 +513,23 @@ async function saveWebhookConversation(body, uid) {
       body?.entry[0]?.changes[0]?.value?.messages &&
       body?.entry[0]?.changes[0]?.value?.messages[0]?.interactive?.button_reply
     ) {
-      await saveMessage(body, uid, 'text', {
-        type: 'text',
+      await saveMessage(body, uid, "text", {
+        type: "text",
         text: {
           preview_url: true,
-          body: body?.entry[0]?.changes[0]?.value?.messages[0]?.interactive?.button_reply?.title,
+          body: body?.entry[0]?.changes[0]?.value?.messages[0]?.interactive
+            ?.button_reply?.title,
         },
       });
 
       await botWebhook(
-        body?.entry[0]?.changes[0]?.value?.messages[0]?.interactive?.button_reply?.title || 'aU1uLzohPGMncyrwlPIb',
+        body?.entry[0]?.changes[0]?.value?.messages[0]?.interactive
+          ?.button_reply?.title || "aU1uLzohPGMncyrwlPIb",
         uid,
         body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
         body?.entry[0]?.changes
           ? body?.entry[0]?.changes[0]?.value?.contacts[0]?.profile?.name
-          : 'NA'
+          : "NA"
       );
     }
     // Delivery status
@@ -497,14 +540,14 @@ async function saveWebhookConversation(body, uid) {
       const metaMsgId = body?.entry[0]?.changes[0]?.value?.statuses[0]?.id;
       const chatId = convertNumberToRandomString(
         body?.entry[0]?.changes[0]?.value?.statuses[0]?.recipient_id,
-        body?.entry[0]?.changes || 'NA'
+        body?.entry[0]?.changes || "NA"
       );
 
       const filePath = `${__dirname}/../conversations/inbox/${uid}/${chatId}.json`;
       await updateMessageObjectInFile(
         filePath,
         metaMsgId,
-        'status',
+        "status",
         body?.entry[0]?.changes[0]?.value?.statuses[0]?.status
       );
 
@@ -512,18 +555,20 @@ async function saveWebhookConversation(body, uid) {
       const room = await Room.findOne({ where: { uid } });
 
       if (room) {
-        io.to(room.socket_id).emit('update_delivery_status', {
+        io.to(room.socket_id).emit("update_delivery_status", {
           chatId,
           status: body?.entry[0]?.changes[0]?.value?.statuses[0]?.status,
           msgId: metaMsgId,
         });
       }
 
-      const agentChat = await AgentChat.findOne({ where: { owner_uid: uid, chat_id: chatId } });
+      const agentChat = await AgentChat.findOne({
+        where: { owner_uid: uid, chat_id: chatId },
+      });
       if (agentChat) {
         const agentRoom = await Room.findOne({ where: { uid: agentChat.uid } });
         if (agentRoom) {
-          io.to(agentRoom.socket_id).emit('update_delivery_status', {
+          io.to(agentRoom.socket_id).emit("update_delivery_status", {
             chatId,
             status: body?.entry[0]?.changes[0]?.value?.statuses[0]?.status,
             msgId: metaMsgId,
@@ -531,17 +576,21 @@ async function saveWebhookConversation(body, uid) {
         }
       }
 
-      if (body?.entry[0]?.changes[0]?.value?.statuses[0]?.status === 'failed') {
+      if (body?.entry[0]?.changes[0]?.value?.statuses[0]?.status === "failed") {
         await BroadcastLog.update(
           {
-            delivery_status: body?.entry[0]?.changes[0]?.value?.statuses[0]?.status,
+            delivery_status:
+              body?.entry[0]?.changes[0]?.value?.statuses[0]?.status,
             err: body,
           },
           { where: { meta_msg_id: metaMsgId } }
         );
       } else {
         await BroadcastLog.update(
-          { delivery_status: body?.entry[0]?.changes[0]?.value?.statuses[0]?.status },
+          {
+            delivery_status:
+              body?.entry[0]?.changes[0]?.value?.statuses[0]?.status,
+          },
           { where: { meta_msg_id: metaMsgId } }
         );
       }
@@ -551,25 +600,27 @@ async function saveWebhookConversation(body, uid) {
       body?.entry[0]?.changes[0]?.value?.messages &&
       body?.entry[0]?.changes[0]?.value?.messages[0]?.interactive?.list_reply
     ) {
-      await saveMessage(body, uid, 'text', {
-        type: 'text',
+      await saveMessage(body, uid, "text", {
+        type: "text",
         text: {
           preview_url: true,
-          body: body?.entry[0]?.changes[0]?.value?.messages[0]?.interactive?.list_reply?.title,
+          body: body?.entry[0]?.changes[0]?.value?.messages[0]?.interactive
+            ?.list_reply?.title,
         },
       });
 
       await botWebhook(
-        body?.entry[0]?.changes[0]?.value?.messages[0]?.interactive?.list_reply?.title || 'aU1uLzohPGMncyrwlPIb',
+        body?.entry[0]?.changes[0]?.value?.messages[0]?.interactive?.list_reply
+          ?.title || "aU1uLzohPGMncyrwlPIb",
         uid,
         body?.entry[0]?.changes[0]?.value?.contacts[0]?.wa_id,
         body?.entry[0]?.changes
           ? body?.entry[0]?.changes[0]?.value?.contacts[0]?.profile?.name
-          : 'NA'
+          : "NA"
       );
     }
   } catch (err) {
-    console.error('Error in saveWebhookConversation:', err);
+    console.error("Error in saveWebhookConversation:", err);
     throw err;
   }
 }
@@ -577,19 +628,21 @@ async function saveWebhookConversation(body, uid) {
 // Update message object in file (made async)
 async function updateMessageObjectInFile(filePath, metaChatId, key, value) {
   try {
-    const data = await fs.readFile(filePath, 'utf8');
+    const data = await fs.readFile(filePath, "utf8");
     const dataArray = JSON.parse(data);
     const message = dataArray.find((obj) => obj.metaChatId === metaChatId);
 
     if (message) {
       message[key] = value;
       await fs.writeFile(filePath, JSON.stringify(dataArray, null, 2));
-      console.log(`Updated message with metaChatId ${metaChatId}: ${key} set to ${value}`);
+      console.log(
+        `Updated message with metaChatId ${metaChatId}: ${key} set to ${value}`
+      );
     } else {
       console.error(`Message with metaChatId ${metaChatId} not found`);
     }
   } catch (error) {
-    console.error('Error updating message in file:', error);
+    console.error("Error updating message in file:", error);
     throw error;
   }
 }
@@ -600,27 +653,27 @@ async function downloadAndSaveMedia(token, mediaId) {
     const url = `https://graph.facebook.com/v19.0/${mediaId}/`;
     const getUrl = await axios(url, {
       headers: {
-        Authorization: 'Bearer ' + token,
+        Authorization: "Bearer " + token,
       },
     });
 
     const config = {
-      method: 'get',
+      method: "get",
       url: getUrl?.data?.url,
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      responseType: 'arraybuffer',
+      responseType: "arraybuffer",
     };
 
     const response = await axios(config);
-    const ext = response.headers['content-type'].split('/')[1];
+    const ext = response.headers["content-type"].split("/")[1];
     const randomSt = randomstring.generate();
     const savingPath = `${__dirname}/../client/public/meta-media/${randomSt}`;
     await fs.writeFile(`${savingPath}.${ext}`, response.data);
     return `${randomSt}.${ext}`;
   } catch (error) {
-    console.error('Error downloading media:', error);
+    console.error("Error downloading media:", error);
     throw error;
   }
 }
@@ -635,23 +688,33 @@ function getCurrentTimestampInTimeZone(timezone) {
 async function addObjectToFile(object, filePath) {
   try {
     const parentDir = path.dirname(filePath);
-    if (!await fs.access(parentDir).then(() => true).catch(() => false)) {
+    if (
+      !(await fs
+        .access(parentDir)
+        .then(() => true)
+        .catch(() => false))
+    ) {
       await fs.mkdir(parentDir, { recursive: true });
     }
 
     let existingData = [];
-    if (await fs.access(filePath).then(() => true).catch(() => false)) {
-      const data = await fs.readFile(filePath, 'utf8');
+    if (
+      await fs
+        .access(filePath)
+        .then(() => true)
+        .catch(() => false)
+    ) {
+      const data = await fs.readFile(filePath, "utf8");
       existingData = JSON.parse(data);
       if (!Array.isArray(existingData)) {
-        throw new Error('File does not contain an array');
+        throw new Error("File does not contain an array");
       }
     }
 
     existingData.push(object);
     await fs.writeFile(filePath, JSON.stringify(existingData, null, 2));
   } catch (err) {
-    console.error('Error adding object to file:', err);
+    console.error("Error adding object to file:", err);
     throw err;
   }
 }
@@ -659,20 +722,20 @@ async function addObjectToFile(object, filePath) {
 // Convert number to random string (unchanged)
 function convertNumberToRandomString(number) {
   const mapping = {
-    0: 'i',
-    1: 'j',
-    2: 'I',
-    3: 'u',
-    4: 'I',
-    5: 'U',
-    6: 'S',
-    7: 'D',
-    8: 'B',
-    9: 'j',
+    0: "i",
+    1: "j",
+    2: "I",
+    3: "u",
+    4: "I",
+    5: "U",
+    6: "S",
+    7: "D",
+    8: "B",
+    9: "j",
   };
 
   const numStr = number.toString();
-  let result = '';
+  let result = "";
   for (let i = 0; i < numStr.length; i++) {
     const digit = numStr[i];
     result += mapping[digit];
@@ -687,14 +750,19 @@ async function saveJsonToFile(jsonData, dir) {
     const filename = `${timestamp}.json`;
     const jsonString = JSON.stringify(jsonData, null, 2);
     const directory = dir;
-    if (!await fs.access(directory).then(() => true).catch(() => false)) {
+    if (
+      !(await fs
+        .access(directory)
+        .then(() => true)
+        .catch(() => false))
+    ) {
       await fs.mkdir(directory, { recursive: true });
     }
     const filePath = path.join(directory, filename);
     await fs.writeFile(filePath, jsonString);
     console.log(`JSON data saved to ${filePath}`);
   } catch (err) {
-    console.error('Error saving JSON to file:', err);
+    console.error("Error saving JSON to file:", err);
     throw err;
   }
 }
@@ -712,11 +780,11 @@ function areMobileNumbersFilled(array) {
 
 // Get file extension (unchanged)
 function getFileExtension(fileName) {
-  const dotIndex = fileName.lastIndexOf('.');
+  const dotIndex = fileName.lastIndexOf(".");
   if (dotIndex !== -1 && dotIndex !== 0) {
     return fileName.substring(dotIndex + 1).toLowerCase();
   }
-  return '';
+  return "";
 }
 
 // Write JSON to file (made async)
@@ -725,10 +793,10 @@ async function writeJsonToFile(filepath, jsonData) {
     const directory = path.dirname(filepath);
     await fs.mkdir(directory, { recursive: true });
     const jsonString = JSON.stringify(jsonData, null, 2);
-    await fs.writeFile(filepath, jsonString, { flag: 'w' });
+    await fs.writeFile(filepath, jsonString, { flag: "w" });
     return `JSON data has been written to '${filepath}'.`;
   } catch (err) {
-    console.error('Error writing JSON to file:', err);
+    console.error("Error writing JSON to file:", err);
     throw err;
   }
 }
@@ -740,7 +808,7 @@ async function deleteFileIfExists(filePath) {
     await fs.unlink(filePath);
     console.log(`File ${filePath} has been deleted.`);
   } catch (err) {
-    if (err.code !== 'ENOENT') {
+    if (err.code !== "ENOENT") {
       console.error(`Error deleting file ${filePath}:`, err);
       throw err;
     }
@@ -750,50 +818,60 @@ async function deleteFileIfExists(filePath) {
 // Read JSON from file (made async)
 async function readJsonFromFile(filePath) {
   try {
-    await fs.access(filePath); 
-    const data = await fs.readFile(filePath, 'utf-8');
+    await fs.access(filePath);
+    const data = await fs.readFile(filePath, "utf-8");
     return JSON.parse(data);
   } catch (err) {
     console.error(`Error reading JSON file ${filePath}:`, err);
-    return null; 
+    return null;
   }
 }
 
 // Read JSON file (updated for robustness)
 async function readJSONFile(filePath, length) {
   try {
-    console.log('Reading JSON file:', filePath);
-    if (!await fs.access(filePath).then(() => true).catch(() => false)) {
-      console.error('File not found:', filePath);
+    console.log("Reading JSON file:", filePath);
+    if (
+      !(await fs
+        .access(filePath)
+        .then(() => true)
+        .catch(() => false))
+    ) {
+      console.error("File not found:", filePath);
       return [];
     }
 
-    let fileContent = await fs.readFile(filePath, 'utf8');
+    let fileContent = await fs.readFile(filePath, "utf8");
 
     // Fix common JSON issues
-    if (fileContent.endsWith('}\n]  }\n]') || fileContent.endsWith('}\n]\n}\n]')) {
-      console.log('Found invalid JSON ending, correcting...');
-      fileContent = fileContent.replace(/}\n]\s*}\n]/, '\n}\n]');
+    if (
+      fileContent.endsWith("}\n]  }\n]") ||
+      fileContent.endsWith("}\n]\n}\n]")
+    ) {
+      console.log("Found invalid JSON ending, correcting...");
+      fileContent = fileContent.replace(/}\n]\s*}\n]/, "\n}\n]");
       await fs.writeFile(filePath, fileContent);
-      console.log('Corrected JSON written to file');
+      console.log("Corrected JSON written to file");
     }
 
     let jsonArray;
     try {
       jsonArray = JSON.parse(fileContent);
     } catch (error) {
-      console.error('JSON parse error:', error.message);
+      console.error("JSON parse error:", error.message);
       return [];
     }
 
     if (!Array.isArray(jsonArray)) {
-      console.error('Invalid JSON format: not an array');
+      console.error("Invalid JSON format: not an array");
       return [];
     }
 
-    return typeof length === 'number' && length > 0 ? jsonArray.slice(-length) : jsonArray;
+    return typeof length === "number" && length > 0
+      ? jsonArray.slice(-length)
+      : jsonArray;
   } catch (error) {
-    console.error('Error reading JSON file:', error);
+    console.error("Error reading JSON file:", error);
     return [];
   }
 }
@@ -804,10 +882,12 @@ async function updateMetaTempletInMsg(uid, savObj, chatId, msgId) {
     console.log({ thisss: uid });
     const user = await User.findOne({ where: { uid } });
     if (!user) {
-      return { success: false, msg: 'User not found' };
+      return { success: false, msg: "User not found" };
     }
 
-    const userTimezone = getCurrentTimestampInTimeZone(user.timezone || Date.now() / 1000);
+    const userTimezone = getCurrentTimestampInTimeZone(
+      user.timezone || Date.now() / 1000
+    );
     const finalSaveMsg = {
       ...savObj,
       metaChatId: msgId,
@@ -833,13 +913,16 @@ async function updateMetaTempletInMsg(uid, savObj, chatId, msgId) {
     const chats = await Chat.findAll({ where: { uid } });
 
     if (room) {
-      io.to(room.socket_id).emit('update_conversations', { chats, notificationOff: true });
-      io.to(room.socket_id).emit('push_new_msg', { msg: finalSaveMsg, chatId });
+      io.to(room.socket_id).emit("update_conversations", {
+        chats,
+        notificationOff: true,
+      });
+      io.to(room.socket_id).emit("push_new_msg", { msg: finalSaveMsg, chatId });
     }
 
     return { success: true };
   } catch (err) {
-    console.error('Error in updateMetaTempletInMsg:', err);
+    console.error("Error in updateMetaTempletInMsg:", err);
     throw err;
   }
 }
@@ -849,15 +932,15 @@ async function sendAPIMessage(obj, waNumId, waToken) {
   try {
     const url = `https://graph.facebook.com/v17.0/${waNumId}/messages`;
     const payload = {
-      messaging_product: 'whatsapp',
-      recipient_type: 'individual',
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
       ...obj,
     };
 
     const response = await fetch(url, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${waToken}`,
       },
       body: JSON.stringify(payload),
@@ -870,11 +953,11 @@ async function sendAPIMessage(obj, waNumId, waToken) {
 
     return {
       success: true,
-      message: 'Message sent successfully!',
+      message: "Message sent successfully!",
       data: data?.messages[0],
     };
   } catch (err) {
-    console.error('Error in sendAPIMessage:', err);
+    console.error("Error in sendAPIMessage:", err);
     return { success: false, msg: err.toString(), err };
   }
 }
@@ -886,28 +969,31 @@ async function sendMetaMsg(uid, msgObj, toNumber, savObj, chatId) {
     const user = await User.findOne({ where: { uid } }); // Fixed typo: MUNIuid -> uid
 
     if (!metaApi) {
-      return { success: false, msg: 'Unable to find API' };
+      return { success: false, msg: "Unable to find API" };
     }
 
     const waToken = metaApi.access_token;
     const waNumId = metaApi.business_phone_number_id;
 
     if (!waToken || !waNumId) {
-      return { success: false, msg: 'Please add your meta token and phone number ID' };
+      return {
+        success: false,
+        msg: "Please add your meta token and phone number ID",
+      };
     }
 
     const url = `https://graph.facebook.com/v17.0/${waNumId}/messages`;
     const payload = {
-      messaging_product: 'whatsapp',
-      recipient_type: 'individual',
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
       to: toNumber,
       ...msgObj,
     };
 
     const response = await fetch(url, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${waToken}`,
       },
       body: JSON.stringify(payload),
@@ -919,7 +1005,9 @@ async function sendMetaMsg(uid, msgObj, toNumber, savObj, chatId) {
     }
 
     if (data?.messages[0]?.id) {
-      const userTimezone = getCurrentTimestampInTimeZone(user?.timezone || Date.now() / 1000);
+      const userTimezone = getCurrentTimestampInTimeZone(
+        user?.timezone || Date.now() / 1000
+      );
       const finalSaveMsg = {
         ...savObj,
         metaChatId: data?.messages[0]?.id,
@@ -943,20 +1031,37 @@ async function sendMetaMsg(uid, msgObj, toNumber, savObj, chatId) {
       const chats = await Chat.findAll({ where: { uid } });
 
       if (room) {
-        io.to(room.socket_id).emit('update_conversations', { chats, notificationOff: true });
-        io.to(room.socket_id).emit('push_new_msg', { msg: finalSaveMsg, chatId });
+        io.to(room.socket_id).emit("update_conversations", {
+          chats,
+          notificationOff: true,
+        });
+        io.to(room.socket_id).emit("push_new_msg", {
+          msg: finalSaveMsg,
+          chatId,
+        });
       }
 
-      const agentChat = await AgentChat.findOne({ where: { owner_uid: uid, chat_id: chatId } });
+      const agentChat = await AgentChat.findOne({
+        where: { owner_uid: uid, chat_id: chatId },
+      });
       if (agentChat) {
-        const agentChats = await AgentChat.findAll({ where: { uid: agentChat.uid } });
+        const agentChats = await AgentChat.findAll({
+          where: { uid: agentChat.uid },
+        });
         const chatIds = agentChats.map((i) => i.chat_id);
-        const chatsGet = await Chat.findAll({ where: { chat_id: chatIds, uid } });
+        const chatsGet = await Chat.findAll({
+          where: { chat_id: chatIds, uid },
+        });
         const agentRoom = await Room.findOne({ where: { uid: agentChat.uid } });
 
         if (agentRoom) {
-          io.to(agentRoom.socket_id).emit('update_conversations', { chats: chatsGet || [] });
-          io.to(agentRoom.socket_id).emit('push_new_msg', { msg: finalSaveMsg, chatId });
+          io.to(agentRoom.socket_id).emit("update_conversations", {
+            chats: chatsGet || [],
+          });
+          io.to(agentRoom.socket_id).emit("push_new_msg", {
+            msg: finalSaveMsg,
+            chatId,
+          });
         }
       }
 
@@ -965,7 +1070,7 @@ async function sendMetaMsg(uid, msgObj, toNumber, savObj, chatId) {
 
     return { success: true };
   } catch (err) {
-    console.error('Error in sendMetaMsg:', err);
+    console.error("Error in sendMetaMsg:", err);
     return { success: false, msg: err.toString(), err };
   }
 }
@@ -973,16 +1078,22 @@ async function sendMetaMsg(uid, msgObj, toNumber, savObj, chatId) {
 // Merge arrays (unchanged)
 function mergeArrays(arrA, arrB) {
   return arrB.map((objB) => {
-    const matchingObject = arrA.find((objA) => objA.mobile === objB.sender_mobile);
+    const matchingObject = arrA.find(
+      (objA) => objA.mobile === objB.sender_mobile
+    );
     return matchingObject ? { ...objB, contact: matchingObject } : objB;
   });
 }
 
 // Get business phone number (unchanged)
-async function getBusinessPhoneNumber(apiVersion, businessPhoneNumberId, bearerToken) {
+async function getBusinessPhoneNumber(
+  apiVersion,
+  businessPhoneNumberId,
+  bearerToken
+) {
   const url = `https://graph.facebook.com/${apiVersion}/${businessPhoneNumberId}`;
   const options = {
-    method: 'GET',
+    method: "GET",
     headers: {
       Authorization: `Bearer ${bearerToken}`,
     },
@@ -992,7 +1103,7 @@ async function getBusinessPhoneNumber(apiVersion, businessPhoneNumberId, bearerT
     const response = await fetch(url, options);
     return await response.json();
   } catch (error) {
-    console.error('Error fetching business phone number:', error);
+    console.error("Error fetching business phone number:", error);
     throw error;
   }
 }
@@ -1001,10 +1112,10 @@ async function getBusinessPhoneNumber(apiVersion, businessPhoneNumberId, bearerT
 async function createMetaTemplet(apiVersion, waba_id, bearerToken, body) {
   const url = `https://graph.facebook.com/${apiVersion}/${waba_id}/message_templates`;
   const options = {
-    method: 'POST',
+    method: "POST",
     headers: {
       Authorization: `Bearer ${bearerToken}`,
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
   };
@@ -1013,7 +1124,7 @@ async function createMetaTemplet(apiVersion, waba_id, bearerToken, body) {
     const response = await fetch(url, options);
     return await response.json();
   } catch (error) {
-    console.error('Error creating Meta template:', error);
+    console.error("Error creating Meta template:", error);
     throw error;
   }
 }
@@ -1022,7 +1133,7 @@ async function createMetaTemplet(apiVersion, waba_id, bearerToken, body) {
 async function getAllTempletsMeta(apiVersion, waba_id, bearerToken) {
   const url = `https://graph.facebook.com/${apiVersion}/${waba_id}/message_templates`;
   const options = {
-    method: 'GET',
+    method: "GET",
     headers: {
       Authorization: `Bearer ${bearerToken}`,
     },
@@ -1032,7 +1143,7 @@ async function getAllTempletsMeta(apiVersion, waba_id, bearerToken) {
     const response = await fetch(url, options);
     return await response.json();
   } catch (error) {
-    console.error('Error fetching Meta templates:', error);
+    console.error("Error fetching Meta templates:", error);
     throw error;
   }
 }
@@ -1041,7 +1152,7 @@ async function getAllTempletsMeta(apiVersion, waba_id, bearerToken) {
 async function delMetaTemplet(apiVersion, waba_id, bearerToken, name) {
   const url = `https://graph.facebook.com/${apiVersion}/${waba_id}/message_templates?name=${name}`;
   const options = {
-    method: 'DELETE',
+    method: "DELETE",
     headers: {
       Authorization: `Bearer ${bearerToken}`,
     },
@@ -1051,17 +1162,24 @@ async function delMetaTemplet(apiVersion, waba_id, bearerToken, name) {
     const response = await fetch(url, options);
     return await response.json();
   } catch (error) {
-    console.error('Error deleting Meta template:', error);
+    console.error("Error deleting Meta template:", error);
     throw error;
   }
 }
 
 // Send Meta template (updated to use Sequelize)
-async function sendMetatemplet(toNumber, business_phone_number_id, token, template, example, dynamicMedia) {
+async function sendMetatemplet(
+  toNumber,
+  business_phone_number_id,
+  token,
+  template,
+  example,
+  dynamicMedia
+) {
   try {
-    const checkBody = template?.components?.filter((i) => i.type === 'BODY');
-    const getHeader = template?.components?.filter((i) => i.type === 'HEADER');
-    const headerFormat = getHeader.length > 0 ? getHeader[0]?.format : '';
+    const checkBody = template?.components?.filter((i) => i.type === "BODY");
+    const getHeader = template?.components?.filter((i) => i.type === "HEADER");
+    const headerFormat = getHeader.length > 0 ? getHeader[0]?.format : "";
 
     let templ = {
       name: template?.name,
@@ -1071,66 +1189,72 @@ async function sendMetatemplet(toNumber, business_phone_number_id, token, templa
 
     if (checkBody.length > 0) {
       const comp = checkBody[0]?.example?.body_text[0]?.map((i, key) => ({
-        type: 'text',
+        type: "text",
         text: example[key] || i,
       }));
       if (comp) {
-        templ.components.push({ type: 'body', parameters: comp });
+        templ.components.push({ type: "body", parameters: comp });
       }
     }
 
-    if (headerFormat === 'IMAGE' && getHeader.length > 0) {
-      const media = await MetaTempletMedia.findOne({ where: { templet_name: template?.name } });
+    if (headerFormat === "IMAGE" && getHeader.length > 0) {
+      const media = await MetaTempletMedia.findOne({
+        where: { templet_name: template?.name },
+      });
       templ.components.unshift({
-        type: 'header',
+        type: "header",
         parameters: [
           {
-            type: 'image',
+            type: "image",
             image: {
               link: dynamicMedia
                 ? dynamicMedia
                 : media
-                  ? `${process.env.BACKURI}/media/${media.file_name}`
-                  : getHeader[0].example?.header_handle[0],
+                ? `${process.env.BACKURI}/media/${media.file_name}`
+                : getHeader[0].example?.header_handle[0],
             },
           },
         ],
       });
     }
 
-    if (headerFormat === 'VIDEO' && getHeader.length > 0) {
-      const media = await MetaTempletMedia.findOne({ where: { templet_name: template?.name } });
+    if (headerFormat === "VIDEO" && getHeader.length > 0) {
+      const media = await MetaTempletMedia.findOne({
+        where: { templet_name: template?.name },
+      });
       templ.components.unshift({
-        type: 'header',
+        type: "header",
         parameters: [
           {
-            type: 'video',
+            type: "video",
             video: {
               link: dynamicMedia
                 ? dynamicMedia
                 : media
-                  ? `${process.env.BACKURI}/media/${media.file_name}`
-                  : getHeader[0].example?.header_handle[0],
+                ? `${process.env.BACKURI}/media/${media.file_name}`
+                : getHeader[0].example?.header_handle[0],
             },
           },
         ],
       });
     }
 
-    if (headerFormat === 'DOCUMENT' && getHeader.length > 0) {
-      const media = await MetaTempletMedia.findOne({ where: { templet_name: template?.name } });
+    if (headerFormat === "DOCUMENT" && getHeader.length > 0) {
+      const media = await MetaTempletMedia.findOne({
+        where: { templet_name: template?.name },
+      });
       templ.components.unshift({
-        type: 'header',
+        type: "header",
         parameters: [
           {
-            type: 'document',
+            type: "document",
             document: {
               link: dynamicMedia
                 ? dynamicMedia
                 : media
-                  ? `${process.env.BACKURI}/media/${media.file_name}`
-                  : getHeader[0].example?.header_handle[0],
-              filename: 'document',
+                ? `${process.env.BACKURI}/media/${media.file_name}`
+                : getHeader[0].example?.header_handle[0],
+              filename: "document",
             },
           },
         ],
@@ -1139,17 +1263,17 @@ async function sendMetatemplet(toNumber, business_phone_number_id, token, templa
 
     const url = `https://graph.facebook.com/v18.0/${business_phone_number_id}/messages`;
     const body = {
-      messaging_product: 'whatsapp',
+      messaging_product: "whatsapp",
       to: toNumber,
-      type: 'template',
+      type: "template",
       template: templ,
     };
 
     const options = {
-      method: 'POST',
+      method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
     };
@@ -1157,7 +1281,7 @@ async function sendMetatemplet(toNumber, business_phone_number_id, token, templa
     const response = await fetch(url, options);
     return await response.json();
   } catch (error) {
-    console.error('Error sending Meta template:', error);
+    console.error("Error sending Meta template:", error);
     throw error;
   }
 }
@@ -1167,19 +1291,25 @@ async function getFileInfo(filePath) {
   try {
     const stats = await fs.stat(filePath);
     const fileSizeInBytes = stats.size;
-    const mimeType = mime.lookup(filePath) || 'application/octet-stream';
+    const mimeType = mime.lookup(filePath) || "application/octet-stream";
     return { fileSizeInBytes, mimeType };
   } catch (err) {
-    console.error('Error getting file info:', err);
+    console.error("Error getting file info:", err);
     throw err;
   }
 }
 
 // Get session upload media Meta (unchanged)
-async function getSessionUploadMediaMeta(apiVersion, app_id, bearerToken, fileSize, mimeType) {
+async function getSessionUploadMediaMeta(
+  apiVersion,
+  app_id,
+  bearerToken,
+  fileSize,
+  mimeType
+) {
   const url = `https://graph.facebook.com/${apiVersion}/${app_id}/uploads?file_length=${fileSize}&file_type=${mimeType}`;
   const options = {
-    method: 'POST',
+    method: "POST",
     headers: {
       Authorization: `Bearer ${bearerToken}`,
     },
@@ -1189,7 +1319,7 @@ async function getSessionUploadMediaMeta(apiVersion, app_id, bearerToken, fileSi
     const response = await fetch(url, options);
     return await response.json();
   } catch (error) {
-    console.error('Error fetching session upload media:', error);
+    console.error("Error fetching session upload media:", error);
     throw error;
   }
 }
@@ -1200,11 +1330,11 @@ async function uploadFileMeta(sessionId, filePath, apiVersion, accessToken) {
     const fileData = await fs.readFile(filePath);
     const url = `https://graph.facebook.com/${apiVersion}/${sessionId}`;
     const options = {
-      method: 'POST',
+      method: "POST",
       headers: {
         Authorization: `OAuth ${accessToken}`,
-        'Content-Type': 'application/pdf',
-        Cookie: 'ps_l=0; ps_n=0',
+        "Content-Type": "application/pdf",
+        Cookie: "ps_l=0; ps_n=0",
       },
       body: fileData,
     };
@@ -1212,25 +1342,29 @@ async function uploadFileMeta(sessionId, filePath, apiVersion, accessToken) {
     const response = await fetch(url, options);
     if (!response.ok) {
       const errorResponse = await response.json();
-      console.error('Error response:', errorResponse);
+      console.error("Error response:", errorResponse);
       return { success: false, data: errorResponse };
     }
     const data = await response.json();
     return { success: true, data };
   } catch (error) {
-    console.error('Error uploading file:', error);
+    console.error("Error uploading file:", error);
     return { success: false, data: error };
   }
 }
 
 // Get Meta number detail (unchanged)
-async function getMetaNumberDetail(apiVersion, business_phone_number_id, bearerToken) {
+async function getMetaNumberDetail(
+  apiVersion,
+  business_phone_number_id,
+  bearerToken
+) {
   const url = `https://graph.facebook.com/${apiVersion}/${business_phone_number_id}`;
   const options = {
-    method: 'GET',
+    method: "GET",
     headers: {
       Authorization: `Bearer ${bearerToken}`,
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   };
 
@@ -1238,7 +1372,7 @@ async function getMetaNumberDetail(apiVersion, business_phone_number_id, bearerT
     const response = await fetch(url, options);
     return await response.json();
   } catch (error) {
-    console.error('Error fetching Meta number detail:', error);
+    console.error("Error fetching Meta number detail:", error);
     throw error;
   }
 }
@@ -1251,7 +1385,7 @@ function addDaysToCurrentTimestamp(days) {
 }
 
 // Update user plan (updated to use Sequelize)
-async function updateUserPlan(plan, uid) { 
+async function updateUserPlan(plan, uid) {
   try {
     console.log({ plan });
     const planDays = parseInt(plan?.plan_duration_in_days || 0);
@@ -1261,7 +1395,7 @@ async function updateUserPlan(plan, uid) {
       { where: { uid } }
     );
   } catch (err) {
-    console.error('Error updating user plan:', err);
+    console.error("Error updating user plan:", err);
     throw err;
   }
 }
@@ -1278,29 +1412,39 @@ async function sendEmail(host, port, email, pass, html, subject, from, to) {
     const transporter = nodemailer.createTransport({
       host,
       port,
-      secure: port === '465',
+      secure: port === "465",
       auth: { user: email, pass },
     });
 
     const info = await transporter.sendMail({
-      from: `${from || 'Email From'} <${email}>`,
+      from: `${from || "Email From"} <${email}>`,
       to,
-      subject: subject || 'Email',
+      subject: subject || "Email",
       html,
     });
 
     return { success: true, info };
   } catch (err) {
-    console.error('Error sending email:', err);
-    return { success: false, err: err.toString() || 'Invalid Email' };
+    console.error("Error sending email:", err);
+    return { success: false, err: err.toString() || "Invalid Email" };
   }
 }
 
 // Get user signups by month (updated to use Sequelize)
 async function getUserSignupsByMonth() {
   const months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
@@ -1308,7 +1452,9 @@ async function getUserSignupsByMonth() {
   const users = await User.findAll();
   const { paidUsers, unpaidUsers } = users.reduce(
     (acc, user) => {
-      const planExpire = user.plan_expire ? new Date(parseInt(user.plan_expire)) : null;
+      const planExpire = user.plan_expire
+        ? new Date(parseInt(user.plan_expire))
+        : null;
       const isPaid = planExpire ? planExpire > currentDate : false;
       if (isPaid) {
         acc.paidUsers.push(user);
@@ -1323,7 +1469,10 @@ async function getUserSignupsByMonth() {
   const paidSignupsByMonth = months.map((month, monthIndex) => {
     const usersInMonth = paidUsers.filter((user) => {
       const userDate = new Date(user.createdAt);
-      return userDate.getMonth() === monthIndex && userDate.getFullYear() === currentYear;
+      return (
+        userDate.getMonth() === monthIndex &&
+        userDate.getFullYear() === currentYear
+      );
     });
     const numberOfSignups = usersInMonth.length;
     const userEmails = usersInMonth.map((user) => user.email);
@@ -1333,7 +1482,10 @@ async function getUserSignupsByMonth() {
   const unpaidSignupsByMonth = months.map((month, monthIndex) => {
     const usersInMonth = unpaidUsers.filter((user) => {
       const userDate = new Date(user.createdAt);
-      return userDate.getMonth() === monthIndex && userDate.getFullYear() === currentYear;
+      return (
+        userDate.getMonth() === monthIndex &&
+        userDate.getFullYear() === currentYear
+      );
     });
     const numberOfSignups = usersInMonth.length;
     const userEmails = usersInMonth.map((user) => user.email);
@@ -1346,8 +1498,18 @@ async function getUserSignupsByMonth() {
 // Get user orders by month (updated to use Sequelize)
 async function getUserOrderssByMonth() {
   const months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
@@ -1357,7 +1519,10 @@ async function getUserOrderssByMonth() {
     const month = months[monthIndex];
     const ordersInMonth = orders.filter((order) => {
       const orderDate = new Date(order.createdAt);
-      return orderDate.getMonth() === monthIndex && orderDate.getFullYear() === currentYear;
+      return (
+        orderDate.getMonth() === monthIndex &&
+        orderDate.getFullYear() === currentYear
+      );
     });
     return { month, numberOfOders: ordersInMonth.length };
   });
@@ -1387,7 +1552,7 @@ async function getUserPlayDays(uid) {
     }
     return getNumberOfDaysFromTimestamp(user.plan_expire);
   } catch (err) {
-    console.error('Error fetching user plan days:', err);
+    console.error("Error fetching user plan days:", err);
     return 0;
   }
 }
@@ -1407,7 +1572,7 @@ async function downloadAndExtractFile(filesObject, outputFolderPath) {
   try {
     const uploadedFile = filesObject.file;
     if (!uploadedFile) {
-      return { success: false, msg: 'No file data found in FormData' };
+      return { success: false, msg: "No file data found in FormData" };
     }
 
     const outputPath = path.join(outputFolderPath, uploadedFile.name);
@@ -1418,14 +1583,15 @@ async function downloadAndExtractFile(filesObject, outputFolderPath) {
       });
     });
 
-    await fs.createReadStream(outputPath)
+    await fs
+      .createReadStream(outputPath)
       .pipe(unzipper.Extract({ path: outputFolderPath }))
       .promise();
 
     await fs.unlink(outputPath);
-    return { success: true, msg: 'App was successfully installed/updated' };
+    return { success: true, msg: "App was successfully installed/updated" };
   } catch (error) {
-    console.error('Error downloading and extracting file:', error);
+    console.error("Error downloading and extracting file:", error);
     return { success: false, msg: error.message };
   }
 }
@@ -1433,51 +1599,57 @@ async function downloadAndExtractFile(filesObject, outputFolderPath) {
 // Fetch profile (unchanged)
 async function fetchProfileFun(mobileId, token) {
   try {
-    const response = await fetch(`https://graph.facebook.com/v17.0/${mobileId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      `https://graph.facebook.com/v17.0/${mobileId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     const data = await response.json();
     return data.error
       ? { success: false, msg: data.error?.message }
       : { success: true, data };
   } catch (error) {
-    console.error('Error fetching profile:', error);
+    console.error("Error fetching profile:", error);
     throw error;
   }
 }
 
 // Return widget (unchanged)
 function returnWidget(image, imageSize, url, position) {
-  let style = '';
+  let style = "";
   switch (position) {
-    case 'TOP_RIGHT':
-      style = 'position: fixed; top: 15px; right: 15px;';
+    case "TOP_RIGHT":
+      style = "position: fixed; top: 15px; right: 15px;";
       break;
-    case 'TOP_CENTER':
-      style = 'position: fixed; top: 15px; right: 50%; transform: translateX(-50%);';
+    case "TOP_CENTER":
+      style =
+        "position: fixed; top: 15px; right: 50%; transform: translateX(-50%);";
       break;
-    case 'TOP_LEFT':
-      style = 'position: fixed; top: 15px; left: 15px;';
+    case "TOP_LEFT":
+      style = "position: fixed; top: 15px; left: 15px;";
       break;
-    case 'BOTTOM_RIGHT':
-      style = 'position: fixed; bottom: 15px; right: 15px;';
+    case "BOTTOM_RIGHT":
+      style = "position: fixed; bottom: 15px; right: 15px;";
       break;
-    case 'BOTTOM_CENTER':
-      style = 'position: fixed; bottom: 15px; right: 50%; transform: translateX(-50%);';
+    case "BOTTOM_CENTER":
+      style =
+        "position: fixed; bottom: 15px; right: 50%; transform: translateX(-50%);";
       break;
-    case 'BOTTOM_LEFT':
-      style = 'position: fixed; bottom: 15px; left: 15px;';
+    case "BOTTOM_LEFT":
+      style = "position: fixed; bottom: 15px; left: 15px;";
       break;
-    case 'ALL_CENTER':
-      style = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);';
+    case "ALL_CENTER":
+      style =
+        "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);";
       break;
     default:
-      style = 'position: fixed; top: 15px; right: 15px;';
+      style = "position: fixed; top: 15px; right: 15px;";
       break;
   }
 
@@ -1508,8 +1680,8 @@ function returnWidget(image, imageSize, url, position) {
 
 // Generate WhatsApp URL (unchanged)
 function generateWhatsAppURL(phoneNumber, text) {
-  const baseUrl = 'https://wa.me/';
-  const formattedPhoneNumber = phoneNumber.replace(/\D/g, '');
+  const baseUrl = "https://wa.me/";
+  const formattedPhoneNumber = phoneNumber.replace(/\D/g, "");
   const encodedText = encodeURIComponent(text);
   return `${baseUrl}${formattedPhoneNumber}?text=${encodedText}`;
 }
@@ -1526,7 +1698,7 @@ async function makeRequest({ method, url, body = null, headers = [] }) {
     }, {});
 
     const requestBody =
-      method === 'GET' || method === 'DELETE'
+      method === "GET" || method === "DELETE"
         ? undefined
         : JSON.stringify(
             body.reduce((acc, { key, value }) => {
@@ -1550,9 +1722,9 @@ async function makeRequest({ method, url, body = null, headers = [] }) {
     }
 
     const data = await response.json();
-    return (typeof data === 'object' || Array.isArray(data))
+    return typeof data === "object" || Array.isArray(data)
       ? { success: true, data }
-      : { success: false, msg: 'Invalid response format' };
+      : { success: false, msg: "Invalid response format" };
   } catch (error) {
     return { success: false, msg: error.message };
   }
@@ -1568,58 +1740,60 @@ function replacePlaceholders(template, data) {
       const property = arrayMatch[2];
       if (Array.isArray(data) && index >= 0 && index < data.length) {
         let value = data[index];
-        const nestedKeys = property.split('.');
+        const nestedKeys = property.split(".");
         for (const k of nestedKeys) {
           if (value && Object.prototype.hasOwnProperty.call(value, k)) {
             value = value[k];
           } else {
-            return 'NA';
+            return "NA";
           }
         }
-        return value !== undefined ? value : 'NA';
+        return value !== undefined ? value : "NA";
       }
-      return 'NA';
+      return "NA";
     }
 
-    const keys = key.split('.');
+    const keys = key.split(".");
     let value = data;
     for (const k of keys) {
       if (value && Object.prototype.hasOwnProperty.call(value, k)) {
         value = value[k];
       } else {
-        return 'NA';
+        return "NA";
       }
     }
-    return value !== undefined ? value : 'NA';
+    return value !== undefined ? value : "NA";
   });
 }
 
 // Razorpay capture payment (unchanged)
 const rzCapturePayment = (paymentId, amount, razorpayKey, razorpaySecret) => {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-  const auth = 'Basic ' + Buffer.from(razorpayKey + ':' + razorpaySecret).toString('base64');
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+  const auth =
+    "Basic " +
+    Buffer.from(razorpayKey + ":" + razorpaySecret).toString("base64");
 
   return new Promise((resolve, reject) => {
     fetch(`https://api.razorpay.com/v1/payments/${paymentId}/capture`, {
-      method: 'POST',
+      method: "POST",
       headers: {
         Authorization: auth,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ amount }),
     })
       .then((response) => response.json())
       .then((data) => {
         if (data.error) {
-          console.error('Error capturing payment:', data.error);
+          console.error("Error capturing payment:", data.error);
           reject(data.error);
         } else {
-          console.log('Payment captured successfully:', data);
+          console.log("Payment captured successfully:", data);
           resolve(data);
         }
       })
       .catch((error) => {
-        console.error('Error capturing payment:', error);
+        console.error("Error capturing payment:", error);
         reject(error);
       });
   });
@@ -1637,17 +1811,17 @@ async function validateFacebookToken(userAccessToken, appId, appSecret) {
       ? { success: true, response: data }
       : { success: false, response: data };
   } catch (error) {
-    console.error('Error validating Facebook token:', error);
+    console.error("Error validating Facebook token:", error);
     return { success: false, response: error };
   }
-};
+}
 
 // Parse CSV file (unchanged)
 const parseCSVFile = async (fileData) => {
   try {
     return csv.parse(fileData, { columns: true, skip_empty_lines: true });
   } catch (error) {
-    console.error('Error parsing CSV:', error);
+    console.error("Error parsing CSV:", error);
     return null;
   }
 };

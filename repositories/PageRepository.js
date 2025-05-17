@@ -5,9 +5,15 @@ class PageRepository {
     if (!title || !content || !slug) throw new Error("Please fill all fields");
     if (!image) throw new Error("No image was selected");
 
-    const reservedSlugs = ["contact-form", "privacy-policy", "terms-and-conditions"];
+    const reservedSlugs = [
+      "contact-form",
+      "privacy-policy",
+      "terms-and-conditions",
+    ];
     if (reservedSlugs.includes(slug)) {
-      throw new Error("This slug is already used by system please use another slug.");
+      throw new Error(
+        "This slug is already used by system please use another slug."
+      );
     }
 
     const existingPage = await Page.findOne({ where: { slug } });

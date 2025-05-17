@@ -3,7 +3,11 @@ const AgentChatRepository = require("../repositories/AgentChatRepository");
 const ChatRepository = require("../repositories/chatRepository");
 const ContactRepository = require("../repositories/contactRepository");
 const AgentRepository = require("../repositories/AgentRepository");
-const { mergeArrays, readJSONFile, sendMetaMsg } = require("../functions/function");
+const {
+  mergeArrays,
+  readJSONFile,
+  sendMetaMsg,
+} = require("../functions/function");
 const ChatNotFoundException = require("../exceptions/CustomExceptions/ChatNotFoundException");
 
 class ChatService {
@@ -11,13 +15,19 @@ class ChatService {
     this.chatRepository = new ChatRepository();
   }
 
-   async getAgentChatsOwner(owner_uid, agent_uid) {
-    const chats = await AgentChatRepository.findChatsByAgent(owner_uid, agent_uid);
+  async getAgentChatsOwner(owner_uid, agent_uid) {
+    const chats = await AgentChatRepository.findChatsByAgent(
+      owner_uid,
+      agent_uid
+    );
     return chats;
   }
 
-   async getAssignedChatAgent(owner_uid, chat_id) {
-    const agentChat = await AgentChatRepository.findByChatId(owner_uid, chat_id);
+  async getAssignedChatAgent(owner_uid, chat_id) {
+    const agentChat = await AgentChatRepository.findByChatId(
+      owner_uid,
+      chat_id
+    );
     if (!agentChat) {
       return {};
     }
@@ -32,7 +42,7 @@ class ChatService {
     };
   }
 
-   async updateAgentInChat(owner_uid, assignAgent, chat_id) {
+  async updateAgentInChat(owner_uid, assignAgent, chat_id) {
     if (assignAgent?.uid) {
       await AgentChatRepository.deleteByChatId(owner_uid, chat_id);
       await AgentChatRepository.create({
@@ -45,11 +55,11 @@ class ChatService {
     }
   }
 
-   async deleteAssignedChat(owner_uid, uid, chat_id) {
+  async deleteAssignedChat(owner_uid, uid, chat_id) {
     await AgentChatRepository.delete(owner_uid, uid, chat_id);
   }
 
-   async getMyAssignedChats(agent_uid, owner_uid) {
+  async getMyAssignedChats(agent_uid, owner_uid) {
     const agentChats = await AgentChatRepository.findByAgentId(agent_uid);
     if (!agentChats.length) {
       return [];
@@ -60,12 +70,23 @@ class ChatService {
     return mergeArrays(contacts, chats);
   }
 
-   async getConversation(owner_uid, chatId) {
-    const filePath = path.join(__dirname, `../conversations/inbox/${owner_uid}/${chatId}.json`);
+  async getConversation(owner_uid, chatId) {
+    const filePath = path.join(
+      __dirname,
+      `../conversations/inbox/${owner_uid}/${chatId}.json`
+    );
     return readJSONFile(filePath, 100);
   }
 
-   async sendMessage({ ownerUid, type, content, toNumber, toName, chatId, agentEmail }) {
+  async sendMessage({
+    ownerUid,
+    type,
+    content,
+    toNumber,
+    toName,
+    chatId,
+    agentEmail,
+  }) {
     const msgObj = { type, [type]: content };
     const savObj = {
       type,
@@ -83,7 +104,7 @@ class ChatService {
     return await sendMetaMsg(ownerUid, msgObj, toNumber, savObj, chatId);
   }
 
-   async changeChatTicketStatus(chatId, status) {
+  async changeChatTicketStatus(chatId, status) {
     await ChatRepository.updateStatus(chatId, status);
   }
   async saveNote(chatId, note) {

@@ -22,7 +22,7 @@ class ContactRepository {
   }
 
   async findByUid(uid) {
-    return await Contact.findAll({ where: { uid } }); 
+    return await Contact.findAll({ where: { uid } });
   }
 
   async deleteByPhonebookId(phonebook_id, uid) {
