@@ -2,7 +2,8 @@ const randomstring = require("randomstring");
 const path = require("path");
 const chatWidgetRepository = require("../repositories/chatWidgetRepository");
 const getFileExtension = require("../functions/function");
-
+const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
+const LogoRequiredException = require("../exceptions/CustomExceptions/LogoRequiredException");
 class ChatWidgetService {
 
   async addWidget(req) {
@@ -10,14 +11,14 @@ class ChatWidgetService {
     const uid = req.decode.uid;
 
     if (!title || !whatsapp_number || !place) {
-      throw new Error("Please fill the details");
+      throw new FillAllFieldsException();
     }
 
     let filename;
 
     if (logoType === "UPLOAD") {
       if (!req.files || Object.keys(req.files).length === 0) {
-        throw new Error("Please upload a logo");
+        throw new LogoRequiredException();
       }
 
       const randomString = randomstring.generate();
@@ -46,24 +47,16 @@ class ChatWidgetService {
       size: size || 50,
     });
 
-    return { msg: "Widget was added", success: true };
+    return true;
   }
   async getMyWidgets(uid) {
-    try {
-      const widgets = await chatWidgetRepository.findByUid(uid);
-      return { success: true, data: widgets };
-    } catch (error) {
-      throw new Error('Failed to fetch widgets: ' + error.message);
-    }
+      return await chatWidgetRepository.findByUid(uid);
+    
   }
 
   async deleteWidget(id) {
-    try {
-      await chatWidgetRepository.delete(id);
-      return { success: true, msg: 'Widget deleted successfully' };
-    } catch (error) {
-      throw new Error('Failed to delete widget: ' + error.message);
-    }
+      return chatWidgetRepository.delete(id);
+
   }
 }
 

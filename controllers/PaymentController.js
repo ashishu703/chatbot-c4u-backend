@@ -7,7 +7,7 @@ class PaymentController {
   paymentService;
   constructor(){
     this.paymentRepository = new PaymentRepository();
-    this.paymentService =new PaymentService();
+    this.paymentService =new PaymentService(); 
   }
    async getPaymentGateway(req, res, next) {
     try {
@@ -62,8 +62,8 @@ class PaymentController {
   async payWithRazorpay(req, res, next) {
     try {
       const { rz_payment_id, plan, amount } = req.body;
-      const result = await this.paymentService.payWithRazorpay(req.decode.uid, { rz_payment_id, plan, amount });
-      return formSuccess(result);
+     await this.paymentService.payWithRazorpay(req.decode.uid, { rz_payment_id, plan, amount });
+      return formSuccess({msg:__t("payment_thank_you")});
     } catch (err) {
       next(err);
     }
@@ -72,8 +72,8 @@ class PaymentController {
   async payWithPaypal(req, res, next) {
     try {
       const { orderID, plan } = req.body;
-      const result = await this.paymentService.payWithPaypal(req.decode.uid, { orderID, plan });
-      return formSuccess(result);
+    await this.paymentService.payWithPaypal(req.decode.uid, { orderID, plan });
+      return formSuccess({msg:__t("payment_thank_you")});
     } catch (err) {
       next(err);
     }
@@ -92,8 +92,8 @@ class PaymentController {
   async startFreeTrial(req, res, next) {
     try {
       const { planId } = req.body;
-      const result = await this.paymentService.startFreeTrial(req.decode.uid, planId);
-      return formSuccess(result);
+     await this.paymentService.startFreeTrial(req.decode.uid, planId);
+      return formSuccess({msg:__t("trial_plan_activated")});
     } catch (err) {
       next(err);
     }

@@ -1,4 +1,4 @@
-const AuthService = require("../services/authService");
+const AuthService = require("../services/AuthService");
 const AdminRepository = require("../repositories/AdminRepository");
 const PasswordNotProvidedException = require("../exceptions/CustomExceptions/PasswordNotProvidedException");
 const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException");

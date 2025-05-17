@@ -1,4 +1,4 @@
-const AuthService = require('../services/authService');
+const AuthService = require('../services/AuthService');
 const HttpException = require('../middlewares/HttpException');
 const TokenMissingOrInvalidExecption = require('../exceptions/CustomExceptions/TokenMissingOrInvalidExecption');
 const TokenMalformedExecption = require('../exceptions/CustomExceptions/TokenMalformedExecption');
@@ -33,8 +33,8 @@ class AuthController {
   async loginWithFacebook(req, res, next) {
     try {
       const { token, userId, email, name } = req.body;
-      const result = await this.authService.loginWithFacebook({ token, userId, email, name });
-      return formSuccess(result);
+      const loginToken = await this.authService.loginWithFacebook({ token, userId, email, name });
+      return formSuccess({token: loginToken});
     } catch (err) {
       next(err);
     }
@@ -42,8 +42,8 @@ class AuthController {
 
   async loginWithGoogle(req, res, next) {
     try {
-      const response = await this.authService.loginWithGoogle(req.body.token);
-      return formSuccess(response);
+      const loginToken = await this.authService.loginWithGoogle(req.body.token);
+      return formSuccess({token:loginToken});
     } catch (err) {
      next(err);
     }
@@ -53,8 +53,8 @@ class AuthController {
   async signup(req, res, next) {
     try {
       const { email, name, password, mobile_with_country_code, acceptPolicy } = req.body;
-      const result = await this.authService.signup({ email, name, password, mobile_with_country_code, acceptPolicy });
-      return formSuccess(result);
+      await this.authService.signup({ email, name, password, mobile_with_country_code, acceptPolicy });
+      return formSuccess({msg: __t("signup_success") });
     } catch (err) {
       next(err);
     }
@@ -83,8 +83,8 @@ class AuthController {
   async sendRecovery(req, res, next) {
     try {
       const { email } = req.body;
-      const result = await this.authService.sendRecovery(email);
-      return formSuccess(result);
+      await this.authService.sendRecovery(email);
+      return formSuccess({ msg:__t("password_recovery_link_sent") });
     } catch (err) {
       next(err);
     }
@@ -93,8 +93,8 @@ class AuthController {
   async modifyPassword(req, res, next) {
     try {
       const { pass } = req.query;
-      const result = await this.authService.modifyPassword(req.decode, pass);
-      return formSuccess(result);
+      await this.authService.modifyPassword(req.decode, pass);
+      return formSuccess({ msg:__t("password_changed_success")});
     } catch (err) {
       next(err);
     }
@@ -102,8 +102,8 @@ class AuthController {
 
   async generateApiKeys(req, res, next) {
     try {
-      const result = await this.authService.generateApiKeys(req.decode.uid);
-      return formSuccess(result);
+      await this.authService.generateApiKeys(req.decode.uid);
+      return formSuccess({msg:__t("new_keys_generated")});
     } catch (err) {
       next(err);
     }

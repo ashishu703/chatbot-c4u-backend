@@ -3,7 +3,10 @@ const randomstring = require("randomstring");
 const { sign } = require("jsonwebtoken");
 const AgentRepository = require("../repositories/agentRepository");
 const AgentTaskRepository = require("../repositories/AgentTaskRepository");
-
+const { __t } = require("../utils/locale.utils");
+const EmailAlreadyInUseException = require ("../exceptions/CustomExceptions/EmailAlreadyInUseException")
+const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException")
+const AgentNotFoundException =require ("../exceptions/CustomExceptions/AgentNotFoundException")
 class AgentService {
   constructor() {
     this.agentRepository = new AgentRepository();
@@ -13,9 +16,7 @@ class AgentService {
   async addAgent({ owner_uid, name, password, email, mobile, comments }) {
     const existingAgent = await this.agentRepository.findByEmail(email);
     if (existingAgent) {
-      throw new Error(
-        "This email is already used by you or someone else on the platform, Please choose another email"
-      );
+      throw new EmailAlreadyInUseException();
     }
     const hashPass = await bcrypt.hash(password, 10);
     const uid = randomstring.generate();
@@ -27,7 +28,7 @@ class AgentService {
       name,
       mobile,
       comments,
-      is_active: 1, // Set as integer to match model
+      is_active: 1,
     });
   }
 
@@ -36,7 +37,7 @@ class AgentService {
   }
 
   async changeAgentActiveness(agentUid, activeness) {
-    await this.agentRepository.updateActiveness(agentUid, activeness ? 1 : 0); // Convert boolean to integer
+    await this.agentRepository.updateActiveness(agentUid, activeness ? 1 : 0);
   }
 
   async deleteAgent(uid, owner_uid) {
@@ -46,11 +47,11 @@ class AgentService {
   async login(email, password) {
     const agent = await this.agentRepository.findByEmail(email);
     if (!agent) {
-      throw new Error("Invalid credentials");
+      throw new InvalidCredentialsException();
     }
     const compare = await bcrypt.compare(password, agent.password);
     if (!compare) {
-      throw new Error("Invalid credentials");
+      throw new InvalidCredentialsException();
     }
     return sign(
       {
@@ -59,14 +60,14 @@ class AgentService {
         email: agent.email,
       },
       process.env.JWTKEY,
-      { expiresIn: "7d" } // Token expires in 7 days
+      { expiresIn: "7d" } 
     );
   }
 
   async getAgentById(uid) {
     const agent = await this.agentRepository.findById(uid);
     if (!agent) {
-      throw new Error("Agent not found");
+      throw new AgentNotFoundException();
     }
     return agent;
   }

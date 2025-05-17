@@ -1,7 +1,7 @@
 const path = require("path");
 const FlowRepository = require("../repositories/chatFlowRepository");
 const { writeJsonToFile, readJsonFromFile, deleteFileIfExists } = require("../functions/function");
-
+const FlowNotfoundException = require("../exceptions/customExceptions/FlowNotfoundException");
 class FlowService {
 
   constructor() {
@@ -22,7 +22,7 @@ class FlowService {
       await this.flowRepository.create({ uid: user.uid, flow_id: flowId, title });
     }
 
-    return { success: true, msg: "Flow was saved" };
+    return true;
   }
   async getFlows(uid) {
     return await this.flowRepository.findByUid(uid);
@@ -38,7 +38,7 @@ class FlowService {
     deleteFileIfExists(nodePath);
     deleteFileIfExists(edgePath);
 
-    return { success: true, msg: "Flow was deleted" };
+    return true;
   }
 
    async getFlowById(flowId, uid) {
@@ -49,12 +49,12 @@ const basePath = path.join(__dirname, "../flow-json");
     const nodes = await readJsonFromFile(nodePath);
     const edges = await readJsonFromFile(edgePath);
 
-    return { nodes, edges, success: true };
+    return { nodes, edges };
   }
 
    async getActivity(flowId, uid) {
     const flow = await this.flowRepository.findByFlowIdAndUid(flowId, uid);
-    if (!flow) throw new Error("Flow not found");
+    if (!flow) throw new FlowNotfoundException();
 
     const prevent = flow.prevent_list || [];
     const ai = flow.ai_list || [];
@@ -62,12 +62,12 @@ const basePath = path.join(__dirname, "../flow-json");
     const preventWithIds = prevent.map((item, index) => ({ ...item, id: `prevent-${index}` }));
     const aiWithIds = ai.map((item, index) => ({ ...item, id: `ai-${index}` }));
 
-    return { success: true, prevent: preventWithIds, ai: aiWithIds };
+    return {prevent: preventWithIds, ai: aiWithIds };
   }
 
    async removeNumberFromActivity(type, number, flowId, uid) {
     const flow = await this.flowRepository.findByFlowId(flowId);
-    if (!flow) throw new Error("Flow not found");
+    if (!flow) throw new FlowNotfoundException();
 
     if (type === "AI") {
       const aiArr = flow.ai_list || [];
@@ -79,7 +79,7 @@ const basePath = path.join(__dirname, "../flow-json");
       await this.flowRepository.updatePreventList(flowId, updatedArr);
     }
 
-    return { success: true, msg: "Number was removed" };
+    return true;
   }
 }
 

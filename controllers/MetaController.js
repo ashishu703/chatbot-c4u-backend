@@ -1,4 +1,4 @@
-const MetaService = require('../services/metaService');
+const MetaService = require('../services/MetaService');
 const { formSuccess } = require('../utils/response.utils');
 
 class MetaController {
@@ -8,8 +8,8 @@ class MetaController {
   }
   async updateMetaApi(req, res, next) {
     try {
-      const result = await this.metaService.updateMetaApi(req.decode.uid, req.body);
-      return formSuccess(result);
+     await this.metaService.updateMetaApi(req.decode.uid, req.body);
+      return formSuccess({msg : __t("meta_settings_updated")});
     } catch (err) {
       next(err);
     }
@@ -26,8 +26,8 @@ class MetaController {
 
   async addMetaTemplet(req, res, next) {
     try {
-      const result = await this.metaService.addMetaTemplet(req.decode.uid, req.body);
-      return formSuccess(result);
+      await this.metaService.addMetaTemplet(req.decode.uid, req.body);
+      return formSuccess({msg : __t("template_pending_review")});
     } catch (err) {
       next(err);
     }
@@ -45,8 +45,8 @@ class MetaController {
   async deleteMetaTemplet(req, res, next) {
     try {
       const { name } = req.body;
-      const result = await this.metaService.deleteMetaTemplet(req.decode.uid, name);
-      return formSuccess(result);
+      await this.metaService.deleteMetaTemplet(req.decode.uid, name);
+      return formSuccess({msg : __t("template_deleted")});
     } catch (err) {
       next(err);
     }

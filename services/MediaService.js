@@ -1,6 +1,6 @@
 const randomstring = require("randomstring");
 const path = require("path");
-
+const NoFilesWereUploadedException = require("../exceptions/CustomExceptions/NoFilesWereUploadedException");
 function getFileExtension(filename) {
   return filename.split(".").pop();
 }
@@ -8,7 +8,7 @@ function getFileExtension(filename) {
 class MediaService {
   async handleMediaUpload(files) {
     if (!files || Object.keys(files).length === 0) {
-      return { success: false, msg: "No files were uploaded" };
+     throw new NoFilesWereUploadedException();
     }
 
     const randomString = randomstring.generate();

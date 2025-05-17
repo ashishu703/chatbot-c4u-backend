@@ -1,8 +1,10 @@
-const InboxService = require("../services/inboxService");
+const InboxService = require("../services/InboxService");
 const InvalidRequestException = require("../exceptions/CustomExceptions/InvalidRequestException");
 const NotEnoughInputProvidedException = require("../exceptions/CustomExceptions/NotEnoughInputProvidedException");
 const ProvideTemplateException = require("../exceptions/CustomExceptions/ProvideTemplateException");
 const {formSuccess} = require("../utils/response.utils");
+const {formRawResponse} = require("../utils/response.utils");
+const { __t } = require("../utils/locale.utils");
 
 class InboxController {
   inboxService;
@@ -45,9 +47,9 @@ class InboxController {
     try {
       const { uid } = req.params;
       const { "hub.mode": mode, "hub.verify_token": token, "hub.challenge": challenge } = req.query;
-      const result = await this.inboxService.verifyWebhook(uid, mode, token, challenge);
-      if (result.challenge) {
-        res.status(200).send(result.challenge);
+      const varifiedChallenge = await this.inboxService.verifyWebhook(uid, mode, token, challenge);
+      if (varifiedChallenge) {
+        return formRawResponse(varifiedChallenge);
       } else {
         res.sendStatus(403);
       }
@@ -59,8 +61,8 @@ class InboxController {
    async testSocket(req, res, next) {
     try {
       const { msg } = req.query;
-      const result = await this.inboxService.testSocket();
-      return formSuccess(result);
+     await this.inboxService.testSocket();
+      return formSuccess({msg:__t("socket_event_emitted")});
     } catch (err) {
       next(err);
     }
@@ -197,14 +199,14 @@ class InboxController {
       if (!template) {
         throw new ProvideTemplateException();
       }
-      const result = await this.inboxService.sendMetaTemplate(user.uid, {
+      await this.inboxService.sendMetaTemplate(user.uid, {
         template,
         toNumber,
         toName,
         chatId,
         example,
       });
-      return formSuccess(result);
+      return formSuccess({msg:__t(template_message_sent)});
     } catch (err) {
       next(err);
     }
@@ -214,8 +216,8 @@ class InboxController {
     try {
       const { chatId } = req.body;
       const user = req.decode;
-      const result = await this.inboxService.deleteChat(user.uid, chatId);
-      return formSuccess(result);
+       await this.inboxService.deleteChat(user.uid, chatId);
+      return formSuccess({msg:__t("conversation_deleted")});
     } catch (err) {
       next(err);
     }

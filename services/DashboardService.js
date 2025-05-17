@@ -2,6 +2,7 @@ const UserRepository = require("../repositories/UserRepository");
 const OrderRepository = require("../repositories/orderRepository");
 const ContactRepository = require("../repositories/ContactRepository");
 const { getUserSignupsByMonth, getUserOrderssByMonth } = require("../functions/function");
+const UserIdRequiredException = require("../exceptions/CustomExceptions/UserIdRequiredException");
 
 class DashboardService {
   serRepository;
@@ -13,9 +14,9 @@ class DashboardService {
   }
 
    async getDashboardData(userId, role) {
-    try {
+
       if (!userId) {
-        throw new Error("User ID is required");
+        throw new UserIdRequiredException();
       }
 
       let dashboardData;
@@ -28,12 +29,8 @@ class DashboardService {
       }
       
       return dashboardData;
-    } catch (error) {
-      throw new Error(error.message);
-    }
   }
    async getUserDashboardData(userId) {
-    try {
       const users = await this.userRepository.getUsers();
       const { paidSignupsByMonth, unpaidSignupsByMonth } = getUserSignupsByMonth(users);
 
@@ -53,13 +50,9 @@ class DashboardService {
           contactLength: contactForms.length,
         }
       };
-    } catch (error) {
-      throw new Error(error.message);
-    }
   }
 
    async getAdminDashboardData() {
-    try {
       const users = await this.userRepository.getUsers();
       const { paidSignupsByMonth, unpaidSignupsByMonth } = getUserSignupsByMonth(users);
 
@@ -79,9 +72,6 @@ class DashboardService {
           totalContacts: contactForms.length,
         }
       };
-    } catch (error) {
-      throw new Error(error.message);
-    }
   }
 
 }

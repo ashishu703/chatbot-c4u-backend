@@ -1,6 +1,7 @@
 const { sendEmail } = require("../functions/function");
 const SmtpRepository = require("../repositories/smtpRepository");
-
+const SmtpConnectionNotFoundException = require("../exceptions/CustomExceptions/SmtpConnectionNotFoundException");
+const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 class EmailService {
   smtpRepository;
   constructor(){
@@ -9,7 +10,7 @@ class EmailService {
    async sendRecoveryEmail(html, appName, to) {
     const smtp = await this.smtpRepository.getSmtp();
     if (!smtp?.email || !smtp?.host || !smtp?.port || !smtp?.password) {
-      throw new Error("SMTP connections not found! Unable to send recovery link");
+      throw new SmtpConnectionNotFoundException();
     }
     await sendEmail(
       smtp.host,
@@ -25,7 +26,7 @@ class EmailService {
 
    async sendTestEmail({ email, port, password, host, to }) {
     if (!email || !port || !password || !host) {
-      throw new Error("Please fill all the fields");
+      throw new FillAllFieldsException();
     }
     return await sendEmail(
       host,

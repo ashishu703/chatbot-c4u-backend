@@ -1,6 +1,7 @@
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FIllAllFieldsException");
 const UrlAndTypeRequiredException = require("../exceptions/CustomExceptions/UrlAndTypeRequiredException");
-const ChatbotService = require("../services/chatbotService");
+const ChatbotService = require("../services/ChatbotService");
+const { __t } = require("../utils/locale.utils");
 const {formSuccess} = require("../utils/response.utils");
 class ChatbotController {
   chatbotService;
@@ -16,14 +17,14 @@ class ChatbotController {
         throw new FillAllFieldsException();
       }
 
-      const result = await this.chatbotService.addChatbot({
+      await this.chatbotService.addChatbot({
         title,
         chats,
         flow,
         for_all,
         user,
       });
-     return formSuccess(result);
+     return formSuccess( {msg: __t("chatbot_added")});
     } catch (err) {
      next(err);
     }
@@ -38,7 +39,7 @@ class ChatbotController {
         throw new FillAllFieldsException();
       }
 
-      const result = await this.chatbotService.updateChatbot({
+     await this.chatbotService.updateChatbot({
         id,
         title,
         chats,
@@ -46,7 +47,7 @@ class ChatbotController {
         for_all,
         user,
       });
-     return formSuccess(result);
+     return formSuccess({msg: __t("Chatbot was updated") });
     } catch (err) {
       next(err);
     }
@@ -67,8 +68,8 @@ class ChatbotController {
       const { id, status } = req.body;
       const user = req.decode;
 
-      const result = await this.chatbotService.changeBotStatus(id, status, user);
-     return formSuccess(result);
+     await this.chatbotService.changeBotStatus(id, status, user);
+      return formSuccess({msg: __t("Chatbot was updated") });
     } catch (err) {
       next(err);
     }
@@ -79,8 +80,8 @@ class ChatbotController {
       const { id } = req.body;
       const user = req.decode;
 
-      const result = await this.chatbotService.deleteChatbot(id, user.uid);
-     return formSuccess(result);
+    await this.chatbotService.deleteChatbot(id, user.uid);
+     return formSuccess({msg: __t("chatbot_deletedd") });
     } catch (err) {
      next(err);
     }

@@ -1,4 +1,5 @@
-const ChatWidgetService = require("../services/chatWidgetService");
+const ChatWidgetService = require("../services/ChatWidgetService");
+const { __t } = require("../utils/locale.utils");
 const {formSuccess} = require("../utils/response.utils");
 class ChatWidgetController {
     chatWidgetService;
@@ -8,8 +9,8 @@ class ChatWidgetController {
 
   async addWidget(req, res, next) {
     try {
-      const result = await this.chatWidgetService.addWidget(req);
-      return formSuccess(result);
+     await this.chatWidgetService.addWidget(req);
+      return formSuccess({ msg:__t("widget_added") });
     } catch (err) {
       next(err);
     }
@@ -26,8 +27,8 @@ class ChatWidgetController {
   async deleteWidget(req, res, next) {
     try {
       const { id } = req.body;
-      const result = await this.chatWidgetService.deleteWidget(id);
-      return formSuccess(result);
+     await this.chatWidgetService.deleteWidget(id);
+      return formSuccess({msg:__t("widget_deleted_success") });
     } catch (err) {
       next(err);
     }

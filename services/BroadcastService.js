@@ -6,6 +6,11 @@ const ContactRepository = require("../repositories/contactRepository");
 const BroadcastRepository = require("../repositories/broadcastRepository");
 const BroadcastLogRepository = require("../repositories/broadcastLogRepository");
 const { getMetaNumberDetail } = require("../functions/function");
+const MetaApiKeysNotfoundException = require("../exceptions/CustomExceptions/MetaApiKeysNotfoundException");
+const AdminNotFoundException = require("../exceptions/CustomExceptions/AdminNotFoundException");
+const PhonebookNoMobileException = require("../exceptions/CustomExceptions/PhonebookNoMobileException");
+const MetaKeysOrTokenInvalid = require("../exceptions/CustomExceptions/MetaKeysOrTokenInvalid");
+
 
 class DashboardService {
   userRepository;
@@ -25,7 +30,7 @@ class DashboardService {
    async getUserDashboardData(userUid) {
     const metaApi = await this.metaApiRepository.findByUid(userUid);
     if (!metaApi) {
-      throw new Error("We could not find your Meta API keys");
+      throw new MetaApiKeysNotfoundException();
     }
     const totalBroadcasts = await this.broadcastRepository.count({ where: { uid: userUid } });
     const totalBroadcastLogs = await this.broadcastLogRepository.count({ where: { uid: userUid } });
@@ -41,7 +46,7 @@ class DashboardService {
    async getAdminDashboardData(adminUid) {
     const admin = await this.adminRepository.findById(adminUid);
     if (!admin) {
-      throw new Error("Admin not found");
+      throw new AdminNotFoundException();
     }
     const totalUsers = await this.userRepository.count();
     const totalBroadcasts = await this.broadcastRepository.count({ where: { uid: adminUid } });
@@ -82,17 +87,17 @@ class DashboardService {
    async addBroadcast({ title, templet, phonebook, scheduleTimestamp, example, user }) {
     const metaApi = await this.metaApiRepository.findByUid(user.uid);
     if (!metaApi) {
-      throw new Error("We could not find your Meta API keys");
+      throw new MetaApiKeysNotfoundException();
     }
 
     const contacts = await this.contactRepository.findByPhonebookId(phonebook.id, user.uid);
     if (!contacts.length) {
-      throw new Error("The phonebook you have selected does not have any mobile number in it");
+      throw new PhonebookNoMobileException();
     }
 
     const metaDetails = await getMetaNumberDetail("v18.0", metaApi.business_phone_number_id, metaApi.access_token);
     if (metaDetails.error) {
-      throw new Error("Either your Meta API keys are invalid or your access token has been expired");
+      throw new MetaKeysOrTokenInvalid();
     }
 
     const broadcast_id = randomstring.generate();
@@ -123,18 +128,18 @@ class DashboardService {
 
     await this.broadcastRepository.create(broadcast);
 
-    return { success: true, msg: "Your broadcast has been added" };
+    return true;
   }
 
    async changeBroadcastStatus(broadcast_id, status, uid) {
     await this.broadcastRepository.updateStatus(broadcast_id, status, uid);
-    return { success: true, msg: "Campaign status updated" };
+    return true
   }
 
    async deleteBroadcast(broadcast_id, uid) {
     await this.broadcastRepository.delete(broadcast_id, uid);
     await this.broadcastLogRepository.deleteByBroadcastId(broadcast_id, uid);
-    return { success: true, msg: "Broadcast was deleted" };
+    return true;
   }
 }
 

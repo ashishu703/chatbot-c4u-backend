@@ -9,6 +9,23 @@ const { welcomeEmail, recoverEmail } = require('../emails/returnEmails');
 const HttpException = require('../middlewares/HttpException');
 const { User,Admin } = require('../models'); 
 const WebRepository = require('../repositories/webRepository'); 
+const TokenExpiredEXception = require("../exceptions/CustomExceptions/TokenExpiredEXception");
+const TokenMissingOrInvalidExecption = require("../exceptions/CustomExceptions/TokenMissingOrInvalidExecption")
+const TokenVerificationFailedException = require ("../exceptions/CustomExceptions/TokenVerificationFailedException")
+const LoginInputMissingException = require ("../exceptions/CustomExceptions/LoginInputMissingException")
+const FacebookAppCredentialsMissingException = require ("../exceptions/CustomExceptions/FacebookAppCredentialsMissingException")
+const FacebookLoginParamMismatchException = require ("../exceptions/CustomExceptions/FacebookLoginParamMismatchException")
+const InvalidLoginTokenException = require ("../exceptions/CustomExceptions/InvalidLoginTokenException")
+const GoogleLoginFailedException = require ("../exceptions/CustomExceptions/GoogleLoginFailedException")
+const FillAllFieldsException = require ("../exceptions/CustomExceptions/FillAllFieldsException")
+const PrivacyTermsUncheckedException = require ("../exceptions/CustomExceptions/PrivacyTermsUncheckedException")
+const EmailAlreadyInUseException = require ("../exceptions/CustomExceptions/EmailAlreadyInUseException")
+const InvalidCredentialsException = require ("../exceptions/CustomExceptions/InvalidCredentialsException");
+const RecoveryUserNotFoundException = require ("../exceptions/CustomExceptions/RecoveryUserNotFoundException")
+const SmtpConnectionNotFoundException = require ("../exceptions/CustomExceptions/SmtpConnectionNotFoundException");
+const PasswordRequiredException = require ("../exceptions/CustomExceptions/PasswordRequiredException")
+
+
 
 class AuthService {
   async verifyToken(token) {
@@ -17,11 +34,11 @@ class AuthService {
         if (err) {
           console.error('JWT Verification failed:', err.message);
           if (err.name === 'TokenExpiredError') {
-            return reject(new Error('Token has expired'));
+            return reject(new TokenExpiredEXception());
           } else if (err.name === 'JsonWebTokenError') {
-            return reject(new Error('Token is invalid'));
+            return reject(new TokenMissingOrInvalidExecption());
           }
-          return reject(new Error('Token verification failed'));
+          return reject(new TokenVerificationFailedException());
         }
         resolve(decoded); 
       });
@@ -31,21 +48,21 @@ class AuthService {
 
   async loginWithFacebook({ token, userId, email, name }) {
     if (!token || !userId || !email || !name) {
-      return { success: false, msg: 'Login can not be completed, Input not provided' };
+      throw new LoginInputMissingException();
     }
     const web = await WebRepository.getWebPublic();
     const appId = web?.fb_login_app_id;
     const appSec = web?.fb_login_app_sec;
     if (!appId || !appSec) {
-      return { success: false, msg: 'Please fill the app ID and secret from the admin panel to complete facebook login' };
+      throw new FacebookAppCredentialsMissingException();
     }
     const checkToken = await validateFacebookToken(token, appId, appSec);
     if (!checkToken?.success) {
-      return { success: false, msg: 'Can not complete your facebook login some parameters could not match' };
+      throw new FacebookLoginParamMismatchException();
     }
     const resp = checkToken?.response?.data;
     if (resp?.user_id !== userId || !resp?.is_valid) {
-      return { success: false, msg: 'The login token found invalid' };
+    throw new InvalidLoginTokenException();
     }
     let user = await User.findOne({ where: { email } });
     if (!user) {
@@ -55,17 +72,17 @@ class AuthService {
       user = await User.create({ name, uid, email, password: hasPass });
     }
     const loginToken = generateToken({ uid: user.uid, role: 'user' });
-    return { success: true, token: loginToken };
+    return loginToken;
   }
 
   async loginWithGoogle(token) {
     if (!token) {
-      throw new Error("Please check your token, it's not valid");
+      throw new TokenMissingOrInvalidExecption();
     }
 
     const decoded = jwt.decode(token, { complete: true });
     if (!decoded?.payload?.email || !decoded?.payload?.email_verified) {
-      throw new Error("Could not complete Google login");
+      throw new GoogleLoginFailedException();
     }
 
     const email = decoded.payload.email;
@@ -80,7 +97,7 @@ class AuthService {
       await this.authRepository.createUser({ name, uid, email, password: hashedPassword });
 
       const loginToken = jwt.sign({ uid, role: "user", email, password: hashedPassword }, process.env.JWTKEY);
-      return { success: true, token: loginToken };
+      return loginToken;
     }
 
     const loginToken = jwt.sign(
@@ -88,23 +105,23 @@ class AuthService {
       process.env.JWTKEY
     );
 
-    return { success: true, token: loginToken };
+    return loginToken;
   }
 
 
   async signup({ email, name, password, mobile_with_country_code, acceptPolicy }) {
     if (!email || !name || !password || !mobile_with_country_code) {
-      return { success: false, msg: 'Please fill the details' };
+     throw new FillAllFieldsException();
     }
     if (!acceptPolicy) {
-      return { success: false, msg: 'You did not click on checkbox of Privacy & Terms' };
+     throw new PrivacyTermsUncheckedException();
     }
     if (!isValidEmail(email)) {
-      return { success: false, msg: 'Please enter a valid email' };
+      throw new InvalidCredentialsException();
     }
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-      return { success: false, msg: 'A user already exists with this email' };
+      throw new EmailAlreadyInUseException();
     }
     const haspass = await bcrypt.hash(password, 10);
     const uid = randomstring.generate();
@@ -116,60 +133,46 @@ class AuthService {
       const html = welcomeEmail(appName, name);
       await sendEmail(smtp.host, smtp.port, smtp.email, smtp.password, html, `${appName} - Welcome`, smtp.email, email);
     }
-    return { success: true, msg: 'Signup Success' };
+    return true;
   }
 
   async userlogin({ email, password }) {
-    try {
-      console.log("🟡 Login Attempt: ", email);
   
       if (!email || !password) {
-        throw new HttpException('Please provide email and password', 400);
+        throw new FillAllFieldsException();
       }
   
       const user = await User.findOne({ where: { email } });
       if (!user) {
-        console.log("🔴 No user found");
-        throw new HttpException('Invalid credentials', 400);
+        throw new InvalidCredentialsException();
       }
   
       const compare = await bcrypt.compare(password, user.password);
       if (!compare) {
-        console.log("🔴 Password does not match");
-        throw new HttpException('Invalid credentials', 400);
+        throw new InvalidCredentialsException();
       }
   
       const token = generateToken({ uid: user.uid, role: 'user' });
-      console.log("🟢 Token Generated:", token);
-  
       return {
         token,
         user: { id: user.uid, name: user.name, email: user.email }
       };
-    } catch (err) {
-      console.error("🔥 ERROR in login:", err);
-      throw new HttpException('Something went wrong in login', 500);
-    }
   }
 
   async adminlogin({ email, password }) {
-    try {
-      console.log("🟡 Login Attempt: ", email, password);
   
       if (!email || !password) {
-        throw new HttpException('Please provide email and password', 400);
+          throw new FillAllFieldsException();
       }
 
       const admin = await Admin.findOne({ where: { email } });
       if (!admin) {
-        console.log("🔴 No user found");
-        throw new HttpException('Invalid credentials', 400);
+       throw new InvalidCredentialsException();
       }
   
       const compare = await bcrypt.compare(password, admin.password);
       if (!compare) {
-        console.log("🔴 Password does not match");
-        throw new HttpException('Invalid credentials', 400);
+       throw new InvalidCredentialsException();
       }
   
       const token = generateToken({ uid: admin.uid, role: 'admin' });
@@ -179,18 +182,14 @@ class AuthService {
         token,
         admin: { id: admin.uid,email: admin.email }
       };
-    } catch (err) {
-      console.error("🔥 ERROR in login:", err);
-      throw new HttpException('Something went wrong in login', 500);
-    }
   }
   async sendRecovery(email) {
     if (!isValidEmail(email)) {
-      return { success: false, msg: 'Please enter a valid email' };
+      throw new InvalidCredentialsException();
     }
     const user = await User.findOne({ where: { email } });
     if (!user) {
-      return { success: true, msg: 'We have sent a recovery link if this email is associated with a user account.' };
+      throw new RecoveryUserNotFoundException();
     }
     const web = await WebRepository.getWebPublic();
     const appName = web?.app_name || 'App';
@@ -205,29 +204,31 @@ class AuthService {
     const html = recoverEmail(appName, recoveryUrl);
     const smtp = await WebRepository.getSmtp();
     if (!smtp?.email || !smtp?.host || !smtp?.port || !smtp?.password) {
-      return { success: false, msg: 'SMTP connections not found! Unable to send recovery link' };
+     throw new SmtpConnectionNotFoundException();
     }
     await sendEmail(smtp.host, smtp.port, smtp.email, smtp.password, html, `${appName} - Password Recovery`, smtp.email, email);
-    return { success: true, msg: 'We have sent you a password recovery link. Please check your email' };
+    return true;
   }
 
   async modifyPassword(decoded, pass) {
     if (!pass) {
-      return { success: false, msg: 'Please provide a password' };
+     throw new PasswordRequiredException();
     }
     if (moment(decoded.time).diff(moment(new Date()), 'hours') > 1) {
-      return { success: false, msg: 'Token expired' };
+      throw new TokenExpiredEXception();
     }
     const hashpassword = await bcrypt.hash(pass, 10);
     const result = await User.update({ password: hashpassword }, { where: { email: decoded.old_email } });
-    return { success: true, msg: 'Your password has been changed. You may login now! Redirecting...', data: result };
+    return result; 
   }
 
   async generateApiKeys(uid) {
     const token = generateToken({ uid, role: 'user' });
     await User.update({ api_key: token }, { where: { uid } });
-    return { success: true, token, msg: 'New keys have been generated' };
+    return true;
   }
+
+
 }
 
 module.exports = AuthService;

@@ -4,6 +4,7 @@ const ChatRepository = require("../repositories/chatRepository");
 const ContactRepository = require("../repositories/contactRepository");
 const AgentRepository = require("../repositories/AgentRepository");
 const { mergeArrays, readJSONFile, sendMetaMsg } = require("../functions/function");
+const ChatNotFoundException = require("../exceptions/CustomExceptions/ChatNotFoundException");
 
 class ChatService {
   constructor() {
@@ -91,7 +92,7 @@ class ChatService {
 
   async pushTag(chatId, tag) {
     const chat = await this.chatRepository.findById(chatId);
-    if (!chat) throw new Error("Chat not found");
+    if (!chat) throw new ChatNotFoundException();
 
     const tags = chat.chat_tags ? JSON.parse(chat.chat_tags) : [];
     tags.push(tag);
@@ -101,7 +102,7 @@ class ChatService {
 
   async deleteTag(chatId, tag) {
     const chat = await this.chatRepository.findById(chatId);
-    if (!chat) throw new Error("Chat not found");
+    if (!chat) throw new ChatNotFoundException();
 
     const tags = chat.chat_tags ? JSON.parse(chat.chat_tags) : [];
     const filteredTags = tags.filter((t) => t !== tag);

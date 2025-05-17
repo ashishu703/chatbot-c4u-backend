@@ -1,3 +1,4 @@
+const PlanNoChatbotPermissionException = require("../exceptions/CustomExceptions/PlanNoChatbotPermissionException");
 const ChatbotRepository = require("../repositories/chatbotRepository");
 
 class ChatbotService {
@@ -7,7 +8,7 @@ class ChatbotService {
   }
    async addChatbot({ title, chats, flow, for_all, user }) {
     if (!user.plan?.allow_chatbot) {
-      throw new Error("Your plan does not allow you to set a chatbot");
+      throw new PlanNoChatbotPermissionException();
     }
 
     const chatbot = {
@@ -21,12 +22,12 @@ class ChatbotService {
     };
 
     await this.chatbotRepository.create(chatbot);
-    return { success: true, msg: "Chatbot was added" };
+    return true;
   }
 
    async updateChatbot({ id, title, chats, flow, for_all, user }) {
     if (!user.plan?.allow_chatbot) {
-      throw new Error("Your plan does not allow you to set a chatbot");
+      throw new PlanNoChatbotPermissionException();
     }
 
     const chatbot = {
@@ -38,7 +39,7 @@ class ChatbotService {
     };
 
     await this.chatbotRepository.update(id, chatbot, user.uid);
-    return { success: true, msg: "Chatbot was updated" };
+    return true;
   }
 
    async getChatbots(uid) {
@@ -47,16 +48,16 @@ class ChatbotService {
 
    async changeBotStatus(id, status, user) {
     if (!user.plan?.allow_chatbot) {
-      throw new Error("Your plan does not allow you to set a chatbot");
+      throw new new PlanNoChatbotPermissionException();
     }
 
     await this.chatbotRepository.updateStatus(id, !!status, user.uid);
-    return { success: true, msg: "Chatbot was updated" };
+    return true;
   }
 
    async deleteChatbot(id, uid) {
     await this.chatbotRepository.delete(id, uid);
-    return { success: true, msg: "Chatbot was deleted" };
+    return true;
   }
 
    async makeRequestApi({ url, body, headers, type }) {
