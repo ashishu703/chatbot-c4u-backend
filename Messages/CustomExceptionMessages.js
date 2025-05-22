@@ -380,6 +380,14 @@ module.exports = class CustomExceptionMessages {
         message: __t("page_not_found"),
         statusCode: 400,
       },
+      CredentialsNotProvided: {
+        message: __t("credentials_not_provided"),
+        statusCode: 400,
+      },
+      UserAlreadyExistException: {
+        message: __t("user_already_exists"),
+        statusCode: 401,
+      },
     }[type];
   }
 };

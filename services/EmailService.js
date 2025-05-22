@@ -2,24 +2,39 @@ const { sendEmail } = require("../functions/function");
 const SmtpRepository = require("../repositories/smtpRepository");
 const SmtpConnectionNotFoundException = require("../exceptions/CustomExceptions/SmtpConnectionNotFoundException");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
+const { getRecoverEmailTemplate } = require("../emails/returnEmails");
+const WebPublicRepository = require("../repositories/WebPublicRepository");
 class EmailService {
-  smtpRepository;
+  smtpConfig;
+  appConfig;
   constructor() {
-    this.smtpRepository = new SmtpRepository();
+
   }
-  async sendRecoveryEmail(html, appName, to) {
-    const smtp = await this.smtpRepository.getSmtp();
-    if (!smtp?.email || !smtp?.host || !smtp?.port || !smtp?.password) {
-      throw new SmtpConnectionNotFoundException();
-    }
+  async initConfig() {
+    this.appConfig = await (new WebPublicRepository()).getWebPublic();
+    this.smtpConfig = await (new SmtpRepository()).getSmtp();
+  }
+
+  async sendRecoveryEmail(to, url) {
+    await this.initConfig();
+    const { app_name } = this.appConfig;
+    const template = getRecoverEmailTemplate(app_name, url);
+    return this.sendEmailTemplate(template, to);
+  }
+
+  async sendEmailTemplate(template, to) {
+    const {
+      email, host, port, password
+    } = this.smtpConfig;
+
     await sendEmail(
-      smtp.host,
-      smtp.port,
-      smtp.email,
-      smtp.password,
-      html,
-      `${appName} - Password Recovery`,
-      smtp.email,
+      host,
+      port,
+      email,
+      password,
+      template,
+      `${app_name} - Password Recovery`,
+      email,
       to
     );
   }

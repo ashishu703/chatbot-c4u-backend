@@ -1,4 +1,4 @@
-function recoverEmail(appName, recoveryLink) {
+function getRecoverEmailTemplate(appName, recoveryLink) {
   return `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -60,7 +60,7 @@ function recoverEmail(appName, recoveryLink) {
     </html>
     `;
 }
-function welcomeEmail(appName, username) {
+function getWelcomeEmailTemplate(appName, username) {
   return `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -126,4 +126,4 @@ function welcomeEmail(appName, username) {
     `;
 }
 
-module.exports = { recoverEmail, welcomeEmail };
+module.exports = { getRecoverEmailTemplate, getWelcomeEmailTemplate };

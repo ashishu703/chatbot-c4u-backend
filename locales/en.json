@@ -166,5 +166,7 @@
     "please_provide_app_name": "Please provide app name",
     "web_config_not_found": "Web config not found",
     "profile_not_found": "Profile not found",
-    "page_not_found": "Page not found"
+    "page_not_found": "Page not found",
+    "credentials_not_provided": "Credentials not provided",
+    "user_already_exists": "User already exists"
 }

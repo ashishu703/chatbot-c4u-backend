@@ -6,8 +6,7 @@ const { generateToken, decodeGoogleToken } = require("../utils/authUtils");
 const { validateFacebookToken } = require("../utils/metaApi");
 const randomstring = require("randomstring");
 const { welcomeEmail, recoverEmail } = require("../emails/returnEmails");
-const HttpException = require("../middlewares/HttpException");
-const { User, Admin } = require("../models");
+const { User } = require("../models");
 const WebRepository = require("../repositories/webRepository");
 const TokenExpiredEXception = require("../exceptions/CustomExceptions/TokenExpiredEXception");
 const TokenMissingOrInvalidExecption = require("../exceptions/CustomExceptions/TokenMissingOrInvalidExecption");
@@ -188,28 +187,7 @@ class AuthService {
     };
   }
 
-  async adminlogin({ email, password }) {
-    if (!email || !password) {
-      throw new FillAllFieldsException();
-    }
-
-    const admin = await Admin.findOne({ where: { email } });
-    if (!admin) {
-      throw new InvalidCredentialsException();
-    }
-
-    const compare = await bcrypt.compare(password, admin.password);
-    if (!compare) {
-      throw new InvalidCredentialsException();
-    }
-
-    const token = generateToken({ uid: admin.uid, role: "admin" });
-
-    return {
-      token,
-      admin: { id: admin.uid, email: admin.email },
-    };
-  }
+  
   async sendRecovery(email) {
     if (!isValidEmail(email)) {
       throw new InvalidCredentialsException();
