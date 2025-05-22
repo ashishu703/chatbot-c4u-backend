@@ -1,9 +1,9 @@
-const FacebookException = require("../../exceptions/FacebookException");
-const InstagramAuthService = require("../../services/_instagram/InstagramAuthService");
-const InstagramProfileService = require("../../services/_instagram/InstagramProfileService");
-const { formSuccess } = require("../../utils/response.utils");
+const FacebookException = require("../exceptions/FacebookException");
+const InstagramAuthService = require("../services/_instagram/InstagramAuthService");
+const InstagramProfileService = require("../services/_instagram/InstagramProfileService");
+const { formSuccess } = require("../utils/response.utils");
 const InstagramController = require("./InstagramController");
-const { __t } = require("../../utils/locale.utils");
+const { __t } = require("../utils/locale.utils");
 
 module.exports = class InstagramAuthController extends InstagramController {
   async initiateUserAuth(req, res, next) {

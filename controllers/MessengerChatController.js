@@ -1,7 +1,7 @@
-const ChatRepository = require("../../repositories/ChatRepository");
-const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
-const MessangerChatService = require("../../services/_messanger/MessangerChatService");
-const { formSuccess } = require("../../utils/response.utils");
+const ChatRepository = require("../repositories/ChatRepository");
+const FacebookPageRepository = require("../repositories/FacebookPageRepository");
+const MessangerChatService = require("../services/_messanger/MessangerChatService");
+const { formSuccess } = require("../utils/response.utils");
 const MessangerController = require("./MessangerController");
 
 module.exports = class MessengerChatController extends MessangerController {

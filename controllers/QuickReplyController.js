@@ -1,5 +1,5 @@
-const QuickReplyService = require("../../services/QuickReplyService");
-const { formSuccess } = require("../../utils/response.utils");
+const QuickReplyService = require("../services/QuickReplyService");
+const { formSuccess } = require("../utils/response.utils");
 
 module.exports = class QuickReplyController {
     quickReplyService;

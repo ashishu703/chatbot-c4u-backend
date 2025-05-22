@@ -1,7 +1,6 @@
-const FacebookException = require("../../exceptions/FacebookException");
-const WebPublicRepository = require("../../repositories/webPublicRepository");
-const WhatsappAuthService = require("../../services/_whatsapp/WhatsappAuthService");
-const WhatsappProfileService = require("../../services/_whatsapp/WhatsappProfileService");
+const WebPublicRepository = require("../repositories/WebPublicRepository");
+const WhatsappAuthService = require("../services/_whatsapp/WhatsappAuthService");
+const WhatsappProfileService = require("../services/_whatsapp/WhatsappProfileService");
 const WhatsappController = require("./WhatsappController");
 
 module.exports = class MessangerAuthController extends WhatsappController {

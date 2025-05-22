@@ -1,7 +1,7 @@
-const FacebookException = require("../../exceptions/FacebookException");
-const MessangerChatService = require("../../services/_messanger/MessangerChatService");
-const { verifyMetaWebhook } = require("../../utils/facebook.utils");
-const { formSuccess } = require("../../utils/response.utils");
+const FacebookException = require("../exceptions/FacebookException");
+const MessangerChatService = require("../services/_messanger/MessangerChatService");
+const { verifyMetaWebhook } = require("../utils/facebook.utils");
+const { formSuccess } = require("../utils/response.utils");
 const MessangerController = require("./MessangerController");
 
 module.exports = class InstagramWebhookController extends MessangerController {

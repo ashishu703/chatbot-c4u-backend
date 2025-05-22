@@ -1,7 +1,7 @@
-const ChatRepository = require("../../repositories/ChatRepository");
-const InstagramAccountRepository = require("../../repositories/InstagramAccountRepository");
-const InstagramChatService = require("../../services/_instagram/InstagramChatService");
-const { formSuccess } = require("../../utils/response.utils");
+const ChatRepository = require("../repositories/ChatRepository");
+const InstagramAccountRepository = require("../repositories/InstagramAccountRepository");
+const InstagramChatService = require("../services/_instagram/InstagramChatService");
+const { formSuccess } = require("../utils/response.utils");
 const InstagramController = require("./InstagramController");
 
 module.exports = class InstagramChatController extends InstagramController {

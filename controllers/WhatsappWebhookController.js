@@ -1,4 +1,4 @@
-const { verifyMetaWebhook } = require("../../utils/facebook.utils");
+const { verifyMetaWebhook } = require("../utils/facebook.utils");
 const WhatsappController = require("./WhatsappController");
 
 
