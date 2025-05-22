@@ -1,16 +1,18 @@
 const { Testimonial } = require("../models");
+const Repository = require("./Repository");
 
-class TestimonialRepository {
-  static async addTestimonial({
+class TestimonialRepository extends Repository {
+  constructor() {
+    super(Testimonial);
+  }
+
+  async addTestimonial({
     title,
     description,
     reviewer_name,
     reviewer_position,
   }) {
-    if (!title || !description || !reviewer_name || !reviewer_position) {
-      throw new Error("Please fill all fields");
-    }
-    await Testimonial.create({
+    return this.create({
       title,
       description,
       reviewer_name,
@@ -18,17 +20,12 @@ class TestimonialRepository {
     });
   }
 
-  static async getTestimonials() {
-    return await Testimonial.findAll();
+  async getTestimonials() {
+    return this.find();
   }
-  static async deleteTestimonial(id) {
-    console.log("Inside delete repository with id:", id);
-    const deleted = await Testimonial.destroy({ where: { id } });
-    console.log("Delete result:", deleted);
-    if (deleted === 0) {
-      console.warn(`Testimonial with id ${id} not found`);
-    }
-    return deleted;
+
+  async deleteTestimonial(id) {
+    return this.delete(id);
   }
 }
 

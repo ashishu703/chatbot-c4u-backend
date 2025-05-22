@@ -1,17 +1,11 @@
-const { Templets } = require("../models");
+const { Templet } = require("../models");
+const Repository = require("./Repository");
 
-class TempletRepository {
-  async create(template) {
-    return await Templets.create(template);
+class TempletRepository extends Repository {
+  constructor() {
+    super(Templet);
   }
 
-  async findByUid(uid) {
-    return await Templets.findAll({ where: { uid } });
-  }
-
-  async deleteByIds(ids) {
-    return await Templets.destroy({ where: { id: ids } });
-  }
 }
 
 module.exports = TempletRepository;

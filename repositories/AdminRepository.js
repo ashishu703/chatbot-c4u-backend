@@ -1,15 +1,14 @@
 const { Admin } = require("../models");
+const Repository = require("./Repository");
 
-class AdminRepository {
+class AdminRepository extends Repository {
+
+  constructor() {
+    super(Admin);
+  }
+
   async findByEmail(email) {
-    return await Admin.findOne({ where: { email } });
-  }
-  async findFirst() {
-    return await Admin.findOne();
-  }
-
-  async findById(uid) {
-    return await Admin.findOne({ where: { uid } });
+    return this.findFirst({ where: { email } });
   }
 
   async updateAdmin(uid, email, newpass) {
@@ -17,12 +16,14 @@ class AdminRepository {
     if (newpass) {
       updateData.password = await require("bcrypt").hash(newpass, 10);
     }
-    await Admin.update(updateData, { where: { uid } });
+    return this.update(updateData, { uid });
   }
 
   async updatePassword(email, password) {
-    await Admin.update({ password }, { where: { email } });
+    return this.update({ password }, { email });
   }
+
+
 }
 
 module.exports = AdminRepository;

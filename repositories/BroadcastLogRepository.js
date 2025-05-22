@@ -1,16 +1,17 @@
 const { BroadcastLog } = require("../models");
+const Repository = require("./Repository");
 
-class BroadcastLogRepository {
-  async bulkCreate(logs) {
-    return await BroadcastLog.bulkCreate(logs);
+class BroadcastLogRepository extends Repository {
+  constructor() {
+    super(BroadcastLog);
   }
 
   async findByBroadcastId(broadcast_id, uid) {
-    return await BroadcastLog.findAll({ where: { broadcast_id, uid } });
+    return this.find({ where: { broadcast_id, uid } });
   }
 
   async deleteByBroadcastId(broadcast_id, uid) {
-    return await BroadcastLog.destroy({ where: { broadcast_id, uid } });
+    return this.delete({ broadcast_id, uid });
   }
 }
 

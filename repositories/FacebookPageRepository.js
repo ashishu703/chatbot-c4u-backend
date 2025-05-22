@@ -1,85 +1,67 @@
-const { query } = require("../database/dbpromise");
+const { FacebookPages } = require("../models");
+const Repository = require("./Repository");
 
-module.exports = class FacebookPageRepository {
-  static async updateOrCreate(userId, accountId, pageId, name, token, status) {
-    const page = await FacebookPageRepository.findByPageId(pageId);
-    if (page) {
-      return FacebookPageRepository.update(userId, pageId, name, token, status);
-    }
-    return FacebookPageRepository.create(
-      userId,
-      accountId,
-      pageId,
-      name,
-      token,
-      status
-    );
+class FacebookPageRepository extends Repository {
+  constructor() {
+    super(FacebookPages);
   }
 
-  static async findByPageId(pageId) {
-    const pages = await query(
-      `SELECT * FROM facebook_pages WHERE page_id = $1 AND status = $2`,
-      [pageId, 1]
-    );
-    return pages.length > 0 ? pages[0] : null;
+  async updateOrCreateUsingPageId(userId, accountId, pageId, name, token, status) {
+    return this.updateOrCreate({
+      uid: userId,
+      account_id: accountId,
+      name: name,
+      token: token,
+      status: status
+    }, { page_id: pageId });
   }
 
-  static async findInactiveByPageId(pageId) {
-    const pages = await query(
-      `SELECT * FROM facebook_pages WHERE page_id = $1 AND status = $2`,
-      [pageId, 0]
-    );
-    return pages.length > 0 ? pages[0] : null;
+  async findByPageId(pageId) {
+    return this.findFirst({
+      where: {
+        page_id: pageId
+      }
+    })
   }
 
-  static async create(userId, accountId, pageId, name, token, status) {
-    return query(
-      `INSERT INTO facebook_pages (uid, page_id, name, token, status, account_id)
-             VALUES ($1, $2, $3, $4, $5, $6)`,
-      [userId, pageId, name, token, status, accountId]
-    );
+  async findInactiveByPageId(pageId) {
+    return this.findFirst({
+      where: {
+        page_id: pageId,
+        status: 0
+      }
+    })
   }
 
-  static async update(userId, pageId, name, token, status) {
-    return query(
-      `UPDATE facebook_pages
-             SET token = $1, name = $2, uid = $3, status = $4
-             WHERE page_id = $5`,
-      [token, name, userId, status, pageId]
-    );
+  async findInactiveByUserId(userId) {
+    return this.findFirst({
+      where: {
+        uid: userId,
+        status: 0
+      }
+    })
   }
 
-  static async findInactiveByUserId(userId) {
-    const pages = await query(
-      `SELECT * FROM facebook_pages WHERE uid = $1 AND status = $2`,
-      [userId, 0]
-    );
-    return pages;
+  async findActiveByUserId(userId) {
+    return this.findFirst({
+      where: {
+        uid: userId,
+        status: 1
+      }
+    })
   }
 
-  static async findActiveByUserId(userId) {
-    const pages = await query(
-      `SELECT * FROM facebook_pages WHERE uid = $1 AND status = $2`,
-      [userId, 1]
-    );
-    return pages;
+  async activatePagesByUserId(userId, pages) {
+    return this.update({ status: 1 }, { uid: userId, page_id: { $in: pages } });
   }
 
-  static async activatePagesByUserId(userId, pages) {
-    return query(
-      `UPDATE facebook_pages SET status = $1 WHERE uid = $2 AND page_id = ANY($3)`,
-      [1, userId, pages]
-    );
+  async deleteInActiveByUserId(userId) {
+    return this.delete({ uid: userId, status: 0 });
   }
 
-  static async deleteInActiveByUserId(userId) {
-    return query(`DELETE FROM facebook_pages WHERE uid = $1 AND status = $2`, [
-      userId,
-      0,
-    ]);
-  }
-
-  static async deleteByPageId(pageId) {
-    return query(`DELETE FROM facebook_pages WHERE page_id = $1`, [pageId]);
+  async deleteByPageId(pageId) {
+    await this.delete({ page_id: pageId });
   }
 };
+
+module.exports = FacebookPageRepository;

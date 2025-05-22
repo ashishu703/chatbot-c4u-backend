@@ -1,29 +1,26 @@
-const { MetaApi, MetaTempletMedia } = require("../models");
+const { MetaApi } = require("../models");
+const Repository = require("./Repository");
 
-class MetaRepository {
+class MetaRepository extends Repository {
+  constructor() {
+    super(MetaApi);
+  }
+
   async findMetaApiByUid(uid) {
-    return await MetaApi.findOne({ where: { uid } });
+    return this.findFirst({ where: { uid } });
   }
 
   async createMetaApi(metaData) {
-    return await MetaApi.create(metaData);
+    return this.create(metaData);
   }
 
   async updateMetaApi(uid, metaData) {
-    const meta = await MetaApi.findOne({ where: { uid } });
-    if (meta) {
-      return await meta.update(metaData);
-    }
-    return null;
+    return this.update(metaData, { uid });
   }
 
-  async createMetaTempletMedia(mediaData) {
-    return await MetaTempletMedia.create(mediaData);
-  }
 
-  static async getMetaByUID(uid) {
-    const result = await query(`SELECT * FROM meta_api WHERE uid = $1`, [uid]);
-    return result.rows[0] || null;
+  async getMetaByUID(uid) {
+    return this.findFirst({ where: { uid } });
   }
 }
 

@@ -1,48 +1,33 @@
-const { Contact, Phonebook } = require("../models");
+const { Contact } = require("../models");
+const Repository = require("./Repository");
 
-class ContactRepository {
-  async getPhonebooksByUid(uid) {
-    return await Phonebook.findAll({ where: { uid } });
+class ContactRepository extends Repository {
+  constructor() {
+    super(Contact);
   }
 
   async findByMobileAndUid(mobile, uid) {
-    return await Contact.findOne({ where: { mobile, uid } });
-  }
-
-  async findById(id) {
-    return await Contact.findOne({ where: { id } });
-  }
-
-  async create(contactData) {
-    return await Contact.create(contactData);
-  }
-
-  async bulkCreate(contacts) {
-    return await Contact.bulkCreate(contacts);
+    return this.findFirst({ where: { mobile, uid } });
   }
 
   async findByUid(uid) {
-    return await Contact.findAll({ where: { uid } });
+    return this.find({ where: { uid } });
   }
 
   async deleteByPhonebookId(phonebook_id, uid) {
-    return await Contact.destroy({ where: { phonebook_id, uid } });
+    return this.delete({ phonebook_id, uid });
   }
 
   async deleteByIds(ids) {
-    return await Contact.destroy({ where: { id: ids } });
+    return this.delete({ id: ids });
   }
 
   async findByPhonebookId(phonebook_id, uid) {
-    return await Contact.findAll({ where: { phonebook_id, uid } });
-  }
-
-  async delete(id) {
-    return await Contact.destroy({ where: { id } });
+    return this.find({ where: { phonebook_id, uid } });
   }
 
   async countByUid(uid) {
-    return await Contact.count({ where: { uid } });
+    return this.count({ where: { uid } });
   }
 }
 

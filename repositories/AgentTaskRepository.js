@@ -1,24 +1,26 @@
 const { AgentTask, Agents } = require("../models");
+const Repository = require("./Repository");
 
-class AgentTaskRepository {
+class AgentTaskRepository extends Repository {
+
+  constructor() {
+    super(AgentTask);
+  }
+
   async findAll(options) {
-    return await AgentTask.findAll(options);
+    return this.find(options);
   }
 
   async findByAgentId(uid) {
-    return await AgentTask.findAll({ where: { uid } });
+    return this.find({ where: { uid } });
   }
 
   async updateTask(id, status, agent_comments) {
-    await AgentTask.update({ status, agent_comments }, { where: { id } });
-  }
-
-  async create(taskData) {
-    return await AgentTask.create(taskData);
+    return this.update({ status, agent_comments }, { where: { id } });
   }
 
   async findByOwnerUid(owner_uid) {
-    return await AgentTask.findAll({
+    return this.findAll({
       where: { owner_uid },
       include: [
         {
@@ -30,26 +32,11 @@ class AgentTaskRepository {
     });
   }
 
-  async delete(id, owner_uid) {
-    return await AgentTask.destroy({ where: { id, owner_uid } });
-  }
-
-  async updateAgent(uid, updateData) {
-    const agent = await Agents.findOne({ where: { uid } });
-    if (agent) {
-      return await agent.update(updateData);
-    }
-    return null;
-  }
-
   async deleteByIdAndOwner(id, owner_uid) {
-    const result = await AgentTask.destroy({
-      where: {
+    return this.delete({
         id,
         owner_uid,
-      },
-    });
-    return result > 0;
+      });
   }
 }
 

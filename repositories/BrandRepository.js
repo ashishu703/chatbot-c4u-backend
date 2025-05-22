@@ -1,16 +1,20 @@
 const { Partner } = require("../models");
+const Repository = require("./Repository");
 
-class BrandRepository {
+class BrandRepository extends Repository {
+  constructor() {
+    super(Partner);
+  }
   async addBrand(filename) {
-    await Partner.create({ filename });
+    return this.create({ filename });
   }
 
   async getBrands() {
-    return await Partner.findAll();
+    return this.find();
   }
 
   async deleteBrand(id) {
-    await Partner.destroy({ where: { id } });
+    await this.delete({ id });
   }
 }
 

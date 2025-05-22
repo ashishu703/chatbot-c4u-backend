@@ -1,21 +1,18 @@
 const { Phonebook } = require("../models");
+const Repository = require("./Repository");
 
-class PhonebookRepository {
+class PhonebookRepository extends Repository {
+  constructor() {
+    super(Phonebook);
+  }
   async findByUidAndName(uid, name) {
-    return await Phonebook.findOne({ where: { uid, name } });
+    return this.findFirst({ where: { uid, name } });
   }
 
   async findByUid(uid) {
-    return await Phonebook.findAll({ where: { uid } });
+    return this.find({ where: { uid } });
   }
 
-  async create(phonebookData) {
-    return await Phonebook.create(phonebookData);
-  }
-
-  async delete(id) {
-    return await Phonebook.destroy({ where: { id } });
-  }
 }
 
 module.exports = PhonebookRepository;

@@ -1,12 +1,20 @@
-const { Rooms } = require("../models");
+const { Room } = require("../models");
+const Repository = require("./Repository");
 
-module.exports = class RoomRepository {
-  async findByUserId(userId) {
-    const room = await Rooms.findOne({ where: { uid: userId } });
-    return room || null;
+class RoomRepository extends Repository {
+  constructor() {
+    super(Room);
   }
+
+  async findByUserId(userId) {
+    return this.findFirst({ where: { uid: userId } });
+  }
+
 
   async findMultipleByUid(ids = []) {
-    return await Rooms.findAll({ where: { uid: ids } });
+    return this.find({ where: { uid: { $in: ids } } });
   }
 };
+
+
+module.exports = RoomRepository

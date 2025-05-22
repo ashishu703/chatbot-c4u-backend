@@ -1,8 +1,12 @@
-const { Orders, User } = require("../models");
+const { Order, User, Plan } = require("../models");
+const Repository = require("./Repository");
 
-class OrderRepository {
+class OrderRepository extends Repository {
+  constructor() {
+    super(Order);
+  }
   async getOrders() {
-    return await Orders.findAll({
+    return this.find({
       include: [
         {
           model: User,
@@ -26,36 +30,27 @@ class OrderRepository {
   }
 
   async getRawOrders() {
-    return await Orders.findAll();
+    return this.find();
   }
 
   async createOrder(orderData) {
-    return await Orders.create(orderData);
+    return this.create(orderData);
   }
 
   async updateOrder(data, updateData) {
-    const order = await Orders.findOne({ where: { data } });
-    if (order) {
-      return await order.update(updateData);
-    }
-    return null;
+    return this.update(updateData, { data });
   }
 
   async findOrderByData(data) {
-    return await Orders.findOne({ where: { data } });
-  }
-
-  async findPlanById(id) {
-    return await Plan.findByPk(id);
+    return this.findFirst({ where: { data } });
   }
 
   async findActiveOrderByUid(uid) {
-    const order = await Orders.findOne({
+    return this.findFirst({
       where: { uid },
       include: [{ model: Plan, as: "plan" }],
       order: [["createdAt", "DESC"]],
     });
-    return order;
   }
 }
 

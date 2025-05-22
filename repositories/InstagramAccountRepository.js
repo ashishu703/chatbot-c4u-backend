@@ -1,7 +1,13 @@
-const { query } = require("../database/dbpromise");
+const { InstagramAccount } = require("../models");
+const Repository = require("./Repository");
 
-module.exports = class InstagramAccountRepository {
-  static async updateOrCreate(
+class InstagramAccountRepository extends Repository {
+
+  constructor() {
+    super(InstagramAccount);
+  }
+
+  async updateOrCreateAccount(
     userId,
     instagramUserId,
     accountId,
@@ -10,94 +16,39 @@ module.exports = class InstagramAccountRepository {
     avatar,
     accessToken
   ) {
-    const page = await InstagramAccountRepository.findByAccountId(accountId);
-    if (page) {
-      return InstagramAccountRepository.update(
-        userId,
-        instagramUserId,
-        accountId,
-        name,
-        username,
-        avatar,
-        accessToken
-      );
-    }
-    return InstagramAccountRepository.create(
-      userId,
-      instagramUserId,
-      accountId,
-      name,
-      username,
-      avatar,
-      accessToken
-    );
+
+    return this.updateOrCreate({
+      uid: userId,
+      instagram_user_id: instagramUserId,
+      account_id: accountId,
+      name: name,
+      username: username,
+      avatar: avatar,
+      token: accessToken,
+    }, { account_id: accountId })
+
   }
 
-  static async findByAccountId(accountId) {
-    const pages = await query(
-      "SELECT * FROM instagram_accounts WHERE account_id = $1",
-      [accountId]
-    );
-    return pages.length > 0 ? pages[0] : null;
+  async findByAccountId(accountId) {
+    return this.findFirst({ where: { account_id: accountId } });
   }
 
-  static async create(
-    userId,
-    instagramUserId,
-    accountId,
-    name,
-    username,
-    avatar,
-    accessToken
-  ) {
-    return query(
-      "INSERT INTO instagram_accounts (uid, instagram_user_id, account_id, name, username, avatar, token) VALUES ($1, $2, $3, $4, $5, $6, $7);",
-      [userId, instagramUserId, accountId, name, username, avatar, accessToken]
-    );
+  async deleteByAccountId(accountId) {
+    return this.delete({ account_id: accountId });
   }
 
-  static async update(
-    userId,
-    instagramUserId,
-    accountId,
-    name,
-    username,
-    avatar,
-    accessToken
-  ) {
-    return query(
-      "UPDATE instagram_accounts SET avatar = $1, name = $2, username = $3, uid = $4, instagram_user_id = $5, token = $6 WHERE account_id = $7",
-      [avatar, name, username, userId, instagramUserId, accessToken, accountId]
-    );
+  async findByUserId(userId) {
+    return this.delete({ uid: userId });
   }
 
-  static async deleteByAccountId(accountId) {
-    return query("DELETE FROM instagram_accounts WHERE account_id = $1", [
-      accountId,
-    ]);
+  async findOneByUserIdAndAccountId(userId, accountId) {
+    return this.findFirst({ where: { uid: userId, account_id: accountId } });
   }
 
-  static async findManyByUserId(userId) {
-    const accounts = await query(
-      "SELECT * FROM instagram_accounts WHERE uid = $1",
-      [userId]
-    );
-    return accounts;
-  }
-
-  static async findOneByUserIdAndAccountId(userId, accountId) {
-    const account = await query(
-      "SELECT * FROM instagram_accounts WHERE uid = $1 AND account_id = $2",
-      [userId, accountId]
-    );
-    return account.length > 0 ? account[0] : null;
-  }
-
-  static async countByUserId(userId) {
-    const result = await query(
-      "SELECT COUNT(*) AS count FROM instagram_accounts WHERE uid = $1",
-      [userId]
-    );
-    return result[0].count;
+  async countByUserId(userId) {
+    return this.count({ where: { uid: userId } });
   }
 };
+
+
+module.exports = InstagramAccountRepository

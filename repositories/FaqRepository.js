@@ -1,19 +1,21 @@
 const { Faq } = require("../models");
+const Repository = require("./Repository");
 
-class FaqRepository {
+class FaqRepository extends Repository {
+  constructor() {
+    super(Faq);
+  }
+
   async addFaq(question, answer) {
-    if (!question || !answer) {
-      throw new Error("Please provide question and answer both");
-    }
-    await Faq.create({ question, answer });
+    return this.create({ question, answer });
   }
 
   async getFaqs() {
-    return await Faq.findAll();
+    return this.find();
   }
 
   async deleteFaq(id) {
-    await Faq.destroy({ where: { id } });
+    return this.delete({ id });
   }
 }
 

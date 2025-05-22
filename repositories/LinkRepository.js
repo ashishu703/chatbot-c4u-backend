@@ -1,12 +1,16 @@
 const { GenLink } = require("../models");
+const Repository = require("./Repository");
 
-class LinkRepository {
+class LinkRepository extends Repository {
+  constructor() {
+    super(GenLink);
+  }
   async getGeneratedLinks() {
-    return await GenLink.findAll();
+    return this.find();
   }
 
   async deleteGeneratedLink(id) {
-    await GenLink.destroy({ where: { id } });
+    await this.delete({ id });
   }
 }
 

@@ -1,12 +1,16 @@
 const { Plan } = require("../models");
+const Repository = require("./Repository");
 
-class PlanRepository {
-  static async addPlan(plan) {
-    await Plan.create(plan);
+class PlanRepository extends Repository {
+  constructor() {
+    super(Plan);
+  }
+  async addPlan(plan) {
+    return this.create(plan);
   }
 
-  static async getPlans() {
-    return await Plan.findAll({
+  async getPlans() {
+    return this.find({
       attributes: [
         "id",
         "title",
@@ -27,13 +31,10 @@ class PlanRepository {
     });
   }
 
-  static async deletePlan(id) {
-    await Plan.destroy({ where: { id } });
+  async deletePlan(id) {
+    return this.delete({ id });
   }
 
-  static async findById(id) {
-    return await Plan.findByPk(id);
-  }
 }
 
 module.exports = PlanRepository;

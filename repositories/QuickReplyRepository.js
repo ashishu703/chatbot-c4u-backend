@@ -1,36 +1,29 @@
-const { query } = require("../database/dbpromise");
+const { QuickReply } = require("../models");
+const Repository = require("./Repository");
 
-module.exports = class QuickReplyRepository {
+class QuickReplyRepository extends Repository {
+  constructor() {
+    super(QuickReply);
+  }
+
   async createIfNotExist({ uid, message }) {
-    const isExisting = await this.findChatByMessageAndUid(uid, message);
-    if (!isExisting) {
-      return this.createQuickReply({
-        uid,
-        message,
-      });
-    }
+    return this.updateOrCreate({ uid, message }, { message, uid });
   }
   async createQuickReply({ uid, message }) {
-    return query(
-      `INSERT INTO quick_replies (uid, message)
-        VALUES (?, ?)`,
-      [uid, message]
-    );
+    return this.create({ uid, message });
   }
 
   async findChatByMessageAndUid(uid, message) {
-    const quick_replies = await query(
-      `SELECT * FROM quick_replies WHERE message = ? AND uid = ?`,
-      [message, uid]
-    );
-    return quick_replies.length > 0 ? quick_replies[0] : null;
+    return this.findFirst({ where: { uid, message } });
   }
 
   async findUidId(uid) {
-    return query(`SELECT * FROM quick_replies WHERE uid = ?`, [uid]);
+    return this.find({ where: { uid } });
   }
 
   async removeById(id) {
-    return query(`DELETE FROM quick_replies WHERE id = ?`, [id]);
+    return this.delete({ id });
   }
 };
+
+module.exports = QuickReplyRepository

@@ -1,23 +1,16 @@
 const { Smtp } = require("../models");
+const Repository = require("./Repository");
 
-class SmtpRepository {
+class SmtpRepository extends Repository {
+  constructor() {
+    super(Smtp);
+  }
   async getSmtp() {
-    return await Smtp.findOne();
+    return this.findFirst();
   }
 
   async updateSmtp({ email, port, password, host }) {
-    if (!email || !port || !password || !host) {
-      throw new Error("Please fill all the fields");
-    }
-    const existing = await Smtp.findOne();
-    if (existing) {
-      await Smtp.update(
-        { email, host, port, password },
-        { where: { id: existing.id } }
-      );
-    } else {
-      await Smtp.create({ email, host, port, password });
-    }
+    return this.updateOrCreate({ email, port, password, host }, { id: 1 });
   }
 }
 

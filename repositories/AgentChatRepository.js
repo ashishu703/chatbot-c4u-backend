@@ -1,8 +1,15 @@
 const { AgentChat, Chat, User } = require("../models");
+const Repository = require("./Repository");
 
-class AgentChatRepository {
-  static async findChatsByAgent(owner_uid, uid) {
-    return await AgentChat.findAll({
+class AgentChatRepository extends Repository {
+
+
+  constructor() {
+    super(AgentChat);
+  }
+
+  async findChatsByAgent(owner_uid, uid) {
+    return this.find({
       where: { owner_uid, uid },
       include: [
         {
@@ -14,24 +21,20 @@ class AgentChatRepository {
     });
   }
 
-  static async findByChatId(owner_uid, chat_id) {
-    return await AgentChat.findOne({ where: { owner_uid, chat_id } });
+  async findByChatId(owner_uid, chat_id) {
+    return this.findFirst({ where: { owner_uid, chat_id } });
   }
 
-  static async create(agentChat) {
-    await AgentChat.create(agentChat);
+  async deleteByChatId(owner_uid, chat_id) {
+    return this.delete({ owner_uid, chat_id });
   }
 
-  static async deleteByChatId(owner_uid, chat_id) {
-    await AgentChat.destroy({ where: { owner_uid, chat_id } });
+  async deleteByOwner(owner_uid, uid, chat_id) {
+    return this.delete({ owner_uid, uid, chat_id });
   }
 
-  static async delete(owner_uid, uid, chat_id) {
-    await AgentChat.destroy({ where: { owner_uid, uid, chat_id } });
-  }
-
-  static async findByAgentId(uid) {
-    return await AgentChat.findAll({ where: { uid } });
+  async findByAgentId(uid) {
+    return this.find({ where: { uid } });
   }
 }
 

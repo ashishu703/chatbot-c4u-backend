@@ -1,29 +1,25 @@
-const { Agents } = require("../models");
+const { Agent } = require("../models");
+const Repository = require("./Repository");
 
-class AgentRepository {
-  async findByEmail(email) {
-    return await Agents.findOne({ where: { email } });
+class AgentRepository extends Repository {
+
+  constructor() {
+    super(Agent);
   }
 
-  async findById(uid) {
-    return await Agents.findByPk(uid);
+  async findByEmail(email) {
+    return this.findFirst({ where: { email } });
   }
 
   async findByOwner(owner_uid) {
-    return await Agents.findAll({ where: { owner_uid } });
+    return this.find({ where: { owner_uid } });
   }
 
-  async create(agent) {
-    await Agents.create(agent);
-  }
 
   async updateActiveness(uid, is_active) {
-    await Agents.update({ is_active }, { where: { uid } });
+    return this.update({ is_active }, { uid });
   }
 
-  async delete(uid, owner_uid) {
-    await Agents.destroy({ where: { uid, owner_uid } });
-  }
 }
 
 module.exports = AgentRepository;
