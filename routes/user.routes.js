@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const validateUser = require("../middlewares/user");
-const { checkPlan, checkNote, checkTags } = require("../middlewares/plan");
-const adminValidator = require("../middlewares/admin");
+const validateUser = require("../middlewares/user.middleware");
+const { checkPlan, checkNote, checkTags } = require("../middlewares/plan.middleware");
+const adminValidator = require("../middlewares/admin.middleware");
 const AdminController = require("../controllers/adminController");
 const PlanController = require("../controllers/planController");
 const UserController = require("../controllers/userController");
