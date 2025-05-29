@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { User } = require("../models");
-const HttpException = require("../utils/HttpException");
+const HttpException = require("../utils/Http-exception.utils");
 
 const validateUser = async (req, res, next) => {
   try {
