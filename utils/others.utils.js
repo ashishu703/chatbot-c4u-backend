@@ -8,4 +8,14 @@ const generateRandomNumber = (length) => {
   return result;
 };
 
-module.exports = { generateRandomNumber };
+
+const mergeArrays = (arrA, arrB) => {
+  return arrB.map((objB) => {
+    const matchingObject = arrA.find(
+      (objA) => objA.mobile === objB.sender_mobile
+    );
+    return matchingObject ? { ...objB, contact: matchingObject } : objB;
+  });
+}
+
+module.exports = { generateRandomNumber, mergeArrays };

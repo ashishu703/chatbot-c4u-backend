@@ -1,9 +1,19 @@
+const { Op } = require("sequelize");
 const { Chat } = require("../models");
 const Repository = require("./Repository");
 
 class ChatRepository extends Repository {
   constructor() {
     super(Chat);
+  }
+
+  async findChatsByAgent(uid, owner_uid) {
+    return this.find({
+      where: {
+        owner_uid,
+        uid,
+      },
+    });
   }
 
 
@@ -24,7 +34,14 @@ class ChatRepository extends Repository {
     return this.count({ where: { uid } });
   }
 
-
+  async findByOwnerAndIds(owner_id, ids) {
+    return this.find(
+      Op.and(
+        { owner_id },
+        { id: { [Op.in]: ids } }
+      )
+    );
+  }
 }
 
 module.exports = ChatRepository;
