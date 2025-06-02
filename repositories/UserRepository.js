@@ -1,5 +1,5 @@
 const { User } = require("../models");
-const { addDaysToCurrentTimestamp } = require("../utils/dateUtils");
+const { addDaysToCurrentTimestamp } = require("../utils/date.utils");
 const Repository = require("./Repository");
 class UserRepository extends Repository {
   constructor() {

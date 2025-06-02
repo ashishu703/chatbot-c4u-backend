@@ -1,5 +1,5 @@
 const PlanService = require("../services/planService");
-const { addDaysToCurrentTimestamp } = require("../utils/dateUtils");
+const { addDaysToCurrentTimestamp } = require("../utils/date.utils");
 const { User } = require("../models");
 const UidandPlanRequiredException = require("../exceptions/CustomExceptions/UidandPlanRequiredException");
 const { formSuccess } = require("../utils/response.utils");

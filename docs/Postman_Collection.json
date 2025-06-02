@@ -1,0 +1,3344 @@
+{
+	"info": {
+		"_postman_id": "a3f7e78a-b4cc-4401-9ee9-7ae520de66f3",
+		"name": "omni-chat",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38668725"
+	},
+	"item": [
+		{
+			"name": "Admin Routes",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"admin@admin.com\",\r\n    \"password\":\"admin42044$\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/login",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send Recovery Email",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"admin@admin.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/send_resovery",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"send_resovery"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Web Public",
+					"item": [
+						{
+							"name": "Get Web Public",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/get_web_public",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"get_web_public"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Admin",
+					"item": [
+						{
+							"name": "Get Admin",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/get_admin",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"get_admin"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Dashboard",
+					"item": [
+						{
+							"name": "Get Dashboard",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/get_dashboard_for_user",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"get_dashboard_for_user"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Plan",
+					"item": [
+						{
+							"name": "Add Plan",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\":\"123\",\r\n    \"short_description\":\"456\",\r\n    \"allow_tag\":\"1\",\r\n    \"allow_note\":\"1\",\r\n    \"allow_chatbot\":\"1\",\r\n    \"contact_limit\":\"10000\",\r\n    \"allow_api\":\"1\",\r\n    \"is_trial\":0,\r\n    \"price\":\"10000\",\r\n    \"price_strike\":\"1000\",\r\n    \"plan_duration_in_days\":\"10000\"\r\n\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/add_plan",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"add_plan"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Plans",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/get_plans",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"get_plans"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Plan",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\":\"36\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/del_plan",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"del_plan"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Users",
+					"item": [
+						{
+							"name": "Get All Users",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/get_users",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"get_users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"newPassword\":\"user123\",\r\n    \"name\":\"user\",\r\n    \"email\":\"user@user.com\",\r\n    \"mobile_with_country_code\":\"+923081490227\",\r\n    \"uid\":\"lWvj6K0xI0FlSKJoyV7ak9DN0mzvKJK8\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/update_user",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"update_user"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Auto Login",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"uid\":\"B7lkeaMQ0JtHea7ofwUv7Ud7IMISxcvh\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/auto_login",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"auto_login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete User",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"id\":\"14\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/del_user",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"del_user"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update User Plan",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"plan\":{  \"id\": 37,\r\n            \"title\": \"abc\",\r\n            \"short_description\": \"456\",\r\n            \"allow_tag\": 1,\r\n            \"allow_note\": 1,\r\n            \"allow_chatbot\": 1,\r\n            \"contact_limit\": \"10000\",\r\n            \"allow_api\": 1,\r\n            \"is_trial\": 0,\r\n            \"price\": 10000,\r\n            \"price_strike\": \"1000\",\r\n            \"plan_duration_in_days\": \"10000\"},\r\n    \"uid\":\"KUlGPO5xEum89QZ6kwEleHbIoq3x98Bc\"\r\n\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/update_plan",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"update_plan"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Payment Gateway",
+					"item": [
+						{
+							"name": "Get Payment Gateway",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/get_payment_gateway_admin",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"get_payment_gateway_admin"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Payment Gateway",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"pay_offline_id\": \"Suscipit \",\r\n        \"pay_offline_key\": \"Consequat\",\r\n        \"offline_active\": 1,\r\n        \"pay_stripe_id\": \"pk_test_51RBt8Y2cj1rG0o7qU7p8pdE1da07IQ57Qou03m3YDvgR8Vo85WyhNKhKqPua2sEG00SBl2QlCMNTCy0oJFL0PnHX00YwjhXRhV\",\r\n        \"pay_stripe_key\": \"sk_test_51RBt8Y2cj1rG0o7qJDC7iv4QOw4ifYQMwnAWMLIcOZrvg4KKvDyY5M62yYnc85RSMLuBW4Pp1fIlEvIAmzVzHxD100fnnvYjE9\",\r\n        \"stripe_active\": 1,\r\n        \"createdAt\": \"2024-02-26T17:06:06.000Z\",\r\n        \"pay_paypal_id\": \"Tempora ut debitis n\",\r\n        \"pay_paypal_key\": \"Cupidatat saepe comm\",\r\n        \"paypal_active\": \"1\",\r\n        \"rz_id\": \"Sint aut dignissimos\",\r\n        \"rz_key\": \"Pariatur Iusto quos\",\r\n        \"rz_active\": \"1\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/update_pay_gateway",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"update_pay_gateway"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Page",
+					"item": [
+						{
+							"name": "Add Page",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "slug",
+											"value": "unlocking-growth-potential-1",
+											"type": "text"
+										},
+										{
+											"key": "title",
+											"value": "Unlocking Growth Potential 1",
+											"type": "text"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"src": "/C:/Users/khayy/Downloads/Screenshot_24-5-2025_12749_localhost.jpeg"
+										},
+										{
+											"key": "content",
+											"value": "In the fast-paced world of business, staying ahead of the competition requires innovative strategies that prioritize customer engagement and satisfaction. Cloud-Based WhatsApp CRM emerges as a game-changer, offering businesses a powerful platform to connect with customers, streamline operations, and drive growth. Let's delve into how Cloud-Based WhatsApp CRM solutions can unlock the full potential of your business and propel it towards success.</p><p><span style=\\\"color: var(--tw-prose-bold);\\\">Revolutionizing Customer Engagement with Cloud-Based WhatsApp CRM:</span></p><p><br></p><p><br></p><ol><li><span style=\\\"color: var(--tw-prose-bold);\\\">Seamless Communication:</span>&nbsp;Break down communication barriers and connect with customers in real-time through WhatsApp's intuitive messaging interface, fostering instant engagement and responsiveness.</li><li><span style=\\\"color: var(--tw-prose-bold);\\\">Automated Workflows:</span>&nbsp;Streamline routine tasks and workflows with automated features, such as chatbots and broadcast messages, allowing businesses to focus on high-value activities and strategic initiatives.</li><li><span style=\\\"color: var(--tw-prose-bold);\\\">Personalized Interactions:</span>&nbsp;Tailor messages and offers to individual customer preferences, leveraging data insights and segmentation to deliver hyper-targeted content that resonates with your audience.</li><li><span style=\\\"color: var(--tw-prose-bold);\\\">Multi-Channel Integration:</span>&nbsp;Integrate WhatsApp CRM with existing communication channels, such as email and social media, to create a unified customer experience across touchpoints and channels.</li><li><span style=\\\"color: var(--tw-prose-bold);\\\">Actionable Analytics:</span>&nbsp;Gain valuable insights into customer behavior, campaign performance, and ROI through advanced analytics and reporting, enabling data-driven decision-making and continuous improvement.</li></ol><p><span style=\\\"color: var(--tw-prose-bold);\\\">Key Benefits of Cloud-Based WhatsApp CRM for Business Success:</span></p><p><br></p><p><br></p><ul><li><span style=\\\"color: var(--tw-prose-bold);\\\">Scalability:</span>&nbsp;Scale your operations effortlessly to meet growing customer demand, with the flexibility to add new features and functionalities as your business evolves.</li><li><span style=\\\"color: var(--tw-prose-bold);\\\">Efficiency:</span>&nbsp;Streamline processes and workflows, reduce manual intervention, and increase operational efficiency, allowing your team to focus on strategic objectives and business growth.</li><li><span style=\\\"color: var(--tw-prose-bold);\\\">Customer Satisfaction:</span>&nbsp;Deliver exceptional service and support through personalized interactions, proactive communication, and timely responses, earning customer loyalty and trust.</li><li><span style=\\\"color: var(--tw-prose-bold);\\\">Competitive Advantage:</span>&nbsp;Stay ahead of the competition by leveraging innovative technology solutions that enhance customer engagement, drive innovation, and position your business as an industry leader.</li></ul><p><span style=\\\"color: var(--tw-prose-bold);\\\">Unlock Your Business Potential with Cloud-Based WhatsApp CRM:</span></p><p>Embrace the power of Cloud-Based WhatsApp CRM solutions to transform the way you engage with customers, streamline operations, and drive business growth. By harnessing the capabilities of WhatsApp CRM, businesses can unlock new opportunities, cultivate meaningful relationships with customers, and achieve sustainable success in today's dynamic marketplace. Take the next step towards business excellence and unleash your growth potential with Cloud-Based WhatsApp CRM.",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/add_page",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"add_page"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Page slug",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"slug\":\"privacy-policy\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/get_page_slug",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"get_page_slug"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Privacy Policy",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\":\"privacy-policy\",\r\n    \"content\":\"ABC\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/update_privacy_policy",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"update_privacy_policy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Terms",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\":\"Terms of Service\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/update_terms",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"update_terms"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "FAQ",
+					"item": [
+						{
+							"name": "Add FAQ",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"question\":\"What is FAQ?\",\r\n    \"answer\":\"FAQ stands for Frequently Asked Questions.It’s a list of common questions and answers related to a specific topic, product, service, or website. The goal of an FAQ section is to help users quickly find answers to common concerns without needing to contact support or search extensively.\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/add_faq",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"add_faq"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete FAQ",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\":\"11\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/del_faq",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"del_faq"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All FAQ",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/get_faq",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"get_faq"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Testimonial",
+					"item": [
+						{
+							"name": "Add Testimonial",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n   \"title\": \"ABC\",\r\n            \"description\": \"We work in the hotel business, so keeping in touch with people travelling is very easy using WhatsApp. WhatsCRm help us to have multiple people answering guests. It also allows us to automate basic replies such as the address\",\r\n            \"reviewer_name\": \"Eduardo\",\r\n            \"reviewer_position\": \"Menager\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/add_testimonial",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"add_testimonial"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Testimonial",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\":\"6\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/del_testi",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"del_testi"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Testimonial",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/get_testi",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"get_testi"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Leads",
+					"item": [
+						{
+							"name": "Get All Leads",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/get_contact_leads",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"get_contact_leads"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Orders",
+					"item": [
+						{
+							"name": "Get All Orders",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/get_orders",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"get_orders"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Contact Entry",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\":\"1\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/del_cotact_entry",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"del_cotact_entry"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Social Login",
+					"item": [
+						{
+							"name": "Get All Social Login",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/get_social_login",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"get_social_login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Social Login",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"google_client_id\":\"abc@abc.com\",\r\n    \"google_login_active\":1,\r\n    \"fb_login_app_id\":\"1234\",\r\n    \"fb_login_app_sec\":\"sadjasdwqeds\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/update_social_login",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"update_social_login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Web Config",
+					"item": [
+						{
+							"name": "Update Web Config",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "currency_code",
+											"value": "PKR",
+											"type": "text"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"src": "/C:/Users/khayy/Downloads/LOGO.jpg"
+										},
+										{
+											"key": "app_name",
+											"value": "Arrow Prime Financial",
+											"type": "text"
+										},
+										{
+											"key": "custom_home",
+											"value": "Debitis quae mollit ",
+											"type": "text"
+										},
+										{
+											"key": "is_custom_home",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "meta_description",
+											"value": "Ut eius nemo porro c",
+											"type": "text"
+										},
+										{
+											"key": "currency_symbol",
+											"value": "PKR",
+											"type": "text"
+										},
+										{
+											"key": "chatbot_screen_tutorial",
+											"value": "Eaque pariatur Iust",
+											"type": "text"
+										},
+										{
+											"key": "broadcast_screen_tutorial",
+											"value": "Dolore est at quidem",
+											"type": "text"
+										},
+										{
+											"key": "home_page_tutorial",
+											"value": "Adipisci harum natus",
+											"type": "text"
+										},
+										{
+											"key": "login_header_footer",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "exchange_rate",
+											"value": "280",
+											"type": "text"
+										},
+										{
+											"key": "google_client_id",
+											"value": "abc@abc.com",
+											"type": "text"
+										},
+										{
+											"key": "google_login_active",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "rtl",
+											"value": "0",
+											"type": "text"
+										},
+										{
+											"key": "fb_login_app_id",
+											"value": "abc123@abc.com",
+											"type": "text"
+										},
+										{
+											"key": "fb_login_app_sec",
+											"value": "Minim nostrum earum qui aliquam",
+											"type": "text"
+										},
+										{
+											"key": "fb_login_active",
+											"value": "0",
+											"type": "text"
+										},
+										{
+											"key": "facebook_client_id",
+											"value": "abc123@abc.com",
+											"type": "text"
+										},
+										{
+											"key": "facebook_client_secret",
+											"value": "Minim nostrum earum",
+											"type": "text"
+										},
+										{
+											"key": "facebook_graph_version",
+											"value": "v5.0",
+											"type": "text"
+										},
+										{
+											"key": "facebook_auth_scopes",
+											"value": "Molestias velit enim",
+											"type": "text"
+										},
+										{
+											"key": "meta_webhook_verifcation_key",
+											"value": "Deserunt aliquid eaq",
+											"type": "text"
+										},
+										{
+											"key": "instagram_client_id",
+											"value": "abc123@abc.com",
+											"type": "text"
+										},
+										{
+											"key": "instagram_client_secret",
+											"value": "Aspernatur rerum max",
+											"type": "text"
+										},
+										{
+											"key": "instagram_graph_version",
+											"value": "Dolore ex laboris mo",
+											"type": "text"
+										},
+										{
+											"key": "instagram_auth_scopes",
+											"value": "Ipsum modi facilis e",
+											"type": "text"
+										},
+										{
+											"key": "instagram_redirect_url",
+											"value": "https://omnichat.karobar.org/auth-code-manager",
+											"type": "text"
+										},
+										{
+											"key": "whatsapp_client_id",
+											"value": "Facere distinctio R",
+											"type": "text"
+										},
+										{
+											"key": "whatsapp_client_secret",
+											"value": "Nesciunt pariatur ",
+											"type": "text"
+										},
+										{
+											"key": "whatsapp_graph_version",
+											"value": "Nobis veniam tempor",
+											"type": "text"
+										},
+										{
+											"key": "config_id",
+											"value": "Ad quod dolores ipsu",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/web/update_web_config",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"web",
+										"update_web_config"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "SMTP",
+					"item": [
+						{
+							"name": "Update SMTP",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"info@omnichat.karobar.org\",\r\n    \"host\":\"omnichat.karobar.org\",\r\n    \"password\":\"Karobar42044$\",\r\n    \"port\":\"465\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/update_smtp",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"update_smtp"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Check Email Setting",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n \"email\":\"info@omnichat.karobar.org\",\r\n    \"host\":\"omnichat.karobar.org\",\r\n    \"password\":\"Karobar42044$\",\r\n    \"port\":\"465\",\r\n    \"to\":\"abc123@abc.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/send_test_email",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"send_test_email"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get SMTP",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/admin/get_smtp",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"get_smtp"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "User Routes",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Signup",
+							"item": [
+								{
+									"name": "Signup",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\":\"user@user.com\",\r\n    \"name\":\"user\",\r\n    \"password\":\"User123$\",\r\n    \"mobile_with_country_code\":\"03300000000\",\r\n    \"acceptPolicy\":1\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/user/signup",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"user",
+												"signup"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Login",
+							"item": [
+								{
+									"name": "Login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\":\"user@user.com\",\r\n    \"password\":\"User123$\"\r\n\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/user/login",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"user",
+												"login"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Send Recovery",
+							"item": [
+								{
+									"name": "Send Recovery",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\":\"user@user.com\"\r\n\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/user/send_resovery",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"user",
+												"send_resovery"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "User Verify",
+							"item": [
+								{
+									"name": "verify",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{USER_ACCES_TOKEN}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/user/verify",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"user",
+												"verify"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Web Public",
+					"item": [
+						{
+							"name": "Get Web Public",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/web/get_web_public",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"web",
+										"get_web_public"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Dashboard",
+					"item": [
+						{
+							"name": "Get Dashboard",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/user/get_dashboard",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"get_dashboard"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Chat",
+					"item": [
+						{
+							"name": "Get Chats",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/inbox/get_chats",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"inbox",
+										"get_chats"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Phonebook",
+					"item": [
+						{
+							"name": "Get By Uid",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/phonebook/get_by_uid",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"phonebook",
+										"get_by_uid"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Uid Contacts",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/phonebook/get_uid_contacts",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"phonebook",
+										"get_uid_contacts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add Phonebook",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"abc\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/phonebook/add",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"phonebook",
+										"add"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add Single Contact",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\":\"60\",\r\n    \"mobile\":\"+923300000000\",\r\n    \"name\":\"Althea Stephenson\",\r\n    \"phonebook_name\":\"abc\",\r\n    \"var1\":\"Aspernatur maxime ut\",\r\n    \"var2\":\"Asperiores magni deb\",\r\n    \"var3\":\"Quia quos ea vero cu\",\r\n    \"var4\":\"Assumenda qui est et\",\r\n    \"var5\":\"Eum rerum fugit aut\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/phonebook/add_single_contact",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"phonebook",
+										"add_single_contact"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Contact",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"selected\":\"87\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/phonebook/del_contacts",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"phonebook",
+										"del_contacts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Phonebook",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\":\"61\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/phonebook/del_phonebook",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"phonebook",
+										"del_phonebook"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Import CSV",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "Id",
+											"value": "60",
+											"type": "text"
+										},
+										{
+											"key": "phonebook_name",
+											"value": "abc",
+											"type": "text"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"src": "/C:/Users/khayy/Downloads/sample.csv"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/phonebook/import_contacts",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"phonebook",
+										"import_contacts"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Meta Templets",
+					"item": [
+						{
+							"name": "Get Meta Templets",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/user/get_my_meta_templets",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"get_my_meta_templets"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Agents",
+					"item": [
+						{
+							"name": "Get All Agents",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/agent/get_my_agents",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"agent",
+										"get_my_agents"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add Agents",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"comments\":\"OKASKOAIE9R0JDS\",\r\n\"email\":\"user@user.com\",\r\n\"mobile\":\"03300000000\",\r\n\"name\":\"Colorado Hopkins\",\r\n\"password\":\"User123$\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/agent/add_agent",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"agent",
+										"add_agent"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Agent Auto Login",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"uid\":\"GxnoPxAyNdFPG8dbV22MxGxfQqmLmmBl\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/user/auto_agent_login",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"auto_agent_login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Agent",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"uid\":\"GxnoPxAyNdFPG8dbV22MxGxfQqmLmmBl\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/agent/del_agent",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"agent",
+										"del_agent"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Agent Tasks",
+					"item": [
+						{
+							"name": "Get All Agent Tasks",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/user/get_my_agent_tasks",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"get_my_agent_tasks"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add Task For Agent",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"agent_uid\":\"vQT3BBmoIjK0LkuLSUt27mn5nYY4SjiF\",\r\n    \"des\":\"Commodo repudiandae \",\r\n    \"title\":\"At ullam voluptatem \"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/user/add_task_for_agent",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"add_task_for_agent"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Task For Agent",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"id\":\"21\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/user/del_task_for_agent",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"del_task_for_agent"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Chat Widget",
+					"item": [
+						{
+							"name": "Get All Chat Widget",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/user/get_my_widget",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"get_my_widget"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add Widget",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "logoType",
+											"value": "SELECT",
+											"type": "text"
+										},
+										{
+											"key": "place",
+											"value": "top-right",
+											"type": "text"
+										},
+										{
+											"key": "selectedIcon",
+											"type": "file",
+											"src": "/C:/Users/khayy/Downloads/LOGO.jpg"
+										},
+										{
+											"key": "size",
+											"value": "150",
+											"type": "text"
+										},
+										{
+											"key": "title",
+											"value": "Consequuntur quo eni",
+											"type": "text"
+										},
+										{
+											"key": "whatsapp_number",
+											"value": "3000000000",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/user/add_widget",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"add_widget"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Widget",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\":\"31\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/user/del_widget",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"del_widget"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Flow",
+					"item": [
+						{
+							"name": "Get All Chat Flows",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/chat_flow/get_mine",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"chat_flow",
+										"get_mine"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add New Flow",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"abc\",\r\n    \"flowId\": \"oeBc0tfamjnYJEPbfd8eaHqDD9aSoi9r\",\r\n    \"nodes\": [\r\n        {\r\n            \"id\": \"1748154589595\",\r\n            \"type\": \"TEXT\",\r\n            \"nodeType\": \"TEXT\",\r\n            \"data\": {\r\n                \"msgContent\": {\r\n                    \"type\": \"text\",\r\n                    \"text\": {\r\n                        \"preview_url\": true,\r\n                        \"body\": \"sadsfcxzas\"\r\n                    }\r\n                },\r\n                \"keyword\": []\r\n            },\r\n            \"position\": {\r\n                \"x\": 244.66126232713916,\r\n                \"y\": 127.7866304060501\r\n            },\r\n            \"positionAbsolute\": {\r\n                \"x\": 244.66126232713916,\r\n                \"y\": 127.7866304060501\r\n            }\r\n        }\r\n    ],\r\n    \"edges\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/chat_flow/add_new",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"chat_flow",
+										"add_new"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Flow",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n      \"id\": 21,\r\n    \"flow_id\": \"oeBc0tfamjnYJEPbfd8eaHqDD9aSoi9r\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/chat_flow/del_flow",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"chat_flow",
+										"del_flow"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Return Url",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"type": "file",
+											"src": "/C:/Users/khayy/Downloads/LOGO.jpg"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/user/return_media_url",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"return_media_url"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Auto ChatBot",
+					"item": [
+						{
+							"name": "Get All Chatbot",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/chatbot/get_chatbot",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"chatbot",
+										"get_chatbot"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add Chatbot",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"chats\": [\r\n        \"abc\"\r\n    ],\r\n    \"for_all\": true,\r\n    \"flow\": {\r\n        \"id\": 22,\r\n        \"uid\": \"KUlGPO5xEum89QZ6kwEleHbIoq3x98Bc\",\r\n        \"flow_id\": \"oeBc0tfamjnYJEPbfd8eaHqDD9aSoi9r\",\r\n        \"title\": \"abc\",\r\n        \"createdAt\": \"2025-05-25T06:45:14.000Z\",\r\n        \"prevent_list\": null,\r\n        \"ai_list\": null\r\n    },\r\n    \"title\": \"Qui hic iure quam co\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/chatbot/add_chatbot",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"chatbot",
+										"add_chatbot"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Chatbot",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"chats\": [\"abc123\"],\r\n    \"for_all\": 1,\r\n    \"flow\": {\r\n        \"id\": 22,\r\n        \"uid\": \"KUlGPO5xEum89QZ6kwEleHbIoq3x98Bc\",\r\n        \"flow_id\": \"oeBc0tfamjnYJEPbfd8eaHqDD9aSoi9r\",\r\n        \"title\": \"abc123\",\r\n        \"createdAt\": \"2025-05-25T06:45:14.000Z\",\r\n        \"prevent_list\": null,\r\n        \"ai_list\": null\r\n    },\r\n    \"title\": \"Qui hic iure quam co\",\r\n    \"id\": 42\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/chatbot/update_chatbot",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"chatbot",
+										"update_chatbot"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Change Chatbot Status",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\":\"42\",\r\n    \"status\":1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/chatbot/change_bot_status",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"chatbot",
+										"change_bot_status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Chatbot",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\":\"41\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/chatbot/del_chatbot",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"chatbot",
+										"del_chatbot"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Templets",
+					"item": [
+						{
+							"name": "Get All Templets",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/templet/get_templets",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"templet",
+										"get_templets"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add Templets",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"content\": {\r\n        \"type\": \"text\",\r\n        \"text\": {\r\n            \"preview_url\": true,\r\n            \"body\": \"swerghbvcxa\"\r\n        }\r\n    },\r\n    \"title\": \"abc1234\",\r\n    \"type\": \"TEXT\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/templet/add_new",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"templet",
+										"add_new"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Templets",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"selected\": [\r\n        63, 64\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/templet/del_templets",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"templet",
+										"del_templets"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Profile",
+					"item": [
+						{
+							"name": "Get User",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/user/get_me",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"get_me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update User Profile",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{USER_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 32,\r\n    \"role\": \"user\",\r\n    \"uid\": \"KUlGPO5xEum89QZ6kwEleHbIoq3x98Bc\",\r\n    \"name\": \"user\",\r\n    \"email\": \"user@user.com\",\r\n    \"password\": \"$2b$10$saZxdXKUTwBfGBLFmSGl5O35avwZFcAn0DgeFcAY0K0dpB9Lwjl9u\",\r\n    \"mobile_with_country_code\": \"03300000000\",\r\n    \"timezone\": \"Asia/Kolkata\",\r\n    \"plan\": \"{\\\"id\\\":37,\\\"title\\\":\\\"abc\\\",\\\"short_description\\\":\\\"456\\\",\\\"allow_tag\\\":1,\\\"allow_note\\\":1,\\\"allow_chatbot\\\":1,\\\"contact_limit\\\":\\\"10000\\\",\\\"allow_api\\\":1,\\\"is_trial\\\":0,\\\"price\\\":10000,\\\"price_strike\\\":\\\"1000\\\",\\\"plan_duration_in_days\\\":\\\"10000\\\",\\\"createdAt\\\":\\\"2025-05-24T12:26:25.000Z\\\"}\",\r\n    \"plan_expire\": \"2612097040495\",\r\n    \"trial\": 0,\r\n    \"api_key\": null,\r\n    \"createdAt\": \"2025-05-24T14:05:27.000Z\",\r\n    \"contact\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/user/update_profile",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"update_profile"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Agent Routes",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Login",
+							"item": [
+								{
+									"name": "Agent Login",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\":\"user@user.com\",\r\n    \"password\":\"User123$\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASE_URL}}/api/agent/login",
+											"host": [
+												"{{BASE_URL}}"
+											],
+											"path": [
+												"api",
+												"agent",
+												"login"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Profile",
+					"item": [
+						{
+							"name": "Get Agent",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{AGENT_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/agent/get_me",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"agent",
+										"get_me"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Inbox",
+					"item": [
+						{
+							"name": "Get Chats",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{AGENT_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/agent/get_my_assigned_chats",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"agent",
+										"get_my_assigned_chats"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Tasks",
+					"item": [
+						{
+							"name": "Get All Tasks",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{AGENT_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/agent/get_my_task",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"agent",
+										"get_my_task"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Mark Task Complete",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{AGENT_ACCES_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 23,\r\n    \"comment\": \"done\",\r\n    \"down\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/api/agent/mark_task_complete",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"api",
+										"agent",
+										"mark_task_complete"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

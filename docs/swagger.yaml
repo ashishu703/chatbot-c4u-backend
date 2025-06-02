@@ -1,0 +1,2948 @@
+openapi: 3.0.3
+info:
+  title: Omni-Chat API
+  description: Comprehensive API for managing admin, user, and agent functionalities in the Omni-Chat application, including authentication, plans, chatbots, and more.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8001/api
+    description: Local development server for the Omni-Chat API
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    AdminLogin:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: admin@admin.com
+        password:
+          type: string
+          example: admin42044$
+      required:
+        - email
+        - password
+    SendRecoveryEmail:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: admin@admin.com
+      required:
+        - email
+    AddPlan:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "123"
+        short_description:
+          type: string
+          example: "456"
+        allow_tag:
+          type: string
+          example: "1"
+        allow_note:
+          type: string
+          example: "1"
+        allow_chatbot:
+          type: string
+          example: "1"
+        contact_limit:
+          type: string
+          example: "10000"
+        allow_api:
+          type: string
+          example: "1"
+        is_trial:
+          type: integer
+          example: 0
+        price:
+          type: string
+          example: "10000"
+        price_strike:
+          type: string
+          example: "1000"
+        plan_duration_in_days:
+          type: string
+          example: "10000"
+      required:
+        - title
+        - short_description
+        - allow_tag
+        - allow_note
+        - allow_chatbot
+        - contact_limit
+        - allow_api
+        - is_trial
+        - price
+        - price_strike
+        - plan_duration_in_days
+    DeletePlan:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "36"
+      required:
+        - id
+    UpdateUser:
+      type: object
+      properties:
+        newPassword:
+          type: string
+          example: user123
+        name:
+          type: string
+          example: user
+        email:
+          type: string
+          format: email
+          example: user@user.com
+        mobile_with_country_code:
+          type: string
+          example: "+923081490227"
+        uid:
+          type: string
+          example: lWvj6K0xI0FlSKJoyV7ak9DN0mzvKJK8
+      required:
+        - newPassword
+        - name
+        - email
+        - mobile_with_country_code
+        - uid
+    AutoLogin:
+      type: object
+      properties:
+        uid:
+          type: string
+          example: B7lkeaMQ0JtHea7ofwUv7Ud7IMISxcvh
+      required:
+        - uid
+    DeleteUser:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "14"
+      required:
+        - id
+    UpdateUserPlan:
+      type: object
+      properties:
+        plan:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 37
+            title:
+              type: string
+              example: abc
+            short_description:
+              type: string
+              example: "456"
+            allow_tag:
+              type: integer
+              example: 1
+            allow_note:
+              type: integer
+              example: 1
+            allow_chatbot:
+              type: integer
+              example: 1
+            contact_limit:
+              type: string
+              example: "10000"
+            allow_api:
+              type: integer
+              example: 1
+            is_trial:
+              type: integer
+              example: 0
+            price:
+              type: integer
+              example: 10000
+            price_strike:
+              type: string
+              example: "1000"
+            plan_duration_in_days:
+              type: string
+              example: "10000"
+          required:
+            - id
+            - title
+            - short_description
+            - allow_tag
+            - allow_note
+            - allow_chatbot
+            - contact_limit
+            - allow_api
+            - is_trial
+            - price
+            - price_strike
+            - plan_duration_in_days
+        uid:
+          type: string
+          example: KUlGPO5xEum89QZ6kwEleHbIoq3x98Bc
+      required:
+        - plan
+        - uid
+    UpdatePaymentGateway:
+      type: object
+      properties:
+        pay_offline_id:
+          type: string
+          example: Suscipit
+        pay_offline_key:
+          type: string
+          example: Consequat
+        offline_active:
+          type: integer
+          example: 1
+        pay_stripe_id:
+          type: string
+          example: pk_test_51RBt8Y2cj1rG0o7qU7p8pdE1da07IQ57Qou03m3YDvgR8Vo85WyhNKhKqPua2sEG00SBl2QlCMNTCy0oJFL0PnHX00YwjhXRhV
+        pay_stripe_key:
+          type: string
+          example: sk_test_51RBt8Y2cj1rG0o7qJDC7iv4QOw4ifYQMwnAWMLIcOZrvg4KKvDyY5M62yYnc85RSMLuBW4Pp1fIlEvIAmzVzHxD100fnnvYjE9
+        stripe_active:
+          type: integer
+          example: 1
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-02-26T17:06:06.000Z"
+        pay_paypal_id:
+          type: string
+          example: Tempora ut debitis n
+        pay_paypal_key:
+          type: string
+          example: Cupidatat saepe comm
+        paypal_active:
+          type: string
+          example: "1"
+        rz_id:
+          type: string
+          example: Sint aut dignissimos
+        rz_key:
+          type: string
+          example: Pariatur Iusto quos
+        rz_active:
+          type: string
+          example: "1"
+      required:
+        - pay_offline_id
+        - pay_offline_key
+        - offline_active
+        - pay_stripe_id
+        - pay_stripe_key
+        - stripe_active
+        - pay_paypal_id
+        - pay_paypal_key
+        - paypal_active
+        - rz_id
+        - rz_key
+        - rz_active
+    AddPage:
+      type: object
+      properties:
+        slug:
+          type: string
+          example: unlocking-growth-potential-1
+        title:
+          type: string
+          example: Unlocking Growth Potential 1
+        file:
+          type: string
+          format: binary
+          description: Optional file upload for the page
+        content:
+          type: string
+          example: In the fast-paced world of business...
+      required:
+        - slug
+        - title
+        - content
+    GetPageSlug:
+      type: object
+      properties:
+        slug:
+          type: string
+          example: privacy-policy
+      required:
+        - slug
+    UpdatePrivacyPolicy:
+      type: object
+      properties:
+        title:
+          type: string
+          example: privacy-policy
+        content:
+          type: string
+          example: ABC
+      required:
+        - title
+        - content
+    UpdateTerms:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Terms of Service
+      required:
+        - title
+    AddFAQ:
+      type: object
+      properties:
+        question:
+          type: string
+          example: What is FAQ?
+        answer:
+          type: string
+          example: FAQ stands for Frequently Asked Questions...
+      required:
+        - question
+        - answer
+    DeleteFAQ:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "11"
+      required:
+        - id
+    AddTestimonial:
+      type: object
+      properties:
+        title:
+          type: string
+          example: ABC
+        description:
+          type: string
+          example: We work in the hotel business...
+        reviewer_name:
+          type: string
+          example: Eduardo
+        reviewer_position:
+          type: string
+          example: Menager
+      required:
+        - title
+        - description
+        - reviewer_name
+        - reviewer_position
+    DeleteTestimonial:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "6"
+      required:
+        - id
+    DeleteContactEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1"
+      required:
+        - id
+    UpdateSocialLogin:
+      type: object
+      properties:
+        google_client_id:
+          type: string
+          example: abc@abc.com
+        google_login_active:
+          type: integer
+          example: 1
+        fb_login_app_id:
+          type: string
+          example: "1234"
+        fb_login_app_sec:
+          type: string
+          example: sadjasdwqeds
+      required:
+        - google_client_id
+        - google_login_active
+        - fb_login_app_id
+        - fb_login_app_sec
+    UpdateWebConfig:
+      type: object
+      properties:
+        currency_code:
+          type: string
+          example: PKR
+        file:
+          type: string
+          format: binary
+          description: Optional file upload for web configuration
+        app_name:
+          type: string
+          example: Arrow Prime Financial
+        custom_home:
+          type: string
+          example: Debitis quae mollit
+        is_custom_home:
+          type: string
+          example: "1"
+        meta_description:
+          type: string
+          example: Ut eius nemo porro c
+        currency_symbol:
+          type: string
+          example: PKR
+        chatbot_screen_tutorial:
+          type: string
+          example: Eaque pariatur Iust
+        broadcast_screen_tutorial:
+          type: string
+          example: Dolore est at quidem
+        home_page_tutorial:
+          type: string
+          example: Adipisci harum natus
+        login_header_footer:
+          type: string
+          example: "1"
+        exchange_rate:
+          type: string
+          example: "280"
+        google_client_id:
+          type: string
+          example: abc@abc.com
+        google_login_active:
+          type: string
+          example: "1"
+        rtl:
+          type: string
+          example: "0"
+        fb_login_app_id:
+          type: string
+          example: abc123@abc.com
+        fb_login_app_sec:
+          type: string
+          example: Minim nostrum earum qui aliquam
+        fb_login_active:
+          type: string
+          example: "0"
+        facebook_client_id:
+          type: string
+          example: abc123@abc.com
+        facebook_client_secret:
+          type: string
+          example: Minim nostrum earum
+        facebook_graph_version:
+          type: string
+          example: v5.0
+        facebook_auth_scopes:
+          type: string
+          example: Molestias velit enim
+        meta_webhook_verifcation_key:
+          type: string
+          example: Deserunt aliquid eaq
+        instagram_client_id:
+          type: string
+          example: abc123@abc.com
+        instagram_client_secret:
+          type: string
+          example: Aspernatur rerum max
+        instagram_graph_version:
+          type: string
+          example: Dolore ex laboris mo
+        instagram_auth_scopes:
+          type: string
+          example: Ipsum modi facilis e
+        instagram_redirect_url:
+          type: string
+          example: https://omnichat.karobar.org/auth-code-manager
+        whatsapp_client_id:
+          type: string
+          example: Facere distinctio R
+        whatsapp_client_secret:
+          type: string
+          example: Nesciunt pariatur
+        whatsapp_graph_version:
+          type: string
+          example: Nobis veniam tempor
+        config_id:
+          type: string
+          example: Ad quod dolores ipsu
+      required:
+        - currency_code
+        - app_name
+        - custom_home
+        - is_custom_home
+        - meta_description
+        - currency_symbol
+        - chatbot_screen_tutorial
+        - broadcast_screen_tutorial
+        - home_page_tutorial
+        - login_header_footer
+        - exchange_rate
+        - google_client_id
+        - google_login_active
+        - rtl
+        - fb_login_app_id
+        - fb_login_app_sec
+        - fb_login_active
+        - facebook_client_id
+        - facebook_client_secret
+        - facebook_graph_version
+        - facebook_auth_scopes
+        - meta_webhook_verifcation_key
+        - instagram_client_id
+        - instagram_client_secret
+        - instagram_graph_version
+        - instagram_auth_scopes
+        - instagram_redirect_url
+        - whatsapp_client_id
+        - whatsapp_client_secret
+        - whatsapp_graph_version
+        - config_id
+    UpdateSMTP:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: info@omnichat.karobar.org
+        host:
+          type: string
+          example: omnichat.karobar.org
+        password:
+          type: string
+          example: Karobar42044$
+        port:
+          type: string
+          example: "465"
+      required:
+        - email
+        - host
+        - password
+        - port
+    CheckEmailSetting:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: info@omnichat.karobar.org
+        host:
+          type: string
+          example: omnichat.karobar.org
+        password:
+          type: string
+          example: Karobar42044$
+        port:
+          type: string
+          example: "465"
+        to:
+          type: string
+          format: email
+          example: abc123@abc.com
+      required:
+        - email
+        - host
+        - password
+        - port
+        - to
+    UserSignup:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@user.com
+        name:
+          type: string
+          example: user
+        password:
+          type: string
+          example: User123$
+        mobile_with_country_code:
+          type: string
+          example: "03300000000"
+        acceptPolicy:
+          type: integer
+          example: 1
+      required:
+        - email
+        - name
+        - password
+        - mobile_with_country_code
+        - acceptPolicy
+    UserLogin:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@user.com
+        password:
+          type: string
+          example: User123$
+      required:
+        - email
+        - password
+    UserSendRecovery:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@user.com
+      required:
+        - email
+    AddPhonebook:
+      type: object
+      properties:
+        name:
+          type: string
+          example: abc
+      required:
+        - name
+    AddSingleContact:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "60"
+        mobile:
+          type: string
+          example: "+923300000000"
+        name:
+          type: string
+          example: Althea Stephenson
+        phonebook_name:
+          type: string
+          example: abc
+        var1:
+          type: string
+          example: Aspernatur maxime ut
+        var2:
+          type: string
+          example: Asperiores magni deb
+        var3:
+          type: string
+          example: Quia quos ea vero cu
+        var4:
+          type: string
+          example: Assumenda qui est et
+        var5:
+          type: string
+          example: Eum rerum fugit aut
+      required:
+        - id
+        - mobile
+        - name
+        - phonebook_name
+    DeleteContact:
+      type: object
+      properties:
+        selected:
+          type: string
+          example: "87"
+      required:
+        - selected
+    DeletePhonebook:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "61"
+      required:
+        - id
+    ImportCSV:
+      type: object
+      properties:
+        Id:
+          type: string
+          example: "60"
+        phonebook_name:
+          type: string
+          example: abc
+        file:
+          type: string
+          format: binary
+          description: CSV file containing contact data
+      required:
+        - Id
+        - phonebook_name
+        - file
+    AddAgent:
+      type: object
+      properties:
+        comments:
+          type: string
+          example: OKASKOAIE9R0JDS
+        email:
+          type: string
+          format: email
+          example: user@user.com
+        mobile:
+          type: string
+          example: "03300000000"
+        name:
+          type: string
+          example: Colorado Hopkins
+        password:
+          type: string
+          example: User123$
+      required:
+        - comments
+        - email
+        - mobile
+        - name
+        - password
+    AgentAutoLogin:
+      type: object
+      properties:
+        uid:
+          type: string
+          example: GxnoPxAyNdFPG8dbV22MxGxfQqmLmmBl
+      required:
+        - uid
+    DeleteAgent:
+      type: object
+      properties:
+        uid:
+          type: string
+          example: GxnoPxAyNdFPG8dbV22MxGxfQqmLmmBl
+      required:
+        - uid
+    AddTaskForAgent:
+      type: object
+      properties:
+        agent_uid:
+          type: string
+          example: vQT3BBmoIjK0LkuLSUt27mn5nYY4SjiF
+        des:
+          type: string
+          example: Commodo repudiandae
+        title:
+          type: string
+          example: At ullam voluptatem
+      required:
+        - agent_uid
+        - des
+        - title
+    DeleteTaskForAgent:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "21"
+      required:
+        - id
+    AddWidget:
+      type: object
+      properties:
+        logoType:
+          type: string
+          example: SELECT
+        place:
+          type: string
+          example: top-right
+        selectedIcon:
+          type: string
+          format: binary
+          description: Icon file for the widget
+        size:
+          type: string
+          example: "150"
+        title:
+          type: string
+          example: Consequuntur quo eni
+        whatsapp_number:
+          type: string
+          example: "3000000000"
+      required:
+        - logoType
+        - place
+        - size
+        - title
+        - whatsapp_number
+    DeleteWidget:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "31"
+      required:
+        - id
+    AddNewFlow:
+      type: object
+      properties:
+        title:
+          type: string
+          example: abc
+        flowId:
+          type: string
+          example: oeBc0tfamjnYJEPbfd8eaHqDD9aSoi9r
+        nodes:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                example: "1748154589595"
+              type:
+                type: string
+                example: TEXT
+              nodeType:
+                type: string
+                example: TEXT
+              data:
+                type: object
+                properties:
+                  msgContent:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: text
+                      text:
+                        type: object
+                        properties:
+                          preview_url:
+                            type: boolean
+                            example: true
+                          body:
+                            type: string
+                            example: sadsfcxzas
+                  keyword:
+                    type: array
+                    items:
+                      type: string
+              position:
+                type: object
+                properties:
+                  x:
+                    type: number
+                    example: 244.66126232713916
+                  y:
+                    type: number
+                    example: 127.7866304060501
+              positionAbsolute:
+                type: object
+                properties:
+                  x:
+                    type: number
+                    example: 244.66126232713916
+                  y:
+                    type: number
+                    example: 127.7866304060501
+            required:
+              - id
+              - type
+              - nodeType
+              - data
+              - position
+              - positionAbsolute
+        edges:
+          type: array
+          items:
+            type: object
+      required:
+        - title
+        - flowId
+        - nodes
+        - edges
+    DeleteFlow:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 21
+        flow_id:
+          type: string
+          example: oeBc0tfamjnYJEPbfd8eaHqDD9aSoi9r
+      required:
+        - id
+        - flow_id
+    ReturnMediaUrl:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+          description: File to upload for generating a media URL
+      required:
+        - file
+    AddChatbot:
+      type: object
+      properties:
+        chats:
+          type: array
+          items:
+            type: string
+            example: abc
+        for_all:
+          type: boolean
+          example: true
+        flow:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 22
+            uid:
+              type: string
+              example: KUlGPO5xEum89QZ6kwEleHbIoq3x98Bc
+            flow_id:
+              type: string
+              example: oeBc0tfamjnYJEPbfd8eaHqDD9aSoi9r
+            title:
+              type: string
+              example: abc
+            createdAt:
+              type: string
+              format: date-time
+              example: "2025-05-25T06:45:14.000Z"
+            prevent_list:
+              type: string
+              nullable: true
+            ai_list:
+              type: string
+              nullable: true
+          required:
+            - id
+            - uid
+            - flow_id
+            - title
+            - createdAt
+        title:
+          type: string
+          example: Qui hic iure quam co
+      required:
+        - chats
+        - for_all
+        - flow
+        - title
+    UpdateChatbot:
+      type: object
+      properties:
+        chats:
+          type: array
+          items:
+            type: string
+            example: abc123
+        for_all:
+          type: integer
+          example: 1
+        flow:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 22
+            uid:
+              type: string
+              example: KUlGPO5xEum89QZ6kwEleHbIoq3x98Bc
+            flow_id:
+              type: string
+              example: oeBc0tfamjnYJEPbfd8eaHqDD9aSoi9r
+            title:
+              type: string
+              example: abc123
+            createdAt:
+              type: string
+              format: date-time
+              example: "2025-05-25T06:45:14.000Z"
+            prevent_list:
+              type: string
+              nullable: true
+            ai_list:
+              type: string
+              nullable: true
+          required:
+            - id
+            - uid
+            - flow_id
+            - title
+            - createdAt
+        title:
+          type: string
+          example: Qui hic iure quam co
+        id:
+          type: integer
+          example: 42
+      required:
+        - chats
+        - for_all
+        - flow
+        - title
+        - id
+    ChangeChatbotStatus:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "42"
+        status:
+          type: integer
+          example: 1
+      required:
+        - id
+        - status
+    DeleteChatbot:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "41"
+      required:
+        - id
+    AddTemplet:
+      type: object
+      properties:
+        content:
+          type: object
+          properties:
+            type:
+              type: string
+              example: text
+            text:
+              type: object
+              properties:
+                preview_url:
+                  type: boolean
+                  example: true
+                body:
+                  type: string
+                  example: swerghbvcxa
+              required:
+                - preview_url
+                - body
+          required:
+            - type
+            - text
+        title:
+          type: string
+          example: abc1234
+        type:
+          type: string
+          example: TEXT
+      required:
+        - content
+        - title
+        - type
+    DeleteTemplets:
+      type: object
+      properties:
+        selected:
+          type: array
+          items:
+            type: integer
+            example: 63
+      required:
+        - selected
+    UpdateUserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 32
+        role:
+          type: string
+          example: user
+        uid:
+          type: string
+          example: KUlGPO5xEum89QZ6kwEleHbIoq3x98Bc
+        name:
+          type: string
+          example: user
+        email:
+          type: string
+          format: email
+          example: user@user.com
+        password:
+          type: string
+          example: $2b$10$saZxdXKUTwBfGBLFmSGl5O35avwZFcAn0DgeFcAY0K0dpB9Lwjl9u
+        mobile_with_country_code:
+          type: string
+          example: "03300000000"
+        timezone:
+          type: string
+          example: Asia/Kolkata
+        plan:
+          type: string
+          example: "{\"id\":37,\"title\":\"abc\",\"short_description\":\"456\",\"allow_tag\":1,\"allow_note\":1,\"allow_chatbot\":1,\"contact_limit\":\"10000\",\"allow_api\":1,\"is_trial\":0,\"price\":10000,\"price_strike\":\"1000\",\"plan_duration_in_days\":\"10000\",\"createdAt\":\"2025-05-24T12:26:25.000Z\"}"
+        plan_expire:
+          type: string
+          example: "2612097040495"
+        trial:
+          type: integer
+          example: 0
+        api_key:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-05-24T14:05:27.000Z"
+        contact:
+          type: integer
+          example: 1
+      required:
+        - id
+        - role
+        - uid
+        - name
+        - email
+        - password
+        - mobile_with_country_code
+        - timezone
+        - plan
+        - plan_expire
+        - trial
+        - contact
+    AgentLogin:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@user.com
+        password:
+          type: string
+          example: User123$
+      required:
+        - email
+        - password
+    MarkTaskComplete:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 23
+        comment:
+          type: string
+          example: done
+        down:
+          type: boolean
+          example: true
+      required:
+        - id
+        - comment
+        - down
+paths:
+  /admin/login:
+    post:
+      summary: Admin login
+      description: Authenticates an admin user and returns a JWT token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminLogin'
+      responses:
+        '200':
+          description: Successful login, returns JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '401':
+          description: Invalid credentials
+  /admin/send_resovery:
+    post:
+      summary: Send recovery email
+      description: Sends a password recovery email to the admin.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendRecoveryEmail'
+      responses:
+        '200':
+          description: Recovery email sent successfully
+        '400':
+          description: Invalid email
+  /admin/get_web_public:
+    get:
+      summary: Get web public data
+      description: Retrieves public web configuration data for admin.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Web public data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  config:
+                    type: object
+                    example: { "app_name": "Omni-Chat", "currency_code": "PKR" }
+        '401':
+          description: Unauthorized
+  /admin/get_admin:
+    get:
+      summary: Get admin details
+      description: Retrieves details of the authenticated admin.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Admin details retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  email:
+                    type: string
+                    example: admin@admin.com
+                  name:
+                    type: string
+                    example: Admin User
+        '401':
+          description: Unauthorized
+  /admin/get_dashboard_for_user:
+    get:
+      summary: Get dashboard for user
+      description: Retrieves dashboard data for the admin, including user statistics.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Dashboard data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: integer
+                    example: 100
+                  active_plans:
+                    type: integer
+                    example: 50
+        '401':
+          description: Unauthorized
+  /admin/add_plan:
+    post:
+      summary: Add a new plan
+      description: Creates a new subscription plan for users.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddPlan'
+      responses:
+        '200':
+          description: Plan added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 37
+                  title:
+                    type: string
+                    example: "123"
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid plan data
+  /admin/get_plans:
+    get:
+      summary: Get all plans
+      description: Retrieves a list of all subscription plans.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of plans retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 37
+                    title:
+                      type: string
+                      example: abc
+                    price:
+                      type: integer
+                      example: 10000
+        '401':
+          description: Unauthorized
+  /admin/del_plan:
+    post:
+      summary: Delete a plan
+      description: Deletes a subscription plan by ID.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeletePlan'
+      responses:
+        '200':
+          description: Plan deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Plan not found
+  /admin/get_users:
+    get:
+      summary: Get all users
+      description: Retrieves a list of all registered users.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 14
+                    email:
+                      type: string
+                      example: user@user.com
+                    name:
+                      type: string
+                      example: user
+        '401':
+          description: Unauthorized
+  /admin/update_user:
+    post:
+      summary: Update user details
+      description: Updates user information by UID.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUser'
+      responses:
+        '200':
+          description: User updated successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+  /admin/auto_login:
+    post:
+      summary: Auto login for user
+      description: Performs auto login for a user by UID, returning a JWT token.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AutoLogin'
+      responses:
+        '200':
+          description: Auto login successful, returns JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+  /admin/del_user:
+    post:
+      summary: Delete a user
+      description: Deletes a user by ID.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteUser'
+      responses:
+        '200':
+          description: User deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+  /admin/update_plan:
+    post:
+      summary: Update user plan
+      description: Updates the subscription plan for a user by UID.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserPlan'
+      responses:
+        '200':
+          description: User plan updated successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: User or plan not found
+  /admin/get_payment_gateway_admin:
+    get:
+      summary: Get payment gateway settings
+      description: Retrieves payment gateway settings for admin.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Payment gateway settings retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  stripe_active:
+                    type: integer
+                    example: 1
+                  paypal_active:
+                    type: string
+                    example: "1"
+        '401':
+          description: Unauthorized
+  /admin/update_pay_gateway:
+    post:
+      summary: Update payment gateway settings
+      description: Updates payment gateway configuration.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePaymentGateway'
+      responses:
+        '200':
+          description: Payment gateway updated successfully
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid payment gateway data
+  /admin/add_page:
+    post:
+      summary: Add a new page
+      description: Creates a new page with content and optional file upload.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddPage'
+      responses:
+        '200':
+          description: Page added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  slug:
+                    type: string
+                    example: unlocking-growth-potential-1
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid page data
+  /admin/get_page_slug:
+    post:
+      summary: Get page by slug
+      description: Retrieves a page by its slug.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetPageSlug'
+      responses:
+        '200':
+          description: Page retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  slug:
+                    type: string
+                    example: privacy-policy
+                  content:
+                    type: string
+                    example: ABC
+        '401':
+          description: Unauthorized
+        '404':
+          description: Page not found
+  /admin/update_privacy_policy:
+    post:
+      summary: Update privacy policy
+      description: Updates the privacy policy content.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePrivacyPolicy'
+      responses:
+        '200':
+          description: Privacy policy updated successfully
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid data
+  /admin/update_terms:
+    post:
+      summary: Update terms of service
+      description: Updates the terms of service content.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTerms'
+      responses:
+        '200':
+          description: Terms updated successfully
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid data
+  /admin/add_faq:
+    post:
+      summary: Add a new FAQ
+      description: Creates a new FAQ entry.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddFAQ'
+      responses:
+        '200':
+          description: FAQ added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 11
+                  question:
+                    type: string
+                    example: What is FAQ?
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid FAQ data
+  /admin/del_faq:
+    post:
+      summary: Delete an FAQ
+      description: Deletes an FAQ by ID.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteFAQ'
+      responses:
+        '200':
+          description: FAQ deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: FAQ not found
+  /admin/get_faq:
+    get:
+      summary: Get all FAQs
+      description: Retrieves a list of all FAQs.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of FAQs retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 11
+                    question:
+                      type: string
+                      example: What is FAQ?
+                    answer:
+                      type: string
+                      example: FAQ stands for Frequently Asked Questions...
+        '401':
+          description: Unauthorized
+  /admin/add_testimonial:
+    post:
+      summary: Add a new testimonial
+      description: Creates a new testimonial entry.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddTestimonial'
+      responses:
+        '200':
+          description: Testimonial added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 6
+                  title:
+                    type: string
+                    example: ABC
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid testimonial data
+  /admin/del_testi:
+    post:
+      summary: Delete a testimonial
+      description: Deletes a testimonial by ID.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteTestimonial'
+      responses:
+        '200':
+          description: Testimonial deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Testimonial not found
+  /admin/get_testi:
+    get:
+      summary: Get all testimonials
+      description: Retrieves a list of all testimonials.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of testimonials retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 6
+                    title:
+                      type: string
+                      example: ABC
+                    reviewer_name:
+                      type: string
+                      example: Eduardo
+        '401':
+          description: Unauthorized
+  /admin/get_contact_leads:
+    get:
+      summary: Get all leads
+      description: Retrieves a list of all contact leads.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of leads retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: John Doe
+                    email:
+                      type: string
+                      example: john@doe.com
+        '401':
+          description: Unauthorized
+  /admin/get_orders:
+    get:
+      summary: Get all orders
+      description: Retrieves a list of all orders.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    user_id:
+                      type: integer
+                      example: 14
+                    amount:
+                      type: integer
+                      example: 10000
+        '401':
+          description: Unauthorized
+  /admin/del_cotact_entry:
+    post:
+      summary: Delete contact entry
+      description: Deletes a contact entry by ID.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteContactEntry'
+      responses:
+        '200':
+          description: Contact entry deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Contact entry not found
+  /admin/get_social_login:
+    get:
+      summary: Get social login settings
+      description: Retrieves social login configuration.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Social login settings retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  google_client_id:
+                    type: string
+                    example: abc@abc.com
+                  google_login_active:
+                    type: integer
+                    example: 1
+        '401':
+          description: Unauthorized
+  /admin/update_social_login:
+    post:
+      summary: Update social login settings
+      description: Updates social login configuration.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSocialLogin'
+      responses:
+        '200':
+          description: Social login settings updated successfully
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid social login data
+  /web/update_web_config:
+    post:
+      summary: Update web configuration
+      description: Updates the web configuration settings, including optional file upload.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateWebConfig'
+      responses:
+        '200':
+          description: Web configuration updated successfully
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid configuration data
+  /admin/update_smtp:
+    post:
+      summary: Update SMTP settings
+      description: Updates SMTP configuration for email services.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSMTP'
+      responses:
+        '200':
+          description: SMTP settings updated successfully
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid SMTP data
+  /admin/send_test_email:
+    post:
+      summary: Send test email
+      description: Sends a test email to verify SMTP settings.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckEmailSetting'
+      responses:
+        '200':
+          description: Test email sent successfully
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid email settings
+  /admin/get_smtp:
+    get:
+      summary: Get SMTP settings
+      description: Retrieves SMTP configuration.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: SMTP settings retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    example: info@omnichat.karobar.org
+                  host:
+                    type: string
+                    example: omnichat.karobar.org
+                  port:
+                    type: string
+                    example: "465"
+        '401':
+          description: Unauthorized
+  /user/signup:
+    post:
+      summary: User signup
+      description: Registers a new user in the system.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSignup'
+      responses:
+        '200':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 14
+                  email:
+                    type: string
+                    example: user@user.com
+        '400':
+          description: Invalid signup data
+  /user/login:
+    post:
+      summary: User login
+      description: Authenticates a user and returns a JWT token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: User login successful, returns JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '401':
+          description: Invalid credentials
+  /user/send_resovery:
+    post:
+      summary: Send user recovery email
+      description: Sends a password recovery email to the user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSendRecovery'
+      responses:
+        '200':
+          description: Recovery email sent successfully
+        '400':
+          description: Invalid email
+  /user/verify:
+    get:
+      summary: Verify user
+      description: Verifies the authenticated user.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User verified successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 14
+                  email:
+                    type: string
+                    example: user@user.com
+        '401':
+          description: Unauthorized
+  /web/get_web_public:
+    get:
+      summary: Get web public data
+      description: Retrieves public web configuration data for users.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Web public data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  app_name:
+                    type: string
+                    example: Omni-Chat
+                  currency_code:
+                    type: string
+                    example: PKR
+        '401':
+          description: Unauthorized
+  /user/get_dashboard:
+    get:
+      summary: Get user dashboard
+      description: Retrieves dashboard data for the authenticated user.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Dashboard data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  chats:
+                    type: integer
+                    example: 50
+                  contacts:
+                    type: integer
+                    example: 100
+        '401':
+          description: Unauthorized
+  /inbox/get_chats:
+    get:
+      summary: Get user chats
+      description: Retrieves a list of chats for the authenticated user.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of chats retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    contact_name:
+                      type: string
+                      example: John Doe
+        '401':
+          description: Unauthorized
+  /phonebook/get_by_uid:
+    get:
+      summary: Get phonebook by UID
+      description: Retrieves phonebook data for the authenticated user by UID.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Phonebook data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 60
+                    name:
+                      type: string
+                      example: abc
+        '401':
+          description: Unauthorized
+  /phonebook/get_uid_contacts:
+    get:
+      summary: Get contacts by UID
+      description: Retrieves contacts for the authenticated user by UID.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Contacts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 87
+                    name:
+                      type: string
+                      example: Althea Stephenson
+                    mobile:
+                      type: string
+                      example: "+923300000000"
+        '401':
+          description: Unauthorized
+  /phonebook/add:
+    post:
+      summary: Add phonebook
+      description: Creates a new phonebook for the authenticated user.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddPhonebook'
+      responses:
+        '200':
+          description: Phonebook added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 60
+                  name:
+                    type: string
+                    example: abc
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid phonebook data
+  /phonebook/add_single_contact:
+    post:
+      summary: Add single contact
+      description: Adds a single contact to a phonebook.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddSingleContact'
+      responses:
+        '200':
+          description: Contact added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 87
+                  name:
+                    type: string
+                    example: Althea Stephenson
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid contact data
+  /phonebook/del_contacts:
+    post:
+      summary: Delete contact
+      description: Deletes a contact by ID.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteContact'
+      responses:
+        '200':
+          description: Contact deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Contact not found
+  /phonebook/del_phonebook:
+    post:
+      summary: Delete phonebook
+      description: Deletes a phonebook by ID.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeletePhonebook'
+      responses:
+        '200':
+          description: Phonebook deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Phonebook not found
+  /phonebook/import_contacts:
+    post:
+      summary: Import contacts from CSV
+      description: Imports contacts from a CSV file into a phonebook.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ImportCSV'
+      responses:
+        '200':
+          description: Contacts imported successfully
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid CSV file or data
+  /user/get_my_meta_templets:
+    get:
+      summary: Get meta templates
+      description: Retrieves meta templates for the authenticated user.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Meta templates retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 63
+                    title:
+                      type: string
+                      example: abc1234
+        '401':
+          description: Unauthorized
+  /agent/get_my_agents:
+    get:
+      summary: Get all agents
+      description: Retrieves a list of all agents for the authenticated user.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of agents retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: Colorado Hopkins
+                    email:
+                      type: string
+                      example: user@user.com
+        '401':
+          description: Unauthorized
+  /agent/add_agent:
+    post:
+      summary: Add a new agent
+      description: Creates a new agent for the authenticated user.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddAgent'
+      responses:
+        '200':
+          description: Agent added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: Colorado Hopkins
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid agent data
+  /user/auto_agent_login:
+    post:
+      summary: Agent auto login
+      description: Performs auto login for an agent by UID, returning a JWT token.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentAutoLogin'
+      responses:
+        '200':
+          description: Agent auto login successful, returns JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '401':
+          description: Unauthorized
+        '404':
+          description: Agent not found
+  /agent/del_agent:
+    post:
+      summary: Delete an agent
+      description: Deletes an agent by UID.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteAgent'
+      responses:
+        '200':
+          description: Agent deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Agent not found
+  /user/get_my_agent_tasks:
+    get:
+      summary: Get all agent tasks
+      description: Retrieves a list of tasks for agents assigned by the authenticated user.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of agent tasks retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 21
+                    title:
+                      type: string
+                      example: At ullam voluptatem
+        '401':
+          description: Unauthorized
+  /user/add_task_for_agent:
+    post:
+      summary: Add task for agent
+      description: Creates a new task for an agent.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddTaskForAgent'
+      responses:
+        '200':
+          description: Task added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 21
+                  title:
+                    type: string
+                    example: At ullam voluptatem
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid task data
+  /user/del_task_for_agent:
+    post:
+      summary: Delete task for agent
+      description: Deletes a task for an agent by ID.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteTaskForAgent'
+      responses:
+        '200':
+          description: Task deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Task not found
+  /user/get_my_widget:
+    get:
+      summary: Get all chat widgets
+      description: Retrieves a list of chat widgets for the authenticated user.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of chat widgets retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 31
+                    title:
+                      type: string
+                      example: Consequuntur quo eni
+        '401':
+          description: Unauthorized
+  /user/add_widget:
+    post:
+      summary: Add a new widget
+      description: Creates a new chat widget with optional icon upload.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AddWidget'
+      responses:
+        '200':
+          description: Widget added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 31
+                  title:
+                    type: string
+                    example: Consequuntur quo eni
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid widget data
+  /user/del_widget:
+    post:
+      summary: Delete a widget
+      description: Deletes a chat widget by ID.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteWidget'
+      responses:
+        '200':
+          description: Widget deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Widget not found
+  /chat_flow/get_mine:
+    get:
+      summary: Get all chat flows
+      description: Retrieves a list of chat flows for the authenticated user.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of chat flows retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 21
+                    title:
+                      type: string
+                      example: abc
+                    flow_id:
+                      type: string
+                      example: oeBc0tfamjnYJEPbfd8eaHqDD9aSoi9r
+        '401':
+          description: Unauthorized
+  /chat_flow/add_new:
+    post:
+      summary: Add a new chat flow
+      description: Creates a new chat flow for the authenticated user.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddNewFlow'
+      responses:
+        '200':
+          description: Chat flow added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 21
+                  title:
+                    type: string
+                    example: abc
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid chat flow data
+  /chat_flow/del_flow:
+    post:
+      summary: Delete a chat flow
+      description: Deletes a chat flow by ID and flow_id.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteFlow'
+      responses:
+        '200':
+          description: Chat flow deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Chat flow not found
+  /user/return_media_url:
+    post:
+      summary: Return media URL
+      description: Uploads a file and returns its media URL.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReturnMediaUrl'
+      responses:
+        '200':
+          description: Media URL returned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    example: http://localhost:8001/uploads/file.jpg
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid file
+  /chatbot/get_chatbot:
+    get:
+      summary: Get all chatbots
+      description: Retrieves a list of chatbots for the authenticated user.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of chatbots retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 42
+                    title:
+                      type: string
+                      example: Qui hic iure quam co
+        '401':
+          description: Unauthorized
+  /chatbot/add_chatbot:
+    post:
+      summary: Add a new chatbot
+      description: Creates a new chatbot for the authenticated user.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddChatbot'
+      responses:
+        '200':
+          description: Chatbot added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 42
+                  title:
+                    type: string
+                    example: Qui hic iure quam co
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid chatbot data
+  /chatbot/update_chatbot:
+    post:
+      summary: Update a chatbot
+      description: Updates an existing chatbot by ID.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateChatbot'
+      responses:
+        '200':
+          description: Chatbot updated successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Chatbot not found
+  /chatbot/change_bot_status:
+    post:
+      summary: Change chatbot status
+      description: Changes the status of a chatbot by ID.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeChatbotStatus'
+      responses:
+        '200':
+          description: Chatbot status changed successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Chatbot not found
+  /chatbot/del_chatbot:
+    post:
+      summary: Delete a chatbot
+      description: Deletes a chatbot by ID.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteChatbot'
+      responses:
+        '200':
+          description: Chatbot deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Chatbot not found
+  /templet/get_templets:
+    get:
+      summary: Get all templates
+      description: Retrieves a list of templates for the authenticated user.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of templates retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 63
+                    title:
+                      type: string
+                      example: abc1234
+        '401':
+          description: Unauthorized
+  /templet/add_new:
+    post:
+      summary: Add a new template
+      description: Creates a new template for the authenticated user.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddTemplet'
+      responses:
+        '200':
+          description: Template added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 63
+                  title:
+                    type: string
+                    example: abc1234
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid template data
+  /templet/del_templets:
+    post:
+      summary: Delete templates
+      description: Deletes templates by IDs.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteTemplets'
+      responses:
+        '200':
+          description: Templates deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Templates not found
+  /user/get_me:
+    get:
+      summary: Get user profile
+      description: Retrieves the profile of the authenticated user.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUserProfile'
+        '401':
+          description: Unauthorized
+  /user/update_profile:
+    post:
+      summary: Update user profile
+      description: Updates the profile of the authenticated user.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserProfile'
+      responses:
+        '200':
+          description: User profile updated successfully
+        '401':
+          description: Unauthorized
+        '400':
+          description: Invalid profile data
+  /agent/login:
+    post:
+      summary: Agent login
+      description: Authenticates an agent and returns a JWT token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentLogin'
+      responses:
+        '200':
+          description: Agent login successful, returns JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '401':
+          description: Invalid credentials
+  /agent/get_me:
+    get:
+      summary: Get agent profile
+      description: Retrieves the profile of the authenticated agent.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Agent profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: Colorado Hopkins
+                  email:
+                    type: string
+                    example: user@user.com
+        '401':
+          description: Unauthorized
+  /agent/get_my_assigned_chats:
+    get:
+      summary: Get assigned chats
+      description: Retrieves a list of chats assigned to the authenticated agent.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of assigned chats retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    contact_name:
+                      type: string
+                      example: John Doe
+        '401':
+          description: Unauthorized
+  /agent/get_my_task:
+    get:
+      summary: Get all tasks for agent
+      description: Retrieves a list of tasks assigned to the authenticated agent.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of tasks retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 23
+                    title:
+                      type: string
+                      example: At ullam voluptatem
+        '401':
+          description: Unauthorized
+  /agent/mark_task_complete:
+    post:
+      summary: Mark task as complete
+      description: Marks a task as complete for the authenticated agent.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarkTaskComplete'
+      responses:
+        '200':
+          description: Task marked as complete
+        '401':
+          description: Unauthorized
+        '404':
+          description: Task not found
