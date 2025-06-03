@@ -1,5 +1,5 @@
 const randomstring = require("randomstring");
-const UserRepository = require("../repositories/userRepository");
+const UserRepository = require("../repositories/UserRepository");
 const AdminRepository = require("../repositories/AdminRepository");
 const MetaApiRepository = require("../repositories/metaApiRepository");
 const ContactRepository = require("../repositories/contactRepository");
@@ -10,6 +10,9 @@ const MetaApiKeysNotfoundException = require("../exceptions/CustomExceptions/Met
 const AdminNotFoundException = require("../exceptions/CustomExceptions/AdminNotFoundException");
 const PhonebookNoMobileException = require("../exceptions/CustomExceptions/PhonebookNoMobileException");
 const MetaKeysOrTokenInvalid = require("../exceptions/CustomExceptions/MetaKeysOrTokenInvalid");
+const { SENT, DELIVERED, READ, FAILED, PENDING } = require("../types/broadcast-delivery-status.types");
+const { metaApiVersion, defaultTimeZone } = require("../config/app.config");
+const { QUEUE } = require("../types/broadcast-execution-status.types");
 
 class DashboardService {
   userRepository;
@@ -74,19 +77,37 @@ class DashboardService {
         broadcast.broadcast_id,
         adminUid
       );
+
       const stats = {
         broadcast_id: broadcast.broadcast_id,
         totalLogs: logs.length,
-        getSent: logs.filter((log) => log.delivery_status === "sent").length,
-        totalDelivered: logs.filter(
-          (log) => log.delivery_status === "delivered"
-        ).length,
-        totalRead: logs.filter((log) => log.delivery_status === "read").length,
-        totalFailed: logs.filter((log) => log.delivery_status === "failed")
-          .length,
-        totalPending: logs.filter((log) => log.delivery_status === "PENDING")
-          .length,
+        getSent: 0,
+        totalDelivered: 0,
+        totalRead: 0,
+        totalFailed: 0,
+        totalPending: 0,
       };
+
+      for (const log of logs) {
+        switch (log.delivery_status) {
+          case SENT:
+            stats.getSent++;
+            break;
+          case DELIVERED:
+            stats.totalDelivered++;
+            break;
+          case READ:
+            stats.totalRead++;
+            break;
+          case FAILED:
+            stats.totalFailed++;
+            break;
+          case PENDING:
+            stats.totalPending++;
+            break;
+        }
+      }
+
 
       broadcastLogs.push({
         broadcast: broadcast,
@@ -120,7 +141,7 @@ class DashboardService {
     }
 
     const metaDetails = await getMetaNumberDetail(
-      "v18.0",
+      metaApiVersion,
       metaApi.business_phone_number_id,
       metaApi.access_token
     );
@@ -137,7 +158,7 @@ class DashboardService {
       templet_name: templet.name || "NA",
       sender_mobile: metaDetails.display_phone_number,
       send_to: contact.mobile,
-      delivery_status: "PENDING",
+      delivery_status: PENDING,
       example,
       contact,
     }));
@@ -149,25 +170,21 @@ class DashboardService {
       title,
       templet,
       phonebook,
-      status: "QUEUE",
+      status: QUEUE,
       schedule: scheduleTimestamp ? new Date(scheduleTimestamp) : null,
-      timezone: userData.timezone || "Asia/Kolkata",
+      timezone: userData.timezone || defaultTimeZone,
     };
 
-    await this.broadcastRepository.create(broadcast);
-
-    return true;
+    return this.broadcastRepository.create(broadcast);
   }
 
   async changeBroadcastStatus(broadcast_id, status, uid) {
-    await this.broadcastRepository.updateStatus(broadcast_id, status, uid);
-    return true;
+    return this.broadcastRepository.updateStatus(broadcast_id, status, uid);
   }
 
   async deleteBroadcast(broadcast_id, uid) {
     await this.broadcastRepository.delete(broadcast_id, uid);
-    await this.broadcastLogRepository.deleteByBroadcastId(broadcast_id, uid);
-    return true;
+    return this.broadcastLogRepository.deleteByBroadcastId(broadcast_id, uid);
   }
 }
 

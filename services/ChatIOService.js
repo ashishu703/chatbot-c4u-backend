@@ -3,7 +3,7 @@ const {
   PUSH_NEW_MSG,
   PUSH_NEW_REACTION,
   UPDATE_DELIVERY_STATUS,
-} = require("../constants/socket.constant");
+} = require("../types/socket-message.types");
 const IOService = require("./IOService");
 
 module.exports = class ChatIOService extends IOService {

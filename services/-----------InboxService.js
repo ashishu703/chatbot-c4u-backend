@@ -1,7 +1,7 @@
 const path = require("path");
 const MetaApiRepository = require("../repositories/metaApiRepository");
 const UserRepository = require("../repositories/userRepository");
-const ChatsRepository = require("../repositories/chatRepository");
+const ChatsRepository = require("../repositories/ChatRepository");
 const ContactRepository = require("../repositories/contactRepository");
 const RoomsRepository = require("../repositories/RoomRepository");
 const {
@@ -220,13 +220,7 @@ class InboxService {
   }
 
   async deleteChat(uid, chatId) {
-    await ChatsRepository.delete(uid, chatId);
-    const filePath = path.join(
-      __dirname,
-      `../conversations/inbox/${uid}/${chatId}.json`
-    );
-    await deleteFileIfExists(filePath); // Added await
-    return true;
+    return this.chatsRepository.delete({ uid, chat_id: chatId });
   }
 }
 

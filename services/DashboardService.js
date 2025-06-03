@@ -4,8 +4,9 @@ const ContactRepository = require("../repositories/ContactRepository");
 const {
   getUserSignupsByMonth,
   getUserOrderssByMonth,
-} = require("../functions/function");
+} = require("../utils/statistics.utils");
 const UserIdRequiredException = require("../exceptions/CustomExceptions/UserIdRequiredException");
+const { ADMIN, USER } = require("../types/roles.types");
 
 class DashboardService {
   serRepository;
@@ -23,9 +24,9 @@ class DashboardService {
 
     let dashboardData;
 
-    if (role === "user") {
+    if (role === USER) {
       dashboardData = await DashboardService.getUserDashboardData(userId);
-    } else if (role === "admin") {
+    } else if (role === ADMIN) {
       dashboardData = await DashboardService.getAdminDashboardData();
     }
 
@@ -42,15 +43,12 @@ class DashboardService {
     const contactForms = await this.contactRepository.getPhonebooksByUid();
 
     return {
-      success: true,
-      data: {
-        paidSignupsByMonth,
-        unpaidSignupsByMonth,
-        ordersByMonth,
-        userLength: users.length,
-        orderLength: orders.length,
-        contactLength: contactForms.length,
-      },
+      paidSignupsByMonth,
+      unpaidSignupsByMonth,
+      ordersByMonth,
+      userLength: users.length,
+      orderLength: orders.length,
+      contactLength: contactForms.length,
     };
   }
 
@@ -65,15 +63,12 @@ class DashboardService {
     const contactForms = await this.contactRepository.getPhonebooksByUid();
 
     return {
-      success: true,
-      data: {
-        paidSignupsByMonth,
-        unpaidSignupsByMonth,
-        ordersByMonth,
-        totalUsers: users.length,
-        totalOrders: orders.length,
-        totalContacts: contactForms.length,
-      },
+      paidSignupsByMonth,
+      unpaidSignupsByMonth,
+      ordersByMonth,
+      totalUsers: users.length,
+      totalOrders: orders.length,
+      totalContacts: contactForms.length,
     };
   }
 }

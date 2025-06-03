@@ -1,17 +1,21 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class FacebookProfile extends Model {
+  class SocialAccount extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      SocialAccount.hasMany(models.Chat, {
+        foreignKey: "chat_id",
+        targetKey: "chat_id",
+        as: "chat",
+      });
     }
   }
-  FacebookProfile.init(
+  SocialAccount.init(
     {
       uid: DataTypes.STRING,
       account_id: DataTypes.STRING,
@@ -20,9 +24,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "FacebookProfile",
+      modelName: "SocialAccount",
       tableName: "facebook_profiles",
     }
   );
-  return FacebookProfile;
+  return SocialAccount;
 };

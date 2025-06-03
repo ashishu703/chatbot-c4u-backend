@@ -1,12 +1,15 @@
 const bcrypt = require("bcrypt");
-const randomstring = require("randomstring");
 const { sign } = require("jsonwebtoken");
-const AgentRepository = require("../repositories/agentRepository");
+const AgentRepository = require("../repositories/AgentRepository");
 const AgentTaskRepository = require("../repositories/AgentTaskRepository");
 const { __t } = require("../utils/locale.utils");
 const EmailAlreadyInUseException = require("../exceptions/CustomExceptions/EmailAlreadyInUseException");
 const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException");
 const AgentNotFoundException = require("../exceptions/CustomExceptions/AgentNotFoundException");
+const { COMPLETED } = require("../types/tasks.types");
+const { AGENT } = require("../types/roles.types");
+const { tokenExpirationTime, passwordEncryptionRounds, jwtKey } = require("../config/app.config");
+const { generateUid, encryptPassword } = require("../utils/auth.utils");
 class AgentService {
   constructor() {
     this.agentRepository = new AgentRepository();
@@ -18,8 +21,9 @@ class AgentService {
     if (existingAgent) {
       throw new EmailAlreadyInUseException();
     }
-    const hashPass = await bcrypt.hash(password, 10);
-    const uid = randomstring.generate();
+    
+    const hashPass = encryptPassword(password);
+    const uid = generateUid();
     await this.agentRepository.create({
       owner_uid,
       uid,
@@ -56,11 +60,11 @@ class AgentService {
     return sign(
       {
         uid: agent.uid,
-        role: "agent",
+        role: AGENT,
         email: agent.email,
       },
-      process.env.JWTKEY,
-      { expiresIn: "7d" }
+      jwtKey,
+      { expiresIn: tokenExpirationTime }
     );
   }
 
@@ -77,7 +81,7 @@ class AgentService {
   }
 
   async markTaskComplete(id, comment) {
-    await this.agentTaskRepository.updateTask(id, "COMPLETED", comment);
+    await this.agentTaskRepository.updateTask(id, COMPLETED, comment);
   }
 }
 

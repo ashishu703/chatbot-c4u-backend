@@ -6,6 +6,7 @@ const AdminRepository = require("../repositories/AdminRepository");
 const { generateToken, comparePassword, createAdminPasswordRecoveryUrl, validateTimeExpiration, encryptPassword } = require("../utils/auth.utils");
 const EmailService = require("./emailService");
 const UserAlreadyExistException = require("../exceptions/CustomExceptions/UserAlreadyExistException");
+const { ADMIN } = require("../types/roles.types");
 
 
 class AdminAuthService {
@@ -29,7 +30,7 @@ class AdminAuthService {
       throw new InvalidCredentialsException();
     }
 
-    const token = generateToken({ uid: admin.uid, role: "admin" });
+    const token = generateToken({ uid: admin.uid, role: ADMIN });
 
     return {
       token,

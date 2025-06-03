@@ -1,9 +1,9 @@
-const { FacebookProfile } = require("../models");
+const { SocialAccount } = require("../models");
 const Repository = require("./Repository");
 
-class FacebookProfileRepository extends Repository {
+class SocialAccountRepository extends Repository {
   constructor() {
-    super(FacebookProfile);
+    super(SocialAccount);
   }
 
   async updateOrCreateProfile(userId, accountId, name, token) {
@@ -40,4 +40,4 @@ class FacebookProfileRepository extends Repository {
   }
 };
 
-module.exports = FacebookProfileRepository;
+module.exports = SocialAccountRepository;

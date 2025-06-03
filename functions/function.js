@@ -779,13 +779,7 @@ function areMobileNumbersFilled(array) {
 }
 
 // Get file extension (unchanged)
-function getFileExtension(fileName) {
-  const dotIndex = fileName.lastIndexOf(".");
-  if (dotIndex !== -1 && dotIndex !== 0) {
-    return fileName.substring(dotIndex + 1).toLowerCase();
-  }
-  return "";
-}
+
 
 // Write JSON to file (made async)
 async function writeJsonToFile(filepath, jsonData) {
@@ -1430,105 +1424,6 @@ async function sendEmail(host, port, email, pass, html, subject, from, to) {
   }
 }
 
-// Get user signups by month (updated to use Sequelize)
-async function getUserSignupsByMonth() {
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-
-  const users = await User.findAll();
-  const { paidUsers, unpaidUsers } = users.reduce(
-    (acc, user) => {
-      const planExpire = user.plan_expire
-        ? new Date(parseInt(user.plan_expire))
-        : null;
-      const isPaid = planExpire ? planExpire > currentDate : false;
-      if (isPaid) {
-        acc.paidUsers.push(user);
-      } else {
-        acc.unpaidUsers.push(user);
-      }
-      return acc;
-    },
-    { paidUsers: [], unpaidUsers: [] }
-  );
-
-  const paidSignupsByMonth = months.map((month, monthIndex) => {
-    const usersInMonth = paidUsers.filter((user) => {
-      const userDate = new Date(user.createdAt);
-      return (
-        userDate.getMonth() === monthIndex &&
-        userDate.getFullYear() === currentYear
-      );
-    });
-    const numberOfSignups = usersInMonth.length;
-    const userEmails = usersInMonth.map((user) => user.email);
-    return { month, numberOfSignups, userEmails, paid: true };
-  });
-
-  const unpaidSignupsByMonth = months.map((month, monthIndex) => {
-    const usersInMonth = unpaidUsers.filter((user) => {
-      const userDate = new Date(user.createdAt);
-      return (
-        userDate.getMonth() === monthIndex &&
-        userDate.getFullYear() === currentYear
-      );
-    });
-    const numberOfSignups = usersInMonth.length;
-    const userEmails = usersInMonth.map((user) => user.email);
-    return { month, numberOfSignups, userEmails, paid: false };
-  });
-
-  return { paidSignupsByMonth, unpaidSignupsByMonth };
-}
-
-// Get user orders by month (updated to use Sequelize)
-async function getUserOrderssByMonth() {
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-
-  const orders = await Order.findAll(); // Assuming Order model exists
-  return Array.from({ length: 12 }, (_, monthIndex) => {
-    const month = months[monthIndex];
-    const ordersInMonth = orders.filter((order) => {
-      const orderDate = new Date(order.createdAt);
-      return (
-        orderDate.getMonth() === monthIndex &&
-        orderDate.getFullYear() === currentYear
-      );
-    });
-    return { month, numberOfOders: ordersInMonth.length };
-  });
-}
-
-// Get number of days from timestamp (unchanged)
 function getNumberOfDaysFromTimestamp(timestamp) {
   if (!timestamp || isNaN(timestamp)) {
     return 0;

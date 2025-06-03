@@ -26,4 +26,21 @@ const defaultAppConfig = {
     config_id: "",
 }
 
-module.exports = { defaultAppConfig };
+const tokenExpirationTime = "7d"
+const passwordEncryptionRounds = process.env.SALT_ROUNDS
+const jwtKey = process.env.JWTKEY
+const frontendURI = process.env.FRONTENDURI
+const backendURI = process.env.FRONTENDURI
+const metaApiVersion  = "v18.0"
+const defaultTimeZone = "Asia/Kolkata";
+
+module.exports = { 
+    defaultAppConfig, 
+    tokenExpirationTime,
+    passwordEncryptionRounds,
+    jwtKey, 
+    frontendURI, 
+    backendURI, 
+    metaApiVersion, 
+    defaultTimeZone, 
+ };

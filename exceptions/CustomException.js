@@ -1,4 +1,4 @@
-const CustomExceptionMessages = require("../Messages/CustomExceptionMessages");
+const CustomExceptionMessages = require("../messages/CustomExceptionMessages");
 
 class CustomException extends Error {
   status;

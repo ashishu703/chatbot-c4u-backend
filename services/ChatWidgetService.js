@@ -1,10 +1,17 @@
 const randomstring = require("randomstring");
 const path = require("path");
-const chatWidgetRepository = require("../repositories/chatWidgetRepository");
+const ChatWidgetRepository = require("../repositories/ChatWidgetRepository");
 const getFileExtension = require("../functions/function");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const LogoRequiredException = require("../exceptions/CustomExceptions/LogoRequiredException");
+const { UPLOAD } = require("../types/widget-logo.types");
+const { generateUid } = require("../utils/auth.utils");
 class ChatWidgetService {
+
+  constructor() {
+    this.chatWidgetRepository = new ChatWidgetRepository();
+  }
+
   async addWidget(req) {
     const { title, whatsapp_number, place, selectedIcon, logoType, size } =
       req.body;
@@ -16,7 +23,7 @@ class ChatWidgetService {
 
     let filename;
 
-    if (logoType === "UPLOAD") {
+    if (logoType === UPLOAD) {
       if (!req.files || Object.keys(req.files).length === 0) {
         throw new LogoRequiredException();
       }
@@ -38,9 +45,9 @@ class ChatWidgetService {
       filename = selectedIcon;
     }
 
-    const unique_id = randomstring.generate(10);
+    const unique_id = generateUid();
 
-    await chatWidgetRepository.create({
+    await this.chatWidgetRepository.create({
       unique_id,
       uid,
       title,
@@ -53,11 +60,11 @@ class ChatWidgetService {
     return true;
   }
   async getMyWidgets(uid) {
-    return await chatWidgetRepository.findByUid(uid);
+    return this.chatWidgetRepository.findByUid(uid);
   }
 
   async deleteWidget(id) {
-    return chatWidgetRepository.delete(id);
+    return this.chatWidgetRepository.delete(id);
   }
 }
 

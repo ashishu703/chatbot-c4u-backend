@@ -17,9 +17,15 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      type: {
-        type: Sequelize.ENUM("WHATSAPP", "MESSENGER", "INSTAGRAM", ""),
-        defaultValue: "WHATSAPP",
+      account_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "social_accounts",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       last_message_came: {
         type: Sequelize.STRING,

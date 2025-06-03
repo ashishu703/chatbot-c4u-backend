@@ -8,7 +8,16 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Flow.hasMany(models.FlowNode, {
+        foreignKey: "flow_id",
+        onDelete: "CASCADE",
+        hooks: true,
+      });
+      Flow.hasMany(models.FlowEdge, {
+        foreignKey: "flow_id",
+        onDelete: "CASCADE",
+        hooks: true,
+      });
     }
   }
   Flow.init(

@@ -19,26 +19,32 @@ class Repository {
         return this.model.destroy({ where: uniqueKeys });
     }
 
-    async find(condition = {}) {
-        return this.model.findAll(condition);
+    async find(condition = {}, ralations = []) {
+        return this.model.findAll({
+            ...condition,
+            ralations
+        });
     }
     async count(condition = {}) {
         return this.model.findAll(condition);
     }
 
-    async findFirst(condition = {}) {
-        return this.model.findOne(condition);
+    async findFirst(condition = {}, ralations = []) {
+        return this.model.findOne({
+            ...condition,
+            ralations
+        });
     }
 
-    async findById(id) {
-        return this.model.findOne({ where: { id } });
+    async findById(id, ralations = []) {
+        return this.model.findOne({ where: { id } }, ralations);
     }
 
-    async findByUid(uid) {
-        return this.model.findOne({ where: { uid } });
+    async findByUid(uid, ralations = []) {
+        return this.model.findOne({ where: { uid } }, ralations);
     }
-    async findByChatId(chatId) {
-        return this.model.findOne({ where: { chat_id: chatId } });
+    async findByChatId(chatId, ralations = []) {
+        return this.model.findOne({ where: { chat_id: chatId } }, ralations);
     }
 
     async updateOrCreate(data, uniqueKeys = {}) {

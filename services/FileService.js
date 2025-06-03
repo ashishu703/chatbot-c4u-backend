@@ -1,11 +1,12 @@
 const fs = require("fs");
 const path = require("path");
-const randomstring = require("randomstring");
-const { getFileExtension } = require("../functions/function");
+const { getFileExtension } = require("../utils/file.utils");
+const { generateUid } = require("../utils/auth.utils");
+const { backendURI } = require("../config/app.config");
 
 class FileService {
   async uploadFile(file) {
-    const randomString = randomstring.generate();
+    const randomString = generateUid();
     const filename = `${randomString}.${getFileExtension(file.name)}`;
     const uploadDir = path.join(__dirname, "../client/public/uploads");
 
@@ -26,7 +27,7 @@ class FileService {
   }
 
   async uploadMedia(file) {
-    const randomString = randomstring.generate();
+    const randomString = generateUid();
     const filename = `${randomString}.${getFileExtension(file.name)}`;
     const mediaDir = path.join(__dirname, "../client/public/media");
 
@@ -42,7 +43,7 @@ class FileService {
       });
     });
 
-    return `${process.env.BACKURI}/media/${filename}`;
+    return `${backendURI}/media/${filename}`;
   }
 }
 

@@ -1,61 +1,67 @@
-const path = require("path");
 const FlowRepository = require("../repositories/chatFlowRepository");
-const {
-  writeJsonToFile,
-  readJsonFromFile,
-  deleteFileIfExists,
-} = require("../functions/function");
 const FlowNotfoundException = require("../exceptions/customExceptions/FlowNotfoundException");
+const FlowEdgeRepository = require("../repositories/FlowEdgeRepository");
+const FlowNodeRepository = require("../repositories/FlowNodeRepository");
+const { DISABLED, AI } = require("../types/flow.types");
 class FlowService {
   constructor() {
     this.flowRepository = new FlowRepository();
+    this.nodeRepository = new FlowNodeRepository();
+    this.edgeRepository = new FlowEdgeRepository();
   }
   async addFlow({ title, nodes, edges, flowId, user }) {
-    const basePath = path.join(__dirname, "../flow-json");
-    const nodePath = `${basePath}/nodes/${user.uid}/${flowId}.json`;
-    const edgePath = `${basePath}/edges/${user.uid}/${flowId}.json`;
 
-    await writeJsonToFile(nodePath, nodes);
-    await writeJsonToFile(edgePath, edges);
+    const flow = await this.flowRepository.updateOrCreate({
+      uid: user.uid,
+      flow_id: flowId,
+      title,
+    }, {
+      flow_id: flowId,
+      uid: user.uid
+    });
 
-    const existingFlow = await this.flowRepository.findByFlowId(flowId);
-    if (existingFlow) {
-      await this.flowRepository.updateTitle(flowId, title);
-    } else {
-      await this.flowRepository.create({
-        uid: user.uid,
-        flow_id: flowId,
-        title,
+    for (const node of nodes) {
+      this.nodeRepository.create({
+        "node_id": node.id,
+        "flow_id": flow.id,
+        "type": node.type,
+        "node_type": node.nodeType,
+        "data": JSON.stringify(node.data),
+        "position": JSON.stringify(node.position),
+        "position_absolute": JSON.stringify(node.positionAbsolute),
+        "uid": user.uid,
       });
-    }
+    };
 
-    return true;
+    for (const edge of edges) {
+      this.edgeRepository.create({
+        "flow_id": flow.id,
+        "edge_id": edge.id,
+        "source": edge.source,
+        "source_handle": edge.sourceHandle,
+        "uid": user.uid,
+        "target": edge.target,
+        "target_handle": edge.targetHandle,
+        "uid": user.uid,
+      });
+    };
+
+    return flow;
   }
   async getFlows(uid) {
     return await this.flowRepository.findByUid(uid);
   }
 
-  async deleteFlow(id, flowId, uid) {
-    const basePath = path.join(__dirname, "../flow-json");
-    const nodePath = `${basePath}/nodes/${uid}/${flowId}.json`;
-    const edgePath = `${basePath}/edges/${uid}/${flowId}.json`;
-
-    await this.flowRepository.delete(id, uid);
-    deleteFileIfExists(nodePath);
-    deleteFileIfExists(edgePath);
-
-    return true;
+  async deleteFlow(id) {
+    return this.flowRepository.delete({
+      id
+    });
   }
 
-  async getFlowById(flowId, uid) {
-    const basePath = path.join(__dirname, "../flow-json");
-    const nodePath = `${basePath}/nodes/${flowId}/${uid}.json`;
-    const edgePath = `${basePath}/edges/${flowId}/${uid}.json`;
-
-    const nodes = await readJsonFromFile(nodePath);
-    const edges = await readJsonFromFile(edgePath);
-
-    return { nodes, edges };
+  async getFlowById(id) {
+    return this.flowRepository.find({
+      id
+    }, ["nodes", "edges"]);
   }
 
   async getActivity(flowId, uid) {
@@ -69,6 +75,7 @@ class FlowService {
       ...item,
       id: `prevent-${index}`,
     }));
+
     const aiWithIds = ai.map((item, index) => ({ ...item, id: `ai-${index}` }));
 
     return { prevent: preventWithIds, ai: aiWithIds };
@@ -78,17 +85,17 @@ class FlowService {
     const flow = await this.flowRepository.findByFlowId(flowId);
     if (!flow) throw new FlowNotfoundException();
 
-    if (type === "AI") {
+    if (type === AI) {
       const aiArr = flow.ai_list || [];
       const updatedArr = aiArr.filter((x) => x.senderNumber !== number);
-      await this.flowRepository.updateAiList(flowId, updatedArr);
-    } else if (type === "DISABLED") {
+      return this.flowRepository.updateAiList(flowId, updatedArr);
+    } else if (type === DISABLED) {
       const preventArr = flow.prevent_list || [];
       const updatedArr = preventArr.filter((x) => x.senderNumber !== number);
-      await this.flowRepository.updatePreventList(flowId, updatedArr);
+      return this.flowRepository.updatePreventList(flowId, updatedArr);
     }
 
-    return true;
+    return flow;
   }
 }
 

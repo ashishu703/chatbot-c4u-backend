@@ -1,10 +1,12 @@
-const ChatRepository = require("../../repositories/chatRepository");
-const FacebookProfileRepository = require("../../repositories/FacebookProfileRepository");
-const MessangerService = require("./MessangerService");
-
-module.exports = class FacebookProfileService extends MessangerService {
+const ChatRepository = require("../repositories/ChatRepository");
+const MessengerProfileApi = require("../api/Messanger/MessengerProfileApi");
+const SocialAccountRepository = require("../repositories/SocialAccountRepository");
+const { MESSANGER } = require("../types/social-platform-types");
+class FacebookProfileService {
   constructor(user, accessToken) {
-    super(user, accessToken);
+    this.messangerProfileApi = new MessengerProfileApi(user, accessToken);
+    this.socialAccountRepository = new SocialAccountRepository();
+    this.chatRepository = new ChatRepository();
   }
 
   async fetchAndSaveProfileInformation() {
@@ -13,32 +15,31 @@ module.exports = class FacebookProfileService extends MessangerService {
   }
 
   async saveProfile(accountId, name) {
-    await FacebookProfileRepository.updateOrCreate(
-      this.user.uid,
-      accountId,
-      name,
-      this.accessToken
+    return this.socialAccountRepository.updateOrCreate(
+      {
+        uid: this.user.uid,
+        account_id: accountId,
+        name: name,
+        access_token: this.accessToken
+      }
     );
-    return {
-      userId: this.user.uid,
-      accountId,
-      name,
-      accessToken: this.accessToken,
-    };
   }
 
   async fetchProfile() {
-    return this.get("/me", {
-      access_token: this.accessToken,
-    });
+    return this.messangerProfileApi.fetchOwnerProfile();
   }
 
   async getProfiles() {
-    return FacebookProfileRepository.findManyByUserId(this.user.uid);
+    return this.socialAccountRepository.findManyByUserId(this.user.uid);
   }
 
   async deleteProfile(id) {
-    await ChatRepository.removePlatformChat(this.user.uid, "MESSENGER");
-    return FacebookProfileRepository.deleteByAccountId(id);
+    return this.socialAccountRepository.delete({
+      id,
+      platform: MESSANGER
+    });
   }
 };
+
+
+module.exports = FacebookProfileService

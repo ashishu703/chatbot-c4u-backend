@@ -1,5 +1,3 @@
-const FacebookException = require("../../exceptions/FacebookException");
-const FacebookProfileRepository = require("../../repositories/FacebookProfileRepository");
 const InstagramProfileService = require("./InstagramProfileService");
 const InstagramService = require("./InstagramService");
 const fetch = require("node-fetch");

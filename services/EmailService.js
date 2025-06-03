@@ -1,8 +1,7 @@
 const { sendEmail } = require("../functions/function");
 const SmtpRepository = require("../repositories/smtpRepository");
-const SmtpConnectionNotFoundException = require("../exceptions/CustomExceptions/SmtpConnectionNotFoundException");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
-const { getRecoverEmailTemplate } = require("../emails/returnEmails");
+const { getRecoverEmailTemplate, getWelcomeEmailTemplate } = require("../emails/returnEmails");
 const WebPublicRepository = require("../repositories/WebPublicRepository");
 class EmailService {
   smtpConfig;
@@ -19,6 +18,13 @@ class EmailService {
     await this.initConfig();
     const { app_name } = this.appConfig;
     const template = getRecoverEmailTemplate(app_name, url);
+    return this.sendEmailTemplate(template, to);
+  }
+
+  async sendWelcomeEmail(to, username) {
+    await this.initConfig();
+    const { app_name } = this.appConfig;
+    const template = getWelcomeEmailTemplate(app_name, username);
     return this.sendEmailTemplate(template, to);
   }
 

@@ -52,10 +52,24 @@ const downloadAndExtractFile = async (files, outputPath) => {
   return { success: true, msg: "File extracted successfully" };
 };
 
+async function deleteFileIfExists(filePath) {
+  try {
+    await fs.access(filePath);
+    await fs.unlink(filePath);
+    console.log(`File ${filePath} has been deleted.`);
+  } catch (err) {
+    if (err.code !== "ENOENT") {
+      console.error(`Error deleting file ${filePath}:`, err);
+      throw err;
+    }
+  }
+}
+
 module.exports = {
   folderExists,
   downloadAndExtractFile,
   getFileExtension,
   uploadFile,
+  deleteFileIfExists,
   getFileInfo,
 };

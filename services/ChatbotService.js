@@ -21,8 +21,7 @@ class ChatbotService {
       active: true,
     };
 
-    await this.chatbotRepository.create(chatbot);
-    return true;
+    return this.chatbotRepository.create(chatbot);
   }
 
   async updateChatbot({ id, title, chats, flow, for_all, user }) {
@@ -38,32 +37,25 @@ class ChatbotService {
       flow_id: flow?.id,
     };
 
-    await this.chatbotRepository.update(id, chatbot, user.uid);
-    return true;
+    return this.chatbotRepository.update(id, chatbot, user.uid);
   }
 
   async getChatbots(uid) {
-    return await this.chatbotRepository.findByUid(uid);
+    return this.chatbotRepository.findByUid(uid);
   }
 
   async changeBotStatus(id, status, user) {
     if (!user.plan?.allow_chatbot) {
-      throw new new PlanNoChatbotPermissionException()();
+      throw new PlanNoChatbotPermissionException();
     }
 
-    await this.chatbotRepository.updateStatus(id, !!status, user.uid);
-    return true;
+    return this.chatbotRepository.updateStatus(id, !!status, user.uid);
   }
 
   async deleteChatbot(id, uid) {
-    await this.chatbotRepository.delete(id, uid);
-    return true;
+    return this.chatbotRepository.delete(id, uid);
   }
 
-  async makeRequestApi({ url, body, headers, type }) {
-    const { makeRequest } = require("../functions/function");
-    return await makeRequest({ method: type, url, body, headers });
-  }
 }
 
 module.exports = ChatbotService;

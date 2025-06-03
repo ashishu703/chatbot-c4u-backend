@@ -27,6 +27,8 @@ class FlowRepository extends Repository {
     return this.update({ prevent_list }, { flow_id });
   }
 
+
+
 }
 
 module.exports = FlowRepository;

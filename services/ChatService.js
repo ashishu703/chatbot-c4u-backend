@@ -1,18 +1,17 @@
-const path = require("path");
 const AgentChatRepository = require("../repositories/AgentChatRepository");
 const ChatRepository = require("../repositories/ChatRepository");
 const ContactRepository = require("../repositories/ContactRepository");
 const AgentRepository = require("../repositories/AgentRepository");
-const {
-  readJSONFile,
-  sendMetaMsg,
-} = require("../functions/function");
+
 const ChatNotFoundException = require("../exceptions/CustomExceptions/ChatNotFoundException");
 const { mergeArrays } = require("../utils/others.utils");
+const { OUTGOING } = require("../types/conversation-route.types");
+const { SENT } = require("../types/conversation-status.types");
 
 class ChatService {
   constructor() {
     this.chatRepository = new ChatRepository();
+    this.contactRepository = new ContactRepository();
     this.agentRepository = new AgentRepository();
     this.agentChatRepository = new AgentChatRepository();
   }
@@ -67,16 +66,14 @@ class ChatService {
     }
     const chatIds = agentChats.map((chat) => chat.chat_id);
     const chats = await this.chatRepository.findByOwnerAndIds(owner_uid, chatIds);
-    const contacts = await ContactRepository.findByOwner(owner_uid);
+    const contacts = await this.contactRepository.findByOwner(owner_uid);
     return mergeArrays(contacts, chats);
   }
 
   async getConversation(owner_uid, chatId) {
-    const filePath = path.join(
-      __dirname,
-      `../conversations/inbox/${owner_uid}/${chatId}.json`
-    );
-    return readJSONFile(filePath, 100);
+    return this.chatRepository.findFirst({
+      owner_uid, chat_id: chatId
+    }, ["conversations"]);
   }
 
   async sendMessage({
@@ -97,16 +94,16 @@ class ChatService {
       timestamp: "",
       senderName: toName,
       senderMobile: toNumber,
-      status: "sent",
+      status: SENT,
       star: false,
-      route: "OUTGOING",
+      route: OUTGOING,
       agent: agentEmail,
     };
     return await sendMetaMsg(ownerUid, msgObj, toNumber, savObj, chatId);
   }
 
   async changeChatTicketStatus(chatId, status) {
-    await ChatRepository.updateStatus(chatId, status);
+    await this.chatRepository.updateStatus(chatId, status);
   }
   async saveNote(chatId, note) {
     return this.chatRepository.updateNote(chatId, note);
