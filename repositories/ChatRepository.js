@@ -42,6 +42,11 @@ class ChatRepository extends Repository {
       )
     );
   }
+
+
+  async updateLastMessage(chat_id, data) {
+    return this.update(data, { chat_id });
+  }
 }
 
 module.exports = ChatRepository;

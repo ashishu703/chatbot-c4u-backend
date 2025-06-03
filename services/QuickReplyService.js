@@ -1,20 +1,24 @@
 const QuickReplyRepository = require("../repositories/QuickReplyRepository");
 
-module.exports = class QuickReplyService {
-  constructor() {}
+class QuickReplyService {
+
+  constructor() {
+    this.quickReplyRepository = new QuickReplyRepository();
+  }
 
   async create({ uid, message }) {
-    return QuickReplyRepository.createIfNotExist({
+    return this.quickReplyRepository.createIfNotExist({
       uid,
       message,
     });
   }
 
   async destroy(id) {
-    return QuickReplyRepository.removeById(id);
+    return this.quickReplyRepository.removeById(id);
   }
 
   async list(uid) {
-    return QuickReplyRepository.findUidId(uid);
+    return this.quickReplyRepository.findUidId(uid);
   }
 };
+module.exports = QuickReplyService

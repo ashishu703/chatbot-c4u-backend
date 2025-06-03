@@ -31,16 +31,24 @@ const passwordEncryptionRounds = process.env.SALT_ROUNDS
 const jwtKey = process.env.JWTKEY
 const frontendURI = process.env.FRONTENDURI
 const backendURI = process.env.FRONTENDURI
-const metaApiVersion  = "v18.0"
+const stripeLang = process.env.STRIPE_LANG
+const metaApiVersion = "v18.0"
 const defaultTimeZone = "Asia/Kolkata";
+const paypalUrl = process.env.PAYPAL_URL
+const whatsAppAccountPin = process.env.WHATSAPP_ACCOUNT_PIN
 
-module.exports = { 
-    defaultAppConfig, 
+module.exports = {
+    defaultAppConfig,
     tokenExpirationTime,
     passwordEncryptionRounds,
-    jwtKey, 
-    frontendURI, 
-    backendURI, 
-    metaApiVersion, 
-    defaultTimeZone, 
- };
+    jwtKey,
+    frontendURI,
+    backendURI,
+    metaApiVersion,
+    defaultTimeZone,
+    stripeLang,
+    paypalClientId,
+    paypalClientSecret,
+    paypalUrl,
+    whatsAppAccountPin,
+};

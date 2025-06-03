@@ -1,13 +1,13 @@
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
-const WaLinkRepository = require("../repositories/waLinkRepository");
+const LinkRepository = require("../repositories/LinkRepository");
 const { isValidEmail } = require("../utils/validation");
-const { createWhatsAppLink } = require("../utils/whatsapp");
+const { createWhatsAppLink } = require("../utils/whatsapp.utils");
 const InvalidEmailIdException = require("../exceptions/CustomExceptions/InvalidEmailIdException");
 
 class WaLinkService {
   waLinkRepository;
   constructor() {
-    this.waLinkRepository = new WaLinkRepository();
+    this.waLinkRepository = new LinkRepository();
   }
   async generateWaLink({ mobile, email, msg }) {
     if (!mobile || !email) {

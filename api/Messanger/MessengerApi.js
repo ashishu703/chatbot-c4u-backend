@@ -18,8 +18,7 @@ class MessengerApi extends SocialApi {
 
         this.AppId = facebook_client_id;
         this.AppSecret = facebook_client_secret;
-        this.DefaultApiVersion = facebook_graph_version;
-        this.APIURL = `https://graph.facebook.com/${metaApiVersion}`;
+        this.APIURL = `https://graph.facebook.com/${facebook_graph_version}`;
         this.scopes = facebook_auth_scopes;
     }
 

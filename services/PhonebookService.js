@@ -3,7 +3,7 @@ const ContactRepository = require("../repositories/ContactRepository");
 const {
   parseCSVFile,
   areMobileNumbersFilled,
-} = require("../functions/function");
+} = require("../utils/phonebook.utils");
 const DuplicatePhonebookNameException = require("../exceptions/CustomExceptions/DuplicatePhonebookNameException");
 const InvalidCsvProvidedException = require("../exceptions/CustomExceptions/InvalidCsvProvidedException");
 const CsvMobileMissingException = require("../exceptions/CustomExceptions/CsvMobileMissingException");

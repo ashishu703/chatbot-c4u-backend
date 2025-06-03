@@ -40,10 +40,6 @@ async function verifyMetaWebhook(req) {
   };
 }
 
-function prepareChatPath(uid, chatId) {
-  return `${__dirname}/../conversations/inbox/${uid}/${chatId}.json`;
-}
-
 function createChatId(senderId, receiverId) {
   return convertNumberToRandomString(senderId + receiverId);
 }
@@ -51,6 +47,5 @@ function createChatId(senderId, receiverId) {
 module.exports = {
   handleApiResponse,
   verifyMetaWebhook,
-  prepareChatPath,
   createChatId,
 };

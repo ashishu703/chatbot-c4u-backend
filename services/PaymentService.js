@@ -1,8 +1,8 @@
 const WebRepository = require("../repositories/webRepository");
 const OrderRepository = require("../repositories/OrderRepository");
-const { rzCapturePayment, updateUserPlan } = require("../utils/paymentUtils");
+const { rzCapturePayment, updateUserPlan } = require("../utils/payment.utils");
 const Stripe = require("stripe");
-const randomstring = require("randomstring");
+const { generateUid } = require("./../utils/auth.utils");
 const PaymentDetailsNotFoundException = require("../exceptions/CustomExceptions/PaymentDetailsNotFoundException");
 const PaymentKeysNotFoundException = require("../exceptions/CustomExceptions/PaymentKeysNotFoundException");
 const PlanNotFoundWithIdException = require("../exceptions/CustomExceptions/PlanNotFoundWithIdException");
@@ -16,6 +16,7 @@ const InvalidRequestException = require("../exceptions/CustomExceptions/InvalidR
 const { __t } = require("../utils/locale.utils");
 const TrialAlreadyTakenException = require("../exceptions/CustomExceptions/TrialAlreadyTakenException");
 const NotATrialPlanException = require("../exceptions/CustomExceptions/NotATrialPlanException");
+const { backendURI, stripeLang, paypalUrl } = require("../config/app.config");
 
 class PaymentService {
   webRepository;
@@ -41,7 +42,7 @@ class PaymentService {
     if (!plan) {
       throw new PlanNotFoundWithIdException();
     }
-    const randomSt = randomstring.generate();
+    const randomSt = generateUid();
     const orderID = `STRIPE_${randomSt}`;
     await this.orderRepository.createOrder({
       uid,
@@ -63,9 +64,9 @@ class PaymentService {
         },
       ],
       mode: "payment",
-      success_url: `${process.env.BACKURI}/api/user/stripe_payment?order=${orderID}&plan=${plan.id}`,
-      cancel_url: `${process.env.BACKURI}/api/user/stripe_payment?order=${orderID}&plan=${plan.id}`,
-      locale: process.env.STRIPE_LANG || "en",
+      success_url: `${backendURI}/api/user/stripe_payment?order=${orderID}&plan=${plan.id}`,
+      cancel_url: `${backendURI}/api/user/stripe_payment?order=${orderID}&plan=${plan.id}`,
+      locale: stripeLang || "en",
     });
     await this.orderRepository.updateOrder(orderID, { s_token: session.id });
     return { session };
@@ -122,7 +123,7 @@ class PaymentService {
       throw new PaypalCredentialsRequiredException();
     }
     const response = await fetch(
-      "https://api.sandbox.paypal.com/v1/oauth2/token",
+      paypalUrl + "/v1/oauth2/token",
       {
         method: "POST",
         body: "grant_type=client_credentials",
@@ -138,7 +139,7 @@ class PaymentService {
     );
     const data = await response.json();
     const resp_order = await fetch(
-      `https://api.sandbox.paypal.com/v1/checkout/orders/${orderID}`,
+      paypalUrl + `/v1/checkout/orders/${orderID}`,
       {
         method: "GET",
         headers: { Authorization: "Bearer " + data.access_token },
@@ -211,7 +212,7 @@ class PaymentService {
     return `<!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="refresh" content="5;url=${process.env.BACKURI}/user">
+  <meta http-equiv="refresh" content="5;url=${backendURI}/user">
   <style>
     body { font-family: Arial, sans-serif; background-color: #f4f4f4; text-align: center; margin: 0; padding: 0; }
     .container { background-color: #ffffff; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin: 100px auto; padding: 20px; width: 300px; }

@@ -1,9 +1,6 @@
 const path = require("path");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { Agents } = require("../models");
-const contactRepository = require("../repositories/ContactRepository");
-const chatRepository = require("../repositories/ChatRepository");
+const ContactRepository = require("../repositories/ContactRepository");
+const ChatRepository = require("../repositories/ChatRepository");
 const chatbotRepository = require("../repositories/ChatbotRepository");
 const AgentTaskRepository = require("../repositories/AgentTaskRepository");
 const metaRepository = require("../repositories/MetaRepository");
@@ -22,6 +19,14 @@ const NoFilesWereUploadedException = require("../exceptions/CustomExceptions/NoF
 const PleaseSelectAgentException = require("../exceptions/CustomExceptions/PleaseSelectAgentException");
 const TaskNotFoundOrUnauthorizedException = require("../exceptions/CustomExceptions/TaskNotFoundOrUnauthorizedException");
 const CannotRemoveAgentDetailException = require("../exceptions/CustomExceptions/CannotRemoveAgentDetailException");
+const { OPEN, PENDING, SOLVED } = require("../types/conversation-status.types");
+const { PENDING: PENDING_TASK } = require("../types/tasks.types");
+const ChatbotRepository = require("../repositories/ChatbotRepository");
+const { encryptPassword, generateToken } = require("../utils/auth.utils");
+const { USER } = require("../types/roles.types");
+const PhonebookRepository = require("../repositories/phonebookRepository");
+const WhatsappProfileApi = require("../api/Whatsapp/WhatsappProfileApi");
+const { backendURI } = require("../config/app.config");
 
 class UserService {
   userRepository;
@@ -29,7 +34,12 @@ class UserService {
 
   constructor() {
     this.userRepository = new UserRepository();
+    this.whatsappProfileApi = new WhatsappProfileApi();
     this.agentTaskRepository = new AgentTaskRepository();
+    this.chatRepository = new ChatRepository();
+    this.chatbotRepository = new ChatbotRepository();
+    this.phonebookRepository = new PhonebookRepository();
+    this.contactRepository = new ContactRepository();
   }
 
   async getUsers() {
@@ -43,23 +53,34 @@ class UserService {
   }
 
   async getDashboard(uid) {
-    const openChats =
-      (await chatRepository.findByChatStatus(uid, "open")) || [];
-    const pendingChats =
-      (await chatRepository.findByChatStatus(uid, "pending")) || [];
-    const resolvedChats =
-      (await chatRepository.findByChatStatus(uid, "solved")) || [];
-    const activeBots = (await chatbotRepository.findByStatus(uid, 1)) || [];
-    const inactiveBots = (await chatbotRepository.findByStatus(uid, 0)) || [];
-    const totalChats = (await chatRepository.countByUid(uid)) || 0;
-    const totalChatbots = (await chatbotRepository.countByUid(uid)) || 0;
-    const totalContacts = (await contactRepository.countByUid(uid)) || 0;
-    const totalFlows = (await chatRepository.countByUid(uid)) || 0;
-    const totalBroadcasts = (await chatRepository.countByUid(uid)) || 0;
-    const totalTemplets = (await chatRepository.countByUid(uid)) || 0;
+
+    const user = await this.userRepository.findByUid(uid, [
+      "chats",
+      "chatbots",
+      "contacts",
+      "broadcasts",
+      "flows",
+      "templets",
+    ]);
+
+    const chats = user.chats;
+    const openChats = chats.filter(chat => chat.chat_status === OPEN);
+    const pendingChats = chats.filter(chat => chat.chat_status === PENDING);
+    const resolvedChats = chats.filter(chat => chat.chat_status === SOLVED);
+
+    const bots = user.chatbots;
+    const activeBots = bots.filter(bot => bot.active === 1);
+    const inactiveBots = bots.filter(bot => bot.active === 0);
+
+    const totalContacts = user.contacts.length;
+    const totalFlows = user.flows.length;
+    const totalBroadcasts = user.broadcasts.length;
+    const totalTemplets = user.templets.length;
+
+    const totalChats = chats.length
+    const totalChatbots = bots.length
 
     return {
-      success: true,
       opened: openChats,
       pending: pendingChats,
       resolved: resolvedChats,
@@ -69,7 +90,7 @@ class UserService {
       totalChatbots,
       totalContacts,
       totalFlows,
-      totalBroadcast: totalBroadcasts,
+      totalBroadcasts,
       totalTemplets,
     };
   }
@@ -85,69 +106,56 @@ class UserService {
     const updates = { name, email, mobile_with_country_code };
 
     if (newPassword) {
-      updates.password = await bcrypt.hash(newPassword, 10);
+      updates.password = await encryptPassword(newPassword);
     }
 
-    await this.userRepository.update(uid, updates);
-    return true;
+    return this.userRepository.update(updates, { uid });
   }
 
   async autoLogin(uid) {
     const user = await this.userRepository.findByUid(uid);
     if (!user) throw new UserNotFoundException();
 
-    const token = jwt.sign(
+    return generateToken(
       {
         uid: user.uid,
-        role: "user",
+        role: USER,
         password: user.password,
         email: user.email,
-      },
-      process.env.JWTKEY
-    );
-
-    return token;
+      });
   }
 
   async deleteUser(id) {
-    await this.userRepository.deleteById(id);
-    return true;
+    return this.userRepository.deleteById(id);
   }
 
   async saveNote(uid, chatId, note) {
-    await chatRepository.update(chatId, { chat_note: note });
-    return true;
+    return this.chatRepository.update({ chat_note: note }, { chat_id: chatId, uid });
   }
 
   async pushTag(uid, tag, chatId) {
     if (!tag) throw new TypeTagException();
-
-    const chat = await chatRepository.findByChatId(chatId);
+    const chat = await this.chatRepository.findByChatId(chatId);
     if (!chat) throw new ChatNotFoundException();
-
     let tags = [];
-
     tags = chat.chat_tags ? JSON.parse(chat.chat_tags) : [];
-
     const newTags = [...tags, tag];
-    await chatRepository.update(chatId, { chat_tags: JSON.stringify(newTags) });
-    return true;
+    return this.chatRepository.update({ chat_tags: JSON.stringify(newTags) }, { chat_id: chatId, uid });
   }
 
   async deleteTag(uid, tag, chatId) {
-    const chat = await chatRepository.findByChatId(chatId);
+    const chat = await this.chatRepository.findByChatId(chatId);
     if (!chat) throw new ChatNotFoundException();
 
     const tags = chat.chat_tags ? JSON.parse(chat.chat_tags) : [];
     const newTags = tags.filter((t) => t !== tag);
 
-    await chatRepository.update(chatId, { chat_tags: JSON.stringify(newTags) });
-    return true;
+    return this.chatRepository.update({ chat_tags: JSON.stringify(newTags) }, { chat_id: chatId, uid });
   }
 
   async checkContact(uid, mobile) {
-    const contact = await contactRepository.findByMobileAndUid(mobile, uid);
-    const phonebooks = await contactRepository.getPhonebooksByUid(uid);
+    const contact = await this.contactRepository.findByMobileAndUid(mobile, uid);
+    const phonebooks = await this.phonebookRepository.findByUid(uid);
 
     if (!contact) {
       throw new ContactNotFoundInPhonebookException();
@@ -173,7 +181,7 @@ class UserService {
       throw new NotEnoughInputProvidedException();
     }
 
-    const existingContact = await contactRepository.findByMobileAndUid(
+    const existingContact = await this.contactRepository.findByMobileAndUid(
       phoneNumber,
       uid
     );
@@ -181,7 +189,7 @@ class UserService {
       throw new ContactAlreadyExistedException();
     }
 
-    await contactRepository.create({
+    return this.contactRepository.create({
       uid,
       phonebook_id: phoneBookId,
       phonebook_name: phoneBookName,
@@ -194,12 +202,10 @@ class UserService {
       var5: var5 || "",
     });
 
-    return true;
   }
 
   async deleteContact(id) {
-    await contactRepository.delete(id);
-    return true;
+    return this.contactRepository.delete({ id });
   }
 
   async updateProfile(
@@ -212,22 +218,15 @@ class UserService {
 
     const updateData = { name, email, mobile_with_country_code, timezone };
     if (newPassword) {
-      updateData.password = await bcrypt.hash(newPassword, 10);
+      updateData.password = await encryptPassword(newPassword);
     }
 
-    await this.userRepository.update(uid, updateData);
-    return true;
+    return this.userRepository.update(updateData, { uid });
   }
 
   async fetchProfile(uid) {
-    const metaKeys = await metaRepository.findMetaApiByUid(uid);
-    if (!metaKeys?.access_token || !metaKeys?.business_phone_number_id) {
-      throw new FillAllFieldsException();
-    }
-
-    return await fetchProfileFun(
+    return this.whatsappProfileApi.setToken(metaKeys.access_token).fetchProfile(
       metaKeys.business_phone_number_id,
-      metaKeys.access_token
     );
   }
 
@@ -240,7 +239,7 @@ class UserService {
       files.file,
       path.join(__dirname, "..", "client", "public", "media")
     );
-    const url = `${process.env.BACKURI}/media/${filename}`;
+    const url = `${backendURI}/media/${filename}`;
     return { url };
   }
 
@@ -253,33 +252,24 @@ class UserService {
       throw new PleaseSelectAgentException();
     }
 
-    await this.agentTaskRepository.create({
+    return this.agentTaskRepository.create({
       owner_uid: ownerUid,
       uid: agent_uid,
       title,
       description: des,
-      status: "PENDING",
+      status: PENDING_TASK,
     });
-
-    return true;
   }
 
   async getMyAgentTasks(ownerUid) {
-    const tasks = await this.agentTaskRepository.findByOwnerUid(ownerUid);
-    return { data: tasks };
+    return this.agentTaskRepository.findByOwnerUid(ownerUid);
   }
 
   async deleteAgentTask(id, ownerUid) {
-    const deleted = await this.agentTaskRepository.deleteByIdAndOwner(
+    return this.agentTaskRepository.deleteByIdAndOwner(
       id,
       ownerUid
     );
-
-    if (deleted) {
-      return true;
-    } else {
-      throw new TaskNotFoundOrUnauthorizedException();
-    }
   }
 
   async updateAgentProfile({ email, name, mobile, newPas, uid }) {
@@ -289,28 +279,18 @@ class UserService {
 
     const updateData = { email, name, mobile };
     if (newPas) {
-      updateData.password = await bcrypt.hash(newPas, 10);
+      updateData.password = encryptPassword(newPas);
     }
 
-    await this.agentTaskRepository.updateAgent(uid, updateData);
-    return true;
+    return this.agentTaskRepository.updateAgent(updateData, { uid });
   }
 
   async getUserById(id) {
-    const user = await this.userRepository.findById(id);
-    if (!user) {
-      throw new UserNotFoundException();
-    }
-    return user;
+    return this.userRepository.findById(id);
   }
 
   async getMe(uid) {
-    const user = await this.userRepository.findByUid(uid);
-    const contacts = await contactRepository.getPhonebooksByUid(uid);
-    return {
-      success: true,
-      data: { ...user.dataValues, contact: contacts.length },
-    };
+    return this.userRepository.findByUid(uid, ["contacts"]);
   }
 }
 

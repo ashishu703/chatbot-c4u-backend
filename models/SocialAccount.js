@@ -11,21 +11,27 @@ module.exports = (sequelize, DataTypes) => {
       SocialAccount.hasMany(models.Chat, {
         foreignKey: "chat_id",
         targetKey: "chat_id",
-        as: "chat",
+        as: "chats",
       });
     }
   }
   SocialAccount.init(
     {
+      platform: DataTypes.STRING,
+      avatar: DataTypes.STRING,
       uid: DataTypes.STRING,
-      account_id: DataTypes.STRING,
+      social_user_id: DataTypes.STRING,
+      social_account_id: DataTypes.STRING,
       name: DataTypes.STRING,
-      token: DataTypes.TEXT,
+      username: DataTypes.STRING,
+      token: DataTypes.STRING,
+      refresh_token: DataTypes.STRING,
+      expires_in: DataTypes.INTEGER,
     },
     {
       sequelize,
       modelName: "SocialAccount",
-      tableName: "facebook_profiles",
+      tableName: "social_accounts",
     }
   );
   return SocialAccount;

@@ -13,6 +13,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
+      avatar: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       uid: {
         type: Sequelize.STRING,
         allowNull: true,

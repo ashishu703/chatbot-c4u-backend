@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       chat_id: DataTypes.STRING,
       uid: DataTypes.STRING,
       type: DataTypes.STRING,
+      avatar: DataTypes.STRING,
       last_message_came: DataTypes.STRING,
       chat_note: DataTypes.TEXT,
       chat_tags: DataTypes.TEXT,

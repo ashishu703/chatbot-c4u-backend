@@ -1,10 +1,11 @@
-const WidgetRepository = require("../repositories/widgetRepository");
-const { uploadFile, getFileExtension } = require("../utils/fileUtils");
-const { generateWhatsAppURL, returnWidget } = require("../utils/widgetUtils");
-const randomstring = require("randomstring");
-const path = require("path");
+const WidgetRepository = require("../repositories/ChatWidgetRepository");
+const { uploadFile, getFileExtension } = require("../utils/file.utils");
+const { generateWhatsAppURL, returnWidget } = require("../utils/widget.utils");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const LogoRequiredException = require("../exceptions/CustomExceptions/LogoRequiredException");
+const { generateUid } = require("../utils/auth.utils");
+const { UPLOAD } = require("../types/widget-logo.types");
+const { backendURI } = require("../config/app.config");
 
 class WidgetService {
   widgetRepository;
@@ -20,12 +21,12 @@ class WidgetService {
       throw new FillAllFieldsException();
     }
     let filename;
-    if (logoType === "UPLOAD") {
+    if (logoType === UPLOAD) {
       if (!files || !files.file) {
         throw new LogoRequiredException();
       }
       const file = files.file;
-      const randomString = randomstring.generate();
+      const randomString = generateUid();
       filename = `${randomString}.${getFileExtension(file.name)}`;
       await uploadFile(
         file,
@@ -34,7 +35,7 @@ class WidgetService {
     } else {
       filename = selectedIcon;
     }
-    const unique_id = randomstring.generate(10);
+    const unique_id = generateUid();
     await this.widgetRepository.create({
       unique_id,
       uid,
@@ -67,7 +68,7 @@ class WidgetService {
     }
     const url = generateWhatsAppURL(widget.whatsapp_number, widget.title);
     return returnWidget(
-      `${process.env.BACKURI}/media/${widget.logo}`,
+      `${backendURI}/media/${widget.logo}`,
       widget.size,
       url,
       widget.place

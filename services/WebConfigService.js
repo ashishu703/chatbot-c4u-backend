@@ -1,11 +1,16 @@
 const PleaseProvideAppNameException = require("../exceptions/CustomExceptions/PleaseProvideAppNameException");
 const WebConfigNotFoundException = require("../exceptions/CustomExceptions/WebConfigNotFoundException");
-const webConfigRepository = require("../repositories/WebConfigRepository");
-const { getFileExtension } = require("../utils/validation");
+const WebConfigRepository = require("../repositories/WebPublicRepository");
+const { getFileExtension } = require("../utils/file.utils");
 const path = require("path");
-const randomstring = require("randomstring");
+const { generateUid } = require("../utils/auth.utils");
 
 class WebConfigService {
+
+  constructor() {
+    this.webConfigRepository = new WebConfigRepository();
+  }
+
   async updateWebConfig(req) {
     const {
       app_name,
@@ -38,7 +43,7 @@ class WebConfigService {
 
     if (req.files?.file) {
       const file = req.files.file;
-      const randomName = randomstring.generate();
+      const randomName = generateUid();
       filename = `${randomName}.${getFileExtension(file.name)}`;
       const savePath = path.join(
         __dirname,
@@ -92,15 +97,14 @@ class WebConfigService {
       Object.entries(configData).filter(([_, v]) => v !== undefined)
     );
 
-    const updated = await webConfigRepository.update(1, cleanedData);
-    if (!updated) throw new WebConfigNotFoundException();
-    return updated;
+    return await this.webConfigRepository.update(cleanedData, {
+      id: 1
+    });
+
   }
 
   async getWebPublic() {
-    const config = await webConfigRepository.findFirst();
-    if (!config) throw new WebConfigNotFoundException();
-    return config;
+    return this.webConfigRepository.initConfig();
   }
 }
 

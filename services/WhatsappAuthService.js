@@ -1,61 +1,31 @@
-const { generateRandomNumber } = require("../../utils/others.utils");
-const WhatsappProfileService = require("./WhatsappProfileService");
-const WhatsappService = require("./WhatsappService");
-const WhatsappWebhookService = require("./WhatsappWebhookService");
-const pin = process.env.ACCOUNT_SECRET;
+const WhatsappAuthApi = require("../api/Whatsapp/WhatsappAuthApi");
+const SocialAccountRepository = require("../repositories/SocialAccountRepository");
 
-module.exports = class WhatsappAuthService extends WhatsappService {
+class WhatsappAuthService {
   constructor(user, accessToken) {
-    super(user, accessToken);
+    this.whatsappAuthApi = new WhatsappAuthApi(user, accessToken);
+    this.socialAccountRepository = new SocialAccountRepository();
   }
 
   async initiateUserAuth(code, phoneNumberId, wabaId) {
-    await this.getLongLiveToken(code);
-    await this.registerAccount(phoneNumberId);
-    await this.subscribeWebhook(wabaId);
-    return this.saveCurrentSession(phoneNumberId, wabaId, pin);
+    const { access_token } = await this.whatsappAuthApi.getLongLiveToken(code);
+    this.whatsappAuthApi.setToken(access_token);
+    this.whatsappAuthApi.registerAccount(phoneNumberId).catch((err) => { });
+    await this.whatsappAuthApi.subscribeWebhook(wabaId);
+    return this.saveCurrentSession(phoneNumberId, wabaId);
   }
 
-  async getLongLiveToken(code) {
-    const response = await this.get("/oauth/access_token", {
-      client_id: this.AppId,
-      client_secret: this.AppSecret,
-      grant_type: "authorization_code",
-      code: code,
-    });
 
-    const { access_token } = response;
-
-    this.accessToken = access_token;
-
-    return access_token;
-  }
 
   async saveCurrentSession(phoneNumberId, wabaId, pin) {
-    const whatsappProfileService = new WhatsappProfileService(
+    return this.socialAccountRepository.updateOrCreateWhatsappProfile(
       this.user,
       this.accessToken
     );
-    return whatsappProfileService.saveProfile(phoneNumberId, wabaId, pin);
   }
 
-  async registerAccount(phoneNumberId) {
-    this.post(`/${phoneNumberId}/register`, {
-      messaging_product: "whatsapp",
-      pin,
-    })
-      .then((res) => {})
-      .catch((err) => {
-        console.log(err);
-      });
-  }
 
-  async subscribeWebhook(wabaId) {
-    const webhookService = new WhatsappWebhookService(
-      this.user,
-      this.accessToken
-    );
-    await webhookService.initMeta();
-    return webhookService.subscribeWebhook(wabaId);
-  }
+
 };
+
+module.exports = WhatsappAuthService

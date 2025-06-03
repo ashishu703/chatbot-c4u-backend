@@ -6,7 +6,7 @@ const {
 } = require("../types/socket-message.types");
 const IOService = require("./IOService");
 
-module.exports = class ChatIOService extends IOService {
+class ChatIOService extends IOService {
   constructor(uid) {
     super(uid);
   }
@@ -27,3 +27,4 @@ module.exports = class ChatIOService extends IOService {
     this.emit(UPDATE_DELIVERY_STATUS, status);
   }
 };
+module.exports = ChatIOService

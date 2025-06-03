@@ -1,39 +1,37 @@
 const PageNotFoundException = require("../../exceptions/CustomExceptions/PageNotFoundException");
-const FacebookException = require("../../exceptions/FacebookException");
-const {
-  readJsonFromFile,
-  writeJsonToFile,
-  addObjectToFile,
-} = require("../../functions/function");
-const AgentChatRepository = require("../../repositories/AgentChatRepository");
-const ChatRepository = require("../../repositories/chatRepository");
-const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
-const FacebookProfileRepository = require("../../repositories/FacebookProfileRepository");
-const { prepareChatPath, createChatId } = require("../../utils/facebook.utils");
+const ChatRepository = require("../repositories/ChatRepository");
+const FacebookPageRepository = require("../repositories/FacebookPageRepository");
+const { createChatId } = require("../utils/facebook.utils");
 const {
   convertWebhookReciveMessageToJsonObj,
   convertMessangerWebhookToDBChatCreateObject,
   convertWebhookToDBChatUpdateObject,
   convertWebhookRecieptToJsonObj,
-} = require("../../utils/messenger.utils");
+} = require("../utils/messenger.utils");
 const ChatIOService = require("../ChatIOService");
-const MessangerPageService = require("./MessangerPageService");
-const MessangerService = require("./MessangerService");
+const { USER, AGENT } = require("../types/roles.types");
+const MessengerProfileApi = require("../api/Messanger/MessengerProfileApi");
+const MessengerProfileApi = require("../api/Messanger/MessengerMessageApi");
+const { DELIVERED, READ, SENT } = require("../types/chat-status.types");
+const { VIDEO, FILE, AUDIO } = require("../types/message.types");
+const ConversationRepository = require("../repositories/ConversationRepository");
 
-module.exports = class MessangerChatService extends MessangerService {
-  pageService;
-  agentIoService = null;
-  userIoService = null;
+class MessangerChatService {
+
   constructor(user = null, accessToken = null) {
-    super(user, accessToken);
+    this.pageRepository = new FacebookPageRepository();
+    this.chatRepository = new ChatRepository();
+    this.conversationRepository = new ConversationRepository();
+    this.profileApi = new MessengerProfileApi();
+    this.messageApi = new MessengerMessageApi();
   }
 
   async initIOService(chatId) {
     this.agentIoService = null;
     this.userIoService = null;
 
-    const chat = await ChatRepository.findChatByChatId(chatId);
-    const chatAgent = await AgentChatRepository.getAssignedAgent(chatId);
+    const chat = await this.this.chatRepository.findChatByChatId(chatId);
+    const chatAgent = await this.this.chatRepository.getAssignedAgent(chatId);
 
     if (chat?.uid) {
       this.userIoService = new ChatIOService(chat.uid);
@@ -58,12 +56,12 @@ module.exports = class MessangerChatService extends MessangerService {
         let chatId;
 
         if (message && message.is_echo) {
-          pageProfile = await FacebookPageRepository.findByPageId(sender.id);
+          pageProfile = await this.pageRepository.findByPageId(sender.id);
           chatId = createChatId(recipient.id, sender.id);
         } else {
-          pageProfile = await FacebookPageRepository.findByPageId(recipient.id);
+          pageProfile = await this.pageRepository.findByPageId(recipient.id);
           chatId = createChatId(sender.id, recipient.id);
-          const existingChat = await ChatRepository.findChatByChatId(chatId);
+          const existingChat = await this.chatRepository.findByChatId(chatId);
           if (!existingChat) {
             await this.createNewChat({ ...messageObj, ...pageProfile, chatId });
           }
@@ -75,12 +73,10 @@ module.exports = class MessangerChatService extends MessangerService {
 
         await this.initIOService(chatId);
 
-        const path = prepareChatPath(pageProfile.uid, chatId);
 
         messageObj = {
           ...messageObj,
           ...pageProfile,
-          path,
           chatId,
         };
 
@@ -101,10 +97,10 @@ module.exports = class MessangerChatService extends MessangerService {
 
   async createNewChat(messageObj) {
     const message = messageObj.message;
-    const pageService = new MessangerPageService(null, messageObj.token);
-    await pageService.initMeta();
-    const person = await pageService.fetchProfile(message.mid);
-    await ChatRepository.createIfNotExist(
+    await this.profileApi.setToken(messageObj.token).initMeta();
+    const person = await this.profileApi.fetchProfile(message.mid);
+
+    await this.chatRepository.createIfNotExists(
       convertMessangerWebhookToDBChatCreateObject({
         ...messageObj,
         ...{
@@ -114,14 +110,16 @@ module.exports = class MessangerChatService extends MessangerService {
         },
       })
     );
+
+    await this.conversationRepository.createIfNotExists(messageObj);
   }
 
   async processSentReciept(messageObj) {
-    const { path, chatId } = messageObj;
+    const { chatId } = messageObj;
     const dbMessageObj = convertWebhookRecieptToJsonObj(messageObj);
-    addObjectToFile(dbMessageObj, path);
+    await this.conversationRepository.createIfNotExists(messageObj);
     this.emitNewMessageEvent(dbMessageObj, chatId);
-    await ChatRepository.updateLastMessage(
+    await this.chatRepository.updateLastMessage(
       chatId,
       convertWebhookToDBChatUpdateObject({
         ...messageObj,
@@ -131,11 +129,11 @@ module.exports = class MessangerChatService extends MessangerService {
   }
 
   async processTextMessage(messageObj) {
-    const { path, chatId } = messageObj;
+    const { chatId } = messageObj;
     const dbMessageObj = convertWebhookReciveMessageToJsonObj(messageObj);
-    addObjectToFile(dbMessageObj, path);
     this.emitNewMessageEvent(dbMessageObj, chatId);
-    await ChatRepository.updateLastMessage(
+    await this.conversationRepository.createIfNotExists(messageObj);
+    await this.chatRepository.updateLastMessage(
       chatId,
       convertWebhookToDBChatUpdateObject({
         ...messageObj,
@@ -145,44 +143,23 @@ module.exports = class MessangerChatService extends MessangerService {
   }
 
   async processReaction(messageObj) {
-    const { reaction, chatId, path } = messageObj;
-    const chats = readJsonFromFile(path);
-    let foundMessage;
-    const updatedChat = chats.map((chat) => {
-      if (chat.message_id === reaction.mid) {
-        chat.reaction = reaction.emoji;
-        foundMessage = chat;
-      }
-      return chat;
-    });
-    if (foundMessage) {
-      this.emitNewReactionEvent(foundMessage, chatId);
-      await ChatRepository.updateLastMessage(
-        chatId,
-        convertWebhookToDBChatUpdateObject({
-          ...messageObj,
-          message: foundMessage,
-        })
-      );
-    }
-    writeJsonToFile(path, updatedChat, null);
+    const { reaction, mid } = messageObj;
+    const message = await this.conversationRepository.updateConversationReaction(mid, reaction);
+    this.emitNewReactionEvent(message, chatId);
   }
 
   async processDeliveryMessage(messageObj) {
-    const { path, chatId, delivery, read } = messageObj;
-    const chats = readJsonFromFile(path);
+    const { mid, delivery, read, chatId } = messageObj;
+    let status = SENT;
+    if (delivery && delivery.mids.includes(chat.message_id)) {
+      status = DELIVERED;
+    } else if (read) {
+      status = READ;
+    }
 
-    const updatedChat = chats.map((chat) => {
-      if (delivery && delivery.mids.includes(chat.message_id)) {
-        chat.status = "delivered";
-        this.emitMessageDeliveryEvent(chat, chatId);
-      } else if (read) {
-        chat.status = "read";
-        this.emitMessageDeliveryEvent(chat, chatId);
-      }
-      return chat;
-    });
-    writeJsonToFile(path, updatedChat, null);
+    const message = await this.conversationRepository.updateConversationStatus(mid, reaction);
+    this.emitMessageDeliveryEvent(message, chatId);
+
   }
 
   async send({ text, toNumber }) {
@@ -191,25 +168,23 @@ module.exports = class MessangerChatService extends MessangerService {
       message: { text },
       messaging_type: "RESPONSE",
     };
-    return this.post("/me/messages", payload, {
-      access_token: this.accessToken,
-    });
+    return this.messageApi.sendMessage(payload);
   }
 
   async sendImage({ toNumber, url }) {
-    return this.sendAttachment(url, "image", toNumber);
+    return this.sendAttachment(url, IMAGE, toNumber);
   }
 
   async sendVideo({ toNumber, url }) {
-    return this.sendAttachment(url, "video", toNumber);
+    return this.sendAttachment(url, VIDEO, toNumber);
   }
 
   async sendDoc({ toNumber, url }) {
-    return this.sendAttachment(url, "file", toNumber);
+    return this.sendAttachment(url, FILE, toNumber);
   }
 
   async sendAudio({ toNumber, url }) {
-    return this.sendAttachment(url, "audio", toNumber);
+    return this.sendAttachment(url, AUDIO, toNumber);
   }
 
   async sendAttachment(url, type, toNumber) {
@@ -224,37 +199,20 @@ module.exports = class MessangerChatService extends MessangerService {
         },
       },
     };
-
-    return this.post("/me/messages", payload, {
-      access_token: this.accessToken,
-    });
+    return this.messageApi.sendMessage(payload);
   }
 
   async emitUpdateConversationEvent(chatId) {
-    const chat = await ChatRepository.findChatByChatId(chatId);
-    const chats = await ChatRepository.findUidId(chat.uid);
-    const agentChat = await AgentChatRepository.getAssignedAgent(chatId);
+    const chat = await this.chatRepository.findChatByChatId(chatId);
+    const chats = await this.chatRepository.findUidId(chat.uid);
 
     this.executeSocket(
       "updateConversation",
       {
         chats,
       },
-      "user"
+      USER
     );
-
-    if (agentChat) {
-      const agentChats = await AgentChatRepository.getAgentChats(agentChat.uid);
-      const chatIds = agentChats.map((i) => i?.chat_id);
-      const chats = await ChatRepository.searchByChatIds(chatIds);
-      this.executeSocket(
-        "updateConversation",
-        {
-          chats,
-        },
-        "agent"
-      );
-    }
   }
 
   async emitNewMessageEvent(message, chatId) {
@@ -277,15 +235,18 @@ module.exports = class MessangerChatService extends MessangerService {
   }
 
   async executeSocket(action, payload, target = "both") {
-    if (target === "both" || target === "user") {
+    if (target === "both" || target === USER) {
       if (this.userIoService) {
         this.userIoService[action](payload);
       }
     }
-    if (target === "both" || target === "agent") {
+    if (target === "both" || target === AGENT) {
       if (this.agentIoService) {
         this.agentIoService[action](payload);
       }
     }
   }
 };
+
+
+module.exports = MessangerChatService

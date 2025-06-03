@@ -7,6 +7,7 @@ const InvalidUidOrPlanException = require("../exceptions/CustomExceptions/Invali
 class PlanService {
   constructor() {
     this.userRepository = new UserRepository();
+    this.planRepository = new PlanRepository();
   }
   async addPlan({
     title,
@@ -24,7 +25,7 @@ class PlanService {
     if (!title || !short_description || !plan_duration_in_days) {
       throw new FillAllFieldsException();
     }
-    await PlanRepository.addPlan({
+    await this.planRepository.addPlan({
       title,
       short_description,
       allow_tag: !!allow_tag,
@@ -40,11 +41,11 @@ class PlanService {
   }
 
   async getPlans() {
-    return await PlanRepository.getPlans();
+    return await this.planRepository.getPlans();
   }
 
   async deletePlan(id) {
-    await PlanRepository.deletePlan(id);
+    await this.planRepository.deletePlan(id);
   }
 
   async updateUserPlan(uid, plan) {

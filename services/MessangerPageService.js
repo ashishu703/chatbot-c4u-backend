@@ -1,20 +1,23 @@
-const ChatRepository = require("../../repositories/chatRepository");
-const FacebookPageRepository = require("../../repositories/FacebookPageRepository");
-const MessangerService = require("./MessangerService");
+const ChatRepository = require("../repositories/ChatRepository");
+const FacebookPageRepository = require("../repositories/FacebookPageRepository");
+const MessengerPageApi = require("../api/Messanger/MessengerPageApi");
+const { MESSANGER } = require("../types/social-platform-types");
 
-module.exports = class MessangerPageService extends MessangerService {
+class MessangerPageService {
   page;
   constructor(user = null, accessToken = null) {
-    super(user, accessToken);
+    this.facebookPageRepository = new FacebookPageRepository();
+    this.chatRepository = new ChatRepository();
+    this.messengerPageApi = new MessengerPageApi(user, accessToken);
   }
 
   async initActivePage(pageId) {
-    this.page = await FacebookPageRepository.findByPageId(pageId);
+    this.page = await this.facebookPageRepository.findByPageId(pageId);
     this.initPage();
   }
 
   async initInactivePage(pageId) {
-    this.page = await FacebookPageRepository.findInactiveByPageId(pageId);
+    this.page = await this.facebookPageRepository.findInactiveByPageId(pageId);
     this.initPage();
   }
 
@@ -31,7 +34,7 @@ module.exports = class MessangerPageService extends MessangerService {
   }
 
   async fetchAndSavePages(accountId) {
-    const { data: pages } = await this.fetchPages();
+    const { data: pages } = await this.messengerPageApi.fetchPages();
 
     pages.forEach(async (page) => {
       await this.savePage(page, accountId);
@@ -39,14 +42,10 @@ module.exports = class MessangerPageService extends MessangerService {
 
     return pages;
   }
-  async fetchPages() {
-    return await this.get("/me/accounts?limit=1000", {
-      fields: "id,name,access_token",
-    });
-  }
+
 
   async savePage(page, accountId) {
-    await FacebookPageRepository.updateOrCreate(
+    await this.facebookPageRepository.updateOrCreate(
       this.user.uid,
       accountId,
       page.id,
@@ -59,52 +58,21 @@ module.exports = class MessangerPageService extends MessangerService {
   async activatePage(pageId) {
     await this.initMeta();
     await this.initInactivePage(pageId);
-    this.subscribeWebhooks();
-    await FacebookPageRepository.activatePagesByUserId(this.page.uid, [pageId]);
-    await FacebookPageRepository.deleteInActiveByUserId(this.page.uid);
+    await this.messengerPageApi.subscribeWebhooks(pageId);
+    await this.facebookPageRepository.activatePagesByUserId(this.page.uid, [pageId]);
+    await this.facebookPageRepository.deleteInActiveByUserId(this.page.uid);
   }
 
   async removePage(pageId) {
     await this.initMeta();
     await this.initActivePage(pageId);
-    this.unsubscribeWebhooks();
-    await FacebookPageRepository.deleteByPageId(pageId);
-    await ChatRepository.removePlatformChat(this.page.uid, "MESSENGER");
+    await this.messengerPageApi.unsubscribeWebhooks(pageId);
+    await this.facebookPageRepository.deleteByPageId(pageId);
+    await this.chatRepository.removePlatformChat(this.page.uid, MESSANGER);
   }
 
-  subscribeWebhooks() {
-    this.post(`/${this.page.page_id}/subscribed_apps`, {
-      subscribed_fields: [
-        "messaging_account_linking",
-        "messages",
-        "message_reads",
-        "message_reactions",
-        "message_edits",
-        "message_echoes",
-        "message_deliveries",
-        "message_context",
-      ].join(","),
-    })
-      .then((response) => {
-        console.log(
-          "Subscription successfully activated: " + this.page.page_id
-        );
-      })
-      .catch((err) => {
-        console.log(
-          "Subscription activation failed: " + this.page.page_id,
-          err
-        );
-      });
-  }
 
-  unsubscribeWebhooks() {
-    this.delete(`/${this.page.page_id}/subscribed_apps`)
-      .then((response) => {
-        console.log("Subscription successfully removed: " + this.page.page_id);
-      })
-      .catch((err) => {
-        console.log("Subscription removal failed: " + this.page.page_id, err);
-      });
-  }
 };
+
+
+module.exports = MessangerPageService

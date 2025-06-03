@@ -1,46 +1,33 @@
-const ChatRepository = require("../../repositories/chatRepository");
-const WhatsappProfileRepository = require("../../repositories/WhatsappProfileRepository");
-const WhatsappService = require("./WhatsappService");
-const WhatsappWebhookService = require("./WhatsappWebhookService");
+const ChatRepository = require("../repositories/ChatRepository");
+const SocialAccountRepository = require("../repositories/SocialAccountRepository");
+const WhatsappAuthApi = require("../api/Whatsapp/WhatsappAuthApi");
+const { WHATSAPP } = require("../types/social-platform-types");
 
-module.exports = class WhatsappProfileService extends WhatsappService {
-  constructor(user, accessToken) {
-    super(user, accessToken);
-  }
-
-  async saveProfile(phoneNumberId, wabaId, pin) {
-    await this.initMeta();
-    await WhatsappProfileRepository.updateOrCreate(
-      wabaId,
-      wabaId,
-      this.accessToken,
-      phoneNumberId,
-      this.user.uid,
-      this.AppId,
-      pin
-    );
-    return {
-      userId: this.user.uid,
-      pin,
-      wabaId,
-      phoneNumberId,
-      accessToken: this.accessToken,
-    };
+class WhatsappProfileService {
+  constructor(user = null, accessToken = null) {
+    this.chatRepository = new ChatRepository();
+    this.socialAccountRepository = new SocialAccountRepository();
+    this.whatsappAuthApi = new WhatsappAuthApi(user, accessToken);
   }
 
   async getProfiles() {
-    return WhatsappProfileRepository.findManyByUserId(this.user.uid);
+    return this.socialAccountRepository.findFirst({
+      uid: this.user.uid,
+      platform: WHATSAPP
+    });
   }
 
   async deleteProfile(wabaId) {
-    await ChatRepository.removePlatformChat(this.user.uid, "WHATSAPP");
-    const profile = await WhatsappProfileRepository.getByAccountId(wabaId);
-    const webhookService = new WhatsappWebhookService(
-      this.user,
-      profile.access_token
-    );
-    await webhookService.initMeta();
-    await webhookService.unsubscribeWebhook(wabaId);
-    return WhatsappProfileRepository.deleteByAccountId(wabaId);
+    await this.chatRepository.removePlatformChat(this.user.uid, WHATSAPP);
+    const profile = await this.socialAccountRepository.findFirst({
+      social_account_id: wabaId
+    });
+    await this.whatsappAuthApi.setToken(profile.access_token).unsubscribeWebhook(wabaId);
+    return this.socialAccountRepository.delete({
+      social_account_id: wabaId
+    });
   }
 };
+
+
+module.exports = WhatsappProfileService

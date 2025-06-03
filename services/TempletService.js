@@ -1,7 +1,6 @@
 const TempletRepository = require("../repositories/templetRepository");
 
 class TempletService {
-  templetRepository;
   constructor() {
     this.templetRepository = new TempletRepository();
   }
@@ -11,17 +10,15 @@ class TempletService {
       content = JSON.stringify(content);
     }
 
-    await this.templetRepository.create({ uid, title, type, content });
-    return true;
+    return this.templetRepository.create({ uid, title, type, content });
   }
 
   async getTemplates(uid) {
-    return await this.templetRepository.findByUid(uid);
+    return this.templetRepository.findByUid(uid);
   }
 
   async deleteTemplates(ids) {
-    await this.templetRepository.deleteByIds(ids);
-    return true;
+    return this.templetRepository.deleteByIds(ids);
   }
 }
 

@@ -8,10 +8,11 @@ module.exports = class IOService {
   constructor(uid) {
     this.io = getIOInstance();
     this.uid = uid;
+    this.roomRepository = new RoomRepository();
   }
 
   async initSocket() {
-    this.room = await RoomRepository.findByUserId(this.uid);
+    this.room = await this.roomRepository.findByUserId(this.uid);
   }
 
   async emit(event, data) {

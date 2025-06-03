@@ -1,7 +1,9 @@
-const { MESSENGER_KEY, INSTAGRAM_KEY } = require("../constants/chat.constant");
+const { SENT, OPEN } = require("../types/conversation-status.types");
+const { TEXT } = require("../types/message.types");
+const { MESSANGER, INSTAGRAM } = require("../types/social-platform-types");
 
 function convertWebhookReciveMessageToJsonObj(messageObj) {
-  let type = "text",
+  let type = TEXT,
     url = undefined;
 
   if (
@@ -20,12 +22,12 @@ function convertWebhookReciveMessageToJsonObj(messageObj) {
     status: "",
     text: messageObj.message.text,
     reaction: "",
-    route: "INCOMING",
+    route: INCOMING,
   };
 }
 
 function convertWebhookRecieptToJsonObj(messageObj) {
-  let type = "text",
+  let type = TEXT,
     url = undefined;
 
   if (
@@ -42,9 +44,9 @@ function convertWebhookRecieptToJsonObj(messageObj) {
     type,
     url,
     text: messageObj.message.text,
-    status: "sent",
+    status: SENT,
     reaction: "",
-    route: "OUTGOING",
+    route: OUTGOING,
   };
 }
 
@@ -56,13 +58,13 @@ function convertMessangerWebhookToDBChatCreateObject(object) {
     chat_id: chatId,
     uid: uid,
     recipient: page_id,
-    type: MESSENGER_KEY,
+    type: MESSANGER,
     last_message_came: timestamp / 1000,
     chat_note: null,
     chat_tags: null,
     sender_name: combineNames({ first_name, last_name }),
     sender_mobile: sender.id,
-    chat_status: "open",
+    chat_status: OPEN,
     is_opened: 0,
     last_message: null,
   };
@@ -75,13 +77,13 @@ function convertInstagramWebhookToDBChatCreateObject(object) {
     chat_id: chatId,
     uid: uid,
     recipient: page_id,
-    type: INSTAGRAM_KEY,
+    type: INSTAGRAM,
     last_message_came: timestamp / 1000,
     chat_note: null,
     chat_tags: null,
     sender_name: username,
     sender_mobile: sender.id,
-    chat_status: "open",
+    chat_status: OPEN,
     is_opened: 0,
     last_message: null,
   };
@@ -92,7 +94,7 @@ function convertWebhookToDBChatUpdateObject(object) {
 
   return {
     last_message_came: timestamp / 1000,
-    chat_status: "open",
+    chat_status: OPEN,
     is_opened: 0,
     last_message: message,
   };
