@@ -9,7 +9,7 @@ class WidgetController {
   async returnMediaUrl(req, res, next) {
     try {
       const result = await this.widgetService.returnMediaUrl(req.files);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -26,7 +26,7 @@ class WidgetController {
         logoType,
         size
       }, req.files);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -35,7 +35,7 @@ class WidgetController {
   async getMyWidget(req, res, next) {
     try {
       const result = await this.widgetService.getMyWidget(req.decode.uid);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -45,7 +45,7 @@ class WidgetController {
     try {
       const { id } = req.body;
       const result = await this.widgetService.deleteWidget(id);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -55,7 +55,7 @@ class WidgetController {
     try {
       const { id } = req.query;
       const result = await this.widgetService.getWidget(id);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }

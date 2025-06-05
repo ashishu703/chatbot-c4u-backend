@@ -10,7 +10,7 @@ class LinkController {
    async getGeneratedLinks(req, res, next) {
     try {
       const links = await this.linkRepository.getGeneratedLinks();
-      return formSuccess({ data: links});
+      return formSuccess(res,{ data: links});
     } catch (err) {
       next(err);
     }
@@ -20,7 +20,7 @@ class LinkController {
     try {
       const { id } = req.body;
       await this.linkRepository.deleteGeneratedLink(id);
-      return formSuccess({ msg: __t("generated_link_was_deleted"),
+      return formSuccess(res,{ msg: __t("generated_link_was_deleted"),
         
       });
     } catch (err) {

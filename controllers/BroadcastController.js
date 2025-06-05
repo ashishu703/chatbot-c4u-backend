@@ -32,7 +32,7 @@ class BroadcastController {
         user,
       });
 
-      return formSuccess({ msg: __t("broadcast_added") });
+      return formSuccess(res,{ msg: __t("broadcast_added") });
     } catch (err) {
       next(err);
     }
@@ -42,7 +42,7 @@ class BroadcastController {
     try {
       const user = req.decode;
       const broadcasts = await this.broadcastService.getBroadcasts(user.uid);
-      return formSuccess({ data: broadcasts });
+      return formSuccess(res,{ data: broadcasts });
     } catch (err) {
       next(err);
     }
@@ -54,7 +54,7 @@ class BroadcastController {
       const user = req.decode;
 
       const result = await this.broadcastService.getBroadcastLogs(id, user.uid);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -74,7 +74,7 @@ class BroadcastController {
         status,
         user.uid
       );
-      return formSuccess({msg : __t("campaign_status_updated")});
+      return formSuccess(res,{msg : __t("campaign_status_updated")});
     } catch (err) {
       next(err);
     }
@@ -89,7 +89,7 @@ class BroadcastController {
         broadcast_id,
         user.uid
       );
-      return formSuccess({msg : __t("broadcast_deleted")});
+      return formSuccess(res,{msg : __t("broadcast_deleted")});
     } catch (err) {
       next(err);
     }

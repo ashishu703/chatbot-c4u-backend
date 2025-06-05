@@ -26,7 +26,7 @@ class AgentMessageController {
         chatId,
         agentEmail: req.decode.email,
       });
-      return formSuccess(resp);
+      return formSuccess(res,resp);
     } catch (err) {
       next(err);
     }
@@ -47,7 +47,7 @@ class AgentMessageController {
         chatId,
         agentEmail: req.decode.email,
       });
-      return formSuccess(resp);
+      return formSuccess(res,resp);
     } catch (err) {
       next(err);
     }
@@ -60,7 +60,7 @@ class AgentMessageController {
       }
       const file = req.files.file;
       const url = await this.fileService.uploadMedia(file);
-      return formSuccess({ url });
+      return formSuccess(res,{ url });
     } catch (err) {
       next(err);
     }
@@ -81,7 +81,7 @@ class AgentMessageController {
         chatId,
         agentEmail: req.decode.email,
       });
-      return formSuccess(resp);
+      return formSuccess(res,resp);
     } catch (err) {
       next(err);
     }
@@ -102,7 +102,7 @@ class AgentMessageController {
         chatId,
         agentEmail: req.decode.email,
       });
-      return formSuccess(resp);
+      return formSuccess(res,resp);
     } catch (err) {
       next(err);
     }
@@ -123,7 +123,7 @@ class AgentMessageController {
         chatId,
         agentEmail: req.decode.email,
       });
-      return formSuccess(resp);
+      return formSuccess(res,resp);
     } catch (err) {
       next(err);
     }

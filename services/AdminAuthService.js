@@ -44,7 +44,7 @@ class AdminAuthService {
     const admin = await this.adminRepository.findByEmail(email);
 
     if (!admin) {
-      return UserNotFoundException();
+      throw new UserNotFoundException();
     }
 
     const url = createAdminPasswordRecoveryUrl(admin);

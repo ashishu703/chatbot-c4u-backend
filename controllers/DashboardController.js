@@ -15,7 +15,7 @@ class DashboardController {
       }
 
       const dashboardData = await this.dashboardService.getDashboardData(user.id, 'user');
-      return formSuccess(dashboardData);
+      return formSuccess(res,dashboardData);
     } catch (err) {
       next(err);
     }
@@ -29,7 +29,7 @@ class DashboardController {
       }
 
       const dashboardData = await this.dashboardService.getDashboardData(admin.id, 'admin');
-      return formSuccess(dashboardData);
+      return formSuccess(res,dashboardData);
     } catch (err) {
       next(err);
     }

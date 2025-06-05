@@ -10,7 +10,7 @@ class SocialController {
    async getWebPublic(req, res, next) {
     try {
       const data = await this.webPublicRepository.getWebPublic();
-      return formSuccess({ data: data || {} });
+      return formSuccess(res,{ data: data || {} });
     } catch (err) {
       next(err);
     }
@@ -19,7 +19,7 @@ class SocialController {
    async getSocialLogin(req, res, next) {
     try {
       const data = await this.webPublicRepository.getWebPublic();
-      return formSuccess({ data: data || {} });
+      return formSuccess(res,{ data: data || {} });
     } catch (err) {
       next(err);
     }
@@ -29,7 +29,7 @@ class SocialController {
     try {
       const { google_client_id, google_login_active } = req.body;
       await this.webPublicRepository.updateSocialLogin(google_client_id, google_login_active);
-      return formSuccess({ msg: __t("settings_updated"),
+      return formSuccess(res,{ msg: __t("settings_updated"),
 
        });
     } catch (err) {
@@ -41,7 +41,7 @@ class SocialController {
     try {
       const { rtl } = req.body;
       await this.webPublicRepository.updateRtl(rtl);
-      return formSuccess({ msg: __t("rtl_updated"),
+      return formSuccess(res,{ msg: __t("rtl_updated"),
         
        });
     } catch (err) {

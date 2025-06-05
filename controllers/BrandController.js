@@ -15,7 +15,7 @@ class BrandController {
       const file = req.files?.file;
       const filename = await this.fileService.uploadFile(file);
       await this.brandRepository.addBrand(filename);
-      return formSuccess({ msg: __t("logo_was_uploaded"), });
+      return formSuccess(res,{ msg: __t("logo_was_uploaded"), });
     } catch (err) {
       next(err);
     }
@@ -24,7 +24,7 @@ class BrandController {
    async getBrands(req, res, next) {
     try {
       const brands = await this.brandRepository.getBrands();
-      return formSuccess({data: brands });
+      return formSuccess(res,{data: brands });
     } catch (err) {
       next(err);
     }
@@ -34,7 +34,7 @@ class BrandController {
     try {
       const { id } = req.body;
       await this.brandRepository.deleteBrand(id);
-      return formSuccess({ msg: __t("brand_was_deleted"),
+      return formSuccess(res,{ msg: __t("brand_was_deleted"),
         
        });
     } catch (err) {

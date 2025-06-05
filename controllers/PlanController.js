@@ -16,7 +16,7 @@ class PlanController {
     try {
       const planData = req.body;
       await this.planService.addPlan(planData);
-      return formSuccess({ msg: __t("plan_updated"),
+      return formSuccess(res,{ msg: __t("plan_updated"),
 
        });
     } catch (err) {
@@ -27,7 +27,7 @@ class PlanController {
   async getPlans(req, res, next) {
     try {
       const plans = await this.planService.getPlans();
-      return formSuccess({ data: plans });
+      return formSuccess(res,{ data: plans });
     } catch (err) {
       next(err);
     }
@@ -37,7 +37,7 @@ class PlanController {
     try {
       const { id } = req.body;
       await this.planService.deletePlan(id);
-      return formSuccess({ msg: __t("plan_was_deleted"),
+      return formSuccess(res,{ msg: __t("plan_was_deleted"),
 
       });
     } catch (err) {
@@ -65,7 +65,7 @@ class PlanController {
       );
       
 
-      return formSuccess({ msg: __t("user_plan_updated"), });
+      return formSuccess(res,{ msg: __t("user_plan_updated"), });
     } catch (err) {
       next(err);
     }

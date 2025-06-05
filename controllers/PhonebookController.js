@@ -17,7 +17,7 @@ class PhonebookController {
         throw new EnterPhonebookNameException();
       }
       await this.phonebookService.addPhonebook(user.uid, name);
-      return formSuccess({msg : __t("phonebook_added")});
+      return formSuccess(res,{msg : __t("phonebook_added")});
     } catch (err) {
       next(err);
     }
@@ -27,7 +27,7 @@ class PhonebookController {
     try {
       const user = req.decode;
       const phonebooks = await this.phonebookService.getPhonebooks(user.uid);
-      return formSuccess({ data: phonebooks });
+      return formSuccess(res,{ data: phonebooks });
     } catch (err) {
       next(err);
     }
@@ -38,7 +38,7 @@ class PhonebookController {
       const { id } = req.body;
       const user = req.decode;
       await this.phonebookService.deletePhonebook(user.uid, id);
-      return formSuccess({msg : __t("phonebook_deleted")});
+      return formSuccess(res,{msg : __t("phonebook_deleted")});
     } catch (err) {
       next(err);
     }
@@ -52,7 +52,7 @@ class PhonebookController {
       const { id, phonebook_name } = req.body;
       const user = req.decode;
        await this.phonebookService.importContacts(user.uid, id, phonebook_name, req.files.file.data);
-      return formSuccess({msg: __t("contacts_inserted")});
+      return formSuccess(res,{msg: __t("contacts_inserted")});
     } catch (err) {
       next(err);
     }
@@ -76,7 +76,7 @@ class PhonebookController {
         var4,
         var5,
       });
-      return formSuccess({msg: __t("contacts_inserted")});
+      return formSuccess(res,{msg: __t("contacts_inserted")});
     } catch (err) {
       next(err);
     }
@@ -86,7 +86,7 @@ class PhonebookController {
     try {
       const user = req.decode;
       const contacts = await this.phonebookService.getContacts(user.uid);
-      return formSuccess({ data: contacts });
+      return formSuccess(res,{ data: contacts });
     } catch (err) {
       next(err);
     }
@@ -96,7 +96,7 @@ class PhonebookController {
     try {
       const { selected } = req.body;
        await this.phonebookService.deleteContacts(selected);
-      return formSuccess({msg: __t("contacts_deleted")});
+      return formSuccess(res,{msg: __t("contacts_deleted")});
     } catch (err) {
       next(err);
     }

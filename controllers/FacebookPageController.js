@@ -13,13 +13,13 @@ module.exports = class FacebookPageController extends MessangerController {
   async getInactivePages(req, res) {
     const user = req.decode;
     const pages = await FacebookPageRepository.findInactiveByUserId(user.uid);
-    return formSuccess({ pages });
+    return formSuccess(res,{ pages });
   }
 
   async getActivePages(req, res) {
     const user = req.decode;
     const pages = await FacebookPageRepository.findActiveByUserId(user.uid);
-    return formSuccess({ pages });
+    return formSuccess(res,{ pages });
   }
 
   async activatePages(req, res) {
@@ -29,7 +29,7 @@ module.exports = class FacebookPageController extends MessangerController {
       await this.pageService.activatePage(page);
     });
 
-    return formSuccess({});
+    return formSuccess(res,{});
   }
 
   async deletePage(req, res) {
@@ -37,12 +37,12 @@ module.exports = class FacebookPageController extends MessangerController {
 
     await this.pageService.removePage(id);
 
-    return formSuccess({});
+    return formSuccess(res,{});
   }
 
   async discardInactivePages(req, res) {
     const user = req.decode;
     await FacebookPageRepository.deleteInActiveByUserId(user.uid);
-    return formSuccess({});
+    return formSuccess(res,{});
   }
 };

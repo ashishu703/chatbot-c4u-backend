@@ -21,7 +21,7 @@ class PageController {
       const filename = await this.fileService.uploadFile(file);
       await PageRepository.addPage({ title, content, slug, image: filename });
 
-      return formSuccess({  msg: __t("page_was_added"),
+      return formSuccess(res,{  msg: __t("page_was_added"),
 
        });
     } catch (err) {
@@ -32,7 +32,7 @@ class PageController {
   async getPages(req, res, next) {
     try {
       const pages = await PageRepository.getPages();
-      return formSuccess({ data: pages });
+      return formSuccess(res,{ data: pages });
     } catch (err) {
       next(err);
     }
@@ -42,7 +42,7 @@ class PageController {
     try {
       const { id } = req.body;
       await PageRepository.deletePage(id);
-      return formSuccess({ msg: __t("page_was_deleted"),
+      return formSuccess(res,{ msg: __t("page_was_deleted"),
 
        });
     } catch (err) {
@@ -54,7 +54,7 @@ class PageController {
     try {
       const { slug } = req.body;
       const page = await PageRepository.getPageBySlug(slug);
-      return formSuccess({ data: page || {}, page: !!page });
+      return formSuccess(res,{ data: page || {}, page: !!page });
     } catch (err) {
       next(err);
     }
@@ -64,7 +64,7 @@ class PageController {
     try {
       const { title, content } = req.body;
       await PageRepository.updateTerms(title, content);
-      return formSuccess({ msg: __t("page_updated"),
+      return formSuccess(res,{ msg: __t("page_updated"),
         
        });
     } catch (err) {
@@ -76,7 +76,7 @@ class PageController {
     try {
       const { title, content } = req.body;
       await PageRepository.updatePrivacyPolicy(title, content);
-      return formSuccess({ msg: __t("page_updated"),
+      return formSuccess(res,{ msg: __t("page_updated"),
         
        });
     } catch (err) {

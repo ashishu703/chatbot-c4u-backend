@@ -14,7 +14,7 @@ class AdminController {
       const { email, password } = req.body;
       validateLoginCredentials({ email, password });
       const admin = await this.adminAuthService.initAdminLogin({ email, password });
-      return formSuccess({ ...admin });
+      return formSuccess(res,{ ...admin });
     } catch (err) {
       next(err);
     }
@@ -24,7 +24,7 @@ class AdminController {
     try {
       const { email } = req.body;
       await this.adminAuthService.sendRecoveryEmail(email);
-      return formSuccess({
+      return formSuccess(res,{
         msg: __t(
           "password_recovery_email_sent"
         ),
@@ -42,7 +42,7 @@ class AdminController {
         throw new PasswordNotProvidedException();
       }
       await this.adminAuthService.modifyPassword(req.decode, pass);
-      return formSuccess({
+      return formSuccess(res,{
         msg: __t(
           "password_changed"
         ),
@@ -55,7 +55,7 @@ class AdminController {
   async getAdmin(req, res, next) {
     try {
       const admin = await this.adminAuthService.getAdmin(req.decode.uid);
-      return formSuccess({ data: admin });
+      return formSuccess(res,{ data: admin });
     } catch (err) {
       next(err);
     }
@@ -65,7 +65,7 @@ class AdminController {
     try {
       const { email, newpass } = req.body;
       await this.adminAuthService.updateAdminLoginCredentials(req.decode.uid, { email, password: newpass });
-      return formSuccess({
+      return formSuccess(res,{
         msg: __t(
           "admin_updated"
         ),

@@ -22,7 +22,7 @@ module.exports = class MessangerAuthController extends MessangerController {
       );
       await pageService.initMeta();
       await pageService.fetchAndSavePages(accountInfo.accountId);
-      return formSuccess({ msg: __t("success") });
+      return formSuccess(res,{ msg: __t("success") });
     } catch (err) {
       next(err);
     }
@@ -33,7 +33,7 @@ module.exports = class MessangerAuthController extends MessangerController {
       const user = req.decode;
       const profileService = new FacebookProfileService(user, null);
       const profiles = await profileService.getProfiles();
-      return formSuccess({ msg: __t("success"), profiles });
+      return formSuccess(res,{ msg: __t("success"), profiles });
     } catch (err) {
       next(err);
     }
@@ -47,7 +47,7 @@ module.exports = class MessangerAuthController extends MessangerController {
         facebook_graph_version,
       } = await WebPublicRepository.getSetting();
 
-      return formSuccess({
+      return formSuccess(res,{
         msg: __t("success"),
         clientId: facebook_client_id,
         scopes: facebook_auth_scopes,
@@ -64,7 +64,7 @@ module.exports = class MessangerAuthController extends MessangerController {
       const user = req.decode;
       const profileService = new FacebookProfileService(user, null);
       await profileService.deleteProfile(id);
-      return formSuccess({ msg: __t("success") });
+      return formSuccess(res,{ msg: __t("success") });
     } catch (err) {
       next(err);
     }

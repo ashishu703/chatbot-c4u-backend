@@ -12,7 +12,7 @@ class PaymentController {
    async getPaymentGateway(req, res, next) {
     try {
       const data = await this.webPrivateRepository.getPaymentGateway();
-      return formSuccess({ data: data || {} });
+      return formSuccess(res,{ data: data || {} });
     } catch (err) {
       next(err);
     }
@@ -22,7 +22,7 @@ class PaymentController {
     try {
       const gatewayData = req.body;
       await this.webPrivateRepository.updatePaymentGateway(gatewayData);
-      return formSuccess({ msg: __t("payment_gateway_updated"),
+      return formSuccess(res,{ msg: __t("payment_gateway_updated"),
 
        });
     } catch (err) {
@@ -34,7 +34,7 @@ class PaymentController {
     try {
       const { id } = req.body;
       const result = await this.paymentService.getPlanDetails(id);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -43,7 +43,7 @@ class PaymentController {
   async getPaymentDetails(req, res, next) {
     try {
       const result = await this.paymentService.getPaymentDetails();
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -53,7 +53,7 @@ class PaymentController {
     try {
       const { planId } = req.body;
       const result = await this.paymentService.createStripeSession(req.decode.uid, planId);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -63,7 +63,7 @@ class PaymentController {
     try {
       const { rz_payment_id, plan, amount } = req.body;
      await this.paymentService.payWithRazorpay(req.decode.uid, { rz_payment_id, plan, amount });
-      return formSuccess({msg:__t("payment_thank_you")});
+      return formSuccess(res,{msg:__t("payment_thank_you")});
     } catch (err) {
       next(err);
     }
@@ -73,7 +73,7 @@ class PaymentController {
     try {
       const { orderID, plan } = req.body;
     await this.paymentService.payWithPaypal(req.decode.uid, { orderID, plan });
-      return formSuccess({msg:__t("payment_thank_you")});
+      return formSuccess(res,{msg:__t("payment_thank_you")});
     } catch (err) {
       next(err);
     }
@@ -83,7 +83,7 @@ class PaymentController {
     try {
       const { order, plan } = req.query;
       const result = await this.paymentService.stripePayment(order, plan);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -93,7 +93,7 @@ class PaymentController {
     try {
       const { planId } = req.body;
      await this.paymentService.startFreeTrial(req.decode.uid, planId);
-      return formSuccess({msg:__t("trial_plan_activated")});
+      return formSuccess(res,{msg:__t("trial_plan_activated")});
     } catch (err) {
       next(err);
     }

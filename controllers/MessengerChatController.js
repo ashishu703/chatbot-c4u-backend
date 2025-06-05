@@ -17,7 +17,7 @@ module.exports = class MessengerChatController extends MessangerController {
         text,
         toNumber,
       });
-      return formSuccess({ msg: "success" });
+      return formSuccess(res,{ msg: "success" });
     } catch (err) {
       next(err);
     }
@@ -35,7 +35,7 @@ module.exports = class MessengerChatController extends MessangerController {
         url,
         toNumber,
       });
-      return formSuccess({ msg: "success" });
+      return formSuccess(res,{ msg: "success" });
     } catch (err) {
       next(err);
     }
@@ -52,7 +52,7 @@ module.exports = class MessengerChatController extends MessangerController {
         url,
         toNumber,
       });
-      return formSuccess({ msg: "success" });
+      return formSuccess(res,{ msg: "success" });
     } catch (err) {
       next(err);
     }
@@ -69,7 +69,7 @@ module.exports = class MessengerChatController extends MessangerController {
         url,
         toNumber,
       });
-      return formSuccess({ msg: "success" });
+      return formSuccess(res,{ msg: "success" });
     } catch (err) {
       next(err);
     }
@@ -86,7 +86,7 @@ module.exports = class MessengerChatController extends MessangerController {
         url,
         toNumber,
       });
-      return formSuccess({ msg: "success" });
+      return formSuccess(res,{ msg: "success" });
     } catch (err) {
       next(err);
     }

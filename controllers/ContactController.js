@@ -16,7 +16,7 @@ class ContactController {
         throw new UidRequiredException();
       }
       const leads = await this.contactService.getContactLeads(uid);
-      return formSuccess({ data: leads });
+      return formSuccess(res,{ data: leads });
     } catch (err) {
       next(err);
     }
@@ -29,7 +29,7 @@ class ContactController {
         throw new UidRequiredException();
       }
       await this.contactService.deleteContactEntry(id);
-      return formSuccess({ msg: __t("entry_was_deleted"),
+      return formSuccess(res,{ msg: __t("entry_was_deleted"),
 
        });
     } catch (err) {
@@ -40,7 +40,7 @@ class ContactController {
   async submitContactForm(req, res, next) {
     try {
       await this.contactService.submitContactForm(req.body);
-      return formSuccess({ msg: __t("form_submitted"),
+      return formSuccess(res,{ msg: __t("form_submitted"),
         
        });
     } catch (err) {

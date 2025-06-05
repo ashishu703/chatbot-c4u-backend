@@ -14,7 +14,7 @@ class TempletController {
        throw new FillAllFieldsException();
       }
       await this.templetService.addTemplate(user.uid, { title, type, content });
-      return formSuccess({ msg: __t("template_added") });
+      return formSuccess(res,{ msg: __t("template_added") });
     } catch (err) {
       next(err);
     }
@@ -24,7 +24,7 @@ class TempletController {
     try {
       const user = req.decode;
       const templates = await this.templetService.getTemplates(user.uid);
-      return formSuccess({ data: templates });
+      return formSuccess(res,{ data: templates });
     } catch (err) {
       next(err);
     }
@@ -34,7 +34,7 @@ class TempletController {
     try {
       const { selected } = req.body;
        await this.templetService.deleteTemplates(selected);
-      return formSuccess({msg: __t("template_deleted")});
+      return formSuccess(res,{msg: __t("template_deleted")});
     } catch (err) {
       next(err);
     }

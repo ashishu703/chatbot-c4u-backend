@@ -10,7 +10,7 @@ class AgentTaskController {
    async getMyTasks(req, res, next) {
     try {
       const tasks = await this.agentService.getAgentTasks(req.decode.uid);
-      return formSuccess({ data: tasks });
+      return formSuccess(res,{ data: tasks });
     } catch (err) {
       next(err);
     }
@@ -23,7 +23,7 @@ class AgentTaskController {
         throw new TypeCommentException();
       }
       await this.agentService.markTaskComplete(id, comment);
-      return formSuccess({ msg: __t("task_updated"),
+      return formSuccess(res,{ msg: __t("task_updated"),
 
        });
     } catch (err) {

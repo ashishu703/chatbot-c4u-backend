@@ -9,7 +9,7 @@ class MediaController {
   async returnMediaUrl(req, res, next) {
     try {
       const result = await this.mediaService.handleMediaUpload(req.files);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }

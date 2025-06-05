@@ -13,7 +13,7 @@ module.exports = class InstagramAuthController extends InstagramController {
       const authService = new InstagramAuthService(user, null);
       await authService.initMeta();
       await authService.initiateUserAuth(code);
-      return formSuccess({ msg: __t("success") });
+      return formSuccess(res,{ msg: __t("success") });
     } catch (err) {
       next(err);
     }
@@ -24,7 +24,7 @@ module.exports = class InstagramAuthController extends InstagramController {
       const authService = new InstagramAuthService(null, null);
       await authService.initMeta();
       const authURI = authService.prepareAuthUri();
-      return formSuccess({ msg: __t("success"), authURI });
+      return formSuccess(res,{ msg: __t("success"), authURI });
     } catch (err) {
       next(err);
     }
@@ -35,7 +35,7 @@ module.exports = class InstagramAuthController extends InstagramController {
       const user = req.decode;
       const profileService = new InstagramProfileService(user, null);
       const profiles = await profileService.getProfiles();
-      return formSuccess({ msg: __t("success"), profiles });
+      return formSuccess(res,{ msg: __t("success"), profiles });
     } catch (err) {
       next(err);
     }
@@ -47,7 +47,7 @@ module.exports = class InstagramAuthController extends InstagramController {
       const user = req.decode;
       const profileService = new InstagramProfileService(user, null);
       await profileService.deleteProfile(id);
-      return formSuccess({ msg: __t("success") });
+      return formSuccess(res,{ msg: __t("success") });
     } catch (err) {
       next(err);
     }

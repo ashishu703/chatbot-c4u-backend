@@ -10,7 +10,7 @@ class ChatWidgetController {
   async addWidget(req, res, next) {
     try {
      await this.chatWidgetService.addWidget(req);
-      return formSuccess({ msg:__t("widget_added") });
+      return formSuccess(res,{ msg:__t("widget_added") });
     } catch (err) {
       next(err);
     }
@@ -18,7 +18,7 @@ class ChatWidgetController {
   async getMyWidgets(req, res, next) {
     try {
      const widgets = await this.chatWidgetService.getMyWidgets(req.decode.uid);
-      return formSuccess({data:widgets});
+      return formSuccess(res,{data:widgets});
     } catch (err) {
       next(err);
     }
@@ -28,7 +28,7 @@ class ChatWidgetController {
     try {
       const { id } = req.body;
      await this.chatWidgetService.deleteWidget(id);
-      return formSuccess({msg:__t("widget_deleted_success") });
+      return formSuccess(res,{msg:__t("widget_deleted_success") });
     } catch (err) {
       next(err);
     }

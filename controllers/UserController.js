@@ -13,7 +13,7 @@ class UserController {
     try {
       console.log('req.decode:', req.decode);
       const users = await this.userService.getUsers(req.decode.uid);
-      return formSuccess({ data: users });
+      return formSuccess(res,{ data: users });
     } catch (err) {
       next(err);
     }
@@ -22,7 +22,7 @@ class UserController {
   async updateUser(req, res, next) {
     try {
       await this.userService.updateUser(req.body);
-      return formSuccess({ msg: __t("user_was_updated"),
+      return formSuccess(res,{ msg: __t("user_was_updated"),
 
        });
     } catch (err) {
@@ -33,7 +33,7 @@ class UserController {
   async autoLogin(req, res, next) {
     try {
       const token = await this.userService.autoLogin(req.body.uid);
-      return formSuccess({ token });
+      return formSuccess(res,{ token });
     } catch (err) {
       next(err);
     }
@@ -42,7 +42,7 @@ class UserController {
   async deleteUser(req, res, next) {
     try {
       await this.userService.deleteUser(req.body.id);
-      return formSuccess({ msg: __t("user_was_deleted"),
+      return formSuccess(res,{ msg: __t("user_was_deleted"),
 
        });
     } catch (err) {
@@ -54,7 +54,7 @@ class UserController {
     try {
       const files = req.files;
       const result = await this.userService.returnMediaUrl(req.decode.uid, files);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
      next(err);
     }
@@ -63,7 +63,7 @@ class UserController {
   async getMe(req, res, next) {
     try {
       const data = await this.userService.getMe(req.decode.uid);
-      return formSuccess(data);
+      return formSuccess(res,data);
     } catch (err) {
       next(err);
     }
@@ -73,7 +73,7 @@ class UserController {
     try {
       const { chatId, note } = req.body;
        await this.userService.saveNote(req.decode.uid, chatId, note);
-      return formSuccess({ msg: __t("notes_were_updated"),});
+      return formSuccess(res,{ msg: __t("notes_were_updated"),});
     } catch (err) {
       next(err);
     }
@@ -83,7 +83,7 @@ class UserController {
     try {
       const { tag, chatId } = req.body;
        await this.userService.pushTag(req.decode.uid, tag, chatId);
-      return formSuccess({msg : __t("tag_was_added"),});
+      return formSuccess(res,{msg : __t("tag_was_added"),});
     } catch (err) {
       next(err);
     }
@@ -93,7 +93,7 @@ class UserController {
     try {
       const { tag, chatId } = req.body;
        await this.userService.deleteTag(req.decode.uid, tag, chatId);
-      return formSuccess({msg : __t("tag_was_deleted"),});
+      return formSuccess(res,{msg : __t("tag_was_deleted"),});
     } catch (err) {
       next(err);
     }
@@ -103,7 +103,7 @@ class UserController {
     try {
       const { mobile } = req.body;
       const result = await this.userService.checkContact(req.decode.uid, mobile);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -112,7 +112,7 @@ class UserController {
   async saveContact(req, res, next) {
     try {
        await this.userService.saveContact(req.decode.uid, req.body);
-      return formSuccess({msg : __t("contact_added"),});
+      return formSuccess(res,{msg : __t("contact_added"),});
     } catch (err) {
       next(err);
     }
@@ -121,7 +121,7 @@ class UserController {
   async deleteContact(req, res, next) {
     try {
        await this.userService.deleteContact(req.body.id);
-      return formSuccess({msg : __t("contacts_deleted"),});
+      return formSuccess(res,{msg : __t("contacts_deleted"),});
     } catch (err) {
       next(err);
     }
@@ -130,7 +130,7 @@ class UserController {
   async updateProfile(req, res, next) {
     try {
       await this.userService.updateProfile(req.decode.uid, req.body);
-      return formSuccess({msg : __t("profile_updated"),});
+      return formSuccess(res,{msg : __t("profile_updated"),});
     } catch (err) {
       next(err);
     }
@@ -139,7 +139,7 @@ class UserController {
   async getDashboard(req, res, next) {
     try {
       const result = await this.userService.getDashboard(req.decode.uid);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -149,7 +149,7 @@ class UserController {
     try {
       const { title, des, agent_uid } = req.body;
        await this.userService.addTaskForAgent(req.decode.uid, title, des, agent_uid);
-      return formSuccess({msg : __t("task_added"),});
+      return formSuccess(res,{msg : __t("task_added"),});
     } catch (err) {
       next(err);
     }
@@ -158,7 +158,7 @@ class UserController {
   async getMyAgentTasks(req, res, next) {
     try {
       const result = await this.userService.getMyAgentTasks(req.decode.uid);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -170,7 +170,7 @@ class UserController {
     try {
       const { id } = req.body;
        await this.userService.deleteAgentTask(id, req.decode.uid);
-      return formSuccess({ msg:__t("task_deleted")});
+      return formSuccess(res,{ msg:__t("task_deleted")});
     } catch (err) {
       next(err);
     }
@@ -180,7 +180,7 @@ class UserController {
   async updateAgentProfile(req, res, next) {
     try {
        await this.userService.updateAgentProfile(req.body);
-      return formSuccess({msg : __t("agent_profile_updated"),});
+      return formSuccess(res,{msg : __t("agent_profile_updated"),});
     } catch (err) {
       next(err);
     }
@@ -189,7 +189,7 @@ class UserController {
   async fetchProfile(req, res, next) {
     try {
       const result = await this.userService.fetchProfile(req.decode.uid);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -201,7 +201,7 @@ class UserController {
       if (!token) 
         throw new TokenMissingOrInvalidExecption();
       const user = await this.userService.verifyToken(token);
-      return formSuccess({ user });
+      return formSuccess(res,{ user });
     } catch (err) {
      next(err);
     }
@@ -210,7 +210,7 @@ class UserController {
   async loginWithFacebook(req, res, next) {
     try {
       const result = await this.userService.loginWithFacebook(req.body);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -219,7 +219,7 @@ class UserController {
   async loginWithGoogle(req, res, next) {
     try {
       const result = await this.userService.loginWithGoogle(req.body.token);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -228,7 +228,7 @@ class UserController {
   async signup(req, res, next) {
     try {
       const result = await this.userService.signup(req.body);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -237,7 +237,7 @@ class UserController {
   async login(req, res, next) {
     try {
       const result = await this.userService.login(req.body);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
      next(err);
     }
@@ -246,7 +246,7 @@ class UserController {
   async sendRecovery(req, res, next) {
     try {
       const result = await this.userService.sendRecovery(req.body.email);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -255,7 +255,7 @@ class UserController {
   async modifyPassword(req, res, next) {
     try {
       const result = await this.userService.modifyPassword(req.decode, req.query.pass);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -264,7 +264,7 @@ class UserController {
   async generateApiKeys(req, res, next) {
     try {
       const result = await this.userService.generateApiKeys(req.decode.uid);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -273,7 +273,7 @@ class UserController {
   async autoAgentLogin(req, res, next) {
     try {
       const result = await this.userService.autoAgentLogin(req.body.uid);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }

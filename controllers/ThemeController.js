@@ -9,7 +9,7 @@ class ThemeController {
   async getTheme(req, res, next) {
     try {
       const result = await this.themeService.getTheme();
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -18,7 +18,7 @@ class ThemeController {
   async saveTheme(req, res, next) {
     try {
      await this.themeService.saveTheme(req.body.updatedJson);
-      return formSuccess({msg : __t("theme_updated")});
+      return formSuccess(res,{msg : __t("theme_updated")});
     } catch (err) {
       next(err);
     }

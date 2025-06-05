@@ -158,11 +158,9 @@ class AuthService {
       password: haspass,
       mobile_with_country_code,
     });
-  // this.emailService.sendWelcomeEmail(email, name).catch((err) => {
-  //     console.log("Unable to send email.");
-  //   });
-  
-
+    this.emailService.sendWelcomeEmail(email, name).catch((err) => {
+      console.log("Unable to send Welcome Email", { email, name, err });
+    });
     return user;
   }
 
@@ -193,10 +191,11 @@ class AuthService {
       throw new InvalidCredentialsException();
     }
     const user = await User.findOne({ where: { email } });
+    console.log({ user, email });
     if (!user) {
       throw new RecoveryUserNotFoundException();
     }
-    const web = await WebRepository.getWebPublic();
+    const web = await this.webPublicRepository.getWebPublic();
     const appName = web?.app_name || "App";
     const token = generateToken({
       old_email: email,

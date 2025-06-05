@@ -17,7 +17,7 @@ class FlowController {
       }
 
      await this.flowService.addFlow({ title, nodes, edges, flowId, user });
-      return formSuccess({ msg: __t("flow_saved") });
+      return formSuccess(res,{ msg: __t("flow_saved") });
     } catch (err) {
       next(err);
     }
@@ -27,7 +27,7 @@ class FlowController {
     try {
       const user = req.decode;
       const flows = await this.flowService.getFlows(user.uid);
-      return formSuccess({ data: flows });
+      return formSuccess(res,{ data: flows });
     } catch (err) {
       next(err);
     }
@@ -38,7 +38,7 @@ class FlowController {
       const { id, flowId } = req.body;
       const user = req.decode;
      await this.flowService.deleteFlow(id, flowId, user.uid);
-      return formSuccess({ msg: __t("flow_deleted") });
+      return formSuccess(res,{ msg: __t("flow_deleted") });
     } catch (err) {
       next(err);
     }
@@ -57,7 +57,7 @@ class FlowController {
         flowId
       );
 
-      return formSuccess({ nodes, edges });
+      return formSuccess(res,{ nodes, edges });
     } catch (err) {
       next(err);
     }
@@ -69,7 +69,7 @@ class FlowController {
       const { flowId } = req.body;
       const user = req.decode;
       const result = await this.flowService.getActivity(flowId, user.uid);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -80,7 +80,7 @@ class FlowController {
       const { type, number, flowId } = req.body;
       const user = req.decode;
     await this.flowService.removeNumberFromActivity(type, number, flowId, user.uid);
-      return formSuccess({msg: __t("number_removed") });
+      return formSuccess(res,{msg: __t("number_removed") });
     } catch (err) {
       next(err);
     }

@@ -3,7 +3,7 @@ const Repository = require("./Repository");
 const { defaultAppConfig } = require("../config/app.config");
 
 class WebPublicRepository extends Repository {
-
+  
   constructor() {
     super(WebPublic);
   }

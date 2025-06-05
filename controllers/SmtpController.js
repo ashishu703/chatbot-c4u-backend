@@ -13,7 +13,7 @@ class SmtpController {
    async getSmtp(req, res, next) {
     try {
       const smtp = await this.smtpRepository.getSmtp();
-      return formSuccess({ data: smtp || { id: "ID" }});
+      return formSuccess(res,{ data: smtp || { id: "ID" }});
     } catch (err) {
       next(err);
     }
@@ -23,7 +23,7 @@ class SmtpController {
     try {
       const smtpData = req.body;
       await this.smtpRepository.updateSmtp(smtpData);
-      return formSuccess({  msg: __t("email_settings_updated"),
+      return formSuccess(res,{  msg: __t("email_settings_updated"),
 
        });
     } catch (err) {
@@ -35,7 +35,7 @@ class SmtpController {
     try {
       const { email, port, password, host, to } = req.body;
       const result = await this.emailService.sendTestEmail({ email, port, password, host, to });
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }

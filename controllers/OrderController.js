@@ -11,7 +11,7 @@ class OrderController {
   async getOrders(req, res, next) {
     try {
       const orders = await this.orderRepository.getOrders();
-      return formSuccess({ data: orders });
+      return formSuccess(res,{ data: orders });
     } catch (err) {
       next(err);
     }

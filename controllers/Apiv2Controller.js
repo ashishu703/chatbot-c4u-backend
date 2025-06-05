@@ -24,7 +24,7 @@ class ApiV2Controller {
       }
 
       const result = await this.metaService.sendMessage(token, messageObject);
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -57,7 +57,7 @@ class ApiV2Controller {
         exampleArr,
         mediaUri,
       });
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }

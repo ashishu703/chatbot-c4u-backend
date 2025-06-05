@@ -9,7 +9,7 @@ class WebConfigController {
   async updateWebConfig(req, res, next) {
     try {
       const result = await this.webConfigService .updateWebConfig(req);
-      return formSuccess({ msg: __t("web_config_updated"), data: result });
+      return formSuccess(res,{ msg: __t("web_config_updated"), data: result });
     } catch (err) {
       next(err);
     }
@@ -18,7 +18,7 @@ class WebConfigController {
   async getWebPublic(req, res, next) {
     try {
       const config = await this.webConfigService.getWebPublic();
-      return formSuccess({ data: config });
+      return formSuccess(res,{ data: config });
     } catch (err) {
       next(err);
     }

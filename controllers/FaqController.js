@@ -10,7 +10,7 @@ class FaqController {
     try {
       const { question, answer } = req.body;
       await this.faqRepository.addFaq(question, answer);
-      return formSuccess({ msg:__t("faq_was_added"),
+      return formSuccess(res,{ msg:__t("faq_was_added"),
 
        });
     } catch (err) {
@@ -21,7 +21,7 @@ class FaqController {
    async getFaqs(req, res, next) {
     try {
       const faqs = await this.faqRepository.getFaqs();
-      return formSuccess({ data: faqs });
+      return formSuccess(res,{ data: faqs });
     } catch (err) {
      next(err);
     }
@@ -31,7 +31,7 @@ class FaqController {
     try {
       const { id } = req.body;
       await this.faqRepository.deleteFaq(id);
-      return formSuccess({ msg: __t("faq_was_deleted"),
+      return formSuccess(res,{ msg: __t("faq_was_deleted"),
         
       });
     } catch (err) {

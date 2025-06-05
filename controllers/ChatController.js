@@ -11,7 +11,7 @@ class ChatController {
     try {
       const { chatId, note } = req.body;
       await this.chatService.saveNote(chatId, note);
-      return formSuccess({ msg:__t("notes_were_updated"),
+      return formSuccess(res,{ msg:__t("notes_were_updated"),
 
        });
     } catch (err) {
@@ -28,7 +28,7 @@ class ChatController {
       }
 
       await this.chatService.pushTag(chatId, tag);
-      return formSuccess({ msg: __t("tag_was_added"),
+      return formSuccess(res,{ msg: __t("tag_was_added"),
 
        });
     } catch (err) {
@@ -40,7 +40,7 @@ class ChatController {
     try {
       const { chatId, tag } = req.body;
       await this.chatService.deleteTag(chatId, tag);
-      return formSuccess({ msg: __t("tag_was_deleted"),
+      return formSuccess(res,{ msg: __t("tag_was_deleted"),
         
       });
     } catch (err) {

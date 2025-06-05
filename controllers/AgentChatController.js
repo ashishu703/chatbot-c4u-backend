@@ -11,7 +11,7 @@ class AgentChatController {
     try {
       const { uid } = req.body;
       const chats = await this.chatService.getAgentChatsOwner(req.decode.uid, uid);
-      return formSuccess({ data: chats });
+      return formSuccess(res,{ data: chats });
     } catch (err) {
       next(err);
     }
@@ -21,7 +21,7 @@ class AgentChatController {
     try {
       const { chatId } = req.body;
       const agent = await this.chatService.getAssignedChatAgent(req.decode.uid, chatId);
-      return formSuccess({ data: agent });
+      return formSuccess(res,{ data: agent });
     } catch (err) {
       next(err);
     }
@@ -31,7 +31,7 @@ class AgentChatController {
     try {
       const { assignAgent, chatId } = req.body;
       await this.chatService.updateAgentInChat(req.decode.uid, assignAgent, chatId);
-      return formSuccess({
+      return formSuccess(res,{
         msg: __t("updated"),
       });
     } catch (err) {
@@ -43,7 +43,7 @@ class AgentChatController {
     try {
       const { uid, chat_id } = req.body;
       await this.chatService.deleteAssignedChat(req.decode.uid, uid, chat_id);
-      return formSuccess({
+      return formSuccess(res,{
         msg: __t(
           "chat_removed_from_agent"
         ),
@@ -56,7 +56,7 @@ class AgentChatController {
   async getMyAssignedChats(req, res, next) {
     try {
       const chats = await this.chatService.getMyAssignedChats(req.decode.uid, req.owner.uid);
-      return formSuccess({ data: chats });
+      return formSuccess(res,{ data: chats });
     } catch (err) {
       next(err);
     }
@@ -66,7 +66,7 @@ class AgentChatController {
     try {
       const { chatId } = req.body;
       const data = await this.chatService.getConversation(req.owner.uid, chatId);
-      return formSuccess({ data });
+      return formSuccess(res,{ data });
     } catch (err) {
       next(err);
     }
@@ -79,7 +79,7 @@ class AgentChatController {
         throw new InvalidRequestException();
       }
       await this.chatService.changeChatTicketStatus(chatId, status);
-      return formSuccess({ msg: __t("chat_status_updated"), });
+      return formSuccess(res,{ msg: __t("chat_status_updated"), });
     } catch (err) {
       next(err);
     }

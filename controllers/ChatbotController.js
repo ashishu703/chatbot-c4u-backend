@@ -24,7 +24,7 @@ class ChatbotController {
         for_all,
         user,
       });
-     return formSuccess( {msg: __t("chatbot_added")});
+     return formSuccess(res, {msg: __t("chatbot_added")});
     } catch (err) {
      next(err);
     }
@@ -47,7 +47,7 @@ class ChatbotController {
         for_all,
         user,
       });
-     return formSuccess({msg: __t("Chatbot was updated") });
+     return formSuccess(res,{msg: __t("Chatbot was updated") });
     } catch (err) {
       next(err);
     }
@@ -57,7 +57,7 @@ class ChatbotController {
     try {
       const user = req.decode;
       const chatbots = await this.chatbotService.getChatbots(user.uid);
-     return formSuccess({ data: chatbots });
+     return formSuccess(res,{ data: chatbots });
     } catch (err) {
       next(err);
     }
@@ -69,7 +69,7 @@ class ChatbotController {
       const user = req.decode;
 
      await this.chatbotService.changeBotStatus(id, status, user);
-      return formSuccess({msg: __t("Chatbot was updated") });
+      return formSuccess(res,{msg: __t("Chatbot was updated") });
     } catch (err) {
       next(err);
     }
@@ -81,7 +81,7 @@ class ChatbotController {
       const user = req.decode;
 
     await this.chatbotService.deleteChatbot(id, user.uid);
-     return formSuccess({msg: __t("chatbot_deletedd") });
+     return formSuccess(res,{msg: __t("chatbot_deletedd") });
     } catch (err) {
      next(err);
     }
@@ -96,7 +96,7 @@ class ChatbotController {
       }
 
       const result = await this.chatbotService.makeRequestApi({ url, body, headers, type });
-     return formSuccess(result);
+     return formSuccess(res,result);
     } catch (err) {
       next(err);
     }

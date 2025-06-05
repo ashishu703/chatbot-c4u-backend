@@ -30,7 +30,7 @@ class AgentController {
         comments,
       });
 
-      return formSuccess({msg: __t("agent_account_created"),
+      return formSuccess(res,{msg: __t("agent_account_created"),
 
       });
     } catch (err) {
@@ -41,7 +41,7 @@ class AgentController {
   async getMyAgents(req, res, next) {
     try {
       const agents = await this.agentService.getMyAgents(req.decode.uid);
-      return formSuccess({data: agents});
+      return formSuccess(res,{data: agents});
     } catch (err) {
       next(err);
     }
@@ -51,7 +51,7 @@ class AgentController {
     try {
       const { agentUid, activeness } = req.body;
       await this.agentService.changeAgentActiveness(agentUid, activeness);
-      return formSuccess({msg: __t(success),
+      return formSuccess(res,{msg: __t(success),
 
        });
     } catch (err) {
@@ -63,7 +63,7 @@ class AgentController {
     try {
       const { uid } = req.body;
       await this.agentService.deleteAgent(uid, req.decode.uid);
-      return formSuccess({msg:__t(agent_was_deleted),
+      return formSuccess(res,{msg:__t(agent_was_deleted),
         
        });
     } catch (err) {
@@ -80,7 +80,7 @@ class AgentController {
       }
 
       const token = await this.agentService.login(email, password);
-      return formSuccess({token });
+      return formSuccess(res,{token });
     } catch (err) {
       next(err);
     }
@@ -89,7 +89,7 @@ class AgentController {
   async getMe(req, res, next) {
     try {
       const agent = await this.agentService.getAgentById(req.decode.uid);
-      return formSuccess({data: agent});
+      return formSuccess(res,{data: agent});
     } catch (err) {
       next(err);
     }

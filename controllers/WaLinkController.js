@@ -9,7 +9,7 @@ class WaLinkController {
   async generateWaLink(req, res, next) {
     try {
       const link = await this.waLinkService.generateWaLink(req.body);
-      return formSuccess({ data: link });
+      return formSuccess(res,{ data: link });
     } catch (err) {
       next(err);
     }

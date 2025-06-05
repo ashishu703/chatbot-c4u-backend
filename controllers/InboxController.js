@@ -16,7 +16,7 @@ class InboxController {
       const { uid } = req.params;
       const body = req.body;
       await this.inboxService.handleWebhook(uid, body);
-      return formSuccess({  });
+      return formSuccess(res,{  });
     } catch (err) {
       next(err);
     }
@@ -26,7 +26,7 @@ class InboxController {
     try {
       const user = req.decode;
       const chats = await this.inboxService.getChats(user.uid);
-      return formSuccess({ data: chats });
+      return formSuccess(res,{ data: chats });
     } catch (err) {
       next(err);
     }
@@ -37,7 +37,7 @@ class InboxController {
       const { chatId } = req.body;
       const user = req.decode;
       const conversation = await this.inboxService.getConversation(user.uid, chatId);
-      return formSuccess({ data: conversation });
+      return formSuccess(res,{ data: conversation });
     } catch (err) {
       next(err);
     }
@@ -49,7 +49,7 @@ class InboxController {
       const { "hub.mode": mode, "hub.verify_token": token, "hub.challenge": challenge } = req.query;
       const varifiedChallenge = await this.inboxService.verifyWebhook(uid, mode, token, challenge);
       if (varifiedChallenge) {
-        return formRawResponse(varifiedChallenge);
+        return formRawResponse(res,varifiedChallenge);
       } else {
         res.sendStatus(403);
       }
@@ -62,7 +62,7 @@ class InboxController {
     try {
       const { msg } = req.query;
      await this.inboxService.testSocket();
-      return formSuccess({msg:__t("socket_event_emitted")});
+      return formSuccess(res,{msg:__t("socket_event_emitted")});
     } catch (err) {
       next(err);
     }
@@ -83,7 +83,7 @@ class InboxController {
         msgType,
         type: "template",
       });
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -104,7 +104,7 @@ class InboxController {
         caption,
         type: "image",
       });
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -125,7 +125,7 @@ class InboxController {
         caption,
         type: "video",
       });
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -146,7 +146,7 @@ class InboxController {
         caption,
         type: "document",
       });
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -166,7 +166,7 @@ class InboxController {
         chatId,
         type: "audio",
       });
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -186,7 +186,7 @@ class InboxController {
         chatId,
         type: "text",
       });
-      return formSuccess(result);
+      return formSuccess(res,result);
     } catch (err) {
       next(err);
     }
@@ -206,7 +206,7 @@ class InboxController {
         chatId,
         example,
       });
-      return formSuccess({msg:__t(template_message_sent)});
+      return formSuccess(res,{msg:__t(template_message_sent)});
     } catch (err) {
       next(err);
     }
@@ -217,7 +217,7 @@ class InboxController {
       const { chatId } = req.body;
       const user = req.decode;
        await this.inboxService.deleteChat(user.uid, chatId);
-      return formSuccess({msg:__t("conversation_deleted")});
+      return formSuccess(res,{msg:__t("conversation_deleted")});
     } catch (err) {
       next(err);
     }
