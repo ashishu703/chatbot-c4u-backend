@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const TempletController = require("../controllers/templetController");
-const validateUser = require("../middlewares/user");
-const { checkPlan } = require("../middlewares/plan");
+const validateUser = require("../middlewares/user.middleware");
+const { checkPlan } = require("../middlewares/plan.middleware");
 
 const templateController = new TempletController();
 

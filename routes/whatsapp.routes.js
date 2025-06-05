@@ -1,7 +1,7 @@
 const router = require("express").Router();
-const validateUser = require("../middlewares/user.js");
-const AuthController = require("../controllers/_whatsapp/WhatsappAuthController.js");
-const WhatsappWebhookController = require("../controllers/_whatsapp/WhatsappWebhookController.js");
+const validateUser = require("../middlewares/user.middleware.js");
+const AuthController = require("../controllers/WhatsappAuthController.js");
+const WhatsappWebhookController = require("../controllers/WhatsappWebhookController.js");
 const authController = new AuthController();
 const whatsappWebhookController = new WhatsappWebhookController();
 

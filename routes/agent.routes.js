@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const validateUser = require("../middlewares/user");
-const validateAgent = require("../middlewares/agent");
-const { checkPlan } = require("../middlewares/plan");
+const validateUser = require("../middlewares/user.middleware");
+const validateAgent = require("../middlewares/agent.middleware");
+const { checkPlan } = require("../middlewares/plan.middleware");
 const AgentController = require("../controllers/agentController");
 const AgentChatController = require("../controllers/agentChatController");
 const AgentMessageController = require("../controllers/agentMessageController");

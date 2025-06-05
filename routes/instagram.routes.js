@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
 
-const validateUser = require("../middlewares/user.js");
-const validateAgent = require("../middlewares/agent.js");
+const validateUser = require("../middlewares/user.middleware.js");
+const validateAgent = require("../middlewares/agent.middleware.js");
 
 // Import controller classes
-const InstagramAuthController = require("../controllers/_instagram/InstagramAuthController.js");
-const InstagramWebhookController = require("../controllers/_instagram/InstagramWebhookController.js");
-const InstagramChatController = require("../controllers/_instagram/InstagramChatController.js");
+const InstagramAuthController = require("../controllers/InstagramAuthController.js");
+const InstagramWebhookController = require("../controllers/InstagramWebhookController.js");
+const InstagramChatController = require("../controllers/InstagramChatController.js");
 
 // Instantiate controllers
 const authController = new InstagramAuthController();

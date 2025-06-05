@@ -1,6 +1,6 @@
 const FacebookException = require("../exceptions/FacebookException");
-const InstagramAuthService = require("../services/_instagram/InstagramAuthService");
-const InstagramProfileService = require("../services/_instagram/InstagramProfileService");
+const InstagramAuthService = require("../services/InstagramAuthService");
+const InstagramProfileService = require("../services/InstagramProfileService");
 const { formSuccess } = require("../utils/response.utils");
 const InstagramController = require("./InstagramController");
 const { __t } = require("../utils/locale.utils");

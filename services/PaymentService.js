@@ -1,4 +1,4 @@
-const WebRepository = require("../repositories/webRepository");
+const WebPrivate = require("../repositories/WebPrivateRepository");
 const OrderRepository = require("../repositories/OrderRepository");
 const { rzCapturePayment, updateUserPlan } = require("../utils/payment.utils");
 const Stripe = require("stripe");
@@ -19,13 +19,13 @@ const NotATrialPlanException = require("../exceptions/CustomExceptions/NotATrial
 const { backendURI, stripeLang, paypalUrl } = require("../config/app.config");
 
 class PaymentService {
-  webRepository;
+  WebPrivate;
   constructor() {
-    this.webRepository = new WebRepository();
+    this.webPrivate = new WebPrivate();
     this.orderRepository = new OrderRepository();
   }
   async getPaymentDetails() {
-    const webPrivate = await this.webRepository.getWebPrivate();
+    const webPrivate = await this.webPrivate.getWebPrivate();
     if (!webPrivate) {
       throw new PaymentDetailsNotFoundException();
     }
@@ -33,7 +33,7 @@ class PaymentService {
   }
 
   async createStripeSession(uid, planId) {
-    const webPrivate = await this.webRepository.getWebPrivate();
+    const webPrivate = await this.webPrivate.getWebPrivate();
     if (!webPrivate?.pay_stripe_key || !webPrivate?.pay_stripe_id) {
       throw new PaymentKeysNotFoundException();
     }
@@ -50,7 +50,7 @@ class PaymentService {
       amount: plan.price,
       data: orderID,
     });
-    const webPublic = await this.webRepository.getWebPublic();
+    const webPublic = await this.webPrivate.getWebPublic();
     const session = await stripeClient.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
@@ -80,8 +80,8 @@ class PaymentService {
     if (!getPlan) {
       throw new InvalidPlanFoundException();
     }
-    const webPrivate = await this.webRepository.getWebPrivate();
-    const webPublic = await this.webRepository.getWebPublic();
+    const webPrivate = await this.webPrivate.getWebPrivate();
+    const webPublic = await this.webPrivate.getWebPublic();
     const rzId = webPrivate?.rz_id;
     const rzKey = webPrivate?.rz_key;
     if (!rzId || !rzKey) {
@@ -116,7 +116,7 @@ class PaymentService {
     if (!getPlan) {
       throw new InvalidPlanFoundException();
     }
-    const webPrivate = await this.webRepository.getWebPrivate();
+    const webPrivate = await this.webPrivate.getWebPrivate();
     const paypalClientId = webPrivate?.pay_paypal_id;
     const paypalClientSecret = webPrivate?.pay_paypal_key;
     if (!paypalClientId || !paypalClientSecret) {
@@ -165,7 +165,7 @@ class PaymentService {
     if (!getOrder || !getPlan) {
       throw new InvalidRequestException();
     }
-    const webPrivate = await this.webRepository.getWebPrivate();
+    const webPrivate = await this.webPrivate.getWebPrivate();
     const stripeClient = new Stripe(webPrivate?.pay_stripe_key);
     const getPay = await stripeClient.checkout.sessions.retrieve(
       getOrder.s_token

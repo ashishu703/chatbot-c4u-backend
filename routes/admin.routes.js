@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const adminValidator = require("../middlewares/admin");
+const adminValidator = require("../middlewares/admin.middleware");
 const AdminController = require("../controllers/AdminController");
 const PlanController = require("../controllers/planController");
 const UserController = require("../controllers/userController");
@@ -33,7 +33,7 @@ const dashboardController = new DashboardController();
 const linkController = new LinkController();
 const socialController = new SocialController();
 
-router.post("/login", authController.adminlogin.bind(authController));
+router.post("/login", adminController.initAdminLogin.bind(adminController));
 router.post(
   "/send_resovery",
   adminController.sendRecovery.bind(adminController)

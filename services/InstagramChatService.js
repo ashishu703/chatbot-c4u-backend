@@ -7,7 +7,7 @@ const {
   convertWebhookRecieptToJsonObj,
 } = require("../utils/messenger.utils");
 const ChatIOService = require("./IOService");
-const ProfileNotFoundException = require("../../exceptions/CustomExceptions/ProfileNotFoundException");
+const ProfileNotFoundException = require("../exceptions/CustomExceptions/ProfileNotFoundException");
 const ChatRepository = require("../repositories/ChatRepository");
 const SocialAccountRepository = require("../repositories/SocialAccountRepository");
 const InstagramProfileApi = require("../api/Instagram/InstagramProfileApi");
@@ -20,7 +20,6 @@ class InstagramChatService {
 
 
   constructor(user = null, accessToken = null) {
-    super(user, accessToken);
     this.instagramApi = new InstagramApi(user, accessToken);
     this.chatRepository = new ChatRepository();
     this.agentIoService = new ChatIOService();

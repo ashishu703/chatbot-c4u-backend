@@ -10,7 +10,7 @@ class WebPublicRepository extends Repository {
 
 
   async initConfig() {
-    return this.createIfNotExists({ id: 1 }, defaultAppConfig);
+    return this.createIfNotExists(defaultAppConfig, { id: 1 });
   }
 
   async getWebPublic() {

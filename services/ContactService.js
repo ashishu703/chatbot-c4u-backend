@@ -1,5 +1,5 @@
 const ContactRepository = require("../repositories/ContactRepository");
-const { validateEmail } = require("../utils/validation");
+const { validateEmail } = require("../utils/validation.utils");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const InvalidEmailIdException = require("../exceptions/CustomExceptions/InvalidEmailIdException");
 const UidRequiredException = require("../exceptions/CustomExceptions/UidRequiredException");

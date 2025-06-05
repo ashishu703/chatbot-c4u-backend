@@ -1,17 +1,17 @@
-const PaymentRepository = require("../repositories/paymentRepository");
+const WebPrivateRepository = require("../repositories/WebPrivateRepository");
 const PaymentService = require("../services/PaymentService");
 const { formSuccess } = require("../utils/response.utils");
 const { __t }= require("../utils/locale.utils")
 class PaymentController {
-  paymentRepository;
+  webPrivateRepository;
   paymentService;
   constructor(){
-    this.paymentRepository = new PaymentRepository();
+    this.webPrivateRepository = new WebPrivateRepository();
     this.paymentService =new PaymentService(); 
   }
    async getPaymentGateway(req, res, next) {
     try {
-      const data = await this.paymentRepository.getPaymentGateway();
+      const data = await this.webPrivateRepository.getPaymentGateway();
       return formSuccess({ data: data || {} });
     } catch (err) {
       next(err);
@@ -21,7 +21,7 @@ class PaymentController {
    async updatePaymentGateway(req, res, next) {
     try {
       const gatewayData = req.body;
-      await this.paymentRepository.updatePaymentGateway(gatewayData);
+      await this.webPrivateRepository.updatePaymentGateway(gatewayData);
       return formSuccess({ msg: __t("payment_gateway_updated"),
 
        });

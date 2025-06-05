@@ -1,7 +1,6 @@
-const { json } = require("sequelize");
 
 function formSuccess(data, statusCode = 200) {
-  return json(
+  return (
     {
       success: true,
       ...data,

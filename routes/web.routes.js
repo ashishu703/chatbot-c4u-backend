@@ -5,7 +5,7 @@ const ContactController = require("../controllers/ContactController");
 const WebConfigController = require("../controllers/WebConfigController");
 const ThemeController = require("../controllers/ThemeController");
 const WaLinkController = require("../controllers/WaLinkController");
-const adminMiddleware = require("../middlewares/admin");
+const adminMiddleware = require("../middlewares/admin.middleware");
 
 const contactController = new ContactController();
 const translationController = new TranslationController();

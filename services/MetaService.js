@@ -6,7 +6,7 @@ const {
   delMetaTemplet,
   getSessionUploadMediaMeta,
   uploadFileMeta,
-} = require("../utils/metaApi");
+} = require("../utils/meta-api.utils");
 const randomstring = require("randomstring");
 const path = require("path");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");

@@ -1,5 +1,5 @@
 const FacebookException = require("../exceptions/FacebookException");
-const MessangerChatService = require("../services/_messanger/MessangerChatService");
+const MessangerChatService = require("../services/MessangerChatService");
 const { verifyMetaWebhook } = require("../utils/facebook.utils");
 const { formSuccess } = require("../utils/response.utils");
 const MessangerController = require("./MessangerController");

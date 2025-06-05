@@ -6,10 +6,16 @@ const translations = {
   fr: require("../locales/fr.json"),
 };
 
-const locale = process.env.LOCALE;
+const locale = process.env.LOCALE || 'en'; 
 
 function __t(key, values = {}) {
-  const msg = new IntlMessageFormat(translations[locale][key], locale);
+  const translationString = translations[locale] && translations[locale][key];
+  
+  if (!translationString) {
+    return key; 
+  }
+
+  const msg = new IntlMessageFormat(translationString, locale);
   return msg.format(values);
 }
 

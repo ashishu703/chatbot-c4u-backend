@@ -9,7 +9,7 @@ class AdminController {
   constructor() {
     this.adminAuthService = new AdminAuthService();
   }
-  async login(req, res, next) {
+  async initAdminLogin(req, res, next) {
     try {
       const { email, password } = req.body;
       validateLoginCredentials({ email, password });

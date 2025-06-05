@@ -1,8 +1,9 @@
 const AuthService = require('../services/AuthService');
-const HttpException = require('../middlewares/HttpException');
+const HttpException = require('../middlewares/http-exception.middleware');
 const TokenMissingOrInvalidExecption = require('../exceptions/CustomExceptions/TokenMissingOrInvalidExecption');
 const TokenMalformedExecption = require('../exceptions/CustomExceptions/TokenMalformedExecption');
 const {formSuccess} = require("../utils/response.utils");
+const { __t } = require("../utils/locale.utils");
 class AuthController {
   authService;
 
@@ -54,6 +55,9 @@ class AuthController {
     try {
       const { email, name, password, mobile_with_country_code, acceptPolicy } = req.body;
       await this.authService.signup({ email, name, password, mobile_with_country_code, acceptPolicy });
+      console.log({
+        "check" : 1
+      });
       return formSuccess({msg: __t("signup_success") });
     } catch (err) {
       next(err);

@@ -3,7 +3,7 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class FlowEdge extends Model {
     static associate(models) {
-      FlowNode.belongsTo(models.Flow, {
+      FlowEdge.belongsTo(models.Flow, {
         foreignKey: "flow_id",
       });
     }

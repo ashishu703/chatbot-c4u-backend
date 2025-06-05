@@ -1,6 +1,6 @@
 const ChatRepository = require("../repositories/ChatRepository");
 const InstagramAccountRepository = require("../repositories/InstagramAccountRepository");
-const InstagramChatService = require("../services/_instagram/InstagramChatService");
+const InstagramChatService = require("../services/InstagramChatService");
 const { formSuccess } = require("../utils/response.utils");
 const InstagramController = require("./InstagramController");
 

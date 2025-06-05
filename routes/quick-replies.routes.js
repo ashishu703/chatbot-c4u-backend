@@ -1,7 +1,7 @@
 const router = require("express").Router();
-const validateUser = require("../middlewares/user.js");
+const validateUser = require("../middlewares/user.middleware.js");
 
-const QuickRepliesController = require("../controllers/_quick_replies/QuickReplyController.js");
+const QuickRepliesController = require("../controllers/QuickReplyController.js");
 const quickRepliesController = new QuickRepliesController();
 
 router.get(

@@ -1,10 +1,10 @@
 const router = require("express").Router();
-const validateUser = require("../middlewares/user.js");
-const validateAgent = require("../middlewares/agent.js");
-const AuthController = require("../controllers/_messanger/MessangerAuthController.js");
-const MessengerWebhookController = require("../controllers/_messanger/MessengerWebhookController.js");
-const MessengerChatController = require("../controllers/_messanger/MessengerChatController.js");
-const FacebookPageController = require("../controllers/_messanger/FacebookPageController.js");
+const validateUser = require("../middlewares/user.middleware.js");
+const validateAgent = require("../middlewares/agent.middleware.js");
+const AuthController = require("../controllers/MessangerAuthController.js");
+const MessengerWebhookController = require("../controllers/MessengerWebhookController.js");
+const MessengerChatController = require("../controllers/MessengerChatController.js");
+const FacebookPageController = require("../controllers/FacebookPageController.js");
 const authController = new AuthController();
 const messengerWebhookController = new MessengerWebhookController();
 const messengerChatController = new MessengerChatController();

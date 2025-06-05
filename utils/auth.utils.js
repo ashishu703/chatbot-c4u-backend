@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException");
 const CredentialsNotProvided = require("../exceptions/CustomExceptions/CredentialsNotProvided");
 const TokenExpiredEXception = require("../exceptions/CustomExceptions/TokenExpiredEXception");
@@ -19,8 +20,10 @@ const verifyToken = (token) => {
 };
 
 const encryptPassword = async (password) => {
-  return bcrypt.hash(password, passwordEncryptionRounds);
-}
+  const saltRounds = 10;
+  const hashed = await bcrypt.hash(password, saltRounds);
+  return hashed;
+};
 
 const comparePassword = async (password, hashedPassword) => {
   return bcrypt.compare(password, hashedPassword);

@@ -1,6 +1,6 @@
 const WebPublicRepository = require("../repositories/WebPublicRepository");
-const WhatsappAuthService = require("../services/_whatsapp/WhatsappAuthService");
-const WhatsappProfileService = require("../services/_whatsapp/WhatsappProfileService");
+const WhatsappAuthService = require("../services/WhatsappAuthService");
+const WhatsappProfileService = require("../services/WhatsappProfileService");
 const WhatsappController = require("./WhatsappController");
 
 module.exports = class MessangerAuthController extends WhatsappController {

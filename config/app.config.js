@@ -47,8 +47,6 @@ module.exports = {
     metaApiVersion,
     defaultTimeZone,
     stripeLang,
-    paypalClientId,
-    paypalClientSecret,
     paypalUrl,
     whatsAppAccountPin,
 };

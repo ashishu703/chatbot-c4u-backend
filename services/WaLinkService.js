@@ -1,6 +1,6 @@
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const LinkRepository = require("../repositories/LinkRepository");
-const { isValidEmail } = require("../utils/validation");
+const { isValidEmail } = require("../utils/validation.utils");
 const { createWhatsAppLink } = require("../utils/whatsapp.utils");
 const InvalidEmailIdException = require("../exceptions/CustomExceptions/InvalidEmailIdException");
 

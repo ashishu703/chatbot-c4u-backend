@@ -6,34 +6,50 @@ const WebPublicRepository = require("../repositories/WebPublicRepository");
 class EmailService {
   smtpConfig;
   appConfig;
-  constructor() {
 
+  constructor() {
+    this.initConfig();
   }
+
   async initConfig() {
-    this.appConfig = await (new WebPublicRepository()).getWebPublic();
-    this.smtpConfig = await (new SmtpRepository()).getSmtp();
+    try {
+      this.appConfig = await (new WebPublicRepository()).getWebPublic();
+      this.smtpConfig = await (new SmtpRepository()).getSmtp();
+    } catch (error) {
+      console.error("Failed to initialize configs:", error);
+      throw new Error("Configuration initialization failed");
+    }
   }
 
   async sendRecoveryEmail(to, url) {
-    await this.initConfig();
+    if (!this.appConfig || !this.smtpConfig) {
+     await this.initConfig(); 
+    }
     const { app_name } = this.appConfig;
     const template = getRecoverEmailTemplate(app_name, url);
     return this.sendEmailTemplate(template, to);
   }
 
   async sendWelcomeEmail(to, username) {
-    await this.initConfig();
+    if (!this.appConfig || !this.smtpConfig) {
+      await this.initConfig(); 
+    }
     const { app_name } = this.appConfig;
     const template = getWelcomeEmailTemplate(app_name, username);
     return this.sendEmailTemplate(template, to);
   }
 
   async sendEmailTemplate(template, to) {
+    if (!this.appConfig || !this.smtpConfig) {
+      throw new Error("Configuration not initialized");
+    }
+
     const {
       email, host, port, password
     } = this.smtpConfig;
+    const { app_name } = this.appConfig; 
 
-    await sendEmail(
+    return sendEmail(
       host,
       port,
       email,

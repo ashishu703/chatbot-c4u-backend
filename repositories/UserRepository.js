@@ -3,7 +3,7 @@ const { addDaysToCurrentTimestamp } = require("../utils/date.utils");
 const Repository = require("./Repository");
 class UserRepository extends Repository {
   constructor() {
-    super(Testimonial);
+    super(User);
   }
 
   async findByEmail(email) {

@@ -1,5 +1,5 @@
 const FacebookException = require("../exceptions/FacebookException");
-const InstagramChatService = require("../services/_instagram/InstagramChatService");
+const InstagramChatService = require("../services/InstagramChatService");
 const { verifyMetaWebhook } = require("../utils/facebook.utils");
 const { formSuccess } = require("../utils/response.utils");
 const InstagramController = require("./InstagramController");

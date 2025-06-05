@@ -1,10 +1,10 @@
 const FacebookException = require("../exceptions/FacebookException");
 const WebPublicRepository = require("../repositories/WebPublicRepository");
-const FacebookProfileService = require("../services/_messanger/FacebookProfileService");
-const MessangerAuthService = require("../services/_messanger/MessangerAuthService");
-const MessangerPageService = require("../services/_messanger/MessangerPageService");
+const FacebookProfileService = require("../services/FacebookProfileService");
+const MessangerAuthService = require("../services/MessangerAuthService");
+const MessangerPageService = require("../services/MessangerPageService");
 const { formSuccess } = require("../utils/response.utils");
-const MessangerController = require("../_messanger/MessangerController");
+const MessangerController = require("../controllers/MessangerController");
 const AuthenticationFailedException = require("../exceptions/CustomExceptions/AuthenticationFailedException");
 
 module.exports = class MessangerAuthController extends MessangerController {

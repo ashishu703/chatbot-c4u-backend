@@ -1,4 +1,4 @@
-const PageNotFoundException = require("../../exceptions/CustomExceptions/PageNotFoundException");
+const PageNotFoundException = require("../exceptions/CustomExceptions/PageNotFoundException");
 const ChatRepository = require("../repositories/ChatRepository");
 const FacebookPageRepository = require("../repositories/FacebookPageRepository");
 const { createChatId } = require("../utils/facebook.utils");
@@ -8,10 +8,9 @@ const {
   convertWebhookToDBChatUpdateObject,
   convertWebhookRecieptToJsonObj,
 } = require("../utils/messenger.utils");
-const ChatIOService = require("../ChatIOService");
+const ChatIOService = require("./ChatIOService");
 const { USER, AGENT } = require("../types/roles.types");
 const MessengerProfileApi = require("../api/Messanger/MessengerProfileApi");
-const MessengerProfileApi = require("../api/Messanger/MessengerMessageApi");
 const { DELIVERED, READ, SENT } = require("../types/chat-status.types");
 const { VIDEO, FILE, AUDIO } = require("../types/message.types");
 const ConversationRepository = require("../repositories/ConversationRepository");

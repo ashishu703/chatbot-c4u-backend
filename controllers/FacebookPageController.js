@@ -1,5 +1,5 @@
 const FacebookPageRepository = require("../repositories/FacebookPageRepository");
-const MessangerPageService = require("../services/_messanger/MessangerPageService");
+const MessangerPageService = require("../services/MessangerPageService");
 const { formSuccess } = require("../utils/response.utils");
 const MessangerController = require("./MessangerController");
 

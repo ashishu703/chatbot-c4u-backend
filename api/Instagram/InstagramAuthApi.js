@@ -1,4 +1,4 @@
-import InstagramApi from "./InstagramApi";
+const InstagramApi = require("./InstagramApi");
 class InstagramAuthApi extends InstagramApi {
     constructor(user = null, accessToken = null) {
         super(user, accessToken);
