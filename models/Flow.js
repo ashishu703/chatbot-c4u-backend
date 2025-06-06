@@ -8,6 +8,11 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+        Flow.belongsTo(models.User, {
+        foreignKey: "uid",
+        targetKey: "uid",
+        as: "user",
+      });
       Flow.hasMany(models.FlowNode, {
         foreignKey: "flow_id",
         onDelete: "CASCADE",

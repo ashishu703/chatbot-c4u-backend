@@ -3,7 +3,7 @@ const router = express.Router();
 const validateUser = require("../middlewares/user.middleware");
 const { checkPlan, checkNote, checkTags } = require("../middlewares/plan.middleware");
 const adminValidator = require("../middlewares/admin.middleware");
-const AdminController = require("../controllers/adminController");
+const AdminController = require("../controllers/AdminController");
 const PlanController = require("../controllers/planController");
 const UserController = require("../controllers/userController");
 const PaymentController = require("../controllers/paymentController");
@@ -52,24 +52,13 @@ router.post(
 );
 router.post(
   "/send_resovery",
-  adminController.sendRecovery.bind(adminController)
+  authController.sendRecovery.bind(authController)
 );
 router.get(
   "/modify_password",
   adminValidator,
   adminController.modifyPassword.bind(adminController)
 );
-router.get(
-  "/get_admin",
-  adminValidator,
-  adminController.getAdmin.bind(adminController)
-);
-router.post(
-  "/update-admin",
-  adminValidator,
-  adminController.updateAdmin.bind(adminController)
-);
-
 router.post(
   "/add_plan",
   adminValidator,
@@ -114,41 +103,6 @@ router.post(
   mediaController.returnMediaUrl.bind(mediaController)
 );
 
-router.get(
-  "/get_payment_gateway_admin",
-  adminValidator,
-  paymentController.getPaymentGateway.bind(paymentController)
-);
-router.post(
-  "/update_pay_gateway",
-  adminValidator,
-  paymentController.updatePaymentGateway.bind(paymentController)
-);
-
-router.post(
-  "/add_brand_image",
-  adminValidator,
-  brandController.addBrandImage.bind(brandController)
-);
-router.get("/get_brands", brandController.getBrands.bind(brandController));
-router.post(
-  "/del_brand_logo",
-  adminValidator,
-  brandController.deleteBrandLogo.bind(brandController)
-);
-
-router.post(
-  "/add_faq",
-  adminValidator,
-  faqController.addFaq.bind(faqController)
-);
-router.get("/get_faq", faqController.getFaqs.bind(faqController));
-router.post(
-  "/del_faq",
-  adminValidator,
-  faqController.deleteFaq.bind(faqController)
-);
-
 router.post(
   "/add_page",
   adminValidator,
@@ -188,23 +142,6 @@ router.post(
   "/del_testi",
   adminValidator,
   testimonialController.deleteTestimonial.bind(testimonialController)
-);
-
-router.get(
-  "/get_orders",
-  adminValidator,
-  orderController.getOrders.bind(orderController)
-);
-
-router.get(
-  "/get_contact_leads",
-  adminValidator,
-  contactController.getContactLeads.bind(contactController)
-);
-router.post(
-  "/del_cotact_entry",
-  adminValidator,
-  contactController.deleteContactEntry.bind(contactController)
 );
 
 router.post(
@@ -276,9 +213,9 @@ router.post(
 );
 
 router.get(
-  "/dashboard",
-  adminValidator,
-  dashboardController.getAdminDashboard.bind(dashboardController)
+  "/get_dashboard",
+  validateUser,
+  userController.getDashboard.bind(userController)
 );
 
 router.get(

@@ -3,8 +3,7 @@ const jwt = require("jsonwebtoken");
 const moment = require("moment");
 const { isValidEmail, sendEmail } = require("../functions/function");
 const { generateToken, comparePassword } = require("../utils/auth.utils");
-const { validateFacebookToken } = require("../utils/meta-api.utils");
-const { recoverEmail } = require("../emails/returnEmails");
+const { getRecoverEmailTemplate } = require("../emails/returnEmails");
 const { User } = require("../models");
 const WebPublicRepository = require("../repositories/WebPublicRepository");
 const TokenExpiredEXception = require("../exceptions/CustomExceptions/TokenExpiredEXception");
@@ -158,9 +157,7 @@ class AuthService {
       password: haspass,
       mobile_with_country_code,
     });
-    this.emailService.sendWelcomeEmail(email, name).catch((err) => {
-      console.log("Unable to send Welcome Email", { email, name, err });
-    });
+    this.emailService.sendWelcomeEmail(email, name);
     return user;
   }
 
@@ -195,8 +192,6 @@ class AuthService {
     if (!user) {
       throw new RecoveryUserNotFoundException();
     }
-    const web = await this.webPublicRepository.getWebPublic();
-    const appName = web?.app_name || "App";
     const token = generateToken({
       old_email: email,
       email,
@@ -204,23 +199,8 @@ class AuthService {
       password: user.password,
       role: USER,
     });
-    const recoveryUrl = `${process.env.FRONTENDURI}/recovery-user/${token}`;
-    const html = recoverEmail(appName, recoveryUrl);
-    const smtp = await WebRepository.getSmtp();
-    if (!smtp?.email || !smtp?.host || !smtp?.port || !smtp?.password) {
-      throw new SmtpConnectionNotFoundException();
-    }
-    await sendEmail(
-      smtp.host,
-      smtp.port,
-      smtp.email,
-      smtp.password,
-      html,
-      `${appName} - Password Recovery`,
-      smtp.email,
-      email
-    );
-    return true;
+    const url = `${process.env.FRONTENDURI}/recovery-user/${token}`;
+    return this.emailService.sendRecoveryEmail(email, url);
   }
 
   async modifyPassword(decoded, pass) {

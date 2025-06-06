@@ -1,8 +1,8 @@
 const path = require("path");
 const MetaApiRepository = require("../repositories/metaApiRepository");
-const UserRepository = require("../repositories/userRepository");
+const UserRepository = require("../repositories/UserRepository");
 const ChatsRepository = require("../repositories/ChatRepository");
-const ContactRepository = require("../repositories/contactRepository");
+const ContactRepository = require("../repositories/ContactRepository");
 const RoomsRepository = require("../repositories/RoomRepository");
 const {
   saveWebhookConversation,
@@ -12,7 +12,6 @@ const {
   sendMetatemplet,
   updateMetaTempletInMsg,
   getUserPlanDays,
-  deleteFileIfExists,
 } = require("../functions/function");
 const { getIOInstance } = require("../socket");
 const UserPlanExpiredException = require("../exceptions/CustomExceptions/UserPlanExpiredException");

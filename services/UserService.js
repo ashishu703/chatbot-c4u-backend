@@ -1,10 +1,7 @@
 const path = require("path");
 const ContactRepository = require("../repositories/ContactRepository");
 const ChatRepository = require("../repositories/ChatRepository");
-const chatbotRepository = require("../repositories/ChatbotRepository");
 const AgentTaskRepository = require("../repositories/AgentTaskRepository");
-const metaRepository = require("../repositories/MetaRepository");
-const { fetchProfileFun } = require("../utils/meta-api.utils");
 const { uploadFile } = require("../utils/file.utils");
 const UserRepository = require("../repositories/UserRepository");
 const EmailAlreadyTakenException = require("../exceptions/CustomExceptions/EmailAlreadyTakenException");
@@ -17,7 +14,6 @@ const ContactAlreadyExistedException = require("../exceptions/CustomExceptions/C
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const NoFilesWereUploadedException = require("../exceptions/CustomExceptions/NoFilesWereUploadedException");
 const PleaseSelectAgentException = require("../exceptions/CustomExceptions/PleaseSelectAgentException");
-const TaskNotFoundOrUnauthorizedException = require("../exceptions/CustomExceptions/TaskNotFoundOrUnauthorizedException");
 const CannotRemoveAgentDetailException = require("../exceptions/CustomExceptions/CannotRemoveAgentDetailException");
 const { OPEN, PENDING, SOLVED } = require("../types/conversation-status.types");
 const { PENDING: PENDING_TASK } = require("../types/tasks.types");
@@ -52,48 +48,52 @@ class UserService {
     return updatedUser;
   }
 
-  async getDashboard(uid) {
+async getDashboard(uid) {
+  const user = await this.userRepository.findByUid(uid, [
+    "chats",
+    "chatbots",
+    "contacts",
+    "broadcasts",
+    "flows",
+    "templets",
+  ]);
 
-    const user = await this.userRepository.findByUid(uid, [
-      "chats",
-      "chatbots",
-      "contacts",
-      "broadcasts",
-      "flows",
-      "templets",
-    ]);
-
-    const chats = user.chats;
-    const openChats = chats.filter(chat => chat.chat_status === OPEN);
-    const pendingChats = chats.filter(chat => chat.chat_status === PENDING);
-    const resolvedChats = chats.filter(chat => chat.chat_status === SOLVED);
-
-    const bots = user.chatbots;
-    const activeBots = bots.filter(bot => bot.active === 1);
-    const inactiveBots = bots.filter(bot => bot.active === 0);
-
-    const totalContacts = user.contacts.length;
-    const totalFlows = user.flows.length;
-    const totalBroadcasts = user.broadcasts.length;
-    const totalTemplets = user.templets.length;
-
-    const totalChats = chats.length
-    const totalChatbots = bots.length
-
-    return {
-      opened: openChats,
-      pending: pendingChats,
-      resolved: resolvedChats,
-      activeBot: activeBots,
-      dActiveBot: inactiveBots,
-      totalChats,
-      totalChatbots,
-      totalContacts,
-      totalFlows,
-      totalBroadcasts,
-      totalTemplets,
-    };
+  if (!user) {
+    throw new Error("User not found");
   }
+
+  const chats = user.chats || [];
+  const openChats = chats.filter(chat => chat.chat_status === OPEN);
+  const pendingChats = chats.filter(chat => chat.chat_status === PENDING);
+  const resolvedChats = chats.filter(chat => chat.chat_status === SOLVED);
+
+  const bots = user.chatbots || [];
+  const activeBots = bots.filter(bot => bot.active === 1);
+  const inactiveBots = bots.filter(bot => bot.active === 0);
+
+  const totalContacts = (user.contacts || []).length;
+  const totalFlows = (user.flows || []).length;
+  const totalBroadcasts = (user.broadcasts || []).length;
+  const totalTemplets = (user.templets || []).length;
+
+  const totalChats = chats.length;
+  const totalChatbots = bots.length;
+
+  return {
+    opened: openChats,
+    pending: pendingChats,
+    resolved: resolvedChats,
+    activeBot: activeBots,
+    dActiveBot: inactiveBots,
+    totalChats,
+    totalChatbots,
+    totalContacts,
+    totalFlows,
+    totalBroadcasts,
+    totalTemplets,
+  };
+}
+
 
   async updateUser(data) {
     const { uid, name, email, mobile_with_country_code, newPassword } = data;

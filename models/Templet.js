@@ -8,7 +8,11 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Templet.belongsTo(models.User, {
+        foreignKey: "uid",
+        targetKey: "uid",
+        as: "user",
+      });
     }
   }
   Templet.init(

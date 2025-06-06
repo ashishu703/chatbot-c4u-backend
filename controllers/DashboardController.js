@@ -28,7 +28,7 @@ class DashboardController {
        throw new AdminNotFoundException();
       }
 
-      const dashboardData = await this.dashboardService.getDashboardData(admin.id, 'admin');
+      const dashboardData = await this.dashboardService.getAdminDashboardData(admin.id, 'admin');
       return formSuccess(res,dashboardData);
     } catch (err) {
       next(err);

@@ -25,9 +25,9 @@ class DashboardService {
     let dashboardData;
 
     if (role === USER) {
-      dashboardData = await DashboardService.getUserDashboardData(userId);
+      dashboardData = await this.getUserDashboardData(userId);
     } else if (role === ADMIN) {
-      dashboardData = await DashboardService.getAdminDashboardData();
+      dashboardData = await this.getAdminDashboardData();
     }
 
     return dashboardData;
