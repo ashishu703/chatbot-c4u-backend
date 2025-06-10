@@ -16,14 +16,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      order_id: DataTypes.STRING,
-      order_status: DataTypes.STRING,
-      order_type: DataTypes.STRING,
-      order_date: DataTypes.STRING,
       payment_mode: DataTypes.STRING,
       amount: DataTypes.STRING,
       data: DataTypes.TEXT,
       s_token: DataTypes.STRING,
+      
+      
+      
     },
     {
       sequelize,

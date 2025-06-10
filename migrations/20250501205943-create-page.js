@@ -11,11 +11,12 @@ module.exports = {
       },
       slug: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
+        unique: true,
       },
       title: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
       image: {
         type: Sequelize.STRING,
@@ -23,7 +24,7 @@ module.exports = {
       },
       content: {
         type: Sequelize.TEXT,
-        allowNull: true,
+        allowNull: false,
       },
       permanent: {
         type: Sequelize.BOOLEAN,

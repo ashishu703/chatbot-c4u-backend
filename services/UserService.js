@@ -39,7 +39,7 @@ class UserService {
   }
 
   async getUsers() {
-    const users = await this.userRepository.findAll();
+    const users = await this.userRepository.find();
     return users;
   }
 
@@ -126,7 +126,7 @@ async getDashboard(uid) {
   }
 
   async deleteUser(id) {
-    return this.userRepository.deleteById(id);
+    return this.userRepository.delete({id});
   }
 
   async saveNote(uid, chatId, note) {

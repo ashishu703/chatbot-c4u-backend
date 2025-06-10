@@ -11,7 +11,7 @@ module.exports = {
       },
       uid: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
       payment_mode: {
         type: Sequelize.STRING,
@@ -29,6 +29,8 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
+      
+
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

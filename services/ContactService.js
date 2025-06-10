@@ -30,7 +30,7 @@ class ContactService {
     if (!id) {
       throw new IdRequiredException();
     }
-    return await this.contactRepository.delete(id);
+    return await this.contactRepository.delete({id});
   }
 }
 

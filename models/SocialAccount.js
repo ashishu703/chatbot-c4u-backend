@@ -9,8 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       SocialAccount.hasMany(models.Chat, {
-        foreignKey: "chat_id",
-        targetKey: "chat_id",
+        foreignKey: "account_id",
         as: "chats",
       });
     }

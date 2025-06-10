@@ -26,7 +26,7 @@ class ContactController {
     try {
       const { id } = req.body;
       if (!id) {
-        throw new UidRequiredException();
+        throw new UidRequiredException(); 
       }
       await this.contactService.deleteContactEntry(id);
       return formSuccess(res,{ msg: __t("entry_was_deleted"),

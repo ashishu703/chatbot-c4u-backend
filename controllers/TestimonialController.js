@@ -4,10 +4,14 @@ const{ __t }=require("../utils/locale.utils")
 
 class TestimonialController {
 
+  constructor() {
+    this.testimonialRepository = new TestimonialRepository();
+  }
+
    async addTestimonial(req, res, next) {
     try {
       const testimonialData = req.body;
-      await TestimonialRepository.addTestimonial(testimonialData);
+      await this.testimonialRepository.addTestimonial(testimonialData);
       return formSuccess(res,{  msg: __t("testimonial_was_added"),
 
        });
@@ -18,7 +22,7 @@ class TestimonialController {
 
    async getTestimonials(req, res, next) {
     try {
-      const testimonials = await TestimonialRepository.getTestimonials();
+      const testimonials = await this.testimonialRepository.getTestimonials();
       return formSuccess(res,{  data: testimonials });
     } catch (err) {
       next(err);
@@ -29,7 +33,7 @@ class TestimonialController {
   try {
     const { id } = req.body;
     console.log("Deleting testimonial with ID:", id);  
-    const deleted = await TestimonialRepository.deleteTestimonial(id);
+    const deleted = await this.testimonialRepository.deleteTestimonial(id);
     console.log("Deleted?", deleted);  
     return formSuccess(res,{  msg: __t("testimonial_was_deleted"),
       

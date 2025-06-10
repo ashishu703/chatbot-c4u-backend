@@ -1,4 +1,4 @@
-const WebPublicRepository = require("../repositories/webPublicRepository");
+const WebPublicRepository = require("../repositories/WebPublicRepository");
 const { formSuccess } = require("../utils/response.utils");
 const {__t }= require("../utils/locale.utils")
 
@@ -28,7 +28,7 @@ class SocialController {
    async updateSocialLogin(req, res, next) {
     try {
       const { google_client_id, google_login_active } = req.body;
-      await this.webPublicRepository.updateSocialLogin(google_client_id, google_login_active);
+      await this.webPublicRepository.updateGoogleLoginCredentials(google_client_id, google_login_active);
       return formSuccess(res,{ msg: __t("settings_updated"),
 
        });
