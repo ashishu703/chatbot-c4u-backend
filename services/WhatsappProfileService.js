@@ -13,8 +13,10 @@ class WhatsappProfileService {
 
   async getProfiles() {
     return this.socialAccountRepository.find({
-      uid: this.user.uid,
-      platform: WHATSAPP,
+      where: {
+        uid: this.user.uid,
+        platform: WHATSAPP,
+      }
     });
   }
 

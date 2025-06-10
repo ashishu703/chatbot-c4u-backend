@@ -2,10 +2,12 @@ const ChatRepository = require("../repositories/ChatRepository");
 const FacebookPageRepository = require("../repositories/FacebookPageRepository");
 const MessengerPageApi = require("../api/Messanger/MessengerPageApi");
 const { MESSANGER } = require("../types/social-platform-types");
+const { INACTIVE } = require("../types/facebook-page-status.types");
+const { Op } = require("sequelize");
 
 class MessangerPageService {
-  page;
   constructor(user = null, accessToken = null) {
+    this.user = user;
     this.facebookPageRepository = new FacebookPageRepository();
     this.chatRepository = new ChatRepository();
     this.messengerPageApi = new MessengerPageApi(user, accessToken);
@@ -16,10 +18,7 @@ class MessangerPageService {
     this.initPage();
   }
 
-  async initInactivePage(pageId) {
-    this.page = await this.facebookPageRepository.findInactiveByPageId(pageId);
-    this.initPage();
-  }
+
 
   async initPage() {
     this.accessToken = this.page.token;
@@ -34,41 +33,62 @@ class MessangerPageService {
   }
 
   async fetchAndSavePages(accountId) {
-    const { data: pages } = await this.messengerPageApi.fetchPages();
+    await this.messengerPageApi.initMeta();
 
-    pages.forEach(async (page) => {
-      await this.savePage(page, accountId);
-    });
+    const { data: pages } = await this.messengerPageApi.fetchPages();
+    for await (const page of pages) {
+      const {
+        id,
+        name,
+        picture: pictureObject,
+        access_token: accessToken,
+      } = page;
+      const picture = pictureObject?.data?.url || "";
+      await this.savePage(id, name, picture, accessToken, accountId);
+    };
 
     return pages;
   }
 
 
-  async savePage(page, accountId) {
-    await this.facebookPageRepository.updateOrCreate(
-      this.user.uid,
-      accountId,
-      page.id,
-      page.name,
-      page.access_token,
-      false
+  async savePage(id, name, picture, accessToken, accountId) {
+
+    return this.facebookPageRepository.updateOrCreate(
+      {
+        uid: this.user.uid,
+        account_id: accountId,
+        page_id: id,
+        name,
+        token: accessToken,
+        avatar: picture,
+        status: INACTIVE
+      },
+      {
+        uid: this.user.uid,
+        account_id: accountId,
+        page_id: id,
+      }
     );
   }
 
-  async activatePage(pageId) {
-    await this.initMeta();
-    await this.initInactivePage(pageId);
-    await this.messengerPageApi.subscribeWebhooks(pageId);
-    await this.facebookPageRepository.activatePagesByUserId(this.page.uid, [pageId]);
-    await this.facebookPageRepository.deleteInActiveByUserId(this.page.uid);
+  async activatePage(userId, pageId) {
+    await this.messengerPageApi.initMeta();
+    const pages = await this.facebookPageRepository.find({ where: { page_id: { [Op.in]: [pageId] } } });
+    for await (const page of pages) {
+      const pageId = page.page_id;
+      const accessToken = page.token;
+      await this.messengerPageApi.setToken(accessToken).subscribeWebhooks(pageId);
+      await this.facebookPageRepository.activatePagesByUserId(userId, [pageId]);
+      await this.facebookPageRepository.deleteInActiveByUserId(userId);
+    }
+
   }
 
   async removePage(pageId) {
-    await this.initMeta();
-    await this.initActivePage(pageId);
-    await this.messengerPageApi.unsubscribeWebhooks(pageId);
+    const page = await this.facebookPageRepository.findByPageId(pageId);
+    await this.messengerPageApi.initMeta();
+    await this.messengerPageApi.setToken(page.token).unsubscribeWebhooks(pageId);
     await this.facebookPageRepository.deleteByPageId(pageId);
-    await this.chatRepository.removePlatformChat(this.page.uid, MESSANGER);
   }
 
 

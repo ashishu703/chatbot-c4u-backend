@@ -15,13 +15,13 @@ class Repository {
 
     async update(data, uniqueKeys = {}) {
         await this.model.update(data, { where: uniqueKeys });
-        return this.model.findAll({ where: uniqueKeys }); 
+        return this.findFirst({ where: uniqueKeys });
     }
 
     async delete(uniqueKeys) {
         const records = await this.model.findAll({ where: uniqueKeys });
         await this.model.destroy({ where: uniqueKeys });
-        return records.map(record => record.toJSON()); 
+        return records.map(record => record.toJSON());
     }
 
     async find(condition = {}, relations = []) {
@@ -29,11 +29,12 @@ class Repository {
             ...condition,
             include: relations
         });
+    
         return records.map(record => record.toJSON());
     }
 
     async count(condition = {}) {
-        return this.model.count(condition); 
+        return this.model.count(condition);
     }
 
     async findFirst(condition = {}, relations = []) {
@@ -60,8 +61,17 @@ class Repository {
     }
 
     async updateOrCreate(data, uniqueKeys = {}) {
-        const [record] = await this.model.upsert({ ...data, ...uniqueKeys }, { returning: true });
-        return record.toJSON(); 
+        const existing = await this.findFirst({ where: uniqueKeys });
+        if (existing) {
+            await this.model.update(data, { where: uniqueKeys });
+            return {
+                ...existing,
+                ...data
+            };
+        }
+        else {
+            return this.create({ ...data, ...uniqueKeys });
+        }
     }
 
     async deleteByIds(ids) {

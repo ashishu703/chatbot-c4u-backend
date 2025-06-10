@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       avatar: DataTypes.STRING,
       uid: DataTypes.STRING,
       social_user_id: DataTypes.STRING,
-      social_account_id: DataTypes.STRING,
+      social_account_id: DataTypes.TEXT,
       name: DataTypes.STRING,
       username: DataTypes.STRING,
       token: DataTypes.TEXT,

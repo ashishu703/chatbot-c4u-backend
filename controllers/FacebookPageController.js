@@ -9,24 +9,22 @@ class FacebookPageController {
     this.pageRepository = new FacebookPageRepository();
   }
 
-  async getInactivePages(req, res) {
+  async getPages(req, res) {
     const user = req.decode;
-    const pages = await this.pageRepository.findInactiveByUserId(user.uid);
-    return formSuccess(res, { pages });
-  }
+    const pages = await this.pageRepository.find({
+      where: { uid: user.uid }
+    });
 
-  async getActivePages(req, res) {
-    const user = req.decode;
-    const pages = await this.pageRepository.findActiveByUserId(user.uid);
     return formSuccess(res, { pages });
   }
 
   async activatePages(req, res) {
     const { pages } = req.body;
+    const user = req.decode;
 
-    await pages.forEach(async (page) => {
-      await this.pageService.activatePage(page);
-    });
+    for await (const page of pages) {
+      await this.pageService.activatePage(user.uid, page);
+    };
 
     return formSuccess(res, {});
   }

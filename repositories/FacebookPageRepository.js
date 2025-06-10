@@ -1,4 +1,6 @@
+const { Op } = require("sequelize");
 const { FacebookPage } = require("../models");
+const { ACTIVE, INACTIVE } = require("../types/facebook-page-status.types");
 const Repository = require("./Repository");
 
 class FacebookPageRepository extends Repository {
@@ -6,15 +8,6 @@ class FacebookPageRepository extends Repository {
     super(FacebookPage);
   }
 
-  async updateOrCreateUsingPageId(userId, accountId, pageId, name, token, status) {
-    return this.updateOrCreate({
-      uid: userId,
-      account_id: accountId,
-      name: name,
-      token: token,
-      status: status
-    }, { page_id: pageId });
-  }
 
   async findByPageId(pageId) {
     return this.findFirst({
@@ -28,7 +21,7 @@ class FacebookPageRepository extends Repository {
     return this.findFirst({
       where: {
         page_id: pageId,
-        status: 0
+        is_active: INACTIVE
       }
     })
   }
@@ -37,7 +30,7 @@ class FacebookPageRepository extends Repository {
     return this.findFirst({
       where: {
         uid: userId,
-        status: 0
+        is_active: INACTIVE
       }
     })
   }
@@ -46,17 +39,17 @@ class FacebookPageRepository extends Repository {
     return this.findFirst({
       where: {
         uid: userId,
-        status: 1
+        is_active: ACTIVE
       }
     })
   }
 
   async activatePagesByUserId(userId, pages) {
-    return this.update({ status: 1 }, { uid: userId, page_id: { $in: pages } });
+    return this.update({ is_active: ACTIVE }, { uid: userId, page_id: { [Op.in]: pages } });
   }
 
   async deleteInActiveByUserId(userId) {
-    return this.delete({ uid: userId, status: 0 });
+    return this.delete({ uid: userId, is_active: INACTIVE });
   }
 
   async deleteByPageId(pageId) {

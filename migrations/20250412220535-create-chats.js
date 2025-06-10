@@ -30,7 +30,7 @@ module.exports = {
         },
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
-      },
+    },
       last_message_came: {
         type: Sequelize.STRING,
         allowNull: true,

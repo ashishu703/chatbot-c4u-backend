@@ -15,15 +15,14 @@ class MessangerAuthController  {
       const { accessToken } = req.body;
       const user = req.decode;
       const authService = new MessangerAuthService(user, accessToken);
-      await authService.initMeta();
       const accountInfo = await authService.initiateUserAuth();
       if (!accountInfo) throw new AuthenticationFailedException();
       const pageService = new MessangerPageService(
         user,
-        accountInfo.accessToken
+        accountInfo.token
       );
-      await pageService.initMeta();
-      await pageService.fetchAndSavePages(accountInfo.accountId);
+
+      await pageService.fetchAndSavePages(accountInfo.id);
       return formSuccess(res,{ msg: __t("success") });
     } catch (err) {
       next(err);
@@ -41,24 +40,6 @@ class MessangerAuthController  {
     }
   }
 
-  async getAuthParams(req, res, next) {
-    try {
-      const {
-        facebook_client_id,
-        facebook_auth_scopes,
-        facebook_graph_version,
-      } = await this.webPublicRepository.getWebPublic();
-
-      return formSuccess(res,{
-        msg: __t("success"),
-        clientId: facebook_client_id,
-        scopes: facebook_auth_scopes,
-        version: facebook_graph_version,
-      });
-    } catch (err) {
-      next(err);
-    }
-  }
 
   async deleteAccount(req, res, next) {
     try {

@@ -10,11 +10,7 @@ const messengerWebhookController = new MessengerWebhookController();
 const messengerChatController = new MessengerChatController();
 const facebookPageController = new FacebookPageController();
 
-router.get(
-  "/auth-params",
-  validateUser,
-  authController.getAuthParams.bind(authController)
-);
+
 
 router.post(
   "/auth-init",
@@ -99,19 +95,14 @@ router.get(
 );
 
 router.get(
-  "/inactive-pages",
+  "/pages",
   validateUser,
-  facebookPageController.getInactivePages.bind(facebookPageController)
+  facebookPageController.getPages.bind(facebookPageController)
 );
 
-router.get(
-  "/active-pages",
-  validateUser,
-  facebookPageController.getActivePages.bind(facebookPageController)
-);
 
 router.post(
-  "/active-pages",
+  "/pages",
   validateUser,
   facebookPageController.activatePages.bind(facebookPageController)
 );
