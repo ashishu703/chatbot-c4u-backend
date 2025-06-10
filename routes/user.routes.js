@@ -22,6 +22,7 @@ const MetaController = require("../controllers/metaController");
 const ChatWidgetController = require("../controllers/chatWidgetController");
 const MediaController = require("../controllers/mediaController");
 const ChatController = require("../controllers/chatController");
+const SmiController = require("../controllers/SmiController");
 
 const authController = new AuthController();
 const adminController = new AdminController();
@@ -42,6 +43,7 @@ const chatWidgetController = new ChatWidgetController();
 const mediaController = new MediaController();
 const chatController = new ChatController();
 const metaController = new MetaController();
+const smiController = new SmiController();
 
 router.get("/verify", authController.verify.bind(authController));
 router.post("/signup", authController.signup.bind(authController));
@@ -278,6 +280,11 @@ router.post(
   "/return_media_url_meta",
   validateUser,
   metaController.returnMediaUrlMeta.bind(metaController)
+);
+router.get(
+  "/get_auth_params",
+  validateUser,
+  smiController.getAuthParams.bind(smiController)
 );
 
 module.exports = router;

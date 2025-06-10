@@ -10,11 +10,6 @@ router.get(
   whatsappWebhookController.verifyWebhook.bind(whatsappWebhookController)
 );
 
-router.get(
-  "/auth-params",
-  validateUser,
-  authController.getAuthParams.bind(authController)
-);
 
 router.post(
   "/auth-init",
@@ -29,7 +24,7 @@ router.get(
 );
 
 router.delete(
-  "/accounts/:id",
+  "/accounts/:wabaId",
   validateUser,
   authController.deleteAccount.bind(authController)
 );

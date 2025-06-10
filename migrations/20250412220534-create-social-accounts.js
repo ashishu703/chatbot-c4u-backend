@@ -42,11 +42,11 @@ module.exports = {
         allowNull: true,
       },
       token: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false,
       },
       refresh_token: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       expires_in: {

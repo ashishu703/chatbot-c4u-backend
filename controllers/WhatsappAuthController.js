@@ -1,28 +1,30 @@
 const WebPublicRepository = require("../repositories/WebPublicRepository");
 const WhatsappAuthService = require("../services/WhatsappAuthService");
 const WhatsappProfileService = require("../services/WhatsappProfileService");
-const WhatsappController = require("./WhatsappController");
+const { formSuccess } = require("../utils/response.utils");
 
-module.exports = class MessangerAuthController extends WhatsappController {
+class MessangerAuthController {
+    constructor() {
+        this.webPublicRepository = new WebPublicRepository();
+    }
     async initiateUserAuth(req, res, next) {
         try {
             const {
                 code,
-                phone_number_id,
+                business_id,
                 waba_id
             } = req.body
 
-            
+
             const user = req.decode;
             const authService = new WhatsappAuthService(user);
-            await authService.initMeta();
             const accountInfo = await authService.initiateUserAuth(
                 code,
-                phone_number_id,
+                business_id,
                 waba_id
             );
             if (!accountInfo) throw new Error("Authentication Failed");
-            return formSuccess(res,{ msg: "success" });
+            return formSuccess(res, { msg: "success" });
         }
         catch (err) {
             next(err);
@@ -34,10 +36,14 @@ module.exports = class MessangerAuthController extends WhatsappController {
             const user = req.decode;
             const profileService = new WhatsappProfileService(user, null);
             const profiles = await profileService.getProfiles();
-            return formSuccess(res,{ msg: "success", profiles });
+
+            return formSuccess(res, {
+                msg: "success",
+                profiles
+            });
         }
         catch (err) {
-           next(err);
+            next(err);
         }
     }
 
@@ -46,18 +52,18 @@ module.exports = class MessangerAuthController extends WhatsappController {
         try {
             const {
                 whatsapp_client_id,
-                config_id,
+                whatsapp_config_id,
                 whatsapp_graph_version
-            } = await WebPublicRepository.getSetting();
+            } = await this.webPublicRepository.getWebPublic();
 
-            return formSuccess(res,{
+            return formSuccess(res, {
                 msg: "success",
                 clientId: whatsapp_client_id,
-                config_id: config_id,
+                whatsapp_config_id: whatsapp_config_id,
                 version: whatsapp_graph_version
             });
         } catch (err) {
-           next(err);
+            next(err);
         }
     }
 
@@ -65,14 +71,16 @@ module.exports = class MessangerAuthController extends WhatsappController {
 
     async deleteAccount(req, res, next) {
         try {
-            const { id } = req.params;
+            const { wabaId } = req.params;
             const user = req.decode;
             const profileService = new WhatsappProfileService(user, null);
-            await profileService.deleteProfile(id);
-            return formSuccess(res,{ msg: "success" });
+            await profileService.deleteProfile(wabaId);
+            return formSuccess(res, { msg: "success" });
         }
         catch (err) {
-           next(err);
+            next(err);
         }
     }
 }
+
+module.exports = MessangerAuthController;

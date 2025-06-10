@@ -34,7 +34,7 @@ module.exports = class InstagramAuthController extends InstagramController {
     try {
       const user = req.decode;
       const profileService = new InstagramProfileService(user, null);
-      const profiles = await profileService.getProfiles();
+      const profiles = await profileService.getProfiles(user.uid);
       return formSuccess(res,{ msg: __t("success"), profiles });
     } catch (err) {
       next(err);

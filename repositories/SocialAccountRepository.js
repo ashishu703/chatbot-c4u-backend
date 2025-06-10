@@ -58,29 +58,30 @@ class SocialAccountRepository extends Repository {
     })
   }
 
-  async updateOrCreateWhatsappProfile(id,
-    accountId,
+  async updateOrCreateWhatsappProfile(
     userId,
-    profile_picture_url,
-    username,
+    wabaId,
+    phoneNumberId,
+    socialUserId,
     name,
-    user_id,
-    token
+    accessToken,
+    refreshToken
   ) {
+
     return this.updateOrCreate({
       platform: WHATSAPP,
+      avatar: null,
       uid: userId,
-      social_user_id: user_id,
-      social_account_id: id,
+      social_user_id: phoneNumberId,
+      social_account_id: wabaId,
       name: name,
-      username: username,
-      token: token,
-      refresh_token: "",
-      avatar: profile_picture_url,
+      username: socialUserId,
+      token: accessToken,
+      refresh_token: refreshToken,
       expires_in: 0
     }, {
       uid: userId,
-      social_account_id: accountId
+      social_account_id: wabaId,
     })
   }
 
@@ -102,7 +103,7 @@ class SocialAccountRepository extends Repository {
   }
 
   async deleteByAccountId(accountId) {
-    return this.delete({ account_id: accountId });
+    return this.delete({ social_account_id: accountId });
   }
 };
 

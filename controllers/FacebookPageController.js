@@ -1,25 +1,24 @@
 const FacebookPageRepository = require("../repositories/FacebookPageRepository");
 const MessangerPageService = require("../services/MessangerPageService");
 const { formSuccess } = require("../utils/response.utils");
-const MessangerController = require("./MessangerController");
 
-module.exports = class FacebookPageController extends MessangerController {
+class FacebookPageController {
   pageService;
   constructor() {
-    super();
     this.pageService = new MessangerPageService();
+    this.pageRepository = new FacebookPageRepository();
   }
 
   async getInactivePages(req, res) {
     const user = req.decode;
-    const pages = await FacebookPageRepository.findInactiveByUserId(user.uid);
-    return formSuccess(res,{ pages });
+    const pages = await this.pageRepository.findInactiveByUserId(user.uid);
+    return formSuccess(res, { pages });
   }
 
   async getActivePages(req, res) {
     const user = req.decode;
-    const pages = await FacebookPageRepository.findActiveByUserId(user.uid);
-    return formSuccess(res,{ pages });
+    const pages = await this.pageRepository.findActiveByUserId(user.uid);
+    return formSuccess(res, { pages });
   }
 
   async activatePages(req, res) {
@@ -29,7 +28,7 @@ module.exports = class FacebookPageController extends MessangerController {
       await this.pageService.activatePage(page);
     });
 
-    return formSuccess(res,{});
+    return formSuccess(res, {});
   }
 
   async deletePage(req, res) {
@@ -37,12 +36,14 @@ module.exports = class FacebookPageController extends MessangerController {
 
     await this.pageService.removePage(id);
 
-    return formSuccess(res,{});
+    return formSuccess(res, {});
   }
 
   async discardInactivePages(req, res) {
     const user = req.decode;
-    await FacebookPageRepository.deleteInActiveByUserId(user.uid);
-    return formSuccess(res,{});
+    await this.pageRepository.deleteInActiveByUserId(user.uid);
+    return formSuccess(res, {});
   }
 };
+
+module.exports = FacebookPageController
