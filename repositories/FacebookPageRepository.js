@@ -1,9 +1,9 @@
-const { FacebookPages } = require("../models");
+const { FacebookPage } = require("../models");
 const Repository = require("./Repository");
 
 class FacebookPageRepository extends Repository {
   constructor() {
-    super(FacebookPages);
+    super(FacebookPage);
   }
 
   async updateOrCreateUsingPageId(userId, accountId, pageId, name, token, status) {

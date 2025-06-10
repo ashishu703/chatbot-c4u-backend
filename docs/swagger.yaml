@@ -470,7 +470,7 @@ components:
         whatsapp_graph_version:
           type: string
           example: Nobis veniam tempor
-        config_id:
+        whatsapp_config_id:
           type: string
           example: Ad quod dolores ipsu
       required:
@@ -504,7 +504,7 @@ components:
         - whatsapp_client_id
         - whatsapp_client_secret
         - whatsapp_graph_version
-        - config_id
+        - whatsapp_config_id
     UpdateSMTP:
       type: object
       properties:

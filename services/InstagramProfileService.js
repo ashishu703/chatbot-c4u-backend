@@ -5,8 +5,8 @@ class InstagramProfileService {
     this.socialAccountRepository = new SocialAccountRepository();
   }
 
-  async getProfiles() {
-    return this.socialAccountRepository.findManyByUserId(this.user.uid);
+  async getProfiles(userId) {
+    return this.socialAccountRepository.findManyByUserId(userId);
   }
 
   async deleteProfile(id) {

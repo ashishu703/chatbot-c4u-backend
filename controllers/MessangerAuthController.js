@@ -1,13 +1,15 @@
-const FacebookException = require("../exceptions/FacebookException");
 const WebPublicRepository = require("../repositories/WebPublicRepository");
 const FacebookProfileService = require("../services/FacebookProfileService");
 const MessangerAuthService = require("../services/MessangerAuthService");
 const MessangerPageService = require("../services/MessangerPageService");
 const { formSuccess } = require("../utils/response.utils");
-const MessangerController = require("../controllers/MessangerController");
 const AuthenticationFailedException = require("../exceptions/CustomExceptions/AuthenticationFailedException");
+const { __t } = require("../utils/locale.utils");
 
-module.exports = class MessangerAuthController extends MessangerController {
+class MessangerAuthController  {
+  constructor() {
+    this.webPublicRepository = new WebPublicRepository();
+  }
   async initiateUserAuth(req, res, next) {
     try {
       const { accessToken } = req.body;
@@ -45,7 +47,7 @@ module.exports = class MessangerAuthController extends MessangerController {
         facebook_client_id,
         facebook_auth_scopes,
         facebook_graph_version,
-      } = await WebPublicRepository.getSetting();
+      } = await this.webPublicRepository.getWebPublic();
 
       return formSuccess(res,{
         msg: __t("success"),
@@ -70,3 +72,5 @@ module.exports = class MessangerAuthController extends MessangerController {
     }
   }
 };
+
+module.exports = MessangerAuthController

@@ -18,10 +18,14 @@ class WhatsappAuthApi extends WhatsappApi {
 
 
     async registerAccount(phoneNumberId) {
-        this.post(`/${phoneNumberId}/register`, {
+        return this.post(`/${phoneNumberId}/register`, {
             messaging_product: "whatsapp",
             whatsAppAccountPin,
         });
+    }
+
+    async getMe() {
+        return this.get("/me");
     }
 
 

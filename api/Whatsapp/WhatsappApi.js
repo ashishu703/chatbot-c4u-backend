@@ -12,14 +12,14 @@ class WhatsappApi extends SocialApi {
             whatsapp_client_id,
             whatsapp_client_secret,
             whatsapp_graph_version,
-            config_id,
+            whatsapp_config_id,
         } = await this.webPublicRepository.getWebPublic();
 
         this.AppId = whatsapp_client_id;
         this.AppSecret = whatsapp_client_secret;
         this.DefaultApiVersion = whatsapp_graph_version;
         this.APIURL = `https://graph.facebook.com/${this.DefaultApiVersion}`;
-        this.scopes = config_id;
+        this.scopes = whatsapp_config_id;
     }
 
 

@@ -1433,7 +1433,7 @@
 											"type": "text"
 										},
 										{
-											"key": "config_id",
+											"key": "whatsapp_config_id",
 											"value": "Ad quod dolores ipsu",
 											"type": "text"
 										}

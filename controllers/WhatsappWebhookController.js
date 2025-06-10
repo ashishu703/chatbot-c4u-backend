@@ -1,8 +1,7 @@
 const { verifyMetaWebhook } = require("../utils/facebook.utils");
-const WhatsappController = require("./WhatsappController");
 
 
-module.exports = class WhatsappWebhookController extends WhatsappController {
+ class WhatsappWebhookController{
     async verifyWebhook(req, res) {
         const {
             status,
@@ -18,3 +17,5 @@ module.exports = class WhatsappWebhookController extends WhatsappController {
         return res.status(status).send(data);
     }
 }
+
+module.exports = WhatsappWebhookController

@@ -36,7 +36,7 @@ class WebConfigService {
       whatsapp_client_id,
       whatsapp_client_secret,
       whatsapp_graph_version,
-      config_id,
+      whatsapp_config_id,
     } = req.body;
 
     let filename = req.body.logo || "";
@@ -89,7 +89,7 @@ class WebConfigService {
       whatsapp_client_id,
       whatsapp_client_secret,
       whatsapp_graph_version,
-      config_id,
+      whatsapp_config_id,
     };
 
     // ✅ Remove undefined values to prevent PostgreSQL errors

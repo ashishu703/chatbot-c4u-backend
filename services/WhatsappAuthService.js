@@ -3,26 +3,43 @@ const SocialAccountRepository = require("../repositories/SocialAccountRepository
 
 class WhatsappAuthService {
   constructor(user, accessToken) {
+    this.user = user;
     this.whatsappAuthApi = new WhatsappAuthApi(user, accessToken);
     this.socialAccountRepository = new SocialAccountRepository();
   }
 
   async initiateUserAuth(code, phoneNumberId, wabaId) {
-    const { access_token } = await this.whatsappAuthApi.getLongLiveToken(code);
-    this.whatsappAuthApi.setToken(access_token);
-    this.whatsappAuthApi.registerAccount(phoneNumberId).catch((err) => { });
-    await this.whatsappAuthApi.subscribeWebhook(wabaId);
-    return this.saveCurrentSession(phoneNumberId, wabaId);
+    await this.whatsappAuthApi.initMeta();
+    const { access_token: accessToken } = await this.whatsappAuthApi.getLongLiveToken(code);
+    this.whatsappAuthApi.setToken(accessToken);
+
+    this.whatsappAuthApi.registerAccount(phoneNumberId)
+      .catch((err) => { console.log("Account Registration Failed", err) });
+
+    this.whatsappAuthApi.subscribeWebhook(wabaId)
+      .catch((err) => { console.log("Webhook Subscription Failed", err) });
+
+    const accountInfo = await this.whatsappAuthApi.getMe();
+
+    return this.saveCurrentSession(accountInfo, accessToken, code, phoneNumberId, wabaId);
   }
 
 
 
-  async saveCurrentSession(phoneNumberId, wabaId, pin) {
+  async saveCurrentSession(accountInfo, accessToken, code, phoneNumberId, wabaId) {
+    const { name, id: socialUserId } = accountInfo;
     return this.socialAccountRepository.updateOrCreateWhatsappProfile(
-      this.user,
-      this.accessToken
+      this.user.uid,
+      wabaId,
+      phoneNumberId,
+      socialUserId,
+      name,
+      accessToken,
+      code
     );
   }
+
+
 
 
 

@@ -8,7 +8,6 @@ class EmailService {
   appConfig;
 
   constructor() {
-    this.initConfig();
   }
 
   async initConfig() {

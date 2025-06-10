@@ -4,59 +4,78 @@ class Repository {
     }
 
     async create(data) {
-        return this.model.create(data);
+        const record = await this.model.create(data);
+        return record.toJSON();
     }
 
     async bulkCreate(data) {
-        return this.model.bulkCreate(data);
+        const records = await this.model.bulkCreate(data);
+        return records.map(record => record.toJSON());
     }
 
     async update(data, uniqueKeys = {}) {
-        return this.model.update(data, { where: uniqueKeys });
+        await this.model.update(data, { where: uniqueKeys });
+        return this.model.findAll({ where: uniqueKeys }); 
     }
 
     async delete(uniqueKeys) {
-        return this.model.destroy({ where: uniqueKeys });
+        const records = await this.model.findAll({ where: uniqueKeys });
+        await this.model.destroy({ where: uniqueKeys });
+        return records.map(record => record.toJSON()); 
     }
 
-    async find(condition = {}, ralations = []) {
-        return this.model.findAll({
+    async find(condition = {}, relations = []) {
+        const records = await this.model.findAll({
             ...condition,
-            ralations
+            include: relations
         });
+        return records.map(record => record.toJSON());
     }
+
     async count(condition = {}) {
-        return this.model.findAll(condition);
+        return this.model.count(condition); 
     }
 
-    async findFirst(condition = {}, ralations = []) {
-        return this.model.findOne({
+    async findFirst(condition = {}, relations = []) {
+        const record = await this.model.findOne({
             ...condition,
-            ralations
+            include: relations
         });
+        return record ? record.toJSON() : null;
     }
 
-    async findById(id, ralations = []) {
-        return this.model.findOne({ where: { id } }, ralations);
+    async findById(id, relations = []) {
+        const record = await this.model.findOne({ where: { id }, include: relations });
+        return record ? record.toJSON() : null;
     }
 
-    async findByUid(uid, ralations = []) {
-        return this.model.findOne({ where: { uid } }, ralations);
+    async findByUid(uid, relations = []) {
+        const record = await this.model.findOne({ where: { uid }, include: relations });
+        return record ? record.toJSON() : null;
     }
-    async findByChatId(chatId, ralations = []) {
-        return this.model.findOne({ where: { chat_id: chatId } }, ralations);
+
+    async findByChatId(chatId, relations = []) {
+        const record = await this.model.findOne({ where: { chat_id: chatId }, include: relations });
+        return record ? record.toJSON() : null;
     }
 
     async updateOrCreate(data, uniqueKeys = {}) {
-        return this.model.upsert({ ...data, ...uniqueKeys }, { where: uniqueKeys });
+        const [record] = await this.model.upsert({ ...data, ...uniqueKeys }, { returning: true });
+        return record.toJSON(); 
     }
 
     async deleteByIds(ids) {
-        return this.model.destroy({ where: { id: { $in: ids } } });
+        const records = await this.model.findAll({ where: { id: ids } });
+        await this.model.destroy({ where: { id: ids } });
+        return records.map(record => record.toJSON());
     }
 
     async createIfNotExists(data, uniqueKeys = {}) {
-        return this.model.findOrCreate({ where: uniqueKeys, defaults: data });
+        const [record, created] = await this.model.findOrCreate({
+            where: uniqueKeys,
+            defaults: data
+        });
+        return record.toJSON();
     }
 }
 

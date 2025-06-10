@@ -23,8 +23,8 @@ module.exports = (sequelize, DataTypes) => {
       social_account_id: DataTypes.STRING,
       name: DataTypes.STRING,
       username: DataTypes.STRING,
-      token: DataTypes.STRING,
-      refresh_token: DataTypes.STRING,
+      token: DataTypes.TEXT,
+      refresh_token: DataTypes.TEXT,
       expires_in: DataTypes.INTEGER,
     },
     {
