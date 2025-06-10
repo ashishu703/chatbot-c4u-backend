@@ -6,27 +6,7 @@ class OrderRepository extends Repository {
     super(Order);
   }
   async getOrders() {
-    return this.find({
-      include: [
-        {
-          model: User,
-          attributes: [
-            "uid",
-            "role",
-            "name",
-            "email",
-            "password",
-            "mobile_with_country_code",
-            "timezone",
-            "plan",
-            "plan_expire",
-            "trial",
-            "api_key",
-            "createdAt",
-          ],
-        },
-      ],
-    });
+    return this.find();
   }
 
   async getRawOrders() {

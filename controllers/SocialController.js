@@ -30,9 +30,8 @@ class SocialController {
   async updateSocialLogin(req, res, next) {
     try {
       const { google_client_id, google_login_active } = req.body;
-      await this.webPublicRepository.updateSocialLogin(google_client_id, google_login_active);
-      return formSuccess(res, {
-        msg: __t("settings_updated"),
+      await this.webPublicRepository.updateGoogleLoginCredentials(google_client_id, google_login_active);
+      return formSuccess(res,{ msg: __t("settings_updated"),
 
       });
     } catch (err) {

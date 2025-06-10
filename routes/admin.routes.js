@@ -15,9 +15,7 @@ const SmtpController = require("../controllers/smtpController");
 const DashboardController = require("../controllers/dashboardController");
 const SocialController = require("../controllers/socialController");
 const LinkController = require("../controllers/linkController");
-const AuthController = require("../controllers/authController");
 
-const authController = new AuthController();
 const adminController = new AdminController();
 const planController = new PlanController();
 const contactController = new ContactController();
@@ -180,7 +178,7 @@ router.get(
   contactController.getContactLeads.bind(contactController)
 );
 router.post(
-  "/del_cotact_entry",
+  "/del_contact_entry",
   adminValidator,
   contactController.deleteContactEntry.bind(contactController)
 );

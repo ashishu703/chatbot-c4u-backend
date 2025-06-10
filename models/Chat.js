@@ -3,6 +3,12 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Chat extends Model {
     static associate(models) {
+
+      Chat.belongsTo(models.SocialAccount, {
+        foreignKey: "account_id",
+        as: "account",
+      });
+      
       Chat.belongsTo(models.User, {
         foreignKey: "uid",
         targetKey: "uid",
@@ -11,11 +17,6 @@ module.exports = (sequelize, DataTypes) => {
       Chat.hasMany(models.Conversation, {
         foreignKey: "chat_id",
         as: "conversations",
-      });
-      Chat.belongsTo(models.Conversation, {
-        foreignKey: "account_id",
-        targetKey: "id",
-        as: "account",
       });
     }
   }
@@ -35,9 +36,9 @@ module.exports = (sequelize, DataTypes) => {
       sender_mobile: DataTypes.STRING,
       chat_status: DataTypes.STRING,
       account_id: DataTypes.INTEGER,
-      is_opened: DataTypes.INTEGER,
+      is_opened: DataTypes.BOOLEAN,
       last_message: DataTypes.TEXT,
-      is_deleted: DataTypes.INTEGER,
+      is_deleted: DataTypes.BOOLEAN,
       recipient: DataTypes.STRING,
     },
     {

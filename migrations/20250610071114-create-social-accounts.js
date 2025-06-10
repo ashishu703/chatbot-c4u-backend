@@ -18,7 +18,7 @@ module.exports = {
         defaultValue: WHATSAPP,
       },
       avatar: {
-        type: Sequelize.TEXT,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       uid: {
@@ -42,16 +42,19 @@ module.exports = {
         allowNull: true,
       },
       token: {
+<<<<<<<< HEAD:migrations/20250610071114-create-social-accounts.js
         type: Sequelize.STRING,
         allowNull: false,
       },
       refresh_token: {
         type: Sequelize.STRING,
+========
         type: Sequelize.TEXT,
         allowNull: false,
       },
       refresh_token: {
         type: Sequelize.TEXT,
+>>>>>>>> 1cced61585793c4794b5d94fd2c4296253aec050:migrations/20250412220534-create-social-accounts.js
         allowNull: true,
       },
       expires_in: {
@@ -73,4 +76,8 @@ module.exports = {
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable("social_accounts");
   },
+<<<<<<<< HEAD:migrations/20250610071114-create-social-accounts.js
 };
+========
+};
+>>>>>>>> 1cced61585793c4794b5d94fd2c4296253aec050:migrations/20250412220534-create-social-accounts.js

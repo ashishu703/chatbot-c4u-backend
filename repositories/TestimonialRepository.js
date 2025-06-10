@@ -25,7 +25,11 @@ class TestimonialRepository extends Repository {
   }
 
   async deleteTestimonial(id) {
-    return this.delete(id);
+      return this.model.destroy({
+    where: {
+      id: id,
+    },
+  });
   }
 }
 

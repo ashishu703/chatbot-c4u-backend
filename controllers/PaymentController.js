@@ -11,7 +11,7 @@ class PaymentController {
   }
    async getPaymentGateway(req, res, next) {
     try {
-      const data = await this.webPrivateRepository.getPaymentGateway();
+      const data = await this.webPrivateRepository.getWebPrivate();
       return formSuccess(res,{ data: data || {} });
     } catch (err) {
       next(err);
@@ -21,7 +21,7 @@ class PaymentController {
    async updatePaymentGateway(req, res, next) {
     try {
       const gatewayData = req.body;
-      await this.webPrivateRepository.updatePaymentGateway(gatewayData);
+      await this.webPrivateRepository.updateWebPrivate(gatewayData);
       return formSuccess(res,{ msg: __t("payment_gateway_updated"),
 
        });

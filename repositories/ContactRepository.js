@@ -7,7 +7,7 @@ class ContactRepository extends Repository {
   }
 
   async findByMobileAndUid(mobile, uid) {
-    return this.findFirst({ where: { mobile, uid } });
+    return this.findFirst({ where: { mobile, uid } }); 
   }
 
   async findByUid(uid) {

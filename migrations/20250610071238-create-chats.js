@@ -1,76 +1,87 @@
 "use strict";
-
-const { WHATSAPP } = require('../types/social-platform-types');
-
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("social_accounts", {
+    await queryInterface.createTable("chats", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      platform: {
+      chat_id: {
         type: Sequelize.STRING,
-        allowNull: false,
-        defaultValue: WHATSAPP,
+        allowNull: true,
       },
       avatar: {
-        type: Sequelize.TEXT,
+        type: Sequelize.STRING,
         allowNull: true,
       },
       uid: {
         type: Sequelize.STRING,
+        allowNull: true,
+      },
+      account_id: {
+        type: Sequelize.INTEGER,
         allowNull: false,
+        references: {
+          model: "social_accounts",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
-      social_user_id: {
+      last_message_came: {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      social_account_id: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      name: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      username: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      token: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      refresh_token: {
-        type: Sequelize.STRING,
-        type: Sequelize.TEXT,
-        allowNull: false,
-      },
-      refresh_token: {
+      chat_note: {
         type: Sequelize.TEXT,
         allowNull: true,
       },
-      expires_in: {
-        type: Sequelize.BIGINT,
+      chat_tags: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+      sender_name: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      sender_mobile: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      chat_status: {
+        type: Sequelize.STRING,
+        defaultValue: "open",
+      },
+      is_opened: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+      last_message: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+      is_deleted: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+      recipient: {
+        type: Sequelize.STRING,
         allowNull: true,
       },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("social_accounts");
+    await queryInterface.dropTable("chats");
   },
 };

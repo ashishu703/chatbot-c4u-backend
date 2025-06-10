@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       var1: DataTypes.STRING,
       var2: DataTypes.STRING,
       var3: DataTypes.STRING,
-      var4: DataTypes.STRING,
+      var4: DataTypes.STRING, 
       var5: DataTypes.STRING,
     },
     {
