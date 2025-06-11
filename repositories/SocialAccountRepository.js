@@ -7,24 +7,23 @@ class SocialAccountRepository extends Repository {
     super(SocialAccount);
   }
 
-  async updateOrCreateInstagramProfile(id,
+  async updateOrCreateInstagramProfile(
     accountId,
     userId,
     profile_picture_url,
     username,
     name,
-    user_id,
+    instagramUserId,
     token
   ) {
     return this.updateOrCreate({
       platform: INSTAGRAM,
       uid: userId,
-      social_user_id: user_id,
-      social_account_id: id,
+      social_user_id: instagramUserId,
+      social_account_id: accountId,
       name: name,
       username: username,
       token: token,
-      refresh_token: "",
       avatar: profile_picture_url,
       expires_in: 0
     }, {
@@ -40,7 +39,6 @@ class SocialAccountRepository extends Repository {
     name,
     avatar,
     accessToken,
-    refreshToken,
   ) {
 
     return this.updateOrCreate({
@@ -52,7 +50,6 @@ class SocialAccountRepository extends Repository {
       name: name,
       username: username,
       token: accessToken,
-      refresh_token: refreshToken,
       expires_in: 0
     }, {
       uid: userId,
@@ -68,7 +65,7 @@ class SocialAccountRepository extends Repository {
     socialUserId,
     name,
     accessToken,
-    refreshToken
+    
   ) {
 
     return this.updateOrCreate({
@@ -80,7 +77,6 @@ class SocialAccountRepository extends Repository {
       name: name,
       username: socialUserId,
       token: accessToken,
-      refresh_token: refreshToken,
       expires_in: 0
     }, {
       uid: userId,

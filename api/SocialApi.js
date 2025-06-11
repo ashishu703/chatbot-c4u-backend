@@ -29,11 +29,15 @@ class SocialApi {
     }
 
     async request(method, url, data = null, query = {}, customHeaders = {}) {
+
+
+
         const queryString = new URLSearchParams(query).toString();
 
         const isFullUrl = /^https?:\/\//i.test(url);
 
         const fullUrl = isFullUrl ? `${url}${queryString ? `?${queryString}` : ''}` : `${this.APIURL}${url}${queryString ? `?${queryString}` : ''}`;
+
 
 
         const headers = {
@@ -43,8 +47,10 @@ class SocialApi {
 
         const options = {
             method,
-            headers,
-            ...customHeaders,
+            headers: {
+                ...headers,
+                ...customHeaders,
+            },
             ...(data && { body: JSON.stringify(data) }),
         };
 

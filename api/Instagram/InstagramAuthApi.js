@@ -1,28 +1,34 @@
+const SmiService = require("../../services/SmiService");
+const fetch = require("node-fetch");
 const InstagramApi = require("./InstagramApi");
 class InstagramAuthApi extends InstagramApi {
     constructor(user = null, accessToken = null) {
         super(user, accessToken);
     }
 
-    getAuthorizationUrl() {
-        return `https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=${this.AppId}&redirect_uri=${this.redirectUri}&response_type=code&scope=${this.scopes}`;
-    }
+
 
 
     async authorizeAuthCode(code) {
-        const url = "https://api.instagram.com/oauth/access_token";
 
-        const data = {
-            client_id: this.AppId,
-            client_secret: this.AppSecret,
-            grant_type: "authorization_code",
-            redirect_uri: this.redirectUri,
-            code: code,
-        };
+        const url = 'https://api.instagram.com/oauth/access_token';
 
-        return await this.post(url, data, {}, {
-            "Content-Type": "application/x-www-form-urlencoded",
+        const params = new URLSearchParams();
+        params.append('client_id', this.AppId);
+        params.append('client_secret', this.AppSecret);
+        params.append('grant_type', 'authorization_code');
+        params.append('redirect_uri', (new SmiService()).prepareInstagramRedirectUri());
+        params.append('code', code);
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: params.toString(),
         });
+
+        return this.handleResponse(response);
     }
 
 
@@ -31,6 +37,13 @@ class InstagramAuthApi extends InstagramApi {
             access_token: this.accessToken,
             grant_type: "ig_exchange_token",
             client_secret: this.AppSecret,
+        });
+    }
+
+    async fetchOwnerProfile() {
+        return this.get(`/me`, {
+            fields: "id,profile_picture_url,username,name,user_id",
+            access_token: this.accessToken,
         });
     }
 };

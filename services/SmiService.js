@@ -1,3 +1,4 @@
+const { frontendURI } = require("../config/app.config");
 const WebPublicRepository = require("../repositories/WebPublicRepository");
 
 
@@ -14,13 +15,11 @@ class SmiService {
       facebook_graph_version,
       facebook_auth_scopes,
       instagram_client_id,
-      instagram_graph_version,
       instagram_auth_scopes,
       whatsapp_client_id,
       whatsapp_graph_version,
       whatsapp_config_id,
     } = webPublic;
-
     return {
       facebook: {
         clientId: facebook_client_id,
@@ -28,9 +27,7 @@ class SmiService {
         scopes: facebook_auth_scopes,
       },
       instagram: {
-        clientId: instagram_client_id,
-        version: instagram_graph_version,
-        scopes: instagram_auth_scopes,
+        authURI: this.prepareInstagramAuthUri(instagram_client_id, instagram_auth_scopes),
       },
       whatsapp: {
         clientId: whatsapp_client_id,
@@ -38,6 +35,15 @@ class SmiService {
         configId: whatsapp_config_id,
       },
     };
+  }
+
+
+  prepareInstagramAuthUri(clientId, scopes) {
+    return `https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=${clientId}&redirect_uri=${this.prepareInstagramRedirectUri()}&response_type=code&scope=${scopes}`;
+  }
+
+  prepareInstagramRedirectUri() {
+    return frontendURI + "/auth-code-manager";
   }
 }
 

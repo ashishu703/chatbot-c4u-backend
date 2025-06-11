@@ -20,7 +20,6 @@ router.post(
   validateUser,
   authController.initiateUserAuth.bind(authController)
 );
-router.get("/auth-uri", authController.getAuthUri.bind(authController));
 router.get(
   "/accounts",
   validateUser,

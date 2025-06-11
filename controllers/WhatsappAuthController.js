@@ -48,24 +48,6 @@ class MessangerAuthController {
     }
 
 
-    async getAuthParams(req, res, next) {
-        try {
-            const {
-                whatsapp_client_id,
-                whatsapp_config_id,
-                whatsapp_graph_version
-            } = await this.webPublicRepository.getWebPublic();
-
-            return formSuccess(res, {
-                msg: "success",
-                clientId: whatsapp_client_id,
-                whatsapp_config_id: whatsapp_config_id,
-                version: whatsapp_graph_version
-            });
-        } catch (err) {
-            next(err);
-        }
-    }
 
 
 
