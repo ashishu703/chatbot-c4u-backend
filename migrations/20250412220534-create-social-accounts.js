@@ -18,7 +18,7 @@ module.exports = {
         defaultValue: WHATSAPP,
       },
       avatar: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       uid: {
@@ -43,11 +43,6 @@ module.exports = {
       },
       token: {
         type: Sequelize.STRING,
-        allowNull: false,
-      },
-      refresh_token: {
-        type: Sequelize.STRING,
-        type: Sequelize.TEXT,
         allowNull: false,
       },
       refresh_token: {

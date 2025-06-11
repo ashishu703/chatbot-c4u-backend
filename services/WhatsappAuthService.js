@@ -21,12 +21,12 @@ class WhatsappAuthService {
 
     const accountInfo = await this.whatsappAuthApi.getMe();
 
-    return this.saveCurrentSession(accountInfo, accessToken, code, phoneNumberId, wabaId);
+    return this.saveCurrentSession(accountInfo, accessToken, phoneNumberId, wabaId);
   }
 
 
 
-  async saveCurrentSession(accountInfo, accessToken, code, phoneNumberId, wabaId) {
+  async saveCurrentSession(accountInfo, accessToken,  phoneNumberId, wabaId) {
     const { name, id: socialUserId } = accountInfo;
     return this.socialAccountRepository.updateOrCreateWhatsappProfile(
       this.user.uid,
@@ -35,7 +35,6 @@ class WhatsappAuthService {
       socialUserId,
       name,
       accessToken,
-      code
     );
   }
 

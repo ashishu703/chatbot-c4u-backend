@@ -1,3 +1,4 @@
+const { INSTAGRAM } = require("../types/social-platform-types");
 const SocialAccountRepository = require("./../repositories/SocialAccountRepository");
 
 class InstagramProfileService {
@@ -6,7 +7,12 @@ class InstagramProfileService {
   }
 
   async getProfiles(userId) {
-    return this.socialAccountRepository.findManyByUserId(userId);
+    return this.socialAccountRepository.find({
+      where: {
+        uid: userId,
+        platform: INSTAGRAM
+      }
+    });
   }
 
   async deleteProfile(id) {

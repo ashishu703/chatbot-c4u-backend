@@ -12,22 +12,21 @@ class InstagramAuthService {
   }
 
   async initiateUserAuth(code) {
+    await this.instagramAuthApi.initMeta();
     const token = await this.getToken(code);
     return this.saveCurrentSession(token);
   }
 
   async getToken(code) {
     const { access_token: shortLiveToken } = await this.instagramAuthApi.authorizeAuthCode(code);
+  
     const { access_token: longLiveToken } = await this.instagramAuthApi.setToken(shortLiveToken).getLongLiveToken();
     return longLiveToken;
   }
 
   async saveCurrentSession(token) {
-    const profile = await this.instagramProfileApi
-      .initMeta()
-      .setToken(token)
-      .fetchOwnerProfile();
-
+    const profile = await this.instagramAuthApi.fetchOwnerProfile();
+   
     const {
       id, profile_picture_url, username, name, user_id
     } = profile;
@@ -43,9 +42,6 @@ class InstagramAuthService {
     );
   }
 
-  prepareAuthUri() {
-    return this.instagramAuthApi.getAuthorizationUrl();
-  }
 };
 
 module.exports = InstagramAuthService;

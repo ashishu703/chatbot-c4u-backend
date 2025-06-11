@@ -1,52 +1,40 @@
 const FacebookProfileService = require("./FacebookProfileService");
 const MessengerAuthApi = require("../api/Messanger/MessengerAuthApi");
 const MessengerProfileApi = require("../api/Messanger/MessengerProfileApi");
+const SocialAccountRepository = require("../repositories/SocialAccountRepository");
 class MessangerAuthService {
   constructor(user, accessToken) {
+    this.user = user;
     this.authApi = new MessengerAuthApi(user, accessToken);
     this.profileApi = new MessengerProfileApi(user, accessToken);
+    this.socialAccountRepository = new SocialAccountRepository();
   }
 
   async initiateUserAuth() {
+    await this.authApi.initMeta();
     const {
-      access_token
+      access_token: accessToken
     } = await this.authApi.getLongLiveToken();
-    return this.saveCurrentSession(access_token);
+    return this.saveCurrentSession(accessToken, this.authApi.getToken());
   }
 
-  async getLongLiveToken() {
-    const response = await this.get("/oauth/access_token", {
-      client_id: this.AppId,
-      client_secret: this.AppSecret,
-      grant_type: "fb_exchange_token",
-      fb_exchange_token: this.accessToken,
-    });
-
-    const { access_token } = response;
-
-    this.accessToken = access_token;
-
-    return access_token;
-  }
 
   async saveCurrentSession(token) {
-    const profile = await this.profileApi
-      .initMeta()
-      .setToken(token)
-      .fetchOwnerProfile();
-
+    await this.profileApi.initMeta();
+    const profile = await this.profileApi.fetchOwnerProfile()
     const {
-      id, profile_picture_url, username, name, user_id
+      id, picture: pictureObject, name, short_name: username
     } = profile;
 
+    const picture = pictureObject?.data?.url || "";
+
     return this.socialAccountRepository.updateOrCreateFacebookProfile(
-      id,
       this.user.uid,
-      profile_picture_url,
+      id,
       username,
       name,
-      user_id,
-      token
+      picture,
+      token,
     );
   }
 };

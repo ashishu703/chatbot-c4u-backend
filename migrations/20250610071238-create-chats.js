@@ -61,16 +61,16 @@ module.exports = {
         defaultValue: "open",
       },
       is_opened: {
-        type: Sequelize.INTEGER,
-        defaultValue: "0",
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
       last_message: {
         type: Sequelize.TEXT,
         allowNull: true,
       },
       is_deleted: {
-        type: Sequelize.INTEGER,
-        defaultValue: "0",
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
       recipient: {
         type: Sequelize.STRING,

@@ -36,9 +36,9 @@ module.exports = (sequelize, DataTypes) => {
       sender_mobile: DataTypes.STRING,
       chat_status: DataTypes.STRING,
       account_id: DataTypes.INTEGER,
-      is_opened: DataTypes.INTEGER,
+      is_opened: DataTypes.BOOLEAN,
       last_message: DataTypes.TEXT,
-      is_deleted: DataTypes.INTEGER,
+      is_deleted: DataTypes.BOOLEAN,
       recipient: DataTypes.STRING,
     },
     {

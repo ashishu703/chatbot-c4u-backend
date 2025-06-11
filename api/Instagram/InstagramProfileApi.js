@@ -12,12 +12,7 @@ class InstagramProfileApi extends InstagramApi {
         });
     }
 
-    async fetchOwnerProfile() {
-        return this.get(`/me`, {
-            fields: "id,profile_picture_url,username,name,user_id",
-            access_token: this.accessToken,
-        });
-    }
+
 
 
 };

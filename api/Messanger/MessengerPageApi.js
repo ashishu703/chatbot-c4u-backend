@@ -6,8 +6,8 @@ class MessengerPageApi extends MessengerApi {
     }
 
     async fetchPages() {
-        return await this.get("/me/accounts?limit=1000", {
-            fields: "id,name,access_token",
+        return await this.get("/me/accounts", {
+            fields: "id,picture,name,access_token",
         });
     }
 

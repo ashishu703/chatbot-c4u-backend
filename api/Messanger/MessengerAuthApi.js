@@ -12,6 +12,7 @@ class MessengerAuthApi extends MessengerApi {
             grant_type: "fb_exchange_token",
             fb_exchange_token: this.accessToken,
             client_secret: this.AppSecret,
+            client_id: this.AppId,
         });
     }
 };

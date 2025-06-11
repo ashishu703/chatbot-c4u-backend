@@ -14,45 +14,28 @@ class Repository {
     return records.map((record) => record.toJSON());
   }
 
-async update(data, uniqueKeys = {}) {
-  if (!uniqueKeys.id || !uniqueKeys.uid) {
-  }
-  const [rowsUpdated] = await this.model.update(data, { where: uniqueKeys });
-  if (rowsUpdated === 0) {
-  }
-  return this.model.findAll({ where: uniqueKeys });
-}
-
-
-  async delete(uniqueKeys) {
-    if (typeof uniqueKeys === "string" || typeof uniqueKeys === "number") {
-      uniqueKeys = { id: uniqueKeys };
+    async update(data, uniqueKeys = {}) {
+        await this.model.update(data, { where: uniqueKeys });
+        return this.model.findAll({ where: uniqueKeys }); 
     }
-    if (
-      typeof uniqueKeys !== "object" ||
-      Array.isArray(uniqueKeys) ||
-      uniqueKeys === null
-    ) {
-      throw new Error(
-        "Invalid input for delete: uniqueKeys must be an object or ID."
-      );
+
+    async delete(uniqueKeys) {
+        const records = await this.model.findAll({ where: uniqueKeys });
+        await this.model.destroy({ where: uniqueKeys });
+        return records.map(record => record.toJSON()); 
     }
-    const records = await this.model.findAll({ where: uniqueKeys });
-    await this.model.destroy({ where: uniqueKeys });
-    return records.map((record) => record.toJSON());
-  }
 
-  async find(condition = {}, relations = []) {
-    const records = await this.model.findAll({
-      ...condition,
-      include: relations,
-    });
-    return records.map((record) => record.toJSON());
-  }
+    async find(condition = {}, relations = []) {
+        const records = await this.model.findAll({
+            ...condition,
+            include: relations
+        });
+        return records.map(record => record.toJSON());
+    }
 
-  async count(condition = {}) {
-    return this.model.count(condition);
-  }
+    async count(condition = {}) {
+        return this.model.count(condition); 
+    }
 
   async findFirst(condition = {}, relations = []) {
     const record = await this.model.findOne({
@@ -87,13 +70,10 @@ async findById(uid, relations = []) {
     return record ? record.toJSON() : null;
   }
 
-  async updateOrCreate(data, uniqueKeys = {}) {
-    const [record] = await this.model.upsert(
-      { ...data, ...uniqueKeys },
-      { returning: true }
-    );
-    return record.toJSON();
-  }
+    async updateOrCreate(data, uniqueKeys = {}) {
+        const [record] = await this.model.upsert({ ...data, ...uniqueKeys }, { returning: true });
+        return record.toJSON(); 
+    }
 
   async deleteByIds(ids) {
     const records = await this.model.findAll({ where: { id: ids } });

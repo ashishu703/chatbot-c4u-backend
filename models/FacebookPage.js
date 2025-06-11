@@ -8,7 +8,11 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      FacebookPage.belongsTo(models.Conversation, {
+        foreignKey: "account_id",
+        targetKey: "id",
+        as: "account",
+      });
     }
   }
   FacebookPage.init(
@@ -16,9 +20,10 @@ module.exports = (sequelize, DataTypes) => {
       uid: DataTypes.STRING,
       name: DataTypes.STRING,
       page_id: DataTypes.STRING,
-      account_id: DataTypes.STRING,
+      account_id: DataTypes.INTEGER,
       token: DataTypes.TEXT,
-      status: DataTypes.INTEGER,
+      avatar: DataTypes.TEXT,
+      is_active: DataTypes.BOOLEAN,
     },
     {
       sequelize,
