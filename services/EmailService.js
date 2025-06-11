@@ -21,18 +21,14 @@ class EmailService {
   }
 
   async sendRecoveryEmail(to, url) {
-    if (!this.appConfig || !this.smtpConfig) {
-     await this.initConfig(); 
-    }
+    await this.initConfig();
     const { app_name } = this.appConfig;
     const template = getRecoverEmailTemplate(app_name, url);
     return this.sendEmailTemplate(template, to);
   }
 
   async sendWelcomeEmail(to, username) {
-    if (!this.appConfig || !this.smtpConfig) {
-      await this.initConfig(); 
-    }
+    await this.initConfig();
     const { app_name } = this.appConfig;
     const template = getWelcomeEmailTemplate(app_name, username);
     return this.sendEmailTemplate(template, to);
@@ -40,7 +36,7 @@ class EmailService {
 
   async sendEmailTemplate(template, to) {
     if (!this.appConfig || !this.smtpConfig) {
-      throw new Error("Configuration not initialized");
+      return console.log("Failed to initialize configs");
     }
 
     const {

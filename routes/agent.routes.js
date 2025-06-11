@@ -3,7 +3,7 @@ const router = express.Router();
 const validateUser = require("../middlewares/user.middleware");
 const validateAgent = require("../middlewares/agent.middleware");
 const { checkPlan } = require("../middlewares/plan.middleware");
-const AgentController = require("../controllers/agentController");
+const AgentController = require("../controllers/AgentController");
 const AgentChatController = require("../controllers/agentChatController");
 const AgentMessageController = require("../controllers/agentMessageController");
 const AgentTaskController = require("../controllers/agentTaskController");
@@ -57,6 +57,7 @@ router.post(
 );
 
 router.post("/login", agentController.login.bind(agentController));
+
 router.get(
   "/get_me",
   validateAgent,

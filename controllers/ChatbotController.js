@@ -1,4 +1,4 @@
-const FillAllFieldsException = require("../exceptions/CustomExceptions/FIllAllFieldsException");
+const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const UrlAndTypeRequiredException = require("../exceptions/CustomExceptions/UrlAndTypeRequiredException");
 const ChatbotService = require("../services/ChatbotService");
 const { __t } = require("../utils/locale.utils");
@@ -8,50 +8,55 @@ class ChatbotController {
   constructor() {
     this.chatbotService = new ChatbotService();
   }
-   async addChatbot(req, res, next) {
-    try {
-      const { title, chats, flow, for_all } = req.body;
-      const user = req.decode;
+async addChatbot(req, res, next) {
+  try {
+    const { title, chats, flow, for_all } = req.body;
+    const user = req.decode;
 
-      if (!title || !chats?.length || !flow) {
-        throw new FillAllFieldsException();
-      }
-
-      await this.chatbotService.addChatbot({
-        title,
-        chats,
-        flow,
-        for_all,
-        user,
-      });
-     return formSuccess(res, {msg: __t("chatbot_added")});
-    } catch (err) {
-     next(err);
+    if (!title || !chats?.length || !flow) {
+      throw new FillAllFieldsException();
     }
+
+    await this.chatbotService.addChatbot({
+      title,
+      chats,
+      flow,
+      for_all,
+      user,
+    });
+
+    return formSuccess(res, { msg: __t("chatbot_added") });
+  } catch (err) {
+    next(err);
   }
+}
 
-   async updateChatbot(req, res, next) {
-    try {
-      const { title, chats, flow, for_all, id } = req.body;
-      const user = req.decode;
 
-      if (!title || !chats?.length || !flow) {
-        throw new FillAllFieldsException();
-      }
+async updateChatbot(req, res, next) {
+  try {
+    const { title, chats, flow, for_all, id } = req.body;
+    const user = req.decode;
 
-     await this.chatbotService.updateChatbot({
-        id,
-        title,
-        chats,
-        flow,
-        for_all,
-        user,
-      });
-     return formSuccess(res,{msg: __t("Chatbot was updated") });
-    } catch (err) {
-      next(err);
+    if (!title || !chats?.length || !flow || !id) {
+      throw new FillAllFieldsException();
     }
+
+    await this.chatbotService.updateChatbot({
+      id,
+      title,
+      chats,
+      flow,
+      for_all,
+      user,
+    });
+
+    return formSuccess(res, { msg: __t("Chatbot was updated") });
+  } catch (err) {
+    next(err);
   }
+}
+
+
 
    async getChatbots(req, res, next) {
     try {

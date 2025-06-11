@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       for_all: DataTypes.INTEGER,
       chats: DataTypes.TEXT,
       flow: DataTypes.TEXT,
-      flow_id: DataTypes.STRING,
+      flow_id: DataTypes.INTEGER, 
       active: DataTypes.INTEGER,
     },
     {

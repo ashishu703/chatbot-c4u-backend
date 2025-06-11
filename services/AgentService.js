@@ -16,25 +16,26 @@ class AgentService {
     this.agentTaskRepository = new AgentTaskRepository();
   }
 
-  async addAgent({ owner_uid, name, password, email, mobile, comments }) {
-    const existingAgent = await this.agentRepository.findByEmail(email);
-    if (existingAgent) {
-      throw new EmailAlreadyInUseException();
-    }
-    
-    const hashPass = encryptPassword(password);
-    const uid = generateUid();
-    await this.agentRepository.create({
-      owner_uid,
-      uid,
-      email,
-      password: hashPass,
-      name,
-      mobile,
-      comments,
-      is_active: 1,
-    });
+async addAgent({ owner_uid, name, password, email, mobile, comments }) {
+  const existingAgent = await this.agentRepository.findByEmail(email);
+  if (existingAgent) {
+    throw new EmailAlreadyInUseException();
   }
+
+  const hashPass = await encryptPassword(password); 
+  const uid = generateUid();
+  await this.agentRepository.create({
+    owner_uid,
+    uid,
+    email,
+    password: hashPass, 
+    name,
+    mobile,
+    comments,
+    is_active: 1,
+  });
+}
+
 
   async getMyAgents(owner_uid) {
     return await this.agentRepository.findByOwner(owner_uid);
@@ -80,9 +81,13 @@ class AgentService {
     return await this.agentTaskRepository.findByAgentId(uid);
   }
 
-  async markTaskComplete(id, comment) {
-    await this.agentTaskRepository.updateTask(id, COMPLETED, comment);
+ async markTaskComplete(id, comment) {
+    if (!id || !comment) {
+    }
+
+    return await this.agentTaskRepository.updateTaskStatus(id, comment);
   }
 }
+
 
 module.exports = AgentService;

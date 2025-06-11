@@ -1,4 +1,4 @@
-const AgentService = require("../services/agentService");
+const AgentService = require("../services/AgentService");
 const { isValidEmail } = require("../functions/function");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException");
@@ -63,7 +63,7 @@ class AgentController {
     try {
       const { uid } = req.body;
       await this.agentService.deleteAgent(uid, req.decode.uid);
-      return formSuccess(res,{msg:__t(agent_was_deleted),
+      return formSuccess(res,{msg:__t("agent_was_deleted"),
         
        });
     } catch (err) {
@@ -94,6 +94,7 @@ class AgentController {
       next(err);
     }
   }
+  
 }
 
 module.exports = AgentController;

@@ -15,8 +15,18 @@ class AgentTaskRepository extends Repository {
     return this.find({ where: { uid } });
   }
 
-  async updateTask(id, status, agent_comments) {
-    return this.update({ status, agent_comments }, { where: { id } });
+async updateTaskStatus(id, comment) {
+    const updateData = {
+      status: "COMPLETED",
+      agent_comments: comment,
+    };
+    const [rowsUpdated] = await this.model.update(updateData, {
+      where: { id },
+    });
+
+    if (rowsUpdated === 0) {
+    }
+    return await this.model.findOne({ where: { id } });
   }
 
   async findByOwnerUid(owner_uid) {

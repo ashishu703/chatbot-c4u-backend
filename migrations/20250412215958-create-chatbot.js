@@ -30,7 +30,7 @@ module.exports = {
         allowNull: true,
       },
       flow_id: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       active: {

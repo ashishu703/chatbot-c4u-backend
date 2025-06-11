@@ -157,7 +157,9 @@ class AuthService {
       password: haspass,
       mobile_with_country_code,
     });
-    this.emailService.sendWelcomeEmail(email, name);
+    this.emailService.sendWelcomeEmail(email, name).catch((err) => {
+      console.error("Error sending welcome email", err);
+    });
     return user;
   }
 

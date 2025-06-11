@@ -1,6 +1,7 @@
 const UserRepository = require("../repositories/UserRepository");
 const OrderRepository = require("../repositories/OrderRepository");
 const ContactRepository = require("../repositories/ContactRepository");
+const AdminRepository = require("../repositories/AdminRepository");
 const {
   getUserSignupsByMonth,
   getUserOrderssByMonth,
@@ -11,10 +12,12 @@ const { ADMIN, USER } = require("../types/roles.types");
 class DashboardService {
   serRepository;
   orderRepository;
+  adminRepository;
   constructor() {
     this.userRepository = new UserRepository();
     this.orderRepository = new OrderRepository();
     this.contactRepository = new ContactRepository();
+    this.adminRepository = new AdminRepository();
   }
 
   async getDashboardData(userId, role) {
@@ -53,22 +56,20 @@ class DashboardService {
   }
 
   async getAdminDashboardData() {
-    const users = await this.userRepository.getUsers();
-    const { paidSignupsByMonth, unpaidSignupsByMonth } =
-      getUserSignupsByMonth(users);
+    const { paidSignupsByMonth, unpaidSignupsByMonth, totalUsers } =
+      await getUserSignupsByMonth();
 
-    const orders = await this.orderRepository.getRawOrders();
-    const ordersByMonth = getUserOrderssByMonth(orders);
+    const ordersByMonth = await getUserOrderssByMonth();
 
-    const contactForms = await this.contactRepository.getPhonebooksByUid();
+    const contactForms = await this.contactRepository.count();
 
     return {
       paidSignupsByMonth,
       unpaidSignupsByMonth,
       ordersByMonth,
-      totalUsers: users.length,
-      totalOrders: orders.length,
-      totalContacts: contactForms.length,
+      totalUsers: totalUsers,
+      totalOrders: ordersByMonth.totalOrders,
+      totalContacts: contactForms,
     };
   }
 }

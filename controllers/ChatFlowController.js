@@ -1,6 +1,7 @@
-const FillAllFieldsException = require("../exceptions/CustomExceptions/FIllAllFieldsException");
+const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const FlowIdException = require("../exceptions/CustomExceptions/FlowIdException");
 const FlowService = require("../services/ChatFlowService");
+const { __t } = require("../utils/locale.utils");
 const {formSuccess} = require("../utils/response.utils");
 class FlowController {
   flowService;

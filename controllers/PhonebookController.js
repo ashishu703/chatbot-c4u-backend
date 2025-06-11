@@ -4,6 +4,7 @@ const NoFilesWereUploadedException = require('../exceptions/CustomExceptions/NoF
 const MobileNumberRequiredException = require('../exceptions/CustomExceptions/MobileNumberRequiredException');
 const { formSuccess } = require('../utils/response.utils');
 const EnterPhonebookNameException = require('../exceptions/CustomExceptions/EnterPhonebookNameException');
+const { __t } = require('../utils/locale.utils');
 class PhonebookController {
   phonebookService;
   constructor() {

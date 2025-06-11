@@ -18,9 +18,7 @@ class SocialController {
 
   async getSocialLogin(req, res, next) {
     try {
-      const {
-        
-      } = await this.webPublicRepository.getWebPublic();
+      const data = await this.webPublicRepository.getWebPublic();
       return formSuccess(res, { data: data || {} });
     } catch (err) {
       next(err);
