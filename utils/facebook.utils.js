@@ -20,7 +20,7 @@ async function verifyMetaWebhook(req) {
   let token = req.query["hub.verify_token"];
   let challenge = req.query["hub.challenge"];
   const { meta_webhook_verifcation_key } =
-    await WebPublicRepository.getSetting();
+    await (new WebPublicRepository()).getWebPublic();
 
   if (mode && token) {
     if (mode === "subscribe" && token === meta_webhook_verifcation_key) {

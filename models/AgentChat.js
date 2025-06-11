@@ -8,14 +8,18 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      AgentChat.hasOne(models.Chat, {
+        foreignKey: "chat_id",
+        targetKey: "id",
+        as: "chat",
+      });
     }
   }
   AgentChat.init(
     {
       owner_uid: DataTypes.STRING,
       uid: DataTypes.STRING,
-      chat_id: DataTypes.STRING,
+      chat_id: DataTypes.INTEGER,
     },
     {
       sequelize,

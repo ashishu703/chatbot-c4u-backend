@@ -81,6 +81,7 @@ class Repository {
     }
 
     async createIfNotExists(data, uniqueKeys = {}) {
+  
         const [record, created] = await this.model.findOrCreate({
             where: uniqueKeys,
             defaults: data

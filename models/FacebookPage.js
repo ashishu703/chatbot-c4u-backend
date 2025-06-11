@@ -8,10 +8,15 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      FacebookPage.belongsTo(models.Conversation, {
+      FacebookPage.belongsTo(models.SocialAccount, {
         foreignKey: "account_id",
         targetKey: "id",
         as: "account",
+      });
+      FacebookPage.belongsTo(models.Chat, {
+        foreignKey: "id",
+        targetKey: "page_id",
+        as: "chat",
       });
     }
   }

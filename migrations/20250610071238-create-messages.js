@@ -1,61 +1,68 @@
 "use strict";
 
-const { WHATSAPP } = require('../types/social-platform-types');
+const { INCOMING } = require('../types/conversation-route.types');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("social_accounts", {
+    await queryInterface.createTable("messages", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      platform: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        defaultValue: WHATSAPP,
-      },
-      avatar: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
       uid: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      social_user_id: {
-        type: Sequelize.STRING,
-        allowNull: true,
+
+      chat_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "chats",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
-      social_account_id: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      name: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      username: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      token: {
+      owner_id: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      refresh_token: {
+      type: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      attchment_url: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+      message_id: {
         type: Sequelize.TEXT,
         allowNull: false,
       },
-      refresh_token: {
+      status: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      text: {
         type: Sequelize.TEXT,
         allowNull: true,
       },
-      expires_in: {
-        type: Sequelize.BIGINT,
+      reaction: {
+        type: Sequelize.STRING,
         allowNull: true,
+      },
+      route: {
+        type: Sequelize.STRING,
+        defaultValue: INCOMING,
+        allowNull: false,
+      },
+      timestamp: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -70,6 +77,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("social_accounts");
+    await queryInterface.dropTable("messages");
   },
 };

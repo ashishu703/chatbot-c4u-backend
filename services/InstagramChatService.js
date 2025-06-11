@@ -4,37 +4,39 @@ const {
   convertWebhookReciveMessageToJsonObj,
   convertInstagramWebhookToDBChatCreateObject,
   convertWebhookToDBChatUpdateObject,
-  convertWebhookRecieptToJsonObj,
-} = require("../utils/messenger.utils");
+  convertWebhookMessageToDBMessage,
+} = require("../utils/messages.utils");
 const ChatIOService = require("./IOService");
 const ProfileNotFoundException = require("../exceptions/CustomExceptions/ProfileNotFoundException");
 const ChatRepository = require("../repositories/ChatRepository");
 const SocialAccountRepository = require("../repositories/SocialAccountRepository");
 const InstagramProfileApi = require("../api/Instagram/InstagramProfileApi");
-const ConversationRepository = require("../repositories/ConversationRepository");
-const { READ } = require("../types/chat-status.types");
+const MessageRepository = require("../repositories/MessageRepository");
+const { OPEN } = require("../types/chat-status.types");
 const { USER, AGENT } = require("../types/roles.types");
 const InstagramMessageApi = require("../api/Instagram/InstagramMessageApi");
+const InstagramWebhookDto = require("../dtos/Instagram/InstagramWebhookDto");
+const { DELIVERED, READ } = require("../types/conversation-status.types");
+const { OUTGOING, INCOMING } = require("../types/conversation-route.types");
 
 class InstagramChatService {
 
 
   constructor(user = null, accessToken = null) {
-    this.instagramApi = new InstagramApi(user, accessToken);
     this.chatRepository = new ChatRepository();
     this.agentIoService = new ChatIOService();
     this.socialAccountRepository = new SocialAccountRepository();
     this.instagramProfileApi = new InstagramProfileApi(user, accessToken);
     this.instagramMessageApi = new InstagramMessageApi(user, accessToken);
-    this.conversationRepository = new ConversationRepository();
+    this.messageRepository = new MessageRepository();
   }
 
-  async initIOService(chatId) {
+  async initIOService(chat) {
     this.agentIoService = null;
     this.userIoService = null;
 
-    const chat = await this.chatRepository.findByChatId(chatId);
-    const chatAgent = await this.chatRepository.getAssignedAgent(chatId);
+
+    const chatAgent = chat.agentChat ?? null;
 
     if (chat?.uid) {
       this.userIoService = new ChatIOService(chat.uid);
@@ -50,86 +52,102 @@ class InstagramChatService {
   async processIncomingWebhook(payload) {
     const { entry } = payload;
     entry.forEach((entryObj) => {
-      const { messaging, changes } = entryObj;
-      messaging?.forEach(async (messageObj) => {
-        await this.processWebhookEntry(messageObj);
-      });
-      changes?.forEach(async (change) => {
-        await this.processChanges(change);
-      });
+      const webhookDto = new InstagramWebhookDto(entryObj);
+
+      if (webhookDto.isMessage()) {
+        const messages = webhookDto.getMessages();
+
+        messages?.forEach(async (messageObj) => {
+          await this.processWebhookEntry(messageObj);
+        });
+      }
+
+      if (webhookDto.isChange()) {
+        const changes = webhookDto.getChanges();
+        changes?.forEach(async (change) => {
+          await this.processChanges(change);
+        });
+      }
     });
   }
 
   async processWebhookEntry(messageObj) {
     try {
-      const { recipient, sender, message, reaction } = messageObj;
-      let instagramProfile;
-      let chatId;
 
-      if (message && message.is_echo) {
-        chatId = createChatId(recipient.id, sender.id);
-        instagramProfile =
-          await this.socialAccountRepository.findFirst({
-            social_user_id: recipient.id
-          });
-      } else {
-        chatId = createChatId(sender.id, recipient.id);
-        instagramProfile =
-          await this.socialAccountRepository.findFirst({
-            social_user_id: recipient.id
-          });
-      }
 
-      const existingChat = await this.chatRepository.findByChatId(chatId);
-      if (!existingChat) {
-        await this.createNewChat({
-          ...messageObj,
-          chatId,
-          ...instagramProfile,
+      let ownerId = messageObj.getOwnerId();
+
+      let chatId = messageObj.getChatId();
+
+      let instagramProfile =
+        await this.socialAccountRepository.findFirst({
+          where: { social_user_id: ownerId }
         });
-      }
+
 
       if (!instagramProfile) {
         throw new ProfileNotFoundException();
       }
 
-      await this.initIOService(chatId);
 
-      messageObj = { ...messageObj, ...instagramProfile, chatId };
 
-      if (message && message.is_echo) {
-        this.processSentReciept(messageObj);
-      } else if (message) {
-        this.processIncomingMessage(messageObj);
-      } else if (reaction) {
-        this.processReaction(messageObj);
+      let chat = await this.chatRepository.findFirst({
+        where: { chat_id: chatId, account_id: instagramProfile.id }
+      }, ["agentChat"]);
+
+      if (!chat) {
+        chat = await this.createNewChat(
+          chatId,
+          instagramProfile,
+          messageObj
+        );
       }
 
-      await this.emitUpdateConversationEvent(chatId);
+
+
+      await this.initIOService(chat);
+
+
+      if (messageObj.isDeliveryReceipt()) {
+        this.processDeliveryReciept(messageObj, chat);
+      } else if (messageObj.isMessage()) {
+        this.processIncomingMessage(messageObj, chat);
+      } else if (messageObj.isReaction()) {
+        this.processReaction(messageObj, chat);
+      }
+
+      await this.emitUpdateConversationEvent(chat);
     } catch (error) {
+      console.log({
+        error
+      })
       return false;
     }
   }
 
   async processChanges(change) {
     try {
-      const { field, value } = change;
-      if (field === "messaging_seen") {
-        const { sender, recipient } = value;
+      if (change.isMessageSeenEvent()) {
+        const sender = change.getSenderId();
         const instagramProfile = await this.socialAccountRepository.findFirst({
-          social_user_id: recipient.id
+          social_user_id: sender
         });
 
-        const chatId = createChatId(sender.id, recipient.id);
 
         if (!instagramProfile) {
           throw new ProfileNotFoundException();
         }
 
-        await this.initIOService(chatId);
+        const chatId = change.getChatId();
 
-        change = { ...value, ...instagramProfile, path, chatId };
-        this.processDeliveryMessage(change);
+        const chat = await this.chatRepository.findFirst({
+          where: { chat_id: change.getChatId(), account_id: instagramProfile.id }
+        }, ["agentChat"]);
+
+
+        await this.initIOService(chat);
+
+        this.processDeliveryMessage(change, chat);
 
         await this.emitUpdateConversationEvent(chatId);
       }
@@ -138,58 +156,84 @@ class InstagramChatService {
     }
   }
 
-  async createNewChat(messageObj) {
+  async createNewChat(chatId, instagramProfile, messageObj) {
 
+    const senderId = messageObj.getTargetId();
+    await this.instagramProfileApi.initMeta();
     const {
       name,
-      username,
       profile_pic
-    } = this.instagramProfileApi.initMeta()
-      .setToken(messageObj.token)
-      .fetchProfile(messageObj.sender.id);
+    } = await this.instagramProfileApi.setToken(instagramProfile.token)
+      .fetchProfile(senderId);
 
-    await this.chatRepository.createIfNotExists(
-      convertInstagramWebhookToDBChatCreateObject({
-        ...messageObj,
-        username: username,
-        name: name,
-        avatar: profile_pic,
-      })
+
+    return this.chatRepository.createIfNotExists(
+      {
+        "chat_id": chatId,
+        "avatar": profile_pic,
+        "uid": instagramProfile.uid,
+        "account_id": instagramProfile.id,
+        "last_message_came": messageObj.getMessageTimestamp(),
+        "chat_note": "",
+        "chat_tags": "",
+        "sender_name": name,
+        "sender_id": senderId,
+        "chat_status": OPEN,
+      },
+      {
+        chat_id: chatId,
+        uid: instagramProfile.uid
+      }
     );
   }
 
-  async processSentReciept(messageObj) {
-    const { chatId } = messageObj;
-    const dbMessageObj = convertWebhookRecieptToJsonObj(messageObj);
-    this.conversationRepository.createIfNotExists(dbMessageObj);
+  async processDeliveryReciept(messageObj, chat) {
+    const chatId = chat.id;
+
+    const dbMessageObj = convertWebhookMessageToDBMessage(messageObj);
+
+    const message = await this.messageRepository.create(
+      {
+        ...dbMessageObj,
+        uid: chat.uid,
+        owner_id: chat.uid,
+        chat_id: chatId,
+        route: OUTGOING,
+      });
+ 
     this.emitNewMessageEvent(dbMessageObj, chatId);
     await this.chatRepository.updateLastMessage(
       chatId,
-      convertWebhookToDBChatUpdateObject({
-        ...messageObj,
-        message: dbMessageObj,
-      })
+      message.id
     );
   }
 
-  async processIncomingMessage(messageObj) {
-    const { chatId } = messageObj;
-    const dbMessageObj = convertWebhookReciveMessageToJsonObj(messageObj);
-    await this.conversationRepository.createIfNotExists(dbMessageObj);
+  async processIncomingMessage(messageObj, chat) {
+    const chatId = chat.id;
+    const dbMessageObj = convertWebhookMessageToDBMessage(messageObj);
+    const message = await this.messageRepository.createIfNotExists(
+      {
+        ...dbMessageObj,
+        uid: chat.uid,
+        owner_id: chat.uid,
+        chat_id: chatId,
+        route: INCOMING,
+      },
+      {
+        message_id: dbMessageObj.getId(),
+        chat_id: chatId,
+      }
+    );
     this.emitNewMessageEvent(dbMessageObj, chatId);
     await this.chatRepository.updateLastMessage(
       chatId,
-      convertWebhookToDBChatUpdateObject({
-        ...messageObj,
-        message: dbMessageObj,
-      })
+      message.id
     );
   }
 
   async processReaction(messageObj) {
-
-    const { mid } = messageObj;
-    const mesasge = await this.conversationRepository.update({
+    const mid = messageObj.getId();
+    const mesasge = await this.messageRepository.update({
       reaction: messageObj.reaction.emoji,
     }, {
       message_id: mid
@@ -199,8 +243,8 @@ class InstagramChatService {
   }
 
   async processDeliveryMessage(messageObj) {
-    const { mid } = messageObj;
-    return this.conversationRepository.updateConversationStatus(mid, READ);
+    const mid = messageObj.getId();
+    return this.messageRepository.updateConversationStatus(mid, READ);
   }
 
   async send({ text, toNumber }) {
@@ -216,10 +260,9 @@ class InstagramChatService {
     return this.instagramMessageApi.sendMessage(payload);
   }
 
-  async emitUpdateConversationEvent(chatId) {
-    const chat = await this.chatRepository.findChatByChatId(chatId);
-    const chats = await this.chatRepository.findUidId(chat.uid);
-    const agentChat = await AgentChatRepository.getAssignedAgent(chatId);
+  async emitUpdateConversationEvent(chat) {
+    const chats = await this.chatRepository.findByUid(chat.uid);
+    // const agentChat = await AgentChatRepository.getAssignedAgent(chat.uid);
 
     this.executeSocket(
       "updateConversation",
@@ -229,18 +272,18 @@ class InstagramChatService {
       USER
     );
 
-    if (agentChat) {
-      const agentChats = await AgentChatRepository.getAgentChats(agentChat.uid);
-      const chatIds = agentChats.map((i) => i?.chat_id);
-      const chats = await this.chatRepository.searchByChatIds(chatIds);
-      this.executeSocket(
-        "updateConversation",
-        {
-          chats,
-        },
-        AGENT
-      );
-    }
+    // if (agentChat) {
+    //   const agentChats = await AgentChatRepository.getAgentChats(agentChat.uid);
+    //   const chatIds = agentChats.map((i) => i?.chat_id);
+    //   const chats = await this.chatRepository.searchByChatIds(chatIds);
+    //   this.executeSocket(
+    //     "updateConversation",
+    //     {
+    //       chats,
+    //     },
+    //     AGENT
+    //   );
+    // }
   }
 
   async emitNewMessageEvent(message, chatId) {

@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       templet_name: DataTypes.STRING,
       is_read: DataTypes.INTEGER,
       meta_msg_id: DataTypes.STRING,
-      sender_mobile: DataTypes.STRING,
+      sender_id: DataTypes.STRING,
       send_to: DataTypes.STRING,
       delivery_status: DataTypes.STRING,
       delivery_time: DataTypes.STRING,
