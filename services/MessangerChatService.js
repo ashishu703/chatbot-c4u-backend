@@ -6,14 +6,14 @@ const {
   convertWebhookReciveMessageToJsonObj,
   convertMessangerWebhookToDBChatCreateObject,
   convertWebhookToDBChatUpdateObject,
-  convertWebhookRecieptToJsonObj,
-} = require("../utils/messenger.utils");
+  convertWebhookMessageToDBMessage,
+} = require("../utils/messages.utils");
 const ChatIOService = require("./ChatIOService");
 const { USER, AGENT } = require("../types/roles.types");
 const MessengerProfileApi = require("../api/Messanger/MessengerProfileApi");
 const { DELIVERED, READ, SENT } = require("../types/chat-status.types");
 const { VIDEO, FILE, AUDIO } = require("../types/message.types");
-const ConversationRepository = require("../repositories/ConversationRepository");
+const ConversationRepository = require("../repositories/MessageRepository");
 
 class MessangerChatService {
 
@@ -115,7 +115,7 @@ class MessangerChatService {
 
   async processSentReciept(messageObj) {
     const { chatId } = messageObj;
-    const dbMessageObj = convertWebhookRecieptToJsonObj(messageObj);
+    const dbMessageObj = convertWebhookMessageToDBMessage(messageObj);
     await this.conversationRepository.createIfNotExists(messageObj);
     this.emitNewMessageEvent(dbMessageObj, chatId);
     await this.chatRepository.updateLastMessage(

@@ -1,7 +1,7 @@
 const RoomRepository = require("../repositories/RoomRepository");
 const { getIOInstance } = require("../socket");
 
-module.exports = class IOService {
+class IOService {
   io;
   uid;
   room;
@@ -19,3 +19,4 @@ module.exports = class IOService {
     this.io.to(this.room?.socket_id).emit(event, data);
   }
 };
+module.exports = IOService

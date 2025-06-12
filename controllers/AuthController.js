@@ -20,8 +20,20 @@ class AuthController {
       if (!token) {
         throw new TokenMalformedExecption();
       }
-      const user = await this.authService.verifyToken(token);
-      return formSuccess(res, { user });
+      const {
+        email,
+        name,
+        role,
+        id,
+      } = await this.authService.verifyToken(token);
+      return formSuccess(res, {
+        user: {
+          email,
+          name,
+          role,
+          id,
+        }
+      });
     } catch (err) {
       next(err);
     }
@@ -62,7 +74,7 @@ class AuthController {
         mobile_with_country_code,
         acceptPolicy,
       });
-    
+
       return formSuccess(res, { msg: __t("signup_success") });
     } catch (err) {
       next(err);

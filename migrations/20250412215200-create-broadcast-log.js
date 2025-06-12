@@ -29,7 +29,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      sender_mobile: {
+      sender_id: {
         type: Sequelize.STRING,
         allowNull: true,
       },

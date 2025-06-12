@@ -156,7 +156,7 @@ class DashboardService {
       uid: user.uid,
       broadcast_id,
       templet_name: templet.name || "NA",
-      sender_mobile: metaDetails.display_phone_number,
+      sender_id: metaDetails.display_phone_number,
       send_to: contact.mobile,
       delivery_status: PENDING,
       example,

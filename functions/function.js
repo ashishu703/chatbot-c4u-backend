@@ -224,7 +224,7 @@ async function saveMessage(body, uid, type, msgContext) {
         uid,
         last_message_came: userTimezone,
         sender_name: actualMsg.senderName,
-        sender_mobile: actualMsg.senderMobile,
+        sender_id: actualMsg.senderMobile,
         last_message: actualMsg,
         is_opened: false,
       });
@@ -1073,7 +1073,7 @@ async function sendMetaMsg(uid, msgObj, toNumber, savObj, chatId) {
 function mergeArrays(arrA, arrB) {
   return arrB.map((objB) => {
     const matchingObject = arrA.find(
-      (objA) => objA.mobile === objB.sender_mobile
+      (objA) => objA.mobile === objB.sender_id
     );
     return matchingObject ? { ...objB, contact: matchingObject } : objB;
   });

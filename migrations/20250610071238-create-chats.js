@@ -1,4 +1,7 @@
 "use strict";
+
+const { OPEN } = require('../types/chat-status.types');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -19,7 +22,7 @@ module.exports = {
         allowNull: true,
       },
       avatar: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       uid: {
@@ -31,6 +34,16 @@ module.exports = {
         allowNull: false,
         references: {
           model: "social_accounts",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
+      page_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "facebook_pages",
           key: "id",
         },
         onDelete: "CASCADE",
@@ -52,37 +65,37 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      sender_mobile: {
+      sender_id: {
         type: Sequelize.STRING,
         allowNull: true,
       },
       chat_status: {
         type: Sequelize.STRING,
-        defaultValue: "open",
+        defaultValue: OPEN,
       },
-      is_opened: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false,
-      },
-      last_message: {
-        type: Sequelize.TEXT,
+      last_message_id: {
+        type: Sequelize.INTEGER,
         allowNull: true,
+        references: {
+          model: "messages",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       is_deleted: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
-      recipient: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
     });
   },

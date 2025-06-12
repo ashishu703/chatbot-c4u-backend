@@ -36,6 +36,7 @@ const metaApiVersion = "v18.0"
 const defaultTimeZone = "Asia/Kolkata";
 const paypalUrl = process.env.PAYPAL_URL
 const whatsAppAccountPin = process.env.WHATSAPP_ACCOUNT_PIN
+const port = process.env.PORT
 
 module.exports = {
     defaultAppConfig,
@@ -49,4 +50,5 @@ module.exports = {
     stripeLang,
     paypalUrl,
     whatsAppAccountPin,
+    port,
 };

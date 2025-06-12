@@ -11,4 +11,17 @@ function addDaysToCurrentTimestamp(days) {
   return futureDate.getTime();
 }
 
-module.exports = { addDaysToCurrentTimestamp };
+
+function secondsToMilliseconds(seconds) {
+  return seconds * 1000;
+}
+
+function millisecondsToSeconds(milliseconds) {
+  return Math.floor(milliseconds / 1000);
+}
+
+module.exports = {
+  addDaysToCurrentTimestamp,
+  secondsToMilliseconds,
+  millisecondsToSeconds
+};

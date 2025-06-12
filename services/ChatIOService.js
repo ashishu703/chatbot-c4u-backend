@@ -11,6 +11,7 @@ class ChatIOService extends IOService {
     super(uid);
   }
 
+
   updateConversation(chats) {
     this.emit(UPDATE_CONVERSATION, chats);
   }

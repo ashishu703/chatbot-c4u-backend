@@ -63,6 +63,7 @@ app.use('/api/quick-replies', require('./routes/quick-replies.routes.js'))
 
 
 const path = require("path");
+const { port } = require('./config/app.config.js')
 
 const currentDir = process.cwd();
 
@@ -72,8 +73,8 @@ app.get("*", function (request, response) {
     response.sendFile(path.resolve(currentDir, "./client/public", "index.html"));
 });
 
-const server = app.listen(process.env.PORT || 3010, () => {
-    console.log(`WaCrm server is running on port ${process.env.PORT}`);
+const server = app.listen(port || 3010, () => {
+    console.log(`WaCrm server is running on port ${port}`);
     setTimeout(() => {
         runCampaign()
     }, 1000);
