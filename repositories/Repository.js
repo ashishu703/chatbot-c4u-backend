@@ -1,4 +1,5 @@
 const { Op, literal } = require("sequelize");
+const paginate = require("../utils/paginate.utils");
 class Repository {
   constructor(model) {
     this.model = model;
@@ -87,6 +88,10 @@ async findById(uid, relations = []) {
       defaults: data,
     });
     return record.toJSON();
+  }
+
+  async paginate(query) {
+   return paginate(this.model, { ...query });
   }
 }
 

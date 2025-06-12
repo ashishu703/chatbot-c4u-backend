@@ -59,8 +59,8 @@ class ChatWidgetService {
 
     return true;
   }
-  async getMyWidgets(uid) {
-    return this.chatWidgetRepository.findByUid(uid);
+  async getMyWidgets(uid, query) {
+    return this.chatWidgetRepository.paginate({ where: { uid }, ...query });
   }
 
   async deleteWidget(id) {

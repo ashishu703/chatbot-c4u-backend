@@ -37,8 +37,8 @@ async addAgent({ owner_uid, name, password, email, mobile, comments }) {
 }
 
 
-  async getMyAgents(owner_uid) {
-    return await this.agentRepository.findByOwner(owner_uid);
+  async getMyAgents(query) {
+    return await this.agentRepository.paginate(query);
   }
 
   async changeAgentActiveness(agentUid, activeness) {
@@ -77,8 +77,8 @@ async addAgent({ owner_uid, name, password, email, mobile, comments }) {
     return agent;
   }
 
-  async getAgentTasks(uid) {
-    return await this.agentTaskRepository.findByAgentId(uid);
+  async getAgentTasks(query) {
+    return await this.agentTaskRepository.paginate(query);
   }
 
  async markTaskComplete(id, comment) {

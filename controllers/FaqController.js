@@ -20,8 +20,9 @@ class FaqController {
 
    async getFaqs(req, res, next) {
     try {
-      const faqs = await this.faqRepository.getFaqs();
-      return formSuccess(res,{ data: faqs });
+      const query  = req.query;
+      const faqs = await this.faqRepository.getFaqs(query);
+      return formSuccess(res,{ ...faqs });
     } catch (err) {
      next(err);
     }

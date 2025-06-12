@@ -34,10 +34,6 @@ async function makeRequest({ method, url, body = null, headers = [] }) {
       signal: controller.signal,
     };
 
-    console.log({
-      config,
-    });
-
     // Perform the request
     const response = await fetch(url, config);
 
@@ -110,7 +106,6 @@ async function checkIfDisabled(flow, senderNumber) {
       }
     }
   } catch (err) {
-    console.log("ERROR FOUND IN replyMessage in chatbot.js");
     console.log(err);
   }
 }
@@ -152,7 +147,6 @@ async function replyMessage({
 
     await sendMetaMsg(uid, k?.data.msgContent, senderNumber, saveObj, chatId);
   } catch (err) {
-    console.log("ERROR FOUND IN replyMessage in chatbot.js");
     console.log(err);
   }
 }

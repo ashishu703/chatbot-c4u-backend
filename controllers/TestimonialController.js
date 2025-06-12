@@ -22,8 +22,9 @@ class TestimonialController {
 
    async getTestimonials(req, res, next) {
     try {
-      const testimonials = await this.testimonialRepository.getTestimonials();
-      return formSuccess(res,{  data: testimonials });
+      const query  = req.query;
+      const testimonials = await this.testimonialRepository.getTestimonials(query);
+      return formSuccess(res,{  ...testimonials });
     } catch (err) {
       next(err);
     }
@@ -32,9 +33,7 @@ class TestimonialController {
  async deleteTestimonial(req, res, next) {
   try {
     const { id } = req.body;
-    console.log("Deleting testimonial with ID:", id);  
     const deleted = await this.testimonialRepository.deleteTestimonial(id);
-    console.log("Deleted?", deleted);  
     return formSuccess(res,{  msg: __t("testimonial_was_deleted"),
       
      });

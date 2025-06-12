@@ -2,6 +2,7 @@ const TempletService = require("../services/TempletService");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const { formSuccess } = require("../utils/response.utils");
 const { __t } = require("../utils/locale.utils");
+const { where } = require("sequelize");
 class TempletController {
   templetService;
   constructor() {
@@ -24,8 +25,12 @@ class TempletController {
    async getTemplates(req, res, next) {
     try {
       const user = req.decode;
-      const templates = await this.templetService.getTemplates(user.uid);
-      return formSuccess(res,{ data: templates });
+      const query = req.query;
+      const templates = await this.templetService.getTemplates({
+        where: { uid: user.uid },
+        ...query,
+      });
+      return formSuccess(res,{ ...templates });
     } catch (err) {
       next(err);
     }

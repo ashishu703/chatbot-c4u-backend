@@ -2,6 +2,7 @@ const UidRequiredException = require("../exceptions/CustomExceptions/UidRequired
 const ContactService = require("../services/ContactService");
 const {formSuccess} = require("../utils/response.utils");
 const { __t } = require("../utils/locale.utils");
+const { where } = require("sequelize");
 class ContactController {
   contactService;
 
@@ -11,12 +12,18 @@ class ContactController {
 
   async getContactLeads(req, res, next) {
     try {
+      const query = req.query;
       const uid = req.user.uid;  
       if (!uid) {
         throw new UidRequiredException();
       }
-      const leads = await this.contactService.getContactLeads(uid);
-      return formSuccess(res,{ data: leads });
+      const leads = await this.contactService.getContactLeads({
+        where: {
+          uid: uid,
+        },
+        ...query
+      });
+      return formSuccess(res,{...leads });
     } catch (err) {
       next(err);
     }

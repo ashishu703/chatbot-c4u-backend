@@ -48,8 +48,8 @@ class FlowService {
 
     return flow;
   }
-  async getFlows(uid) {
-    return await this.flowRepository.findByUid(uid);
+  async getFlows(query) {
+    return await this.flowRepository.paginate(query);
   }
 
   async deleteFlow(id) {

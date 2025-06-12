@@ -10,13 +10,10 @@ const pool = new Pool({
 
 // Debug function to log queries
 async function query(text, params) {
-  console.log("Executing query:", { text, params });
   try {
     const res = await pool.query(text, params);
-    console.log("Query result:", res.rows);
-    return res.rows; // Return only rows for simpler usage
+    return res.rows;
   } catch (err) {
-    console.error("Query error:", err);
     throw err;
   }
 }
