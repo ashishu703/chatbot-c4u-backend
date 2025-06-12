@@ -33,52 +33,54 @@ class ChatbotService {
     return this.chatbotRepository.create(chatbot);
   }
 
-async updateChatbot({ id, title, chats, flow, for_all, user: userObj }) {
-  const user = await this.userRepository.findByUid(userObj.uid);
+  async updateChatbot({ id, title, chats, flow, for_all, user: userObj }) {
+    const user = await this.userRepository.findByUid(userObj.uid);
 
-  if (user.plan) {
-    const plan = JSON.parse(user.plan);
-    if (!plan.allow_chatbot) {
+    if (user.plan) {
+      const plan = JSON.parse(user.plan);
+      if (!plan.allow_chatbot) {
+        throw new PlanNoChatbotPermissionException();
+      }
+    } else {
       throw new PlanNoChatbotPermissionException();
     }
-  } else {
-    throw new PlanNoChatbotPermissionException();
+
+    const chatbot = {
+      title,
+      for_all: !!for_all ? 1 : 0,
+      chats: JSON.stringify(chats),
+      flow: JSON.stringify(flow),
+      flow_id: flow?.id ? parseInt(flow.id) : null,
+    };
+
+    const updateResult = await this.chatbotRepository.update(chatbot, {
+      id: parseInt(id),
+      uid: user.uid,
+    });
+
+    return updateResult;
   }
-
-  const chatbot = {
-    title,
-    for_all: !!for_all ? 1 : 0,
-    chats: JSON.stringify(chats),
-    flow: JSON.stringify(flow),
-    flow_id: flow?.id ? parseInt(flow.id) : null,
-  };
-
-  const updateResult = await this.chatbotRepository.update(chatbot, {
-    id: parseInt(id),
-    uid: user.uid,
-  });
-
-  return updateResult;
-}
-
-
-
-
 
   async getChatbots(uid) {
     return this.chatbotRepository.findByUid(uid);
   }
 
-  async changeBotStatus(id, status, user) {
-    if (!user.plan?.allow_chatbot) {
+  async changeBotStatus( id, status, userObj) {
+    const user = await this.userRepository.findByUid(userObj.uid);
+    if (user.plan) {
+      const plan = JSON.parse(user.plan);
+      if (!plan.allow_chatbot) {
+        throw new PlanNoChatbotPermissionException();
+      }
+    } else {
       throw new PlanNoChatbotPermissionException();
     }
 
-    return this.chatbotRepository.updateStatus(id, !!status, user.uid);
+    return this.chatbotRepository.updateStatus(id, status, user.uid);
   }
 
   async deleteChatbot(id, uid) {
-    return this.chatbotRepository.delete(id, uid);
+    return this.chatbotRepository.deletechatbot(id, uid);
   }
 }
 

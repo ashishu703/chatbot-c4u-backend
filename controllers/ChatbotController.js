@@ -86,7 +86,7 @@ async updateChatbot(req, res, next) {
       const user = req.decode;
 
     await this.chatbotService.deleteChatbot(id, user.uid);
-     return formSuccess(res,{msg: __t("chatbot_deletedd") });
+     return formSuccess(res,{msg: __t("chatbot_deleted") });
     } catch (err) {
      next(err);
     }

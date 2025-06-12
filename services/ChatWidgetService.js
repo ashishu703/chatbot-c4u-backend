@@ -64,7 +64,7 @@ class ChatWidgetService {
   }
 
   async deleteWidget(id) {
-    return this.chatWidgetRepository.delete(id);
+    return this.chatWidgetRepository.deleteChatWidget(id);
   }
 }
 

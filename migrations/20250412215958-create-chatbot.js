@@ -1,4 +1,7 @@
 "use strict";
+
+const { ACTIVE } = require('../types/chatbot-status.types');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -35,7 +38,7 @@ module.exports = {
       },
       active: {
         type: Sequelize.INTEGER,
-        defaultValue: "0",
+        defaultValue: ACTIVE,
       },
 
       createdAt: {

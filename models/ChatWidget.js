@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   ChatWidget.init(
-    {
+    { 
       unique_id: DataTypes.STRING,
       uid: DataTypes.STRING,
       title: DataTypes.STRING,
