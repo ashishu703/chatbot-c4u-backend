@@ -18,20 +18,18 @@ module.exports = (sequelize, DataTypes) => {
         as: 'page',
       });
 
+      Chat.belongsTo(models.Message, {
+        foreignKey: "last_message_id",
+        as: "lastMessage",
+      });
+
       Chat.hasMany(models.Message, {
-        foreignKey: "id",
-        targetKey: "chat_id",
+        foreignKey: "chat_id",
         as: "messages",
       });
-      // Chat.hasOne(models.Message, {
-      //   foreignKey: "last_message_id",
-      //   targetKey: "id",
-      //   as: "lastMessage",
-      // });
 
       Chat.hasOne(models.AgentChat, {
-        foreignKey: "id",
-        targetKey: "chat_id",
+        foreignKey: "chat_id",
         as: "agentChat",
       });
     }

@@ -107,11 +107,11 @@ class InstagramChatService {
 
 
       if (messageObj.isDeliveryReceipt()) {
-        this.processDeliveryReciept(messageObj, chat);
+        await this.processDeliveryReciept(messageObj, chat);
       } else if (messageObj.isMessage()) {
-        this.processIncomingMessage(messageObj, chat);
+        await this.processIncomingMessage(messageObj, chat);
       } else if (messageObj.isReaction()) {
-        this.processReaction(messageObj, chat);
+        await this.processReaction(messageObj, chat);
       }
 
       await this.emitUpdateConversationEvent(chat);
@@ -190,16 +190,21 @@ class InstagramChatService {
 
     const dbMessageObj = convertWebhookMessageToDBMessage(messageObj);
 
-    const message = await this.messageRepository.create(
+    const message = await this.messageRepository.createIfNotExists(
       {
         ...dbMessageObj,
         uid: chat.uid,
         owner_id: chat.uid,
         chat_id: chatId,
         route: OUTGOING,
-      });
+      },
+      {
+        message_id: messageObj.getId(),
+        chat_id: chatId,
+      }
+    );
 
-    this.emitNewMessageEvent(dbMessageObj, chatId);
+    this.emitNewMessageEvent(message, chatId);
     await this.chatRepository.updateLastMessage(
       chatId,
       message.id
@@ -218,11 +223,11 @@ class InstagramChatService {
         route: INCOMING,
       },
       {
-        message_id: dbMessageObj.getId(),
+        message_id: messageObj.getId(),
         chat_id: chatId,
       }
     );
-    this.emitNewMessageEvent(dbMessageObj, chatId);
+    this.emitNewMessageEvent(message, chatId);
     await this.chatRepository.updateLastMessage(
       chatId,
       message.id
@@ -232,11 +237,11 @@ class InstagramChatService {
   async processReaction(messageObj) {
     const mid = messageObj.getId();
     const mesasge = await this.messageRepository.update({
-      reaction: messageObj.reaction.emoji,
+      reaction: messageObj.getEmoji(),
     }, {
       message_id: mid
     });
-    this.emitNewReactionEvent(mesasge, chatId);
+    this.emitNewReactionEvent(mesasge);
 
   }
 
@@ -259,13 +264,13 @@ class InstagramChatService {
   }
 
   async emitUpdateConversationEvent(chat) {
-    const userChats = await this.chatRepository.findByUid(chat.uid);
+    const userChats = await this.chatRepository.findInboxChats(chat.uid);
     this.socketHelper.pushUserChats(userChats);
 
     const agentChat = chat.agentChat ?? null;
 
     if (agentChat) {
-      const agentChats = await this.agentChatRepository.findByAgentId(agentChat.uid);
+      const agentChats = await this.agentChatRepository.find({ uid: agentChat.uid });
       const chats = agentChats.map((i) => i?.chat);
       this.socketHelper.pushAgentChats(chats);
     }

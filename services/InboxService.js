@@ -4,6 +4,7 @@ const UserRepository = require("../repositories/UserRepository");
 const ChatsRepository = require("../repositories/ChatRepository");
 const ContactRepository = require("../repositories/ContactRepository");
 const RoomsRepository = require("../repositories/RoomRepository");
+const MessageRepository = require("../repositories/MessageRepository");
 const {
   saveWebhookConversation,
   mergeArrays,
@@ -35,6 +36,7 @@ class InboxService {
     this.chatsRepository = new ChatsRepository();
     this.contactRepository = new ContactRepository();
     this.roomsRepository = new RoomsRepository();
+    this.messageRepository = new MessageRepository();
   }
   async handleWebhook(uid, body) {
     const days = await getUserPlanDays(uid);
@@ -56,18 +58,14 @@ class InboxService {
     await saveWebhookConversation(body, uid);
   }
 
-  async getChats(uid) {
-    const chats = await this.chatsRepository.findByUid(uid);
-    const contacts = await this.contactRepository.findByUid(uid);
-    return contacts.length ? mergeArrays(contacts, chats) : chats;
+  async getChats(uid, query = {}) {
+    return this.chatsRepository.findInboxChats(uid);
   }
 
-  async getConversation(uid, chatId) {
-    const filePath = path.join(
-      __dirname,
-      `../conversations/inbox/${uid}/${chatId}.json`
-    );
-    return await readJSONFile(filePath, 100);
+  async getConversation(uid, chatId, query = {}) {
+    return this.messageRepository.find({
+      where: { chat_id: chatId, uid },
+    })
   }
 
   async verifyWebhook(uid, mode, token, challenge) {

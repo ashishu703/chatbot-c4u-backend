@@ -21,10 +21,12 @@ class ChatIOService extends IOService {
   }
 
   pushNewReaction(reaction) {
+  
     this.emit(PUSH_NEW_REACTION, reaction);
   }
 
   pushUpdateDelivery(status) {
+   
     this.emit(UPDATE_DELIVERY_STATUS, status);
   }
 };

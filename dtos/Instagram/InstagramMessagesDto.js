@@ -61,6 +61,10 @@ class InstagramMessagesDto {
         return this.isReaction() ? dataGet(this.data, "reaction.mid") : dataGet(this.data, "message.mid");
     }
 
+    getEmoji() {
+        return dataGet(this.data, "reaction.emoji");
+    }
+
     getChatId() {
         return createChatId(this.getTargetId(), this.getOwnerId());
     }

@@ -47,6 +47,11 @@ class ChatRepository extends Repository {
   async updateLastMessage(id, lastMessageId) {
     return this.update({ last_message_id: lastMessageId }, { id });
   }
+
+
+  async findInboxChats(uid, query = {}) {
+    return this.find({ where: { uid } }, ["lastMessage", "page", "account"]);
+  }
 }
 
 module.exports = ChatRepository;

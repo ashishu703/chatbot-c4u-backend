@@ -25,7 +25,8 @@ class InboxController {
    async getChats(req, res, next) {
     try {
       const user = req.decode;
-      const chats = await this.inboxService.getChats(user.uid);
+      const query = req.query;
+      const chats = await this.inboxService.getChats(user.uid, query);
       return formSuccess(res,{ data: chats });
     } catch (err) {
       next(err);
@@ -35,8 +36,9 @@ class InboxController {
    async getConversation(req, res, next) {
     try {
       const { chatId } = req.body;
+      const query = req.query;
       const user = req.decode;
-      const conversation = await this.inboxService.getConversation(user.uid, chatId);
+      const conversation = await this.inboxService.getConversation(user.uid, chatId, query);
       return formSuccess(res,{ data: conversation });
     } catch (err) {
       next(err);
