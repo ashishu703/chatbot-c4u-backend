@@ -1,8 +1,10 @@
 const path = require("path");
 const ContactRepository = require("../repositories/ContactRepository");
+const AgentRepository = require("../repositories/AgentRepository");
 const ChatRepository = require("../repositories/ChatRepository");
 const AgentTaskRepository = require("../repositories/AgentTaskRepository");
 const { uploadFile } = require("../utils/file.utils");
+const AgentNotFoundException = require("../exceptions/CustomExceptions/AgentNotFoundException");
 const UserRepository = require("../repositories/UserRepository");
 const EmailAlreadyTakenException = require("../exceptions/CustomExceptions/EmailAlreadyTakenException");
 const UserNotFoundException = require("../exceptions/CustomExceptions/UserNotFoundException");
@@ -27,6 +29,7 @@ const { backendURI } = require("../config/app.config");
 class UserService {
   userRepository;
   agentTaskRepository;
+  agentRepository 
 
   constructor() {
     this.userRepository = new UserRepository();
@@ -36,11 +39,16 @@ class UserService {
     this.chatbotRepository = new ChatbotRepository();
     this.phonebookRepository = new PhonebookRepository();
     this.contactRepository = new ContactRepository();
+    this.agentRepository = new AgentRepository();
   }
 
   async getUsers() {
     const users = await this.userRepository.find();
     return users;
+  }
+
+    async getUser(uid) {
+    return this.userRepository.findByUid(uid);
   }
 
   async updateUserPlan(uid, plan) {
@@ -59,7 +67,7 @@ async getDashboard(uid) {
   ]);
 
   if (!user) {
-    throw new Error("User not found");
+    throw new UserNotFoundException();
   }
 
   const chats = user.chats || [];
@@ -292,6 +300,15 @@ async getDashboard(uid) {
   async getMe(uid) {
     return this.userRepository.findByUid(uid, ["contacts"]);
   }
+  
+  async autoAgentLogin(uid) {
+    const agent = await this.agentRepository.findByUid(uid);
+    if (!agent) {
+      throw new AgentNotFoundException();
+    }
+    return agent;
+}
+
 }
 
 module.exports = UserService;

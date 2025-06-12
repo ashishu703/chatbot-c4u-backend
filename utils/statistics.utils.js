@@ -1,3 +1,6 @@
+const OrderRepository = require("../repositories/OrderRepository");
+const UserRepository = require("../repositories/UserRepository");
+
 async function getUserSignupsByMonth() {
   const months = [
     "Jan",
@@ -16,7 +19,7 @@ async function getUserSignupsByMonth() {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
 
-  const users = await User.findAll();
+  const users = await (new UserRepository()).find();
   const { paidUsers, unpaidUsers } = users.reduce(
     (acc, user) => {
       const planExpire = user.plan_expire
@@ -59,7 +62,7 @@ async function getUserSignupsByMonth() {
     return { month, numberOfSignups, userEmails, paid: false };
   });
 
-  return { paidSignupsByMonth, unpaidSignupsByMonth };
+  return { paidSignupsByMonth, unpaidSignupsByMonth, totalUsers : users.length };
 }
 
 
@@ -82,7 +85,7 @@ async function getUserOrderssByMonth() {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
 
-  const orders = await Order.findAll(); // Assuming Order model exists
+  const orders = await (new OrderRepository()).find(); // Assuming Order model exists
   return Array.from({ length: 12 }, (_, monthIndex) => {
     const month = months[monthIndex];
     const ordersInMonth = orders.filter((order) => {
@@ -92,7 +95,7 @@ async function getUserOrderssByMonth() {
         orderDate.getFullYear() === currentYear
       );
     });
-    return { month, numberOfOders: ordersInMonth.length };
+    return { month, numberOfOders: ordersInMonth.length, totalOrders: orders.length };
   });
 }
 

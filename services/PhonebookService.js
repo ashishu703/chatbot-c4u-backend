@@ -28,11 +28,12 @@ class PhonebookService {
     return await this.phonebookRepository.findByUid(uid);
   }
 
-  async deletePhonebook(uid, id) {
-    await this.phonebookRepository.delete(id);
-    await this.contactRepository.deleteByPhonebookId(id, uid);
-    return true;
-  }
+async deletePhonebook(uid, id) {
+  await this.phonebookRepository.delete({ id }); 
+  await this.contactRepository.deleteByPhonebookId(id, uid);
+  return true;
+}
+
 
   async importContacts(uid, phonebook_id, phonebook_name, fileData) {
     const csvData = await parseCSVFile(fileData);

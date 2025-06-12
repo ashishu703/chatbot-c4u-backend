@@ -17,9 +17,9 @@ const validateAgent = async (req, res, next) => {
         });
       }
 
-      const { email, password } = decode;
+      const { email } = decode;
 
-      if (!email || !password) {
+      if (!email) {
         return res.json({
           success: false,
           msg: "Invalid token payload",
@@ -28,8 +28,8 @@ const validateAgent = async (req, res, next) => {
       }
 
       const getAgent = await query(
-        "SELECT * FROM agents WHERE email = $1 AND password = $2",
-        [email, password]
+        "SELECT * FROM agents WHERE email = $1",
+        [email]
       );
 
       if (getAgent.length < 1) {

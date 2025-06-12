@@ -24,15 +24,15 @@ class ChatWidgetController {
     }
   }
 
-  async deleteWidget(req, res, next) {
-    try {
-      const { id } = req.body;
-     await this.chatWidgetService.deleteWidget(id);
-      return formSuccess(res,{msg:__t("widget_deleted_success") });
-    } catch (err) {
-      next(err);
-    }
+async deleteWidget(req, res, next) {
+  try {
+    const { id } = req.body;
+    await this.chatWidgetService.deleteWidget({ id }); 
+    return formSuccess(res, { msg: __t("widget_deleted_success") });
+  } catch (err) {
+    next(err);
   }
+}
 }
 
 module.exports = ChatWidgetController;

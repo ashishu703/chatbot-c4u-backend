@@ -6,15 +6,9 @@ const adminValidator = require("../middlewares/admin.middleware");
 const AdminController = require("../controllers/AdminController");
 const PlanController = require("../controllers/planController");
 const UserController = require("../controllers/userController");
-const PaymentController = require("../controllers/paymentController");
-const BrandController = require("../controllers/brandController");
-const FaqController = require("../controllers/faqController");
 const PageController = require("../controllers/pageController");
 const TestimonialController = require("../controllers/testimonialController");
-const OrderController = require("../controllers/orderController");
-const ContactController = require("../controllers/contactController");
 const SmtpController = require("../controllers/smtpController");
-const DashboardController = require("../controllers/dashboardController");
 const SocialController = require("../controllers/socialController");
 const LinkController = require("../controllers/linkController");
 const AuthController = require("../controllers/authController");
@@ -27,16 +21,10 @@ const SmiController = require("../controllers/SmiController");
 const authController = new AuthController();
 const adminController = new AdminController();
 const planController = new PlanController();
-const contactController = new ContactController();
 const testimonialController = new TestimonialController();
 const userController = new UserController();
 const pageController = new PageController();
-const orderController = new OrderController();
-const paymentController = new PaymentController();
-const brandController = new BrandController();
-const faqController = new FaqController();
 const smtpController = new SmtpController();
-const dashboardController = new DashboardController();
 const socialController = new SocialController();
 const linkController = new LinkController();
 const chatWidgetController = new ChatWidgetController();
@@ -87,6 +75,12 @@ router.post(
   "/update_user",
   adminValidator,
   userController.updateUser.bind(userController)
+);
+
+router.post(
+  "/update_profile",
+  validateUser,
+  userController.updateProfile.bind(userController)
 );
 router.post(
   "/del_user",
@@ -285,6 +279,17 @@ router.get(
   "/get_auth_params",
   validateUser,
   smiController.getAuthParams.bind(smiController)
+);
+router.post(
+  "/auto_agent_login",
+  validateUser,
+  userController.autoAgentLogin.bind(userController)
+);
+
+router.get(
+  "/get_me",
+  validateUser,
+  userController.getUser.bind(userController)
 );
 
 module.exports = router;

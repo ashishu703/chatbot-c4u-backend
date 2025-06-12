@@ -24,7 +24,7 @@ class DashboardController {
    async getAdminDashboard(req, res, next) {
     try {
       const admin = req.user;
-      if (!admin || !admin.id || admin.role !== 'admin') {
+      if (!admin || !admin.uid || admin.role !== 'admin') {
        throw new AdminNotFoundException();
       }
 

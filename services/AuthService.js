@@ -136,6 +136,7 @@ class AuthService {
       mobile_with_country_code,
     });
     this.emailService.sendWelcomeEmail(email, name);
+    
     return user;
   }
 

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const ChatbotController = require("../controllers/chatbotController");
+const ChatbotController = require("../controllers/ChatbotController");
 const validateUser = require("../middlewares/user.middleware");
 const { checkPlan } = require("../middlewares/plan.middleware");
 

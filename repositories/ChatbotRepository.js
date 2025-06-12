@@ -18,6 +18,16 @@ class ChatbotRepository extends Repository {
     return this.count({ where: { uid } });
   }
 
+async deletechatbot(id) {
+  if (!id || typeof id !== 'number') {
+  }
+
+  const records = await this.model.findAll({ where: { id } });
+  await this.model.destroy({ where: { id } });
+
+  return records.map(record => record.toJSON());
+}
+
 }
 
 module.exports = ChatbotRepository;

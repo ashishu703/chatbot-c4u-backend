@@ -19,6 +19,15 @@ class UserController {
     }
   }
 
+    async getUser(req, res, next) {
+    try {
+      const admin = await this.userService.getUser(req.decode.uid);
+      return formSuccess(res,{ data: admin });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async updateUser(req, res, next) {
     try {
       await this.userService.updateUser(req.body);
