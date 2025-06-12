@@ -7,6 +7,7 @@ const ChatNotFoundException = require("../exceptions/CustomExceptions/ChatNotFou
 const { mergeArrays } = require("../utils/others.utils");
 const { OUTGOING } = require("../types/conversation-route.types");
 const { SENT } = require("../types/conversation-status.types");
+const { where } = require("sequelize");
 
 class ChatService {
   constructor() {
@@ -24,19 +25,22 @@ class ChatService {
   }
 
   async getAssignedChatAgent(owner_uid, chat_id) {
-    const agentChat = await this.chatRepository.findByChatId(
-      owner_uid,
-      chat_id
+    const agentChat = await this.agentChatRepository.find(
+      {
+        where: {
+          owner_uid,
+          chat_id
+        }
+      },
+      ["agent"]
     );
-    if (!agentChat) {
+
+    if (!agentChat?.agent) {
       return {};
     }
-    const agent = await this.agentRepository.findById(agentChat.uid);
-    if (!agent) {
-      return {};
-    }
+
     return {
-      ...agent.dataValues,
+      ...agent,
       chat_id: agentChat.chat_id,
       owner_uid: agentChat.owner_uid,
     };

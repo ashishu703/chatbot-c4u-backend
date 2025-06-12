@@ -13,6 +13,11 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "id",
         as: "chat",
       });
+      AgentChat.belongsTo(models.Agent, {
+        foreignKey: "uid",
+        targetKey: "uid",
+        as: "agent",
+      });
     }
   }
   AgentChat.init(
