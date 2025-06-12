@@ -1,30 +1,30 @@
 const ChatRepository = require("../repositories/ChatRepository");
 const InstagramAccountRepository = require("../repositories/InstagramAccountRepository");
 const InstagramChatService = require("../services/InstagramChatService");
+const { IMAGE, VIDEO, FILE, AUDIO } = require("../types/message.types");
+const { __t } = require("../utils/locale.utils");
 const { formSuccess } = require("../utils/response.utils");
-const InstagramController = require("./InstagramController");
 
-module.exports = class InstagramChatController extends InstagramController {
+class InstagramChatController {
+
+  constructor() {
+    this.chatRepository = new ChatRepository();
+  }
+
   async send(req, res, next) {
     try {
-      const { text, chatId, toNumber } = req.body;
+      const { text, chatId, senderId } = req.body;
 
-      const chat = await ChatRepository.findChatByChatId(chatId);
+      const chat = await this.chatRepository.findByChatId(chatId, ["account"]);
 
-      const smiUserToken = await InstagramAccountRepository.findByUserId(
-        chat.uid
-      );
-
-      const chatService = new InstagramChatService(null, smiUserToken.token);
-
-      await chatService.initMeta();
+      const chatService = new InstagramChatService(null, chat.account.token);
 
       await chatService.send({
         text,
-        toNumber,
+        senderId,
       });
 
-      return formSuccess(res,{ msg: __t("success") });
+      return formSuccess(res, { msg: __t("success") });
     } catch (err) {
       next(err);
     }
@@ -32,98 +32,63 @@ module.exports = class InstagramChatController extends InstagramController {
 
   async sendImage(req, res, next) {
     try {
-      const { url, chatId, toNumber } = req.body;
+      const { url, chatId, senderId } = req.body;
 
-      const chat = await ChatRepository.findChatByChatId(chatId);
+      const chat = await this.chatRepository.findByChatId(chatId, ["account"]);
 
-      const smiUserToken = await InstagramAccountRepository.findByUserId(
-        chat.uid
-      );
+      const chatService = new InstagramChatService(null, chat.account.token);
 
-      const chatService = new InstagramChatService(null, smiUserToken.token);
+      await chatService.sendAttachment(url, IMAGE, senderId);
 
-      await chatService.initMeta();
-
-      await chatService.sendImage({
-        url,
-        toNumber,
-      });
-
-      return formSuccess(res,{ msg: __t("success") });
+      return formSuccess(res, { msg: __t("success") });
     } catch (err) {
       next(err);
     }
   }
   async sendVideo(req, res, next) {
     try {
-      const { url, chatId, toNumber } = req.body;
+      const { url, chatId, senderId } = req.body;
 
-      const chat = await ChatRepository.findChatByChatId(chatId);
+      const chat = await this.chatRepository.findByChatId(chatId, ["account"]);
 
-      const smiUserToken = await InstagramAccountRepository.findByUserId(
-        chat.uid
-      );
+      const chatService = new InstagramChatService(null, chat.account.token);
 
-      const chatService = new InstagramChatService(null, smiUserToken.token);
+      await chatService.sendAttachment(url, VIDEO, senderId);
 
-      await chatService.initMeta();
-
-      await chatService.sendVideo({
-        url,
-        toNumber,
-      });
-
-      return formSuccess(res,{ msg: __t("success") });
+      return formSuccess(res, { msg: __t("success") });
     } catch (err) {
       next(err);
     }
   }
   async sendDoc(req, res, next) {
     try {
-      const { url, chatId, toNumber } = req.body;
+      const { url, chatId, senderId } = req.body;
 
-      const chat = await ChatRepository.findChatByChatId(chatId);
+      const chat = await this.chatRepository.findByChatId(chatId, ["account"]);
 
-      const smiUserToken = await InstagramAccountRepository.findByUserId(
-        chat.uid
-      );
+      const chatService = new InstagramChatService(null, chat.account.token);
 
-      const chatService = new InstagramChatService(null, smiUserToken.token);
+      await chatService.sendAttachment(url, FILE, senderId);
 
-      await chatService.initMeta();
-
-      await chatService.sendDoc({
-        url,
-        toNumber,
-      });
-
-      return formSuccess(res,{ msg: __t("success") });
+      return formSuccess(res, { msg: __t("success") });
     } catch (err) {
       next(err);
     }
   }
   async sendAudio(req, res, next) {
     try {
-      const { url, chatId, toNumber } = req.body;
+      const { url, chatId, senderId } = req.body;
 
-      const chat = await ChatRepository.findChatByChatId(chatId);
+      const chat = await this.chatRepository.findByChatId(chatId, ["account"]);
 
-      const smiUserToken = await InstagramAccountRepository.findByUserId(
-        chat.uid
-      );
+      const chatService = new InstagramChatService(null, chat.account.token);
 
-      const chatService = new InstagramChatService(null, smiUserToken.token);
+      await chatService.sendAttachment(url, AUDIO, senderId);
 
-      await chatService.initMeta();
-
-      await chatService.sendAudio({
-        url,
-        toNumber,
-      });
-
-      return formSuccess(res,{ msg: __t("success") });
+      return formSuccess(res, { msg: __t("success") });
     } catch (err) {
       next(err);
     }
   }
 };
+module.exports = InstagramChatController

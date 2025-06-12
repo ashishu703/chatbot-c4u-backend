@@ -3,9 +3,8 @@ const InstagramChatService = require("../services/InstagramChatService");
 const { verifyMetaWebhook } = require("../utils/facebook.utils");
 const { __t } = require("../utils/locale.utils");
 const { formSuccess } = require("../utils/response.utils");
-const InstagramController = require("./InstagramController");
 
-module.exports = class InstagramWebhookController extends InstagramController {
+class InstagramWebhookController  {
   async handleWebhook(req, res, next) {
     try {
       const webhookPayload = req.body;
@@ -24,3 +23,4 @@ module.exports = class InstagramWebhookController extends InstagramController {
     return res.status(status).send(data);
   }
 };
+module.exports = InstagramWebhookController

@@ -190,6 +190,7 @@ class InstagramChatService {
 
     const dbMessageObj = convertWebhookMessageToDBMessage(messageObj);
 
+
     const message = await this.messageRepository.createIfNotExists(
       {
         ...dbMessageObj,
@@ -250,14 +251,16 @@ class InstagramChatService {
     return this.messageRepository.updateConversationStatus(mid, READ);
   }
 
-  async send({ text, toNumber }) {
-    const payload = { recipient: { id: toNumber }, message: { text } };
+  async send({ text, senderId }) {
+    await this.instagramMessageApi.initMeta();
+    const payload = { recipient: { id: senderId }, message: { text } };
     return this.instagramMessageApi.sendMessage(payload);
   }
 
-  async sendAttachment(url, type, toNumber) {
+  async sendAttachment(url, type, senderId) {
+    await this.instagramMessageApi.initMeta();
     const payload = {
-      recipient: { id: toNumber },
+      recipient: { id: senderId },
       message: { attachment: { type, payload: { url } } },
     };
     return this.instagramMessageApi.sendMessage(payload);

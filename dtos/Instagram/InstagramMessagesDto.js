@@ -74,10 +74,10 @@ class InstagramMessagesDto {
     }
 
     getAttachmentType() {
-        return dataGet(this.data, "message.attachments[0].type");
+        return dataGet(this.data, "message.attachments.0.type");
     }
     getAttachmentUrl() {
-        return dataGet(this.data, "message.attachments[0].payload.url");
+        return dataGet(this.data, "message.attachments.0.payload.url");
     }
 
 
