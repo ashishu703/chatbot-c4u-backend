@@ -1,12 +1,16 @@
 const socketIO = require("socket.io");
-const { query } = require("./database/dbpromise");
+const { frontendURI } = require("./config/app.config");
+const RoomRepository = require("./repositories/RoomRepository");
+const ChatRepository = require("./repositories/ChatRepository");
 
 let ioInstance;
+const roomRepository = new RoomRepository();
+const chatRepository = new ChatRepository();
 
 function initializeSocket(server) {
   const io = socketIO(server, {
     cors: {
-      origin: process.env.FRONTENDURI,
+      origin: "*",
       methods: ["GET", "POST"],
     },
   });
@@ -20,11 +24,15 @@ function initializeSocket(server) {
       console.log({ userId });
       if (userId) {
         try {
-          await query(`DELETE FROM rooms WHERE uid = $1`, [userId]);
-          await query(`INSERT INTO rooms (uid, socket_id) VALUES ($1, $2)`, [
-            userId,
-            socket.id,
-          ]);
+
+          await roomRepository.updateOrCreate({
+            uid: userId,
+            socket_id: socket.id,
+          }, {
+            uid: userId
+          });
+
+
         } catch (error) {
           console.error("Error executing database queries:", error);
         }
@@ -34,7 +42,9 @@ function initializeSocket(server) {
     socket.on("disconnect", async () => {
       console.log(`A user disconnected with socket ID: ${socket.id}`);
       try {
-        await query(`DELETE FROM rooms WHERE socket_id = $1`, [socket.id]);
+        await roomRepository.delete({
+          socket_id: socket.id
+        });
       } catch (error) {
         console.error("Error executing database query:", error);
       }
@@ -42,16 +52,17 @@ function initializeSocket(server) {
 
     socket.on("change_ticket_status", async ({ uid, status, chatId }) => {
       try {
-        await query(
-          `UPDATE chats SET chat_status = $1 WHERE chat_id = $2 AND uid = $3`,
-          [status, chatId, uid]
-        );
+        await chatRepository.updateStatus(chatId, status);
 
-        const chats = await query(`SELECT * FROM chats WHERE uid = $1`, [uid]);
-        const getId = await query(`SELECT * FROM rooms WHERE uid = $1`, [uid]);
+        const chats = chatRepository.find({
+          where: {
+            uid
+          }
+        });
+        const socketRoom = await roomRepository.findByUid(uid);
 
-        if (getId[0]?.socket_id) {
-          io.to(getId[0].socket_id).emit("update_chats", { chats });
+        if (socketRoom?.socket_id) {
+          io.to(socketRoom.socket_id).emit("update_chats", { chats });
         } else {
           console.log(`Socket ID not found for user ${uid}`);
         }

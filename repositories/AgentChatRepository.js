@@ -34,7 +34,7 @@ class AgentChatRepository extends Repository {
   }
 
   async findByAgentId(uid) {
-    return this.find({ where: { uid } });
+    return this.find({ where: { uid } }, ["chat"]);
   }
 }
 

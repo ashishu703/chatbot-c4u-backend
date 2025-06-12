@@ -1,17 +1,14 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
-const { isValidEmail, sendEmail } = require("../functions/function");
+const { isValidEmail } = require("../functions/function");
 const { generateToken, comparePassword } = require("../utils/auth.utils");
-const { getRecoverEmailTemplate } = require("../emails/returnEmails");
 const { User } = require("../models");
 const WebPublicRepository = require("../repositories/WebPublicRepository");
 const TokenExpiredEXception = require("../exceptions/CustomExceptions/TokenExpiredEXception");
 const TokenMissingOrInvalidExecption = require("../exceptions/CustomExceptions/TokenMissingOrInvalidExecption");
-const TokenVerificationFailedException = require("../exceptions/CustomExceptions/TokenVerificationFailedException");
 const LoginInputMissingException = require("../exceptions/CustomExceptions/LoginInputMissingException");
 const FacebookAppCredentialsMissingException = require("../exceptions/CustomExceptions/FacebookAppCredentialsMissingException");
-const FacebookLoginParamMismatchException = require("../exceptions/CustomExceptions/FacebookLoginParamMismatchException");
 const InvalidLoginTokenException = require("../exceptions/CustomExceptions/InvalidLoginTokenException");
 const GoogleLoginFailedException = require("../exceptions/CustomExceptions/GoogleLoginFailedException");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
@@ -19,7 +16,6 @@ const PrivacyTermsUncheckedException = require("../exceptions/CustomExceptions/P
 const EmailAlreadyInUseException = require("../exceptions/CustomExceptions/EmailAlreadyInUseException");
 const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException");
 const RecoveryUserNotFoundException = require("../exceptions/CustomExceptions/RecoveryUserNotFoundException");
-const SmtpConnectionNotFoundException = require("../exceptions/CustomExceptions/SmtpConnectionNotFoundException");
 const PasswordRequiredException = require("../exceptions/CustomExceptions/PasswordRequiredException");
 const { USER } = require("../types/roles.types");
 const { jwtKey } = require("../config/app.config");
@@ -39,20 +35,7 @@ class AuthService {
   }
 
   async verifyToken(token) {
-    return new Promise((resolve, reject) => {
-      jwt.verify(token, jwtKey, (err, decoded) => {
-        if (err) {
-          console.error("JWT Verification failed:", err.message);
-          if (err.name === "TokenExpiredError") {
-            return reject(new TokenExpiredEXception());
-          } else if (err.name === "JsonWebTokenError") {
-            return reject(new TokenMissingOrInvalidExecption());
-          }
-          return reject(new TokenVerificationFailedException());
-        }
-        resolve(decoded);
-      });
-    });
+    return jwt.verify(token, jwtKey);
   }
 
   async loginWithFacebook({ token, userId, email, name }) {
@@ -85,7 +68,7 @@ class AuthService {
       });
     }
 
-    return generateToken({ uid: user.uid, role: USER });
+    return generateToken({ id: user.uid, uid: user.uid, name: user.name, email: user.email, role: USER });
   }
 
   async loginWithGoogle(token) {
@@ -114,12 +97,7 @@ class AuthService {
       });
     }
 
-    return generateToken({
-      uid: user.uid,
-      role: USER,
-      password: user.password,
-      email: user.email,
-    });
+    return generateToken({ id: user.uid, uid: user.uid, name: user.name, email: user.email, role: USER });
   }
 
   async signup({
@@ -176,7 +154,7 @@ class AuthService {
       throw new InvalidCredentialsException();
     }
 
-    const token = generateToken({ uid: user.uid, role: USER });
+    const token = generateToken({ id: user.uid, uid: user.uid, name: user.name, email: user.email, role: USER });
     return {
       token,
       user: { id: user.uid, name: user.name, email: user.email },

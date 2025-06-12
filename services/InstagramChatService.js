@@ -1,24 +1,20 @@
 
-const { createChatId } = require("../utils/facebook.utils");
 const {
-  convertWebhookReciveMessageToJsonObj,
-  convertInstagramWebhookToDBChatCreateObject,
-  convertWebhookToDBChatUpdateObject,
   convertWebhookMessageToDBMessage,
 } = require("../utils/messages.utils");
-const ChatIOService = require("./IOService");
+const ChatIOService = require("./ChatIOService");
 const ProfileNotFoundException = require("../exceptions/CustomExceptions/ProfileNotFoundException");
 const ChatRepository = require("../repositories/ChatRepository");
 const SocialAccountRepository = require("../repositories/SocialAccountRepository");
 const InstagramProfileApi = require("../api/Instagram/InstagramProfileApi");
 const MessageRepository = require("../repositories/MessageRepository");
+const AgentChatRepository = require("../repositories/AgentChatRepository");
 const { OPEN } = require("../types/chat-status.types");
-const { USER, AGENT } = require("../types/roles.types");
 const InstagramMessageApi = require("../api/Instagram/InstagramMessageApi");
 const InstagramWebhookDto = require("../dtos/Instagram/InstagramWebhookDto");
-const { DELIVERED, READ } = require("../types/conversation-status.types");
+const { READ } = require("../types/conversation-status.types");
 const { OUTGOING, INCOMING } = require("../types/conversation-route.types");
-
+const SocketHelper = require("./../helper/SocketHelper");
 class InstagramChatService {
 
 
@@ -29,24 +25,26 @@ class InstagramChatService {
     this.instagramProfileApi = new InstagramProfileApi(user, accessToken);
     this.instagramMessageApi = new InstagramMessageApi(user, accessToken);
     this.messageRepository = new MessageRepository();
+    this.agentChatRepository = new AgentChatRepository();
   }
 
   async initIOService(chat) {
-    this.agentIoService = null;
-    this.userIoService = null;
-
-
+    this.socketHelper = new SocketHelper();
     const chatAgent = chat.agentChat ?? null;
 
     if (chat?.uid) {
-      this.userIoService = new ChatIOService(chat.uid);
-      await this.userIoService.initSocket();
+      const userRoom = new ChatIOService(chat.uid);
+      await userRoom.initSocket();
+      this.socketHelper.setUserRoom(userRoom);
     }
 
     if (chatAgent?.uid) {
-      this.agentIoService = new ChatIOService(chatAgent.uid);
-      await this.agentIoService.initSocket();
+      const agentRoom = new ChatIOService(chatAgent.uid);
+      await agentRoom.initSocket();
+      this.socketHelper.setAgentRoom(agentRoom);
     }
+
+
   }
 
   async processIncomingWebhook(payload) {
@@ -149,7 +147,7 @@ class InstagramChatService {
 
         this.processDeliveryMessage(change, chat);
 
-        await this.emitUpdateConversationEvent(chatId);
+        await this.emitUpdateConversationEvent(chat);
       }
     } catch (error) {
       return false;
@@ -200,7 +198,7 @@ class InstagramChatService {
         chat_id: chatId,
         route: OUTGOING,
       });
- 
+
     this.emitNewMessageEvent(dbMessageObj, chatId);
     await this.chatRepository.updateLastMessage(
       chatId,
@@ -261,62 +259,30 @@ class InstagramChatService {
   }
 
   async emitUpdateConversationEvent(chat) {
-    const chats = await this.chatRepository.findByUid(chat.uid);
-    // const agentChat = await AgentChatRepository.getAssignedAgent(chat.uid);
+    const userChats = await this.chatRepository.findByUid(chat.uid);
+    this.socketHelper.pushUserChats(userChats);
 
-    this.executeSocket(
-      "updateConversation",
-      {
-        chats,
-      },
-      USER
-    );
+    const agentChat = chat.agentChat ?? null;
 
-    // if (agentChat) {
-    //   const agentChats = await AgentChatRepository.getAgentChats(agentChat.uid);
-    //   const chatIds = agentChats.map((i) => i?.chat_id);
-    //   const chats = await this.chatRepository.searchByChatIds(chatIds);
-    //   this.executeSocket(
-    //     "updateConversation",
-    //     {
-    //       chats,
-    //     },
-    //     AGENT
-    //   );
-    // }
-  }
-
-  async emitNewMessageEvent(message, chatId) {
-    const payload = { msg: message, chatId };
-    this.executeSocket("pushNewMsg", payload, "both");
-  }
-
-  async emitNewReactionEvent(message, chatId) {
-    const payload = {
-      chatId,
-      reaction: message.reaction,
-      message_id: message.message_id,
-    };
-    this.executeSocket("pushNewReaction", payload, "both");
-  }
-
-  async emitMessageDeliveryEvent({ message_id, status }, chatId) {
-    const payload = { message_id, status, chatId };
-    this.executeSocket("pushUpdateDelivery", payload, "both");
-  }
-
-  async executeSocket(action, payload, target = "both") {
-    if (target === "both" || target === USER) {
-      if (this.userIoService) {
-        this.userIoService[action](payload);
-      }
-    }
-    if (target === "both" || target === AGENT) {
-      if (this.agentIoService) {
-        this.agentIoService[action](payload);
-      }
+    if (agentChat) {
+      const agentChats = await this.agentChatRepository.findByAgentId(agentChat.uid);
+      const chats = agentChats.map((i) => i?.chat);
+      this.socketHelper.pushAgentChats(chats);
     }
   }
+
+  async emitNewMessageEvent(message) {
+    this.socketHelper.pushNewMsg(message);
+  }
+
+  async emitNewReactionEvent(message) {
+    this.socketHelper.pushNewReaction(message);
+  }
+
+  async emitMessageDeliveryEvent(message) {
+    this.socketHelper.pushUpdateDelivery(message);
+  }
+
 };
 
 
