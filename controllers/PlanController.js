@@ -26,8 +26,9 @@ class PlanController {
 
   async getPlans(req, res, next) {
     try {
-      const plans = await this.planService.getPlans();
-      return formSuccess(res,{ data: plans });
+      const query  = req.query;
+      const plans = await this.planService.getPlans(query);
+      return formSuccess(res,{ ...plans });
     } catch (err) {
       next(err);
     }
@@ -48,8 +49,6 @@ class PlanController {
   async updatePlan(req, res, next) {
     try {
       const { plan, uid } = req.body;
-      console.log({ plan });
-
       if (!uid || !plan || !plan.id) {
         throw new UidandPlanRequiredException();
       }

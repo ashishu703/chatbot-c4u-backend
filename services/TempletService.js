@@ -13,8 +13,8 @@ class TempletService {
     return this.templetRepository.create({ uid, title, type, content });
   }
 
-  async getTemplates(uid) {
-    return this.templetRepository.findByUid(uid);
+  async getTemplates(query) {
+    return this.templetRepository.paginate(query);
   }
 
   async deleteTemplates(ids) {

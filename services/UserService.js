@@ -1,5 +1,6 @@
 const path = require("path");
 const ContactRepository = require("../repositories/ContactRepository");
+const { Agents } = require("../models");
 const AgentRepository = require("../repositories/AgentRepository");
 const ChatRepository = require("../repositories/ChatRepository");
 const AgentTaskRepository = require("../repositories/AgentTaskRepository");
@@ -29,7 +30,7 @@ const { backendURI } = require("../config/app.config");
 class UserService {
   userRepository;
   agentTaskRepository;
-  agentRepository 
+  agentRepository;
 
   constructor() {
     this.userRepository = new UserRepository();
@@ -42,12 +43,12 @@ class UserService {
     this.agentRepository = new AgentRepository();
   }
 
-  async getUsers() {
-    const users = await this.userRepository.find();
+  async getUsers(query) {
+    const users = await this.userRepository.paginate(query);
     return users;
   }
 
-    async getUser(uid) {
+  async getUser(uid) {
     return this.userRepository.findByUid(uid);
   }
 
@@ -56,52 +57,51 @@ class UserService {
     return updatedUser;
   }
 
-async getDashboard(uid) {
-  const user = await this.userRepository.findByUid(uid, [
-    "chats",
-    "chatbots",
-    "contacts",
-    "broadcasts",
-    "flows",
-    "templets",
-  ]);
+  async getDashboard(uid) {
+    const user = await this.userRepository.findByUid(uid, [
+      "chats",
+      "chatbots",
+      "contacts",
+      "broadcasts",
+      "flows",
+      "templets",
+    ]);
 
-  if (!user) {
-    throw new UserNotFoundException();
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+
+    const chats = user.chats || [];
+    const openChats = chats.filter((chat) => chat.chat_status === OPEN);
+    const pendingChats = chats.filter((chat) => chat.chat_status === PENDING);
+    const resolvedChats = chats.filter((chat) => chat.chat_status === SOLVED);
+
+    const bots = user.chatbots || [];
+    const activeBots = bots.filter((bot) => bot.active === 1);
+    const inactiveBots = bots.filter((bot) => bot.active === 0);
+
+    const totalContacts = (user.contacts || []).length;
+    const totalFlows = (user.flows || []).length;
+    const totalBroadcasts = (user.broadcasts || []).length;
+    const totalTemplets = (user.templets || []).length;
+
+    const totalChats = chats.length;
+    const totalChatbots = bots.length;
+
+    return {
+      opened: openChats,
+      pending: pendingChats,
+      resolved: resolvedChats,
+      activeBot: activeBots,
+      dActiveBot: inactiveBots,
+      totalChats,
+      totalChatbots,
+      totalContacts,
+      totalFlows,
+      totalBroadcasts,
+      totalTemplets,
+    };
   }
-
-  const chats = user.chats || [];
-  const openChats = chats.filter(chat => chat.chat_status === OPEN);
-  const pendingChats = chats.filter(chat => chat.chat_status === PENDING);
-  const resolvedChats = chats.filter(chat => chat.chat_status === SOLVED);
-
-  const bots = user.chatbots || [];
-  const activeBots = bots.filter(bot => bot.active === 1);
-  const inactiveBots = bots.filter(bot => bot.active === 0);
-
-  const totalContacts = (user.contacts || []).length;
-  const totalFlows = (user.flows || []).length;
-  const totalBroadcasts = (user.broadcasts || []).length;
-  const totalTemplets = (user.templets || []).length;
-
-  const totalChats = chats.length;
-  const totalChatbots = bots.length;
-
-  return {
-    opened: openChats,
-    pending: pendingChats,
-    resolved: resolvedChats,
-    activeBot: activeBots,
-    dActiveBot: inactiveBots,
-    totalChats,
-    totalChatbots,
-    totalContacts,
-    totalFlows,
-    totalBroadcasts,
-    totalTemplets,
-  };
-}
-
 
   async updateUser(data) {
     const { uid, name, email, mobile_with_country_code, newPassword } = data;
@@ -124,21 +124,23 @@ async getDashboard(uid) {
     const user = await this.userRepository.findByUid(uid);
     if (!user) throw new UserNotFoundException();
 
-    return generateToken(
-      {
-        uid: user.uid,
-        role: USER,
-        password: user.password,
-        email: user.email,
-      });
+    return generateToken({
+      uid: user.uid,
+      role: USER,
+      password: user.password,
+      email: user.email,
+    });
   }
 
   async deleteUser(id) {
-    return this.userRepository.delete({id});
+    return this.userRepository.delete({ id });
   }
 
   async saveNote(uid, chatId, note) {
-    return this.chatRepository.update({ chat_note: note }, { chat_id: chatId, uid });
+    return this.chatRepository.update(
+      { chat_note: note },
+      { chat_id: chatId, uid }
+    );
   }
 
   async pushTag(uid, tag, chatId) {
@@ -148,7 +150,10 @@ async getDashboard(uid) {
     let tags = [];
     tags = chat.chat_tags ? JSON.parse(chat.chat_tags) : [];
     const newTags = [...tags, tag];
-    return this.chatRepository.update({ chat_tags: JSON.stringify(newTags) }, { chat_id: chatId, uid });
+    return this.chatRepository.update(
+      { chat_tags: JSON.stringify(newTags) },
+      { chat_id: chatId, uid }
+    );
   }
 
   async deleteTag(uid, tag, chatId) {
@@ -158,11 +163,17 @@ async getDashboard(uid) {
     const tags = chat.chat_tags ? JSON.parse(chat.chat_tags) : [];
     const newTags = tags.filter((t) => t !== tag);
 
-    return this.chatRepository.update({ chat_tags: JSON.stringify(newTags) }, { chat_id: chatId, uid });
+    return this.chatRepository.update(
+      { chat_tags: JSON.stringify(newTags) },
+      { chat_id: chatId, uid }
+    );
   }
 
   async checkContact(uid, mobile) {
-    const contact = await this.contactRepository.findByMobileAndUid(mobile, uid);
+    const contact = await this.contactRepository.findByMobileAndUid(
+      mobile,
+      uid
+    );
     const phonebooks = await this.phonebookRepository.findByUid(uid);
 
     if (!contact) {
@@ -209,7 +220,6 @@ async getDashboard(uid) {
       var4: var4 || "",
       var5: var5 || "",
     });
-
   }
 
   async deleteContact(id) {
@@ -233,9 +243,9 @@ async getDashboard(uid) {
   }
 
   async fetchProfile(uid) {
-    return this.whatsappProfileApi.setToken(metaKeys.access_token).fetchProfile(
-      metaKeys.business_phone_number_id,
-    );
+    return this.whatsappProfileApi
+      .setToken(metaKeys.access_token)
+      .fetchProfile(metaKeys.business_phone_number_id);
   }
 
   async returnMediaUrl(uid, files) {
@@ -269,15 +279,16 @@ async getDashboard(uid) {
     });
   }
 
-  async getMyAgentTasks(ownerUid) {
-    return this.agentTaskRepository.findByOwnerUid(ownerUid);
+  async getMyAgentTasks(ownerUid, query) {
+    return this.agentTaskRepository.paginate({
+      where: { owner_uid: ownerUid },
+      include: ["agent"],
+      ...query,
+    });
   }
 
   async deleteAgentTask(id, ownerUid) {
-    return this.agentTaskRepository.deleteByIdAndOwner(
-      id,
-      ownerUid
-    );
+    return this.agentTaskRepository.deleteByIdAndOwner(id, ownerUid);
   }
 
   async updateAgentProfile({ email, name, mobile, newPas, uid }) {
@@ -300,15 +311,14 @@ async getDashboard(uid) {
   async getMe(uid) {
     return this.userRepository.findByUid(uid, ["contacts"]);
   }
-  
+
   async autoAgentLogin(uid) {
     const agent = await this.agentRepository.findByUid(uid);
     if (!agent) {
       throw new AgentNotFoundException();
     }
     return agent;
-}
-
+  }
 }
 
 module.exports = UserService;

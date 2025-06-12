@@ -61,8 +61,8 @@ class ChatbotService {
     return updateResult;
   }
 
-  async getChatbots(uid) {
-    return this.chatbotRepository.findByUid(uid);
+  async getChatbots(query) {
+    return this.chatbotRepository.paginate(query);
   }
 
   async changeBotStatus( id, status, userObj) {

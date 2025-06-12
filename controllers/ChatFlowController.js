@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const FlowIdException = require("../exceptions/CustomExceptions/FlowIdException");
 const FlowService = require("../services/ChatFlowService");
@@ -26,9 +27,13 @@ class FlowController {
 
    async getFlows(req, res, next) {
     try {
+      const query = req.query;
       const user = req.decode;
-      const flows = await this.flowService.getFlows(user.uid);
-      return formSuccess(res,{ data: flows });
+      const flows = await this.flowService.getFlows({
+        where: { uid: user.uid },
+        ...query,
+      });
+      return formSuccess(res,{ ...flows });
     } catch (err) {
       next(err);
     }

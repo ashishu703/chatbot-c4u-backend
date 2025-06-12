@@ -5,8 +5,8 @@ class OrderRepository extends Repository {
   constructor() {
     super(Order);
   }
-  async getOrders() {
-    return this.find();
+  async getOrders(query) {
+    return this.paginate(query);
   }
 
   async getRawOrders() {

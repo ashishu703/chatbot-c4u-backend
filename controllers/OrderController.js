@@ -1,4 +1,4 @@
-const OrderRepository = require("../repositories/orderRepository");
+const OrderRepository = require("../repositories/OrderRepository");
 const { formSuccess } = require("../utils/response.utils");
 
 class OrderController {
@@ -10,7 +10,8 @@ class OrderController {
 
   async getOrders(req, res, next) {
     try {
-      const orders = await this.orderRepository.getOrders();
+      const query = req.query;
+      const orders = await this.orderRepository.getOrders(query);
       return formSuccess(res,{ data: orders });
     } catch (err) {
       next(err);

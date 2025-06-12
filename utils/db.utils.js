@@ -16,12 +16,9 @@ const sequelize = new Sequelize(
 const query = async (text, params) => {
   const client = await pool.connect();
   try {
-    console.log("Executing query:", { text, params });
     const res = await client.query(text, params);
-    console.log("Query result:", res.rows);
     return res.rows;
   } catch (err) {
-    console.error("Database query error:", err);
     throw err;
   } finally {
     client.release();

@@ -4,6 +4,7 @@ const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFi
 const InvalidEmailIdException = require("../exceptions/CustomExceptions/InvalidEmailIdException");
 const UidRequiredException = require("../exceptions/CustomExceptions/UidRequiredException");
 const IdRequiredException = require("../exceptions/CustomExceptions/IdRequiredException");
+const { query } = require("express-validator");
 class ContactService {
 
   constructor() {
@@ -19,11 +20,11 @@ class ContactService {
     }
     return await this.contactRepository.create({ email, name, mobile, content });
   }
-  async getContactLeads(uid) {
+  async getContactLeads(query) {
     if (!uid) {
       throw new UidRequiredException();
     }
-    return await this.contactRepository.findByUid(uid);
+    return await this.contactRepository.paginate(query);
   }
 
   async deleteContactEntry(id) {

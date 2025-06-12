@@ -24,8 +24,8 @@ class PhonebookService {
     return true;
   }
 
-  async getPhonebooks(uid) {
-    return await this.phonebookRepository.findByUid(uid);
+  async getPhonebooks(query) {
+    return await this.phonebookRepository.paginate(query);
   }
 
 async deletePhonebook(uid, id) {
@@ -66,8 +66,8 @@ async deletePhonebook(uid, id) {
     return true;
   }
 
-  async getContacts(uid) {
-    return await this.contactRepository.findByUid(uid);
+  async getContacts(query) {
+    return await this.contactRepository.paginate(query);
   }
 
   async deleteContacts(ids) {

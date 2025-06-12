@@ -20,8 +20,8 @@ class TestimonialRepository extends Repository {
     });
   }
 
-  async getTestimonials() {
-    return this.find();
+  async getTestimonials(query) {
+    return this.paginate(query);
   }
 
   async deleteTestimonial(id) {

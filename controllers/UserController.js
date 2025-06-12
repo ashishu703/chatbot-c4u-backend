@@ -2,7 +2,9 @@ const UserService = require('../services/UserService');
 const HttpException = require('../middlewares/http-exception.middleware');
 const TokenMissingOrInvalidExecption = require('../exceptions/CustomExceptions/TokenMissingOrInvalidExecption');
 const { formSuccess } = require('../utils/response.utils');
-const{ __t }= require("../utils/locale.utils")
+const{ __t }= require("../utils/locale.utils");
+const { where } = require('sequelize');
+const { query } = require('express-validator');
 class UserController {
   userService;
 
@@ -11,9 +13,9 @@ class UserController {
   }
   async getUsers(req, res, next) {
     try {
-      console.log('req.decode:', req.decode);
-      const users = await this.userService.getUsers(req.decode.uid);
-      return formSuccess(res,{ data: users });
+      const query  = req.query;
+      const users = await this.userService.getUsers(query);
+      return formSuccess(res,{ ...users });
     } catch (err) {
       next(err);
     }
@@ -166,7 +168,8 @@ class UserController {
 
   async getMyAgentTasks(req, res, next) {
     try {
-      const result = await this.userService.getMyAgentTasks(req.decode.uid);
+      const query = req.query;
+      const result = await this.userService.getMyAgentTasks( req.decode.uid, query);
       return formSuccess(res,result);
     } catch (err) {
       next(err);

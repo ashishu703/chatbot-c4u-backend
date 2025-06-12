@@ -57,7 +57,9 @@ router.post(
   adminValidator,
   planController.addPlan.bind(planController)
 );
+
 router.get("/get_plans", planController.getPlans.bind(planController));
+
 router.post(
   "/del_plan",
   adminValidator,
@@ -118,7 +120,11 @@ router.post(
   adminValidator,
   faqController.addFaq.bind(faqController)
 );
+
+
 router.get("/get_faq", faqController.getFaqs.bind(faqController));
+
+
 router.post(
   "/del_faq",
   adminValidator,

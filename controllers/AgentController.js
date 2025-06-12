@@ -4,6 +4,7 @@ const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFi
 const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException");
 const {formSuccess} = require("../utils/response.utils");
 const { __t } = require("../utils/locale.utils");
+const { where } = require("sequelize");
 class AgentController {
   constructor() {
     this.agentService = new AgentService();
@@ -40,8 +41,14 @@ class AgentController {
 
   async getMyAgents(req, res, next) {
     try {
-      const agents = await this.agentService.getMyAgents(req.decode.uid);
-      return formSuccess(res,{data: agents});
+      const query = req.query;
+      const agents = await this.agentService.getMyAgents({
+        where: {
+          owner_uid: req.decode.uid,
+        },
+        ...query,
+      });
+      return formSuccess(res,{...agents});
     } catch (err) {
       next(err);
     }

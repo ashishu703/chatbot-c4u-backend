@@ -40,8 +40,8 @@ class PlanService {
     });
   }
 
-  async getPlans() {
-    return await this.planRepository.getPlans();
+  async getPlans(query) {
+    return await this.planRepository.paginate(query);
   }
 
   async deletePlan(id) {

@@ -34,7 +34,7 @@
     "node-fetch": "^2.6.9",
     "nodemailer": "^6.9.1",
     "nodemon": "^3.1.7",
-    "pg": "^8.14.1",
+    "pg": "^8.16.0",
     "pg-hstore": "^2.3.4",
     "randomstring": "^1.2.3",
     "sequelize": "^6.37.7",

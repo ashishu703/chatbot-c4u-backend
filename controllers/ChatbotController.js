@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const UrlAndTypeRequiredException = require("../exceptions/CustomExceptions/UrlAndTypeRequiredException");
 const ChatbotService = require("../services/ChatbotService");
@@ -60,9 +61,13 @@ async updateChatbot(req, res, next) {
 
    async getChatbots(req, res, next) {
     try {
+      const query = req.query;
       const user = req.decode;
-      const chatbots = await this.chatbotService.getChatbots(user.uid);
-     return formSuccess(res,{ data: chatbots });
+      const chatbots = await this.chatbotService.getChatbots({
+        where: { uid: user.uid },
+        ...query,
+      });
+     return formSuccess(res,{ ...chatbots });
     } catch (err) {
       next(err);
     }
