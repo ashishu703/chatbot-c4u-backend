@@ -1,19 +1,20 @@
 const PageNotFoundException = require("../exceptions/CustomExceptions/PageNotFoundException");
 const ChatRepository = require("../repositories/ChatRepository");
 const FacebookPageRepository = require("../repositories/FacebookPageRepository");
-const { createChatId } = require("../utils/facebook.utils");
 const {
-  convertWebhookReciveMessageToJsonObj,
-  convertMessangerWebhookToDBChatCreateObject,
-  convertWebhookToDBChatUpdateObject,
   convertWebhookMessageToDBMessage,
 } = require("../utils/messages.utils");
 const ChatIOService = require("./ChatIOService");
-const { USER, AGENT } = require("../types/roles.types");
 const MessengerProfileApi = require("../api/Messanger/MessengerProfileApi");
-const { DELIVERED, READ, SENT } = require("../types/chat-status.types");
+const MessengerMessageApi = require("../api/Messanger/MessengerMessageApi");
+const { DELIVERED, READ, SENT } = require("../types/broadcast-delivery-status.types");
 const { VIDEO, FILE, AUDIO } = require("../types/message.types");
 const ConversationRepository = require("../repositories/MessageRepository");
+const SocketHelper = require("../helper/SocketHelper");
+const MessengerWebhookDto = require("../dtos/Messenger/MessengerWebhookDto");
+const MessageRepository = require("../repositories/MessageRepository");
+const { INCOMING, OUTGOING } = require("../types/conversation-route.types");
+const { OPEN } = require("../types/chat-status.types");
 
 class MessangerChatService {
 
@@ -23,142 +24,206 @@ class MessangerChatService {
     this.conversationRepository = new ConversationRepository();
     this.profileApi = new MessengerProfileApi();
     this.messageApi = new MessengerMessageApi();
+    this.messageRepository = new MessageRepository();
   }
 
-  async initIOService(chatId) {
-    this.agentIoService = null;
-    this.userIoService = null;
+  async initIOService(chat) {
 
-    const chat = await this.this.chatRepository.findChatByChatId(chatId);
-    const chatAgent = await this.this.chatRepository.getAssignedAgent(chatId);
+
+
+
+    this.socketHelper = new SocketHelper();
+    const chatAgent = chat.agentChat ?? null;
 
     if (chat?.uid) {
-      this.userIoService = new ChatIOService(chat.uid);
-      await this.userIoService.initSocket();
+      const userRoom = new ChatIOService(chat.uid);
+      await userRoom.initSocket();
+      this.socketHelper.setUserRoom(userRoom);
     }
 
     if (chatAgent?.uid) {
-      this.agentIoService = new ChatIOService(chatAgent.uid);
-      await this.agentIoService.initSocket();
+      const agentRoom = new ChatIOService(chatAgent.uid);
+      await agentRoom.initSocket();
+      this.socketHelper.setAgentRoom(agentRoom);
     }
+
+
   }
 
   async processIncomingMessages(payload) {
     const { object, entry } = payload;
     entry.forEach((entryObj) => {
-      const { messaging } = entryObj;
-      messaging.forEach(async (messageObj) => {
-        const { recipient, sender, message, reaction, delivery, read } =
-          messageObj;
 
-        let pageProfile;
-        let chatId;
+      const webhookDto = new MessengerWebhookDto(entryObj);
 
-        if (message && message.is_echo) {
-          pageProfile = await this.pageRepository.findByPageId(sender.id);
-          chatId = createChatId(recipient.id, sender.id);
-        } else {
-          pageProfile = await this.pageRepository.findByPageId(recipient.id);
-          chatId = createChatId(sender.id, recipient.id);
-          const existingChat = await this.chatRepository.findByChatId(chatId);
-          if (!existingChat) {
-            await this.createNewChat({ ...messageObj, ...pageProfile, chatId });
-          }
-        }
-
-        if (!pageProfile) {
-          throw new PageNotFoundException();
-        }
-
-        await this.initIOService(chatId);
+      if (webhookDto.isMessage()) {
+        const messages = webhookDto.getMessages();
+        messages?.forEach(async (messageObj) => {
+          await this.processWebhookEntry(messageObj);
+        });
+      }
 
 
-        messageObj = {
-          ...messageObj,
-          ...pageProfile,
-          chatId,
-        };
-
-        if (message && message.is_echo) {
-          this.processSentReciept(messageObj);
-        } else if (message) {
-          this.processTextMessage(messageObj);
-        } else if (reaction) {
-          this.processReaction(messageObj);
-        } else if (delivery || read) {
-          this.processDeliveryMessage(messageObj);
-        }
-
-        await this.emitUpdateConversationEvent(chatId);
-      });
     });
   }
 
-  async createNewChat(messageObj) {
-    const message = messageObj.message;
-    await this.profileApi.setToken(messageObj.token).initMeta();
-    const person = await this.profileApi.fetchProfile(message.mid);
+  async processWebhookEntry(messageObj) {
 
-    await this.chatRepository.createIfNotExists(
-      convertMessangerWebhookToDBChatCreateObject({
-        ...messageObj,
-        ...{
-          first_name: person.from.name,
-          last_name: "",
-          profile_pic: "",
-        },
-      })
-    );
 
-    await this.conversationRepository.createIfNotExists(messageObj);
+    let ownerId = messageObj.getOwnerId();
+
+    let chatId = messageObj.getChatId();
+
+    let facebookPage = await this.pageRepository.findFirst({
+      where: { page_id: ownerId }
+    }, ["account"]);
+
+    if (!facebookPage) {
+      throw new PageNotFoundException();
+    }
+
+
+    let chat = await this.chatRepository.findFirst({
+      where: { chat_id: chatId, page_id: facebookPage.id }
+    }, ["agentChat"]);
+
+    if (!chat) {
+      chat = await this.createNewChat(
+        chatId,
+        facebookPage,
+        messageObj
+      );
+    }
+
+
+
+    await this.initIOService(chat);
+
+    if (messageObj.isDeliveryReceipt()) {
+      await this.processDeliveryReciept(messageObj, chat);
+    } else if (messageObj.isMessage()) {
+      await this.processIncomingMessage(messageObj, chat);
+    } else if (messageObj.isReaction()) {
+      await this.processReaction(messageObj);
+    } else if (messageObj.isDeliveryEvent() || messageObj.isReadEvent()) {
+      await this.processDeliveryMessage(messageObj, chat);
+    }
+
+    await this.emitUpdateConversationEvent(chat);
   }
 
-  async processSentReciept(messageObj) {
-    const { chatId } = messageObj;
+  async createNewChat(chatId, facebookPage, messageObj) {
+
+    const senderId = messageObj.getTargetId();
+
+    await this.profileApi.initMeta();
+
+    const {
+      first_name,
+      last_name,
+      profile_pic,
+      id
+    } = await this.profileApi.setToken(facebookPage.token).fetchProfile(senderId);
+
+
+
+    return this.chatRepository.createIfNotExists(
+      {
+        "chat_id": chatId,
+        "avatar": profile_pic,
+        "uid": facebookPage.uid,
+        "account_id": facebookPage.account.id,
+        "page_id": facebookPage.id,
+        "last_message_came": messageObj.getMessageTimestamp(),
+        "chat_note": "",
+        "chat_tags": "",
+        "sender_name": `${first_name} ${last_name}`,
+        "sender_id": senderId,
+        "chat_status": OPEN,
+      },
+      {
+        chat_id: chatId,
+        uid: facebookPage.uid
+      }
+    );
+  }
+
+  async processDeliveryReciept(messageObj, chat) {
+    const chatId = chat.id;
+
     const dbMessageObj = convertWebhookMessageToDBMessage(messageObj);
-    await this.conversationRepository.createIfNotExists(messageObj);
-    this.emitNewMessageEvent(dbMessageObj, chatId);
+
+    const message = await this.messageRepository.createIfNotExists(
+      {
+        ...dbMessageObj,
+        uid: chat.uid,
+        owner_id: chat.uid,
+        chat_id: chatId,
+        route: OUTGOING,
+      },
+      {
+        message_id: messageObj.getId(),
+        chat_id: chatId,
+      }
+    );
+
+    this.emitNewMessageEvent(message, chatId);
     await this.chatRepository.updateLastMessage(
       chatId,
-      convertWebhookToDBChatUpdateObject({
-        ...messageObj,
-        message: dbMessageObj,
-      })
+      message.id
     );
   }
 
-  async processTextMessage(messageObj) {
-    const { chatId } = messageObj;
-    const dbMessageObj = convertWebhookReciveMessageToJsonObj(messageObj);
-    this.emitNewMessageEvent(dbMessageObj, chatId);
-    await this.conversationRepository.createIfNotExists(messageObj);
+  async processIncomingMessage(messageObj, chat) {
+    const chatId = chat.id;
+    const dbMessageObj = convertWebhookMessageToDBMessage(messageObj);
+    const message = await this.messageRepository.createIfNotExists(
+      {
+        ...dbMessageObj,
+        uid: chat.uid,
+        owner_id: chat.uid,
+        chat_id: chatId,
+        route: INCOMING,
+      },
+      {
+        message_id: messageObj.getId(),
+        chat_id: chatId,
+      }
+    );
+    this.emitNewMessageEvent(message, chatId);
     await this.chatRepository.updateLastMessage(
       chatId,
-      convertWebhookToDBChatUpdateObject({
-        ...messageObj,
-        message: dbMessageObj,
-      })
+      message.id
     );
   }
 
   async processReaction(messageObj) {
-    const { reaction, mid } = messageObj;
-    const message = await this.conversationRepository.updateConversationReaction(mid, reaction);
-    this.emitNewReactionEvent(message, chatId);
+    const mid = messageObj.getId();
+    const mesasge = await this.messageRepository.update({
+      reaction: messageObj.getEmoji(),
+    }, {
+      message_id: mid
+    });
+    this.emitNewReactionEvent(mesasge);
   }
 
-  async processDeliveryMessage(messageObj) {
-    const { mid, delivery, read, chatId } = messageObj;
+  async processDeliveryMessage(messageObj, chat) {
+
     let status = SENT;
-    if (delivery && delivery.mids.includes(chat.message_id)) {
+    if (messageObj.isDeliveryEvent()) {
       status = DELIVERED;
-    } else if (read) {
-      status = READ;
+      const deliveryObj = messageObj.getDeliveryEventObj();
+      const mids = deliveryObj.mids;
+      mids.forEach(async (mid) => {
+        const message = await this.messageRepository.updateConversationStatus(mid, status);
+        this.emitMessageDeliveryEvent(message);
+      });
+    } else if (messageObj.isReadEvent()) {
+      const messages = await this.messageRepository.setConversationToRead(chat.id);
+      messages.forEach((message) => {
+        this.emitMessageDeliveryEvent(message);
+      });
     }
-
-    const message = await this.conversationRepository.updateConversationStatus(mid, reaction);
-    this.emitMessageDeliveryEvent(message, chatId);
-
   }
 
   async send({ text, toNumber }) {
@@ -201,49 +266,30 @@ class MessangerChatService {
     return this.messageApi.sendMessage(payload);
   }
 
-  async emitUpdateConversationEvent(chatId) {
-    const chat = await this.chatRepository.findChatByChatId(chatId);
-    const chats = await this.chatRepository.findUidId(chat.uid);
+  async emitUpdateConversationEvent(chat) {
 
-    this.executeSocket(
-      "updateConversation",
-      {
-        chats,
-      },
-      USER
-    );
-  }
+    const userChats = await this.chatRepository.findInboxChats(chat.uid);
+    this.socketHelper.pushUserChats(userChats);
 
-  async emitNewMessageEvent(message, chatId) {
-    const payload = { msg: message, chatId };
-    this.executeSocket("pushNewMsg", payload, "both");
-  }
+    const agentChat = chat.agentChat ?? null;
 
-  async emitNewReactionEvent(message, chatId) {
-    const payload = {
-      chatId,
-      reaction: message.reaction,
-      message_id: message.message_id,
-    };
-    this.executeSocket("pushNewReaction", payload, "both");
-  }
-
-  async emitMessageDeliveryEvent({ message_id, status }, chatId) {
-    const payload = { message_id, status, chatId };
-    this.executeSocket("pushUpdateDelivery", payload, "both");
-  }
-
-  async executeSocket(action, payload, target = "both") {
-    if (target === "both" || target === USER) {
-      if (this.userIoService) {
-        this.userIoService[action](payload);
-      }
+    if (agentChat) {
+      const agentChats = await this.agentChatRepository.find({ uid: agentChat.uid });
+      const chats = agentChats.map((i) => i?.chat);
+      this.socketHelper.pushAgentChats(chats);
     }
-    if (target === "both" || target === AGENT) {
-      if (this.agentIoService) {
-        this.agentIoService[action](payload);
-      }
-    }
+  }
+
+  async emitNewMessageEvent(message) {
+    this.socketHelper.pushNewMsg(message);
+  }
+
+  async emitNewReactionEvent(message) {
+    this.socketHelper.pushNewReaction(message);
+  }
+
+  async emitMessageDeliveryEvent(message) {
+    this.socketHelper.pushUpdateDelivery(message);
   }
 };
 

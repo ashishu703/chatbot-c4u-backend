@@ -3,13 +3,19 @@ const MessangerChatService = require("../services/MessangerChatService");
 const { verifyMetaWebhook } = require("../utils/facebook.utils");
 const { formSuccess } = require("../utils/response.utils");
 
-class InstagramWebhookController {
+class MessengerWebhookController {
+  constructor() {
+    this.chatService = new MessangerChatService();
+  }
   async handleWebhook(req, res, next) {
     try {
       const webhookPayload = req.body;
-      const chatService = new MessangerChatService();
-      await chatService.initMeta();
-      await chatService.processIncomingMessages(webhookPayload);
+      
+      console.log({
+        Messenger: JSON.stringify(webhookPayload)
+      })
+    
+      await this.chatService.processIncomingMessages(webhookPayload);
       return formSuccess(res, { msg: "success" });
     } catch (err) {
       next(err);
@@ -25,4 +31,4 @@ class InstagramWebhookController {
   }
 };
 
-module.exports = InstagramWebhookController;
+module.exports = MessengerWebhookController;

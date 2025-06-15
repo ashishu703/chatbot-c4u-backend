@@ -18,11 +18,12 @@ class SocketHelper {
     }
 
     pushUserChats(chats) {
-        this.userRoom.updateConversation(chats);
+       
+        this.userRoom && this.userRoom.updateConversation(chats);
     }
 
     pushAgentChats(chats) {
-        this.agentRoom.updateConversation(chats);
+        this.agentRoom && this.agentRoom.updateConversation(chats);
     }
 
 

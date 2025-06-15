@@ -111,7 +111,7 @@ class InstagramChatService {
       } else if (messageObj.isMessage()) {
         await this.processIncomingMessage(messageObj, chat);
       } else if (messageObj.isReaction()) {
-        await this.processReaction(messageObj, chat);
+        await this.processReaction(messageObj);
       }
 
       await this.emitUpdateConversationEvent(chat);
@@ -139,13 +139,13 @@ class InstagramChatService {
         const chatId = change.getChatId();
 
         const chat = await this.chatRepository.findFirst({
-          where: { chat_id: change.getChatId(), account_id: instagramProfile.id }
+          where: { chat_id: chatId, account_id: instagramProfile.id }
         }, ["agentChat"]);
 
 
         await this.initIOService(chat);
 
-        this.processDeliveryMessage(change, chat);
+        await this.processDeliveryMessage(change, chat);
 
         await this.emitUpdateConversationEvent(chat);
       }
