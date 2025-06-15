@@ -22,8 +22,8 @@ class MessangerChatService {
     this.pageRepository = new FacebookPageRepository();
     this.chatRepository = new ChatRepository();
     this.conversationRepository = new ConversationRepository();
-    this.profileApi = new MessengerProfileApi();
-    this.messageApi = new MessengerMessageApi();
+    this.profileApi = new MessengerProfileApi(user, accessToken);
+    this.messageApi = new MessengerMessageApi(user, accessToken);
     this.messageRepository = new MessageRepository();
   }
 
@@ -226,34 +226,36 @@ class MessangerChatService {
     }
   }
 
-  async send({ text, toNumber }) {
+  async send({ text, senderId }) {
+    await this.messageApi.initMeta();
     const payload = {
-      recipient: { id: toNumber },
+      recipient: { id: senderId },
       message: { text },
       messaging_type: "RESPONSE",
     };
     return this.messageApi.sendMessage(payload);
   }
 
-  async sendImage({ toNumber, url }) {
-    return this.sendAttachment(url, IMAGE, toNumber);
+  async sendImage({ senderId, url }) {
+    return this.sendAttachment(url, IMAGE, senderId);
   }
 
-  async sendVideo({ toNumber, url }) {
-    return this.sendAttachment(url, VIDEO, toNumber);
+  async sendVideo({ senderId, url }) {
+    return this.sendAttachment(url, VIDEO, senderId);
   }
 
-  async sendDoc({ toNumber, url }) {
-    return this.sendAttachment(url, FILE, toNumber);
+  async sendDoc({ senderId, url }) {
+    return this.sendAttachment(url, FILE, senderId);
   }
 
-  async sendAudio({ toNumber, url }) {
-    return this.sendAttachment(url, AUDIO, toNumber);
+  async sendAudio({ senderId, url }) {
+    return this.sendAttachment(url, AUDIO, senderId);
   }
 
-  async sendAttachment(url, type, toNumber) {
+  async sendAttachment(url, type, senderId) {
+    await this.messageApi.initMeta();
     const payload = {
-      recipient: { id: toNumber },
+      recipient: { id: senderId },
       message: {
         attachment: {
           type,

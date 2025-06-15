@@ -7,19 +7,21 @@ class MessengerChatController {
 
   constructor() {
     this.facebookPageRepository = new FacebookPageRepository();
+    this.chatRepository = new ChatRepository();
   }
   async send(req, res, next) {
     try {
-      const { text, chatId, toNumber } = req.body;
-      const chat = await ChatRepository.findChatByChatId(chatId);
-      const { recipient } = chat;
-      const pageProfile = await this.facebookPageRepository.findByPageId(recipient);
-      const chatService = new MessangerChatService(null, pageProfile.token);
-      await chatService.initMeta();
+      const { text, chatId, senderId } = req.body;
+
+      const chat = await this.chatRepository.findByChatId(chatId, ["page"]);
+
+      const chatService = new MessangerChatService(null, chat.page.token);
+
       await chatService.send({
         text,
-        toNumber,
+        senderId,
       });
+
       return formSuccess(res, { msg: "success" });
     } catch (err) {
       next(err);
@@ -28,15 +30,15 @@ class MessengerChatController {
 
   async sendImage(req, res, next) {
     try {
-      const { chatId, toNumber, url } = req.body;
-      const chat = await ChatRepository.findChatByChatId(chatId);
-      const { recipient } = chat;
-      const pageProfile = await this.facebookPageRepository.findByPageId(recipient);
-      const chatService = new MessangerChatService(null, pageProfile.token);
-      await chatService.initMeta();
+      const { chatId, senderId, url } = req.body;
+
+      const chat = await this.chatRepository.findByChatId(chatId, ["page"]);
+
+      const chatService = new MessangerChatService(null, chat.page.token);
+
       await chatService.sendImage({
         url,
-        toNumber,
+        senderId,
       });
       return formSuccess(res, { msg: "success" });
     } catch (err) {
@@ -45,32 +47,31 @@ class MessengerChatController {
   }
   async sendVideo(req, res, next) {
     try {
-      const { chatId, toNumber, url } = req.body;
-      const chat = await ChatRepository.findChatByChatId(chatId);
-      const { recipient } = chat;
-      const pageProfile = await this.facebookPageRepository.findByPageId(recipient);
-      const chatService = new MessangerChatService(null, pageProfile.token);
-      await chatService.initMeta();
+      const { chatId, senderId, url } = req.body;
+
+      const chat = await this.chatRepository.findByChatId(chatId, ["page"]);
+
+      const chatService = new MessangerChatService(null, chat.page.token);
+
       await chatService.sendVideo({
         url,
-        toNumber,
+        senderId,
       });
-      return formSuccess(res, { msg: "success" });
     } catch (err) {
       next(err);
     }
   }
   async sendDoc(req, res, next) {
     try {
-      const { chatId, toNumber, url } = req.body;
-      const chat = await ChatRepository.findChatByChatId(chatId);
-      const { recipient } = chat;
-      const pageProfile = await this.facebookPageRepository.findByPageId(recipient);
-      const chatService = new MessangerChatService(null, pageProfile.token);
-      await chatService.initMeta();
+      const { chatId, senderId, url } = req.body;
+
+      const chat = await this.chatRepository.findByChatId(chatId, ["page"]);
+
+      const chatService = new MessangerChatService(null, chat.page.token);
+
       await chatService.sendDoc({
         url,
-        toNumber,
+        senderId,
       });
       return formSuccess(res, { msg: "success" });
     } catch (err) {
@@ -79,15 +80,15 @@ class MessengerChatController {
   }
   async sendAudio(req, res, next) {
     try {
-      const { chatId, toNumber, url } = req.body;
-      const chat = await ChatRepository.findChatByChatId(chatId);
-      const { recipient } = chat;
-      const pageProfile = await this.facebookPageRepository.findByPageId(recipient);
-      const chatService = new MessangerChatService(null, pageProfile.token);
-      await chatService.initMeta();
+      const { chatId, senderId, url } = req.body;
+
+      const chat = await this.chatRepository.findByChatId(chatId, ["page"]);
+
+      const chatService = new MessangerChatService(null, chat.page.token);
+
       await chatService.sendAudio({
         url,
-        toNumber,
+        senderId,
       });
       return formSuccess(res, { msg: "success" });
     } catch (err) {

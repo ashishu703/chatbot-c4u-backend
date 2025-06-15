@@ -63,9 +63,7 @@ class InboxService {
   }
 
   async getConversation(uid, chatId, query = {}) {
-    return this.messageRepository.find({
-      where: { chat_id: chatId, uid },
-    })
+    return this.messageRepository.findInboxMessages(uid, chatId);
   }
 
   async verifyWebhook(uid, mode, token, challenge) {

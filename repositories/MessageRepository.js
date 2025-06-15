@@ -29,5 +29,9 @@ class MessageRepository extends Repository {
     return this.update({ reaction }, { message_id: messageId });
   }
 
+  async findInboxMessages(uid, chatId, query = {}) {
+    return this.find({ where: { chat_id: chatId, uid }, order: [["createdAt", "ASC"]] });
+  }
+
 };
 module.exports = MessageRepository

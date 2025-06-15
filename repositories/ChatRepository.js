@@ -50,7 +50,12 @@ class ChatRepository extends Repository {
 
 
   async findInboxChats(uid, query = {}) {
-    return this.find({ where: { uid } }, ["lastMessage", "page", "account"]);
+    return this.model.findAll(
+      {
+        where: { uid },
+        include: ["lastMessage", "page", "account"],
+        order: [["createdAt", "DESC"]],
+      });
   }
 }
 
