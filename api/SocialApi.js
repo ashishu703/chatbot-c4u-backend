@@ -28,24 +28,13 @@ class SocialApi {
         return this.user;
     }
 
-    async request(method, url, data = null, query = {}, customHeaders = {}) {
-
-
+    async request(method, url, data = null, query = {}, customHeaders = {}, forcedOptions = {}) {
 
         const queryString = new URLSearchParams(query).toString();
 
         const isFullUrl = /^https?:\/\//i.test(url);
 
         const fullUrl = isFullUrl ? `${url}${queryString ? `?${queryString}` : ''}` : `${this.APIURL}${url}${queryString ? `?${queryString}` : ''}`;
-
-        console.log({
-            method,
-            url,
-            data,
-            query,
-            customHeaders,
-            fullUrl
-        });
 
         const headers = {
             Authorization: `Bearer ${this.accessToken}`,
@@ -59,23 +48,23 @@ class SocialApi {
                 ...customHeaders,
             },
             ...(data && { body: JSON.stringify(data) }),
+            ...forcedOptions
         };
 
         const response = await fetch(fullUrl, options);
         return this.handleResponse(response);
     }
 
-    get(url, query = {}, customHeaders = {}) {
-        return this.request("GET", url, null, query, customHeaders);
+    get(url, query = {}, customHeaders = {}, forcedOptions = {}) {
+        return this.request("GET", url, null, query, customHeaders, forcedOptions = {});
     }
 
-    post(url, data = {}, query = {}, customHeaders = {}) {
-
-        return this.request("POST", url, data, query, customHeaders);
+    post(url, data = {}, query = {}, customHeaders = {}, forcedOptions = {}) {
+        return this.request("POST", url, data, query, customHeaders, forcedOptions = {});
     }
 
-    delete(url, query = {}, customHeaders = {}) {
-        return this.request("DELETE", url, null, query, customHeaders);
+    delete(url, query = {}, customHeaders = {}, forcedOptions = {}) {
+        return this.request("DELETE", url, null, query, customHeaders, forcedOptions = {});
     }
 
     async handleResponse(response) {

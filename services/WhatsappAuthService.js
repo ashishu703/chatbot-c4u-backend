@@ -19,7 +19,7 @@ class WhatsappAuthService {
     this.whatsappAuthApi.subscribeWebhook(wabaId)
       .catch((err) => { console.log("Webhook Subscription Failed", err) });
 
-    const accountInfo = await this.whatsappAuthApi.getOwnerProfile();
+    const accountInfo = await this.whatsappAuthApi.getNumberInfo(phoneNumberId);
 
     return this.saveCurrentSession(accountInfo, accessToken, phoneNumberId, wabaId);
   }
@@ -27,12 +27,12 @@ class WhatsappAuthService {
 
 
   async saveCurrentSession(accountInfo, accessToken, phoneNumberId, wabaId) {
-    const { name, id: socialUserId } = accountInfo;
+    const { verified_name: name, display_phone_number: displayNumber } = accountInfo;
     return this.socialAccountRepository.updateOrCreateWhatsappProfile(
       this.user.uid,
       wabaId,
       phoneNumberId,
-      socialUserId,
+      displayNumber,
       name,
       accessToken,
     );

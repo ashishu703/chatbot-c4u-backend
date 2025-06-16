@@ -7,6 +7,10 @@ class WhatsappProfileApi extends WhatsappApi {
     async fetchProfile(mobileId) {
         return this.get(`/${mobileId}`, { access_token: this.accessToken });
     }
+
+    
+
+
 };
 
 module.exports = WhatsappProfileApi;

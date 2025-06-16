@@ -20,8 +20,23 @@ function millisecondsToSeconds(milliseconds) {
   return Math.floor(milliseconds / 1000);
 }
 
+function getNumberOfDaysFromTimestamp(timestamp) {
+  if (!timestamp || isNaN(timestamp)) {
+    return 0;
+  }
+
+  const currentTimestamp = Date.now();
+  if (timestamp <= currentTimestamp) {
+    return 0;
+  }
+
+  const millisecondsInADay = 1000 * 60 * 60 * 24;
+  return Math.ceil((timestamp - currentTimestamp) / millisecondsInADay);
+}
+
 module.exports = {
   addDaysToCurrentTimestamp,
   secondsToMilliseconds,
-  millisecondsToSeconds
+  millisecondsToSeconds,
+  getNumberOfDaysFromTimestamp
 };

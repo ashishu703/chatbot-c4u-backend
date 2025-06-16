@@ -4,7 +4,6 @@ const MobileNumberRequiredException = require("../exceptions/CustomExceptions/Mo
 const { formSuccess } = require("../utils/response.utils");
 const EnterPhonebookNameException = require("../exceptions/CustomExceptions/EnterPhonebookNameException");
 const { __t } = require("../utils/locale.utils");
-const { where } = require("sequelize");
 class PhonebookController {
   phonebookService;
   constructor() {
@@ -34,7 +33,7 @@ class PhonebookController {
         },
         ...query,
       });
-      return formSuccess(res, { data: phonebooks });
+      return formSuccess(res, phonebooks);
     } catch (err) {
       next(err);
     }
@@ -101,7 +100,7 @@ class PhonebookController {
       const user = req.decode;
       const contacts = await this.phonebookService.getContacts({
         where: {
-          uid: user.uid,  
+          uid: user.uid,
         },
         ...query,
       });

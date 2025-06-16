@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { query } = require("../database/dbpromise");
-const { getNumberOfDaysFromTimestamp } = require("../functions/function");
+const { getNumberOfDaysFromTimestamp } = require("../utils/date.utils");
 
 const checkPlan = async (req, res, next) => {
   try {

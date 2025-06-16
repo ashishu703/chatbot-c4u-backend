@@ -22,12 +22,18 @@ module.exports = {
         allowNull: true,
       },
       templet: {
-        type: Sequelize.TEXT,
+        type: Sequelize.JSON,
         allowNull: true,
       },
-      phonebook: {
-        type: Sequelize.TEXT,
-        allowNull: true,
+      phonebook_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "phonebooks",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       status: {
         type: Sequelize.STRING,
@@ -44,10 +50,12 @@ module.exports = {
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
     });
   },

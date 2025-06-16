@@ -28,6 +28,10 @@ class WhatsappAuthApi extends WhatsappApi {
         return this.get("/me");
     }
 
+    async getNumberInfo(phoneNoId) {
+        return this.get(`/${phoneNoId}`);
+    }
+
 
     async subscribeWebhook(wabaId) {
         return this.post(`/${wabaId}/subscribed_apps`, {

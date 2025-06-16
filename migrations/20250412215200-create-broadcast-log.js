@@ -1,4 +1,7 @@
 "use strict";
+
+const { PENDING } = require('../types/broadcast-delivery-status.types');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -14,16 +17,22 @@ module.exports = {
         allowNull: true,
       },
       broadcast_id: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         allowNull: true,
+        references: {
+          model: "broadcasts",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       templet_name: {
         type: Sequelize.STRING,
         allowNull: true,
       },
       is_read: {
-        type: Sequelize.INTEGER,
-        defaultValue: "0",
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
       meta_msg_id: {
         type: Sequelize.STRING,
@@ -39,22 +48,22 @@ module.exports = {
       },
       delivery_status: {
         type: Sequelize.STRING,
-        defaultValue: "PENDING",
+        defaultValue: PENDING,
       },
       delivery_time: {
         type: Sequelize.STRING,
         allowNull: true,
       },
       err: {
-        type: Sequelize.TEXT,
+        type: Sequelize.JSON,
         allowNull: true,
       },
       example: {
-        type: Sequelize.TEXT,
+        type: Sequelize.JSON,
         allowNull: true,
       },
       contact: {
-        type: Sequelize.STRING,
+        type: Sequelize.JSON,
         allowNull: true,
       },
       createdAt: {

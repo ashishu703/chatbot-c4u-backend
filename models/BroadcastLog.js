@@ -8,13 +8,17 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      BroadcastLog.belongsTo(models.Broadcast, {
+        foreignKey: "broadcast_id",
+        targetKey: "id",
+        as: "broadcast",
+      });
     }
   }
   BroadcastLog.init(
     {
       uid: DataTypes.STRING,
-      broadcast_id: DataTypes.STRING,
+      broadcast_id: DataTypes.INTEGER,
       templet_name: DataTypes.STRING,
       is_read: DataTypes.INTEGER,
       meta_msg_id: DataTypes.STRING,
@@ -22,9 +26,9 @@ module.exports = (sequelize, DataTypes) => {
       send_to: DataTypes.STRING,
       delivery_status: DataTypes.STRING,
       delivery_time: DataTypes.STRING,
-      err: DataTypes.TEXT,
-      example: DataTypes.TEXT,
-      contact: DataTypes.TEXT,
+      err: DataTypes.JSON,
+      example: DataTypes.JSON,
+      contact: DataTypes.JSON,
     },
     {
       sequelize,

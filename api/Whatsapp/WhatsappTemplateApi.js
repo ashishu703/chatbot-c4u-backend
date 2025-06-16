@@ -1,3 +1,4 @@
+const { WHATSAPP } = require("../../types/social-platform-types");
 const WhatsappApi = require("./WhatsappApi");
 class WhatsappTemplateApi extends WhatsappApi {
     constructor(user = null, accessToken = null, wabaId = null) {
@@ -17,5 +18,20 @@ class WhatsappTemplateApi extends WhatsappApi {
             name,
         });
     };
+
+    async sendTemplate(senderId, template) {
+        return this.post(`/${this.wabaId}/messages`, {
+            messaging_product: WHATSAPP,
+            to: senderId,
+            type: "template",
+            template,
+        });
+    }
+
+    async getTemplete(templateName) {
+        return this.get(`/${this.wabaId}/message_templates`, {
+            name: templateName,
+        });
+    }
 }
 module.exports = WhatsappTemplateApi;

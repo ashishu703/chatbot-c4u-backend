@@ -11,7 +11,11 @@ module.exports = (sequelize, DataTypes) => {
       Broadcast.belongsTo(models.User, {
         foreignKey: "uid",
         targetKey: "uid",
-        as: "user",
+        as: "broadcast",
+      });
+      Broadcast.belongsTo(models.Phonebook, {
+        foreignKey: "phonebook_id",
+        as: "phonebook",
       });
     }
   }
@@ -21,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       uid: DataTypes.STRING,
       title: DataTypes.STRING,
       templet: DataTypes.TEXT,
-      phonebook: DataTypes.TEXT,
+      phonebook_id: DataTypes.INTEGER,
       status: DataTypes.STRING,
       schedule: DataTypes.DATE,
       timezone: DataTypes.STRING,

@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs").promises;
 const mime = require("mime-types");
+const { generateUid } = require("./auth.utils");
 
 const folderExists = (folderPath) => {
   return fs.existsSync(folderPath);
@@ -32,7 +33,6 @@ const getFileInfo = async (filePath) => {
   };
 };
 
-module.exports = { getFileInfo };
 
 const downloadAndExtractFile = async (files, outputPath) => {
   if (!files?.file) {
@@ -65,6 +65,18 @@ async function deleteFileIfExists(filePath) {
   }
 }
 
+
+async function uploadMetaFiles(file) {
+  const randomString = generateUid();
+  const filename = `${randomString}.${getFileExtension(file.name)}`;
+  await file.mv(`${__dirname}/../client/public/media/${filename}`);
+  const directory = `${__dirname}/../client/public/media/${filename}`
+  return {
+    filename,
+    directory
+  }
+}
+
 module.exports = {
   folderExists,
   downloadAndExtractFile,
@@ -72,4 +84,5 @@ module.exports = {
   uploadFile,
   deleteFileIfExists,
   getFileInfo,
+  uploadMetaFiles
 };

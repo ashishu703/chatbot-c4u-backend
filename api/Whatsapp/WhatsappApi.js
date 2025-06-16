@@ -8,6 +8,11 @@ class WhatsappApi extends SocialApi {
         this.wabaId = wabaId;
     }
 
+    setWabaId(wabaId) {
+        this.wabaId = wabaId
+        return this;
+    }
+
     async initMeta() {
         const {
             whatsapp_client_id,

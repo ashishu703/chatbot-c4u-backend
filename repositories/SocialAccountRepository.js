@@ -106,31 +106,31 @@ class SocialAccountRepository extends Repository {
     return this.delete({ social_account_id: accountId });
   }
 
-  async getInstagramAccount(userid) {
+  async getInstagramAccount(userid, relations = []) {
     return this.findFirst({
       where: {
         uid: userid,
         platform: INSTAGRAM
-      }
-    })
+      },
+    }, relations)
   }
 
-  async getMessangerAccount(userid) {
+  async getMessangerAccount(userid, relations = []) {
     return this.findFirst({
       where: {
         uid: userid,
         platform: MESSANGER
-      }
-    })
+      },
+    }, relations)
   }
 
-  async getWhatsappAccount(userid) {
+  async getWhatsappAccount(userid, relations = []) {
     return this.findFirst({
       where: {
         uid: userid,
         platform: WHATSAPP
       }
-    })
+    }, relations)
   }
 };
 

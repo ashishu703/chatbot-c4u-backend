@@ -1,18 +1,24 @@
 const BroadcastService = require("../services/BroadcastService");
-const FillAllFieldsException = require("../exceptions/CustomExceptions/FIllAllFieldsException");
+const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const InvalidPhonebookException = require("../exceptions/CustomExceptions/InvalidPhonebookException");
 const InvalidRequestException = require("../exceptions/CustomExceptions/InvalidRequestException");
 const { formSuccess } = require("../utils/response.utils");
 const { __t } = require("../utils/locale.utils");
+const SocialAccountRepository = require("../repositories/SocialAccountRepository");
 class BroadcastController {
-  broadcastService;
   constructor() {
     this.broadcastService = new BroadcastService();
+    this.socialAccountRepository = new SocialAccountRepository();
   }
   async addBroadcast(req, res, next) {
     try {
-      const { title, templet, phonebook, scheduleTimestamp, example } =
-        req.body;
+      const {
+        title,
+        templet,
+        phonebook,
+        scheduleTimestamp,
+        example
+      } = req.body;
       const user = req.decode;
 
       if (!title || !templet?.name || !phonebook || !scheduleTimestamp) {
@@ -23,16 +29,16 @@ class BroadcastController {
         throw new InvalidPhonebookException();
       }
 
-      await this.broadcastService.addBroadcast({
+      await this.broadcastService.addBroadcast(
         title,
         templet,
         phonebook,
         scheduleTimestamp,
         example,
         user,
-      });
+      );
 
-      return formSuccess(res,{ msg: __t("broadcast_added") });
+      return formSuccess(res, { msg: __t("broadcast_added") });
     } catch (err) {
       next(err);
     }
@@ -42,7 +48,7 @@ class BroadcastController {
     try {
       const user = req.decode;
       const broadcasts = await this.broadcastService.getBroadcasts(user.uid);
-      return formSuccess(res,{ data: broadcasts });
+      return formSuccess(res, { data: broadcasts });
     } catch (err) {
       next(err);
     }
@@ -54,7 +60,7 @@ class BroadcastController {
       const user = req.decode;
 
       const result = await this.broadcastService.getBroadcastLogs(id, user.uid);
-      return formSuccess(res,result);
+      return formSuccess(res, result);
     } catch (err) {
       next(err);
     }
@@ -69,12 +75,12 @@ class BroadcastController {
         throw new InvalidRequestException();
       }
 
-     await this.broadcastService.changeBroadcastStatus(
+      await this.broadcastService.changeBroadcastStatus(
         broadcast_id,
         status,
         user.uid
       );
-      return formSuccess(res,{msg : __t("campaign_status_updated")});
+      return formSuccess(res, { msg: __t("campaign_status_updated") });
     } catch (err) {
       next(err);
     }
@@ -85,11 +91,11 @@ class BroadcastController {
       const { broadcast_id } = req.body;
       const user = req.decode;
 
- await this.broadcastService.deleteBroadcast(
+      await this.broadcastService.deleteBroadcast(
         broadcast_id,
         user.uid
       );
-      return formSuccess(res,{msg : __t("broadcast_deleted")});
+      return formSuccess(res, { msg: __t("broadcast_deleted") });
     } catch (err) {
       next(err);
     }

@@ -12,6 +12,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "account_id",
         as: "chats",
       });
+      SocialAccount.belongsTo(models.User, {
+        foreignKey: "uid",
+        targetKey: "uid",
+        as: "user",
+      });
     }
   }
   SocialAccount.init(

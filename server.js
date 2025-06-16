@@ -1,13 +1,11 @@
 
-
-
 require('dotenv').config()
 const express = require('express')
 const app = express()
 const cors = require('cors')
 const fileUpload = require('express-fileupload')
 const { initializeSocket } = require('./socket.js');
-const { runCampaign } = require('./loops/campaignLoop.js')
+const { runBroadcastJob } = require('./jobs/broadcast.job')
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
@@ -76,7 +74,7 @@ app.get("*", function (request, response) {
 const server = app.listen(port || 3010, () => {
     console.log(`WaCrm server is running on port ${port}`);
     setTimeout(() => {
-        runCampaign()
+        runBroadcastJob()
     }, 1000);
 });
 

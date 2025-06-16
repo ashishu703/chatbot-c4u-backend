@@ -3,5 +3,5 @@ module.exports = {
     DELIVERED: 'delivered',
     READ: 'read',
     FAILED: 'failed',
-    PENDING: 'PENDING',
+    PENDING: 'pending',
 };

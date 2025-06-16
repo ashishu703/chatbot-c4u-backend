@@ -245,17 +245,6 @@ router.post(
 );
 
 router.post(
-  "/update_meta",
-  validateUser,
-  metaController.updateMetaApi.bind(metaController)
-);
-router.get(
-  "/get_meta_keys",
-  validateUser,
-  metaController.getMetaKeys.bind(metaController)
-);
-
-router.post(
   "/return_media_url_meta",
   validateUser,
   metaController.returnMediaUrlMeta.bind(metaController)

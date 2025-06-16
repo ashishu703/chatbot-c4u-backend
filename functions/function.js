@@ -1105,123 +1105,7 @@ async function getBusinessPhoneNumber(
 
 
 // Send Meta template (updated to use Sequelize)
-async function sendMetatemplet(
-  toNumber,
-  business_phone_number_id,
-  token,
-  template,
-  example,
-  dynamicMedia
-) {
-  try {
-    const checkBody = template?.components?.filter((i) => i.type === "BODY");
-    const getHeader = template?.components?.filter((i) => i.type === "HEADER");
-    const headerFormat = getHeader.length > 0 ? getHeader[0]?.format : "";
 
-    let templ = {
-      name: template?.name,
-      language: { code: template?.language },
-      components: [],
-    };
-
-    if (checkBody.length > 0) {
-      const comp = checkBody[0]?.example?.body_text[0]?.map((i, key) => ({
-        type: "text",
-        text: example[key] || i,
-      }));
-      if (comp) {
-        templ.components.push({ type: "body", parameters: comp });
-      }
-    }
-
-    if (headerFormat === "IMAGE" && getHeader.length > 0) {
-      const media = await MetaTempletMedia.findOne({
-        where: { templet_name: template?.name },
-      });
-      templ.components.unshift({
-        type: "header",
-        parameters: [
-          {
-            type: "image",
-            image: {
-              link: dynamicMedia
-                ? dynamicMedia
-                : media
-                ? `${process.env.BACKURI}/media/${media.file_name}`
-                : getHeader[0].example?.header_handle[0],
-            },
-          },
-        ],
-      });
-    }
-
-    if (headerFormat === "VIDEO" && getHeader.length > 0) {
-      const media = await MetaTempletMedia.findOne({
-        where: { templet_name: template?.name },
-      });
-      templ.components.unshift({
-        type: "header",
-        parameters: [
-          {
-            type: "video",
-            video: {
-              link: dynamicMedia
-                ? dynamicMedia
-                : media
-                ? `${process.env.BACKURI}/media/${media.file_name}`
-                : getHeader[0].example?.header_handle[0],
-            },
-          },
-        ],
-      });
-    }
-
-    if (headerFormat === "DOCUMENT" && getHeader.length > 0) {
-      const media = await MetaTempletMedia.findOne({
-        where: { templet_name: template?.name },
-      });
-      templ.components.unshift({
-        type: "header",
-        parameters: [
-          {
-            type: "document",
-            document: {
-              link: dynamicMedia
-                ? dynamicMedia
-                : media
-                ? `${process.env.BACKURI}/media/${media.file_name}`
-                : getHeader[0].example?.header_handle[0],
-              filename: "document",
-            },
-          },
-        ],
-      });
-    }
-
-    const url = `https://graph.facebook.com/v18.0/${business_phone_number_id}/messages`;
-    const body = {
-      messaging_product: "whatsapp",
-      to: toNumber,
-      type: "template",
-      template: templ,
-    };
-
-    const options = {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    };
-
-    const response = await fetch(url, options);
-    return await response.json();
-  } catch (error) {
-    console.error("Error sending Meta template:", error);
-    throw error;
-  }
-}
 
 // Get file info (made async)
 async function getFileInfo(filePath) {
@@ -1367,19 +1251,7 @@ async function sendEmail(host, port, email, pass, html, subject, from, to) {
   }
 }
 
-function getNumberOfDaysFromTimestamp(timestamp) {
-  if (!timestamp || isNaN(timestamp)) {
-    return 0;
-  }
 
-  const currentTimestamp = Date.now();
-  if (timestamp <= currentTimestamp) {
-    return 0;
-  }
-
-  const millisecondsInADay = 1000 * 60 * 60 * 24;
-  return Math.ceil((timestamp - currentTimestamp) / millisecondsInADay);
-}
 
 // Get user plan days (updated to use Sequelize)
 async function getUserPlayDays(uid) {
@@ -1671,7 +1543,6 @@ module.exports = {
   sendAPIMessage,
   sendEmail,
   getUserPlayDays,
-  getNumberOfDaysFromTimestamp,
   validateEmail,
   updateUserPlan,
   getFileInfo,
@@ -1680,7 +1551,6 @@ module.exports = {
   getSessionUploadMediaMeta,
   sendMetaMsg,
   updateMetaTempletInMsg,
-  sendMetatemplet,
   getBusinessPhoneNumber,
   botWebhook,
   mergeArrays,

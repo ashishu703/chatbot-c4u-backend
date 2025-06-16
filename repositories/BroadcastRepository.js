@@ -11,6 +11,12 @@ class BroadcastRepository extends Repository {
     return this.update({ status }, { broadcast_id, uid });
   }
 
+
+  async findByStatus(status) {
+    return this.find({ where: { status } });
+  }
+
+
 }
 
 module.exports = BroadcastRepository;

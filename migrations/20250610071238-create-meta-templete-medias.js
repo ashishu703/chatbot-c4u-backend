@@ -1,31 +1,52 @@
 "use strict";
+
+const { INCOMING } = require('../types/conversation-route.types');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("agent_chats", {
+    await queryInterface.createTable("meta_templete_medias", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      owner_uid: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
       uid: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
+        references: {
+          model: "users",
+          key: "uid",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
-      chat_id: {
+      account_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: "chats",
+          model: "social_accounts",
           key: "id",
         },
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
+      },
+      template_name: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      meta_hash: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+      file_name: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+      message_id: {
+        type: Sequelize.TEXT,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -40,6 +61,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("agent_chats");
+    await queryInterface.dropTable("meta_templete_medias");
   },
 };
