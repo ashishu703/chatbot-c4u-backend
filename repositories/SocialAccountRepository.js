@@ -65,7 +65,7 @@ class SocialAccountRepository extends Repository {
     socialUserId,
     name,
     accessToken,
-    
+
   ) {
 
     return this.updateOrCreate({
@@ -104,6 +104,33 @@ class SocialAccountRepository extends Repository {
 
   async deleteByAccountId(accountId) {
     return this.delete({ social_account_id: accountId });
+  }
+
+  async getInstagramAccount(userid) {
+    return this.findFirst({
+      where: {
+        uid: userid,
+        platform: INSTAGRAM
+      }
+    })
+  }
+
+  async getMessangerAccount(userid) {
+    return this.findFirst({
+      where: {
+        uid: userid,
+        platform: MESSANGER
+      }
+    })
+  }
+
+  async getWhatsappAccount(userid) {
+    return this.findFirst({
+      where: {
+        uid: userid,
+        platform: WHATSAPP
+      }
+    })
   }
 };
 

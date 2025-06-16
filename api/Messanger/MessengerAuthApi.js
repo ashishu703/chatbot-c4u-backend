@@ -5,6 +5,13 @@ class MessengerAuthApi extends MessengerApi {
         super(user, accessToken);
     }
 
+    async fetchOwnerProfile() {
+        return this.get("/me", {
+            access_token: this.accessToken,
+            fields: "id,name,picture,short_name",
+        });
+    }
+
 
     async getLongLiveToken() {
         return this.get("/oauth/access_token", {

@@ -254,22 +254,7 @@ router.get(
   validateUser,
   metaController.getMetaKeys.bind(metaController)
 );
-router.post(
-  "/add_meta_templet",
-  validateUser,
-  checkPlan,
-  metaController.addMetaTemplet.bind(metaController)
-);
-router.get(
-  "/get_my_meta_templets",
-  validateUser,
-  metaController.getMyMetaTemplets.bind(metaController)
-);
-router.post(
-  "/del_meta_templet",
-  validateUser,
-  metaController.deleteMetaTemplet.bind(metaController)
-);
+
 router.post(
   "/return_media_url_meta",
   validateUser,

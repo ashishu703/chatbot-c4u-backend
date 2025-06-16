@@ -39,10 +39,13 @@ class SocialApi {
         const fullUrl = isFullUrl ? `${url}${queryString ? `?${queryString}` : ''}` : `${this.APIURL}${url}${queryString ? `?${queryString}` : ''}`;
 
         console.log({
+            method,
             url,
             data,
+            query,
+            customHeaders,
             fullUrl
-        })
+        });
 
         const headers = {
             Authorization: `Bearer ${this.accessToken}`,

@@ -5,12 +5,7 @@ class MessengerProfileApi extends MessengerApi {
     }
 
 
-    async fetchOwnerProfile() {
-        return this.get("/me", { 
-            access_token: this.accessToken,
-            fields: "id,name,picture,short_name",
-         });
-    }
+  
 
     async fetchProfile(id) {
         return this.get(`/${id}`, { access_token: this.accessToken });

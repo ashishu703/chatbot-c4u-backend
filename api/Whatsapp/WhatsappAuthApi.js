@@ -1,4 +1,4 @@
-const { whatsAppAccountPin } = require("../../config/app.config");
+const { whatsAppAccountPin, backendURI } = require("../../config/app.config");
 const WhatsappApi = require("./WhatsappApi");
 
 class WhatsappAuthApi extends WhatsappApi {
@@ -24,14 +24,14 @@ class WhatsappAuthApi extends WhatsappApi {
         });
     }
 
-    async getMe() {
+    async getOwnerProfile() {
         return this.get("/me");
     }
 
 
     async subscribeWebhook(wabaId) {
         return this.post(`/${wabaId}/subscribed_apps`, {
-            override_callback_uri: `${process.env.BACKURI}/api/inbox/webhook/${this.user.uid}`,
+            override_callback_uri: `${backendURI}/api/inbox/webhook/${this.user.uid}`,
             verify_token: this.user.uid,
         });
     }

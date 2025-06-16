@@ -2,9 +2,10 @@ const WebPublicRepository = require("../../repositories/WebPublicRepository");
 const SocialApi = require("../SocialApi");
 const { handleApiResponse } = require("../../utils/facebook.utils");
 class WhatsappApi extends SocialApi {
-    constructor(user = null, accessToken = null) {
+    constructor(user = null, accessToken = null, wabaId = null) {
         super(user, accessToken);
         this.webPublicRepository = new WebPublicRepository();
+        this.wabaId = wabaId;
     }
 
     async initMeta() {

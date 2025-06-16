@@ -61,64 +61,7 @@ class MetaService {
     return { data: data[0] || {} };
   }
 
-  async addMetaTemplet(uid, body) {
-    const apiKeys = await this.metaRepository.findMetaApiByUid(uid);
-    if (apiKeys.length < 1) {
-      throw new FillMetaApiKeysException();
-    }
-
-    const resp = await createMetaTemplet(
-      "v18.0",
-      apiKeys[0].waba_id,
-      apiKeys[0].access_token,
-      body
-    );
-    if (resp?.error || !resp?.success) {
-      throw new TemplateCreationFailedException();
-    }
-
-    return true;
-  }
-
- async getMyMetaTemplets(uid) {
-  const meta = await this.metaRepository.findMetaApiByUid(uid);
-
-  if (!meta || meta.length < 1) {
-    throw new CheckMetaApiKeysException();
-  }
-
-  const resp = await getAllTempletsMeta(
-    "v18.0",
-    meta[0].waba_id,
-    meta[0].access_token
-  );
-
-  if (resp?.error || !resp?.success) {
-    throw new CheckApiException();
-  }
-
-  return { data: resp?.data || [] };
-}
-
-
-  async deleteMetaTemplet(uid, name) {
-    const meta = await this.metaRepository.findMetaApiByUid(uid);
-    if (meta.length < 1) {
-      throw new CheckMetaApiKeysException();
-    }
-
-    const resp = await delMetaTemplet(
-      "v18.0",
-      meta[0].waba_id,
-      meta[0].access_token,
-      name
-    );
-    if (resp?.error || !resp?.success) {
-      throw new CheckApiException();
-    }
-
-    return true;
-  }
+  
 
   async returnMediaUrlMeta(uid, templet_name, file, getFileInfo) {
     if (!templet_name) {

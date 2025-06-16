@@ -1102,64 +1102,7 @@ async function getBusinessPhoneNumber(
   }
 }
 
-// Create Meta template (unchanged)
-async function createMetaTemplet(apiVersion, waba_id, bearerToken, body) {
-  const url = `https://graph.facebook.com/${apiVersion}/${waba_id}/message_templates`;
-  const options = {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${bearerToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  };
 
-  try {
-    const response = await fetch(url, options);
-    return await response.json();
-  } catch (error) {
-    console.error("Error creating Meta template:", error);
-    throw error;
-  }
-}
-
-// Get all Meta templates (unchanged)
-async function getAllTempletsMeta(apiVersion, waba_id, bearerToken) {
-  const url = `https://graph.facebook.com/${apiVersion}/${waba_id}/message_templates`;
-  const options = {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${bearerToken}`,
-    },
-  };
-
-  try {
-    const response = await fetch(url, options);
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching Meta templates:", error);
-    throw error;
-  }
-}
-
-// Delete Meta template (unchanged)
-async function delMetaTemplet(apiVersion, waba_id, bearerToken, name) {
-  const url = `https://graph.facebook.com/${apiVersion}/${waba_id}/message_templates?name=${name}`;
-  const options = {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${bearerToken}`,
-    },
-  };
-
-  try {
-    const response = await fetch(url, options);
-    return await response.json();
-  } catch (error) {
-    console.error("Error deleting Meta template:", error);
-    throw error;
-  }
-}
 
 // Send Meta template (updated to use Sequelize)
 async function sendMetatemplet(
@@ -1738,9 +1681,6 @@ module.exports = {
   sendMetaMsg,
   updateMetaTempletInMsg,
   sendMetatemplet,
-  delMetaTemplet,
-  getAllTempletsMeta,
-  createMetaTemplet,
   getBusinessPhoneNumber,
   botWebhook,
   mergeArrays,
