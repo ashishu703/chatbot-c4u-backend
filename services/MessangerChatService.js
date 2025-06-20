@@ -198,11 +198,19 @@ class MessangerChatService {
 
   async processReaction(messageObj) {
     const mid = messageObj.getId();
-    const message = await this.messageRepository.update({
+
+    let message = await this.messageRepository.findByMessageId(mid);
+
+    if (!message) return;
+
+    const { body } = message;
+
+
+    message = await this.messageRepository.updateBody(mid, {
+      ...body,
       reaction: messageObj.getEmoji(),
-    }, {
-      message_id: mid
     });
+    
     this.emitNewReactionEvent(message);
   }
 

@@ -16,7 +16,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-
       chat_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -27,17 +26,9 @@ module.exports = {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },
-      owner_id: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
       type: {
         type: Sequelize.STRING,
         allowNull: false,
-      },
-      attchment_url: {
-        type: Sequelize.TEXT,
-        allowNull: true,
       },
       message_id: {
         type: Sequelize.TEXT,
@@ -47,12 +38,8 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      text: {
-        type: Sequelize.TEXT,
-        allowNull: true,
-      },
-      reaction: {
-        type: Sequelize.STRING,
+      body: {
+        type: Sequelize.JSON,
         allowNull: true,
       },
       route: {

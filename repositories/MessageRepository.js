@@ -13,6 +13,18 @@ class MessageRepository extends Repository {
     return this.update({ status }, { message_id: messageId });
   }
 
+  async findByMessageId(messageId) {
+    return this.findFirst({
+      where: {
+        message_id: messageId
+      }
+    })
+  }
+
+  async updateBody(messageId, body) {
+    return this.update({ body }, { message_id: messageId });
+  }
+
   async setConversationToRead(chatId) {
     await this.model.update({
       status: READ

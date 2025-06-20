@@ -41,10 +41,12 @@ function convertWebhookMessageToDBMessage(messageObj) {
     timestamp: messageObj.getMessageTimestamp(),
     message_id: messageObj.getId(),
     type,
-    attchment_url,
-    text: messageObj.getMessageText(),
+    body: {
+      text: messageObj.getMessageText(),
+      attchment_url,
+      reaction: "",
+    },
     status: SENT,
-    reaction: "",
   };
 }
 

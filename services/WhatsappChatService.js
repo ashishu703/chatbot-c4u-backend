@@ -157,7 +157,6 @@ class WhatsappChatService {
         {
           ...dbMessageObj,
           uid: chat.uid,
-          owner_id: chat.uid,
           chat_id: chatId,
           route: INCOMING,
         },
@@ -181,16 +180,18 @@ class WhatsappChatService {
 
   async processReaction(messageObj) {
     const mid = messageObj.getId();
-    const message = await this.messageRepository.update({
+
+    let message = await this.messageRepository.findByMessageId(mid);
+
+    if (!message) return;
+
+    const { body } = message;
+
+    message = await this.messageRepository.updateBody(mid, {
+      ...body,
       reaction: messageObj.getEmoji(),
-    }, {
-      message_id: mid
     });
-    await this.chatRepository.updateLastMessage(
-      chatId,
-      message.id,
-      messageObj.getMessageTimestamp()
-    );
+
     this.emitNewReactionEvent(message);
   }
 
@@ -251,7 +252,7 @@ class WhatsappChatService {
 
     const messageId = dataGet(apiResponse, "messages.0.id");
 
-    
+
 
     return this.processOutgoingMessage({
       id: messageId,
@@ -277,13 +278,15 @@ class WhatsappChatService {
     const message = await this.messageRepository.create(
       {
         timestamp,
-        attchment_url,
         message_id: id,
+        body: {
+          text,
+          attchment_url,
+          reaction: "",
+        },
         type,
-        text,
         status: PENDING,
         uid: chat.uid,
-        owner_id: chat.uid,
         chat_id: chatId,
         route: OUTGOING,
       });

@@ -215,7 +215,7 @@ class InboxService {
   }
 
   async deleteChat(uid, chatId) {
-    return this.chatsRepository.delete({ uid, chat_id: chatId });
+    return this.chatsRepository.delete({ uid, id: chatId });
   }
 }
 
