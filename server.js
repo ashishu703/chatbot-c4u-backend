@@ -68,7 +68,7 @@ const currentDir = process.cwd();
 app.use(express.static(path.resolve(currentDir, "./client/public")));
 
 app.get("*", function (request, response) {
-    response.sendFile(path.resolve(currentDir, "./client/public", "index.html"));
+    response.sendFile(path.resolve(currentDir, "./client", "index.html"));
 });
 
 const server = app.listen(port || 3010, () => {
