@@ -19,15 +19,15 @@ module.exports = {
       },
       name: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
       email: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
       password: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
       mobile_with_country_code: {
         type: Sequelize.STRING,

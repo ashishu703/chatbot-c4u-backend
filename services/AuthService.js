@@ -119,9 +119,7 @@ class AuthService {
       throw new InvalidCredentialsException();
     }
 
-    const existingUser = await this.userRepository.findFirst({
-      where: { email },
-    });
+    const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
       throw new EmailAlreadyInUseException();
     }
@@ -136,7 +134,7 @@ class AuthService {
       mobile_with_country_code,
     });
     this.emailService.sendWelcomeEmail(email, name);
-    
+
     return user;
   }
 
