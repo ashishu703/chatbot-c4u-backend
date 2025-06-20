@@ -2,6 +2,7 @@ const WebPublicRepository = require("../../repositories/WebPublicRepository");
 const SocialApi = require("../SocialApi");
 const { handleApiResponse } = require("../../utils/facebook.utils");
 class WhatsappApi extends SocialApi {
+    webhookVerificationToken;
     constructor(user = null, accessToken = null, wabaId = null) {
         super(user, accessToken);
         this.webPublicRepository = new WebPublicRepository();
@@ -19,8 +20,10 @@ class WhatsappApi extends SocialApi {
             whatsapp_client_secret,
             whatsapp_graph_version,
             whatsapp_config_id,
+            meta_webhook_verifcation_key
         } = await this.webPublicRepository.getWebPublic();
 
+        this.webhookVerificationToken = meta_webhook_verifcation_key;
         this.AppId = whatsapp_client_id;
         this.AppSecret = whatsapp_client_secret;
         this.DefaultApiVersion = whatsapp_graph_version;

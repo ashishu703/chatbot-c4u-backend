@@ -171,7 +171,6 @@ class InstagramChatService {
         "avatar": profile_pic,
         "uid": instagramProfile.uid,
         "account_id": instagramProfile.id,
-        "last_message_came": messageObj.getMessageTimestamp(),
         "chat_note": "",
         "chat_tags": "",
         "sender_name": name,
@@ -237,12 +236,12 @@ class InstagramChatService {
 
   async processReaction(messageObj) {
     const mid = messageObj.getId();
-    const mesasge = await this.messageRepository.update({
+    const message = await this.messageRepository.update({
       reaction: messageObj.getEmoji(),
     }, {
       message_id: mid
     });
-    this.emitNewReactionEvent(mesasge);
+    this.emitNewReactionEvent(message);
 
   }
 

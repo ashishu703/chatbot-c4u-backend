@@ -52,6 +52,7 @@ class SocialApi {
         };
 
         const response = await fetch(fullUrl, options);
+      
         return this.handleResponse(response);
     }
 

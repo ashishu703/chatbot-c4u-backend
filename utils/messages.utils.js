@@ -57,7 +57,6 @@ function convertMessangerWebhookToDBChatCreateObject(object) {
     uid: uid,
     recipient: page_id,
     type: MESSANGER,
-    last_message_came: timestamp / 1000,
     chat_note: null,
     chat_tags: null,
     sender_name: combineNames({ first_name, last_name }),
@@ -76,7 +75,6 @@ function convertInstagramWebhookToDBChatCreateObject(object) {
     uid: uid,
     recipient: page_id,
     type: INSTAGRAM,
-    last_message_came: timestamp / 1000,
     chat_note: null,
     chat_tags: null,
     sender_name: username,
@@ -91,7 +89,6 @@ function convertWebhookToDBChatUpdateObject(object) {
   const { timestamp, message } = object;
 
   return {
-    last_message_came: timestamp / 1000,
     chat_status: OPEN,
     is_opened: 0,
     last_message: message,

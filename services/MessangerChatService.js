@@ -134,7 +134,6 @@ class MessangerChatService {
         "uid": facebookPage.uid,
         "account_id": facebookPage.account.id,
         "page_id": facebookPage.id,
-        "last_message_came": messageObj.getMessageTimestamp(),
         "chat_note": "",
         "chat_tags": "",
         "sender_name": `${first_name} ${last_name}`,
@@ -199,12 +198,12 @@ class MessangerChatService {
 
   async processReaction(messageObj) {
     const mid = messageObj.getId();
-    const mesasge = await this.messageRepository.update({
+    const message = await this.messageRepository.update({
       reaction: messageObj.getEmoji(),
     }, {
       message_id: mid
     });
-    this.emitNewReactionEvent(mesasge);
+    this.emitNewReactionEvent(message);
   }
 
   async processDeliveryMessage(messageObj, chat) {

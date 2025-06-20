@@ -49,10 +49,7 @@ module.exports = {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },
-      last_message_came: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
+     
       chat_note: {
         type: Sequelize.TEXT,
         allowNull: true,
@@ -76,12 +73,6 @@ module.exports = {
       last_message_id: {
         type: Sequelize.INTEGER,
         allowNull: true,
-        references: {
-          model: "messages",
-          key: "id",
-        },
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE",
       },
       is_deleted: {
         type: Sequelize.BOOLEAN,

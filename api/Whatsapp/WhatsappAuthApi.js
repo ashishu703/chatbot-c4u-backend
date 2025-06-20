@@ -35,8 +35,8 @@ class WhatsappAuthApi extends WhatsappApi {
 
     async subscribeWebhook(wabaId) {
         return this.post(`/${wabaId}/subscribed_apps`, {
-            override_callback_uri: `${backendURI}/api/inbox/webhook/${this.user.uid}`,
-            verify_token: this.user.uid,
+            override_callback_uri: `${backendURI}/api/whatsapp/webhook`,
+            verify_token: this.webhookVerificationToken,
         });
     }
 

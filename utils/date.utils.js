@@ -20,6 +20,10 @@ function millisecondsToSeconds(milliseconds) {
   return Math.floor(milliseconds / 1000);
 }
 
+function getCurrentTimeStampInSeconds() {
+  return Math.floor(Date.now() / 1000);
+}
+
 function getNumberOfDaysFromTimestamp(timestamp) {
   if (!timestamp || isNaN(timestamp)) {
     return 0;
@@ -38,5 +42,6 @@ module.exports = {
   addDaysToCurrentTimestamp,
   secondsToMilliseconds,
   millisecondsToSeconds,
-  getNumberOfDaysFromTimestamp
+  getNumberOfDaysFromTimestamp,
+  getCurrentTimeStampInSeconds
 };

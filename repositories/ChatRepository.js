@@ -45,7 +45,9 @@ class ChatRepository extends Repository {
 
 
   async updateLastMessage(id, lastMessageId) {
-    return this.update({ last_message_id: lastMessageId }, { id });
+    return this.update({
+      last_message_id: lastMessageId,
+    }, { id });
   }
 
 

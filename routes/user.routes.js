@@ -4,17 +4,17 @@ const validateUser = require("../middlewares/user.middleware");
 const { checkPlan, checkNote, checkTags } = require("../middlewares/plan.middleware");
 const adminValidator = require("../middlewares/admin.middleware");
 const AdminController = require("../controllers/AdminController");
-const PlanController = require("../controllers/planController");
-const UserController = require("../controllers/userController");
-const PageController = require("../controllers/pageController");
-const TestimonialController = require("../controllers/testimonialController");
-const SmtpController = require("../controllers/smtpController");
-const SocialController = require("../controllers/socialController");
-const LinkController = require("../controllers/linkController");
-const AuthController = require("../controllers/authController");
-const MetaController = require("../controllers/metaController");
-const ChatWidgetController = require("../controllers/chatWidgetController");
-const MediaController = require("../controllers/mediaController");
+const PlanController = require("../controllers/PlanController");
+const UserController = require("../controllers/UserController");
+const PageController = require("../controllers/PageController");
+const TestimonialController = require("../controllers/TestimonialController");
+const SmtpController = require("../controllers/SmtpController");
+const SocialController = require("../controllers/SocialController");
+const LinkController = require("../controllers/LinkController");
+const AuthController = require("../controllers/AuthController");
+const WhatsappMediaController = require("../controllers/WhatsappMediaController");
+const ChatWidgetController = require("../controllers/ChatWidgetController");
+const MediaController = require("../controllers/MediaController");
 const ChatController = require("../controllers/chatController");
 const SmiController = require("../controllers/SmiController");
 
@@ -30,7 +30,7 @@ const linkController = new LinkController();
 const chatWidgetController = new ChatWidgetController();
 const mediaController = new MediaController();
 const chatController = new ChatController();
-const metaController = new MetaController();
+const whatsappMediaController = new WhatsappMediaController();
 const smiController = new SmiController();
 
 router.get("/verify", authController.verify.bind(authController));
@@ -247,7 +247,7 @@ router.post(
 router.post(
   "/return_media_url_meta",
   validateUser,
-  metaController.returnMediaUrlMeta.bind(metaController)
+  whatsappMediaController.returnMediaUrlMeta.bind(whatsappMediaController)
 );
 router.get(
   "/get_auth_params",

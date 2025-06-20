@@ -1,5 +1,4 @@
 module.exports = {
     OPEN: 'open',
-    SOLVED: 'solved',
-    PENDING: 'pending',
+    SOLVED: 'solved'
 };

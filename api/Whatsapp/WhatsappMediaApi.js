@@ -1,3 +1,4 @@
+const { default: axios } = require("axios");
 const WhatsappApi = require("./WhatsappApi");
 
 class WhatsappMediaApi extends WhatsappApi {
@@ -24,6 +25,26 @@ class WhatsappMediaApi extends WhatsappApi {
         }, {
             body: fileData
         })
+    }
+
+
+    async getMedia(mediaId) {
+        return this.get(`/${mediaId}`, {}, {
+            responseType: "arraybuffer"
+        })
+    }
+
+
+    async getMediaFromUrl(url) {
+        return axios({
+            method: "GET",
+            url: url,
+            headers: {
+                Authorization: `Bearer ${this.accessToken}`,
+            },
+            responseType: "arraybuffer",
+        });
+
     }
 
 };

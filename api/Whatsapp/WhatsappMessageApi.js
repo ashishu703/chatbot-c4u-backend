@@ -6,7 +6,16 @@ class WhatsappMessageApi extends WhatsappApi {
     }
 
 
-   
+    async send(payload) {
+        return this.post(`/${this.wabaId}/messages`, {
+            messaging_product: "whatsapp",
+            recipient_type: "individual",
+            ...payload
+        });
+    }
+
+
+
 };
 
 module.exports = WhatsappMessageApi;

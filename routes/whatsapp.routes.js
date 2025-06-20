@@ -30,21 +30,21 @@ router.delete(
 
 
 router.get(
-  "/webhook/:uid",
+  "/webhook",
   whatsappWebhookController.verifyWebhook.bind(whatsappWebhookController)
 );
 
 router.post(
-  "/webhook/:uid",
+  "/webhook",
   whatsappWebhookController.handleWebhook.bind(whatsappWebhookController)
 );
 
-router.post(
-  "/send_templet",
-  validateUser,
-  // checkPlan,
-  whatsappChatController.sendTemplate.bind(whatsappChatController)
-);
+// router.post(
+//   "/send_templet",
+//   validateUser,
+//   // checkPlan,
+//   whatsappChatController.sendTemplate.bind(whatsappChatController)
+// );
 
 router.post(
   "/send_image",
@@ -80,12 +80,12 @@ router.post(
   // checkPlan,
   whatsappChatController.sendText.bind(whatsappChatController)
 );
-router.post(
-  "/send_meta_templet",
-  validateUser,
-  // checkPlan,
-  whatsappChatController.sendMetaTemplate.bind(whatsappChatController)
-);
+// router.post(
+//   "/send_meta_templet",
+//   validateUser,
+//   // checkPlan,
+//   whatsappChatController.sendMetaTemplate.bind(whatsappChatController)
+// );
 
 router.post(
   "/add_meta_templet",
