@@ -6,6 +6,9 @@ const cors = require('cors')
 const fileUpload = require('express-fileupload')
 const { initializeSocket } = require('./socket.js');
 const { runBroadcastJob } = require('./jobs/broadcast.job')
+const path = require("path");
+const { port } = require('./config/app.config.js')
+
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
@@ -60,8 +63,7 @@ app.use('/api/quick-replies', require('./routes/quick-replies.routes.js'))
 
 
 
-const path = require("path");
-const { port } = require('./config/app.config.js')
+
 
 const currentDir = process.cwd();
 

@@ -43,6 +43,7 @@ class Repository {
     }
 
     async findFirst(condition = {}, relations = []) {
+  
         const record = await this.model.findOne({
             ...condition,
             include: relations

@@ -7,7 +7,7 @@ class UserRepository extends Repository {
   }
 
   async findByEmail(email) {
-    return this.findFirst({ where: { email } });
+    return this.model.findOne({ where: { email } });
   }
 
   async updateUser(uid, data) {

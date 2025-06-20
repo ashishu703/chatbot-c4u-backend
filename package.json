@@ -8,6 +8,7 @@
     "start": "nodemon server.js",
     "migration:create": "npx sequelize-cli model:generate --attributes dummy:string --name",
     "migration:migrate": "npx sequelize-cli db:migrate",
+    "migration:init": "npx sequelize init",
     "migration:rollback": "npx sequelize-cli db:migrate:undo",
     "migration:rollback:all": "npx sequelize-cli db:migrate:undo:all"
   },

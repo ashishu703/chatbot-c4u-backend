@@ -119,6 +119,7 @@ class AuthService {
       throw new InvalidCredentialsException();
     }
 
+
     const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
       throw new EmailAlreadyInUseException();

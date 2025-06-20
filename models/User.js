@@ -44,20 +44,13 @@ module.exports = (sequelize, DataTypes) => {
 
   User.init(
     {
-      role: DataTypes.STRING,
-      uid: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-      },
+      uid: DataTypes.STRING,
       name: DataTypes.STRING,
       email: DataTypes.STRING,
       password: DataTypes.STRING,
       mobile_with_country_code: DataTypes.STRING,
       timezone: DataTypes.STRING,
-      plan: DataTypes.TEXT,
-      plan_expire: DataTypes.STRING,
-      trial: DataTypes.INTEGER,
+      plan_id: DataTypes.TEXT,
       api_key: DataTypes.STRING,
     },
     {
