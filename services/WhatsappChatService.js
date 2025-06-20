@@ -124,7 +124,7 @@ class WhatsappChatService {
         "uid": whatsappProfile.uid,
         "account_id": whatsappProfile.id,
         "chat_note": "",
-        "chat_tags": "",
+        "chat_tags": [],
         "sender_name": senderName,
         "sender_id": senderId,
         "chat_status": OPEN,

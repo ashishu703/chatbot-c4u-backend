@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
       uid: DataTypes.STRING,
       avatar: DataTypes.TEXT,
       chat_note: DataTypes.TEXT,
-      chat_tags: DataTypes.TEXT,
+      chat_tags: DataTypes.JSON,
       sender_name: DataTypes.STRING,
       sender_id: DataTypes.STRING,
       chat_status: DataTypes.STRING,

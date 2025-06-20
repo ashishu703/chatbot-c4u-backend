@@ -1,6 +1,5 @@
 "use strict";
 
-const { INCOMING } = require('../types/conversation-route.types');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {

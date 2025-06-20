@@ -148,10 +148,10 @@ class UserService {
     const chat = await this.chatRepository.findByChatId(chatId);
     if (!chat) throw new ChatNotFoundException();
     let tags = [];
-    tags = chat.chat_tags ? JSON.parse(chat.chat_tags) : [];
+    tags = chat.chat_tags;
     const newTags = [...tags, tag];
     return this.chatRepository.update(
-      { chat_tags: JSON.stringify(newTags) },
+      { chat_tags: newTags },
       { chat_id: chatId, uid }
     );
   }
@@ -160,11 +160,11 @@ class UserService {
     const chat = await this.chatRepository.findByChatId(chatId);
     if (!chat) throw new ChatNotFoundException();
 
-    const tags = chat.chat_tags ? JSON.parse(chat.chat_tags) : [];
+    const tags = chat.chat_tags;
     const newTags = tags.filter((t) => t !== tag);
 
     return this.chatRepository.update(
-      { chat_tags: JSON.stringify(newTags) },
+      { chat_tags: newTags },
       { chat_id: chatId, uid }
     );
   }

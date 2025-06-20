@@ -15,6 +15,12 @@ module.exports = {
       uid: {
         type: Sequelize.STRING,
         allowNull: false,
+        references: {
+          model: "users",
+          key: "uid",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       chat_id: {
         type: Sequelize.INTEGER,

@@ -1,4 +1,7 @@
 "use strict";
+
+const { defaultTimeZone } = require('../config/app.config');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -9,13 +12,10 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      role: {
-        type: Sequelize.STRING,
-        defaultValue: "user",
-      },
       uid: {
         type: Sequelize.STRING,
         allowNull: true,
+        unique: true,
       },
       name: {
         type: Sequelize.STRING,
@@ -35,23 +35,18 @@ module.exports = {
       },
       timezone: {
         type: Sequelize.STRING,
-        defaultValue: "Asia/Kolkata",
+        defaultValue: defaultTimeZone,
       },
-      dummy: {
-        type: Sequelize.STRING,
+
+      plan_id: {
+        type: Sequelize.INTEGER,
         allowNull: true,
-      },
-      plan: {
-        type: Sequelize.TEXT,
-        allowNull: true,
-      },
-      plan_expire: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      trial: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false,
+        references: {
+          model: "plans",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       api_key: {
         type: Sequelize.STRING,

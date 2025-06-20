@@ -12,6 +12,12 @@ module.exports = {
       uid: {
         type: Sequelize.STRING,
         allowNull: false,
+        references: {
+          model: "users",
+          key: "uid",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       message: {
         type: Sequelize.TEXT,

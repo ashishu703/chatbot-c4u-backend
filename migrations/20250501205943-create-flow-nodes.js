@@ -42,6 +42,12 @@ module.exports = {
       },
       uid: {
         type: Sequelize.STRING,
+        references: {
+          model: "users",
+          key: "uid",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       createdAt: {
         allowNull: false,

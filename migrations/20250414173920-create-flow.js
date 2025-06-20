@@ -12,6 +12,12 @@ module.exports = {
       uid: {
         type: Sequelize.STRING,
         allowNull: true,
+        references: {
+          model: "users",
+          key: "uid",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       flow_id: {
         type: Sequelize.STRING,

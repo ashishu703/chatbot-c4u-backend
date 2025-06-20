@@ -1,40 +1,66 @@
 "use strict";
+
+const { WHATSAPP } = require('../types/social-platform-types');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("meta_apis", {
+    await queryInterface.createTable("social_accounts", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      platform: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: WHATSAPP,
+      },
+      avatar: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       uid: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
+        references: {
+          model: "users",
+          key: "uid",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
-      waba_id: {
+      social_user_id: {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      business_account_id: {
+      social_account_id: {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      access_token: {
+      name: {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      business_phone_number_id: {
+      username: {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      app_id: {
+      token: {
         type: Sequelize.STRING,
+        allowNull: false,
+      },
+      refresh_token: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+      refresh_token: {
+        type: Sequelize.TEXT,
         allowNull: true,
       },
-      pin: {
-        type: Sequelize.STRING,
+      expires_in: {
+        type: Sequelize.BIGINT,
         allowNull: true,
       },
       createdAt: {
@@ -50,6 +76,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("meta_apis");
+    await queryInterface.dropTable("social_accounts");
   },
 };

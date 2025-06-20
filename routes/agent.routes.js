@@ -35,26 +35,7 @@ router.post(
   agentController.deleteAgent.bind(agentController)
 );
 
-router.post(
-  "/get_agent_chats_owner",
-  validateUser,
-  agentChatController.getAgentChatsOwner.bind(agentChatController)
-);
-router.post(
-  "/get_assigned_chat_agent",
-  validateUser,
-  agentChatController.getAssignedChatAgent.bind(agentChatController)
-);
-router.post(
-  "/update_agent_in_chat",
-  validateUser,
-  agentChatController.updateAgentInChat.bind(agentChatController)
-);
-router.post(
-  "/del_assign_chat_by_owner",
-  validateUser,
-  agentChatController.deleteAssignedChat.bind(agentChatController)
-);
+
 
 router.post("/login", agentController.login.bind(agentController));
 

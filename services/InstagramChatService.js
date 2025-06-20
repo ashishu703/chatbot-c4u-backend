@@ -172,7 +172,7 @@ class InstagramChatService {
         "uid": instagramProfile.uid,
         "account_id": instagramProfile.id,
         "chat_note": "",
-        "chat_tags": "",
+        "chat_tags": [],
         "sender_name": name,
         "sender_id": senderId,
         "chat_status": OPEN,

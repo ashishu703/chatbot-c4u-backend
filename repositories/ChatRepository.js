@@ -59,6 +59,14 @@ class ChatRepository extends Repository {
         order: [["createdAt", "DESC"]],
       });
   }
+
+  async updateNote(chat_id, note) {
+    return this.update({ chat_note: note }, { chat_id });
+  }
+  async updateTags(chat_id, tags) {
+    
+    return this.update({ chat_tags: tags }, { chat_id });
+  }
 }
 
 module.exports = ChatRepository;

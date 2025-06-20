@@ -172,25 +172,7 @@ router.post(
   chatWidgetController.deleteWidget.bind(chatWidgetController)
 );
 
-router.post(
-  "/save_note",
-  validateUser,
-  checkPlan,
-  checkNote,
-  chatController.saveNote.bind(chatController)
-);
-router.post(
-  "/push_tag",
-  validateUser,
-  checkPlan,
-  checkTags,
-  chatController.pushTag.bind(chatController)
-);
-router.post(
-  "/del_tag",
-  validateUser,
-  chatController.deleteTag.bind(chatController)
-);
+
 
 router.get(
   "/get_smtp",

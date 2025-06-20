@@ -135,7 +135,7 @@ class MessangerChatService {
         "account_id": facebookPage.account.id,
         "page_id": facebookPage.id,
         "chat_note": "",
-        "chat_tags": "",
+        "chat_tags": [],
         "sender_name": `${first_name} ${last_name}`,
         "sender_id": senderId,
         "chat_status": OPEN,

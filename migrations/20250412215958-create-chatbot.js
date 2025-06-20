@@ -15,14 +15,20 @@ module.exports = {
       uid: {
         type: Sequelize.STRING,
         allowNull: true,
+        references: {
+          model: "users",
+          key: "uid",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       title: {
         type: Sequelize.STRING,
         allowNull: true,
       },
       for_all: {
-        type: Sequelize.INTEGER,
-        defaultValue: "0",
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
       chats: {
         type: Sequelize.TEXT,

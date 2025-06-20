@@ -17,52 +17,6 @@ class ChatService {
     this.agentChatRepository = new AgentChatRepository();
   }
 
-  async getAgentChatsOwner(owner_uid, agent_uid) {
-    return this.chatRepository.findChatsByAgent(
-      owner_uid,
-      agent_uid
-    );
-  }
-
-  async getAssignedChatAgent(owner_uid, chat_id) {
-    const agentChat = await this.agentChatRepository.find(
-      {
-        where: {
-          owner_uid,
-          chat_id
-        }
-      },
-      ["agent"]
-    );
-
-    if (!agentChat?.agent) {
-      return {};
-    }
-
-    return {
-      ...agent,
-      chat_id: agentChat.chat_id,
-      owner_uid: agentChat.owner_uid,
-    };
-  }
-
-  async updateAgentInChat(owner_uid, assignAgent, chat_id) {
-    if (assignAgent?.uid) {
-      await this.agentChatRepository.deleteByChatId(owner_uid, chat_id);
-      await this.agentChatRepository.create({
-        owner_uid: owner_uid,
-        uid: assignAgent.uid,
-        chat_id,
-      });
-    } else {
-      await this.agentChatRepository.deleteByChatId(owner_uid, chat_id);
-    }
-  }
-
-  async deleteAssignedChat(owner_uid, uid, chat_id) {
-    await this.agentChatRepository.delete({ owner_uid, uid, chat_id });
-  }
-
   async getMyAssignedChats(agent_uid, owner_uid) {
     const agentChats = await this.agentChatRepository.findByAgentId(agent_uid);
     if (!agentChats.length) {
@@ -109,29 +63,7 @@ class ChatService {
   async changeChatTicketStatus(chatId, status) {
     await this.chatRepository.updateStatus(chatId, status);
   }
-  async saveNote(chatId, note) {
-    return this.chatRepository.updateNote(chatId, note);
-  }
 
-  async pushTag(chatId, tag) {
-    const chat = await this.chatRepository.findById(chatId);
-    if (!chat) throw new ChatNotFoundException();
-
-    const tags = chat.chat_tags ? JSON.parse(chat.chat_tags) : [];
-    tags.push(tag);
-
-    return this.chatRepository.updateTags(chatId, JSON.stringify(tags));
-  }
-
-  async deleteTag(chatId, tag) {
-    const chat = await this.chatRepository.findById(chatId);
-    if (!chat) throw new ChatNotFoundException();
-
-    const tags = chat.chat_tags ? JSON.parse(chat.chat_tags) : [];
-    const filteredTags = tags.filter((t) => t !== tag);
-
-    return this.chatRepository.updateTags(chatId, JSON.stringify(filteredTags));
-  }
 }
 
 module.exports = ChatService;

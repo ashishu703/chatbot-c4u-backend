@@ -2,28 +2,26 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("meta_templet_media", {
+    await queryInterface.createTable("phonebooks", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      name: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       uid: {
         type: Sequelize.STRING,
         allowNull: true,
-      },
-      templet_name: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      meta_hash: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      file_name: {
-        type: Sequelize.STRING,
-        allowNull: true,
+        references: {
+          model: "users",
+          key: "uid",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       createdAt: {
         allowNull: false,
@@ -38,6 +36,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("meta_templet_media");
+    await queryInterface.dropTable("phonebooks");
   },
 };

@@ -12,7 +12,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      
+
       type: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -28,6 +28,12 @@ module.exports = {
       uid: {
         type: Sequelize.STRING,
         allowNull: true,
+        references: {
+          model: "users",
+          key: "uid",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       account_id: {
         type: Sequelize.INTEGER,
@@ -49,13 +55,13 @@ module.exports = {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },
-     
+
       chat_note: {
         type: Sequelize.TEXT,
         allowNull: true,
       },
       chat_tags: {
-        type: Sequelize.TEXT,
+        type: Sequelize.JSON,
         allowNull: true,
       },
       sender_name: {

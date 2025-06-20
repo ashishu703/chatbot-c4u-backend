@@ -54,15 +54,11 @@ function initializeSocket(server) {
       try {
         await chatRepository.updateStatus(chatId, status);
 
-        const chats = chatRepository.find({
-          where: {
-            uid
-          }
-        });
+        const chats = await chatRepository.findInboxChats(uid);
         const socketRoom = await roomRepository.findByUid(uid);
 
         if (socketRoom?.socket_id) {
-          io.to(socketRoom.socket_id).emit("update_chats", { chats });
+          io.to(socketRoom.socket_id).emit("update_chats", chats);
         } else {
           console.log(`Socket ID not found for user ${uid}`);
         }

@@ -1,61 +1,57 @@
 "use strict";
 
-const { WHATSAPP } = require('../types/social-platform-types');
+const { INACTIVE } = require('../types/facebook-page-status.types');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("social_accounts", {
+    await queryInterface.createTable("facebook_pages", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      platform: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        defaultValue: WHATSAPP,
-      },
-      avatar: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
       uid: {
         type: Sequelize.STRING,
         allowNull: false,
-      },
-      social_user_id: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      social_account_id: {
-        type: Sequelize.STRING,
-        allowNull: true,
+        references: {
+          model: "users",
+          key: "uid",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       name: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
-      username: {
+      page_id: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
+      },
+      account_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "social_accounts",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       token: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      refresh_token: {
         type: Sequelize.TEXT,
         allowNull: false,
       },
-      refresh_token: {
+      avatar: {
         type: Sequelize.TEXT,
         allowNull: true,
       },
-      expires_in: {
-        type: Sequelize.BIGINT,
-        allowNull: true,
+      is_active: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: INACTIVE
       },
       createdAt: {
         allowNull: false,
@@ -70,6 +66,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("social_accounts");
+    await queryInterface.dropTable("facebook_pages");
   },
 };
