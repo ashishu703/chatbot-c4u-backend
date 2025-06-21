@@ -42,7 +42,7 @@ class FlowController {
   async deleteFlow(req, res, next) {
     try {
       const { id, flowId } = req.body;
-      const { uid } = req.decode;
+      const {uid} = req.decode;
       await this.flowService.deleteFlow(id, flowId, uid);
       return formSuccess(res, { msg: __t("flow_deleted") });
     } catch (err) {
