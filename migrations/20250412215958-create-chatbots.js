@@ -30,14 +30,6 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
-      chats: {
-        type: Sequelize.TEXT,
-        allowNull: true,
-      },
-      flow: {
-        type: Sequelize.TEXT,
-        allowNull: true,
-      },
       flow_id: {
         type: Sequelize.INTEGER,
         allowNull: true,

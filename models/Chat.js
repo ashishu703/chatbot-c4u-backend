@@ -28,9 +28,9 @@ module.exports = (sequelize, DataTypes) => {
         as: "messages",
       });
 
-      Chat.hasOne(models.AgentChat, {
+      Chat.hasMany(models.ChatbotChat, {
         foreignKey: "chat_id",
-        as: "agentChat",
+        as: "chatbotChats",
       });
     }
   }

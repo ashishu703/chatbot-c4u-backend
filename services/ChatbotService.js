@@ -8,75 +8,44 @@ class ChatbotService {
     this.chatbotRepository = new ChatbotRepository();
     this.userRepository = new UserRepository();
   }
-  async addChatbot({ title, chats, flow, for_all, user: userObj }) {
-    const user = await this.userRepository.findByUid(userObj.uid);
+  async addChatbot({
+    title,
+    chats,
+    flow_id,
+    for_all,
+    uid
+  }) {
 
-    if (user.plan) {
-      const plan = JSON.parse(user.plan);
-      if (!plan.allow_chatbot) {
-        throw new PlanNoChatbotPermissionException();
-      }
-    } else {
-      throw new PlanNoChatbotPermissionException();
-    }
-
-    const chatbot = {
-      uid: user.uid,
+    return this.chatbotRepository.createAndAttachChats({
+      uid,
       title,
-      for_all: !!for_all ? 1 : 0,
-      chats: JSON.stringify(chats),
-      flow: JSON.stringify(flow),
-      flow_id: flow?.id || null,
-      active: 1,
-    };
+      for_all: !!for_all,
+      flow_id,
+    }, chats);
 
-    return this.chatbotRepository.create(chatbot);
   }
 
-  async updateChatbot({ id, title, chats, flow, for_all, user: userObj }) {
-    const user = await this.userRepository.findByUid(userObj.uid);
-
-    if (user.plan) {
-      const plan = JSON.parse(user.plan);
-      if (!plan.allow_chatbot) {
-        throw new PlanNoChatbotPermissionException();
-      }
-    } else {
-      throw new PlanNoChatbotPermissionException();
-    }
-
-    const chatbot = {
+  async updateChatbot(chatbotId, {
+    title,
+    chats,
+    flow_id,
+    for_all,
+    uid,
+  }) {
+    return this.chatbotRepository.updateAndAttachChats(chatbotId, {
       title,
-      for_all: !!for_all ? 1 : 0,
-      chats: JSON.stringify(chats),
-      flow: JSON.stringify(flow),
-      flow_id: flow?.id ? parseInt(flow.id) : null,
-    };
-
-    const updateResult = await this.chatbotRepository.update(chatbot, {
-      id: parseInt(id),
-      uid: user.uid,
-    });
-
-    return updateResult;
+      for_all: !!for_all,
+      flow_id,
+      uid,
+    }, chats);
   }
 
   async getChatbots(query) {
     return this.chatbotRepository.paginate(query);
   }
 
-  async changeBotStatus( id, status, userObj) {
-    const user = await this.userRepository.findByUid(userObj.uid);
-    if (user.plan) {
-      const plan = JSON.parse(user.plan);
-      if (!plan.allow_chatbot) {
-        throw new PlanNoChatbotPermissionException();
-      }
-    } else {
-      throw new PlanNoChatbotPermissionException();
-    }
-
-    return this.chatbotRepository.updateStatus(id, status, user.uid);
+  async changeBotStatus({ id, status, uid }) {
+    return this.chatbotRepository.updateStatus(id, status, uid);
   }
 
   async deleteChatbot(id, uid) {

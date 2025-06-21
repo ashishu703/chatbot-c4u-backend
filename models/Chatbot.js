@@ -8,6 +8,14 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "uid",
         as: "user",
       });
+      Chatbot.hasMany(models.ChatbotChat, {
+        foreignKey: "chatbot_id",
+        as: "chatbotChats",
+      });
+      Chatbot.belongsTo(models.Flow, {
+        foreignKey: "flow_id",
+        as: "flow",
+      });
     }
   }
   Chatbot.init(
@@ -15,9 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       uid: DataTypes.STRING,
       title: DataTypes.STRING,
       for_all: DataTypes.INTEGER,
-      chats: DataTypes.TEXT,
-      flow: DataTypes.TEXT,
-      flow_id: DataTypes.INTEGER, 
+      flow_id: DataTypes.INTEGER,
       active: DataTypes.INTEGER,
     },
     {
