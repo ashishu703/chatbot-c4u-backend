@@ -21,9 +21,7 @@ class Repository {
     }
 
     async delete(uniqueKeys) {
-        console.log({
-            uniqueKeys
-        })
+
         const records = await this.model.findAll({ where: uniqueKeys });
         await this.model.destroy({ where: uniqueKeys });
         return records.map(record => record.toJSON());
