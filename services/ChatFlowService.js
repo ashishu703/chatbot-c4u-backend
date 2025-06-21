@@ -3,6 +3,7 @@ const FlowNotfoundException = require("../exceptions/customExceptions/FlowNotfou
 const FlowEdgeRepository = require("../repositories/FlowEdgeRepository");
 const FlowNodeRepository = require("../repositories/FlowNodeRepository");
 const { DISABLED, AI } = require("../types/flow.types");
+const { formatNodesForFlow, formatEdgesForFlow } = require("../utils/flow.utils");
 class FlowService {
   constructor() {
     this.flowRepository = new FlowRepository();
@@ -24,11 +25,9 @@ class FlowService {
       await this.nodeRepository.updateOrCreate({
         "node_id": node.id,
         "flow_id": flow.id,
-        "type": node.type,
         "node_type": node.nodeType,
-        "data": JSON.stringify(node.data),
-        "position": JSON.stringify(node.position),
-        "position_absolute": JSON.stringify(node.positionAbsolute),
+        "data": node.data,
+        "position": node.position,
         "uid": uid,
       }, {
         "uid": uid,
@@ -44,7 +43,6 @@ class FlowService {
         "source_handle": edge.sourceHandle,
         "uid": uid,
         "target": edge.target,
-        "target_handle": edge.targetHandle,
       }, {
         "uid": uid,
         "edge_id": edge.id,
@@ -64,12 +62,25 @@ class FlowService {
   }
 
   async getFlowById(uid, flowId) {
-    return this.flowRepository.findFirst({
+    const flow = await this.flowRepository.findFirst({
       where: {
         uid,
         flow_id: flowId
       }
     }, ["nodes", "edges"]);
+
+
+    const {nodes, edges} = flow;
+    
+    const formattedNodes = formatNodesForFlow(nodes);
+    const formattedEdges = formatEdgesForFlow(edges);
+    
+    return {
+      ...flow,
+      nodes: formattedNodes,
+      edges: formattedEdges
+    }
+    
   }
 
   async getActivity(flowId, uid) {

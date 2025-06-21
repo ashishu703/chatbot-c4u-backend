@@ -58,10 +58,7 @@ module.exports = {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },
-      target_handle: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
+    
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

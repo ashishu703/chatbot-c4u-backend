@@ -13,7 +13,6 @@ module.exports = (sequelize, DataTypes) => {
       source: DataTypes.STRING,
       target: DataTypes.STRING,
       source_handle: DataTypes.STRING,
-      target_handle: DataTypes.STRING,
       edge_id: DataTypes.STRING,
       flow_id: DataTypes.INTEGER,
       uid: DataTypes.STRING,

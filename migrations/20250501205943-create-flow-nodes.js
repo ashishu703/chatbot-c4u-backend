@@ -24,10 +24,6 @@ module.exports = {
         onUpdate: "CASCADE",
         allowNull: false,
       },
-      type: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
       node_type: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -36,9 +32,6 @@ module.exports = {
         type: Sequelize.JSON,
       },
       position: {
-        type: Sequelize.JSON,
-      },
-      position_absolute: {
         type: Sequelize.JSON,
       },
       uid: {

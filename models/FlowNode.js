@@ -12,11 +12,9 @@ module.exports = (sequelize, DataTypes) => {
     {
       node_id: DataTypes.STRING,
       flow_id: DataTypes.INTEGER,
-      type: DataTypes.STRING,
       node_type: DataTypes.STRING,
       data: DataTypes.JSON,
       position: DataTypes.JSON,
-      position_absolute: DataTypes.JSON,
       uid: DataTypes.STRING,
     },
     {
