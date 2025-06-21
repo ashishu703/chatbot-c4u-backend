@@ -44,8 +44,7 @@ class UserService {
   }
 
   async getUsers(query) {
-    const users = await this.userRepository.paginate(query);
-    return users;
+    return this.userRepository.paginate({ ...query, include: ["plan"] });
   }
 
   async getUser(uid) {

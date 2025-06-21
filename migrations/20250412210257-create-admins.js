@@ -9,23 +9,23 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      name: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       email: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
       password: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
       uid: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
-      role: {
-        type: Sequelize.STRING,
-        defaultValue: "admin",
-        allowNull: true,
-      },
+   
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

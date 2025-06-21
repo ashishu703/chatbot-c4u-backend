@@ -26,8 +26,10 @@ async function paginate(
     include = [],
   } = {}
 ) {
+
+ 
   searchFields = searchFields.split(",");
-  
+
   const offset = (page - 1) * limit;
 
   if (search && searchFields.length > 0) {

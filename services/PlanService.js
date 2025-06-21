@@ -3,6 +3,8 @@ const UserRepository = require("../repositories/UserRepository");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const UserNotFoundException = require("../exceptions/CustomExceptions/UserNotFoundException");
 const InvalidUidOrPlanException = require("../exceptions/CustomExceptions/InvalidUidOrPlanException");
+const InvalidPlanFoundException = require("../exceptions/CustomExceptions/InvalidPlanFoundException");
+const { addDaysToCurrentTimestamp, millisecondsToSeconds } = require("../utils/date.utils");
 
 class PlanService {
   constructor() {
@@ -48,20 +50,19 @@ class PlanService {
     await this.planRepository.deletePlan(id);
   }
 
-  async updateUserPlan(uid, plan) {
-    if (!uid || !plan || !plan.id) {
-      throw new InvalidUidOrPlanException();
-    }
-    const user = await this.userRepository.findByUid(uid);
-    if (!user) {
-      throw new UserNotFoundException();
-    }
-    const updatedUser = await this.userRepository.updatePlan(uid, {
-      id: plan.id,
-      plan_duration_in_days: plan.plan_duration_in_days,
-      is_trial: plan.is_trial,
-    });
-    return updatedUser;
+  async updateUserPlan(uid, planId) {
+    const plan = await this.planRepository.findById(planId);
+
+    if (!plan) throw new InvalidPlanFoundException();
+
+    const planDays = parseInt(plan?.plan_duration_in_days || 0);
+
+    const timeStamp = addDaysToCurrentTimestamp(planDays);
+
+    return this.userRepository.update(
+      { plan_id: plan.id, plan_expiration: timeStamp },
+      { uid }
+    );
   }
 }
 

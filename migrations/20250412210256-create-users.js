@@ -48,6 +48,10 @@ module.exports = {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },
+      plan_expiration: {
+        type: Sequelize.BIGINT,
+        allowNull: true,
+      },
       api_key: {
         type: Sequelize.STRING,
         allowNull: true,

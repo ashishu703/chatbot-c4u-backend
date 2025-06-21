@@ -39,6 +39,10 @@ module.exports = (sequelize, DataTypes) => {
         sourceKey: "uid",
         as: "templets",
       });
+      User.belongsTo(models.Plan, {
+        foreignKey: "plan_id",
+        as: "plan",
+      });
     }
   }
 
@@ -52,6 +56,7 @@ module.exports = (sequelize, DataTypes) => {
       timezone: DataTypes.STRING,
       plan_id: DataTypes.TEXT,
       api_key: DataTypes.STRING,
+      plan_expiration: DataTypes.BIGINT,
     },
     {
       sequelize,

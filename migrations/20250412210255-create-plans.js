@@ -2,45 +2,55 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("chat_widgets", {
+    await queryInterface.createTable("plans", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      unique_id: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      uid: {
-        type: Sequelize.STRING,
-        allowNull: true,
-        references: {
-          model: "users",
-          key: "uid",
-        },
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE",
-      },
       title: {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      whatsapp_number: {
-        type: Sequelize.STRING,
+      short_description: {
+        type: Sequelize.TEXT,
         allowNull: true,
       },
-      logo: {
-        type: Sequelize.STRING,
+      allow_tag: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+      allow_note: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+      allow_chatbot: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+      contact_limit: {
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
-      place: {
-        type: Sequelize.STRING,
+      allow_api: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+      is_trial: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+      price: {
+        type: Sequelize.BIGINT,
         allowNull: true,
       },
-      size: {
-        type: Sequelize.STRING,
+      price_strike: {
+        type: Sequelize.BIGINT,
+        allowNull: true,
+      },
+      plan_duration_in_days: {
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       createdAt: {
@@ -56,6 +66,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("chat_widgets");
+    await queryInterface.dropTable("plans");
   },
 };
