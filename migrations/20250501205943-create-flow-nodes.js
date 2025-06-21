@@ -12,6 +12,7 @@ module.exports = {
       node_id: {
         type: Sequelize.STRING,
         allowNull: false,
+        unique: true,
       },
       flow_id: {
         type: Sequelize.INTEGER,

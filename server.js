@@ -31,8 +31,8 @@ app.use('/api/admin', adminRoute)
 const phonebookRoute = require('./routes/phonebook.routes.js')
 app.use('/api/phonebook', phonebookRoute)
 
-const chat_flowRoute = require('./routes/chat-flow.routes.js')
-app.use('/api/chat_flow', chat_flowRoute)
+const chatFlowRoute = require('./routes/chat-flow.routes.js')
+app.use('/api/chat_flow', chatFlowRoute)
 
 const inboxRoute = require('./routes/inbox.routes.js')
 app.use('/api/inbox', inboxRoute)

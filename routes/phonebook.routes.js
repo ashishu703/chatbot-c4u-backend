@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const PhonebookController = require("../controllers/phonebookController");
 const validateUser = require("../middlewares/user.middleware");
-const { checkPlan, checkContactLimit } = require("../middlewares/plan.middleware");
+const { checkPlan } = require("../middlewares/plan.middleware");
 
 const phonebookController = new PhonebookController();
 
@@ -10,7 +10,6 @@ router.post(
   "/add",
   validateUser,
   checkPlan,
-  checkContactLimit,
   phonebookController.addPhonebook.bind(phonebookController)
 );
 router.get(
@@ -27,14 +26,12 @@ router.post(
   "/import_contacts",
   validateUser,
   checkPlan,
-  checkContactLimit,
   phonebookController.importContacts.bind(phonebookController)
 );
 router.post(
   "/add_single_contact",
   validateUser,
   checkPlan,
-  checkContactLimit,
   phonebookController.addSingleContact.bind(phonebookController)
 );
 router.get(

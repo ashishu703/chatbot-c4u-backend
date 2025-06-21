@@ -16,12 +16,12 @@ module.exports = (sequelize, DataTypes) => {
       Flow.hasMany(models.FlowNode, {
         foreignKey: "flow_id",
         onDelete: "CASCADE",
-        hooks: true,
+        as: "nodes",
       });
       Flow.hasMany(models.FlowEdge, {
         foreignKey: "flow_id",
         onDelete: "CASCADE",
-        hooks: true,
+        as: "edges",
       });
     }
   }

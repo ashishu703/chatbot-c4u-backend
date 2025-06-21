@@ -10,8 +10,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   FlowEdge.init(
     {
-      source_id: DataTypes.STRING,
-      target_id: DataTypes.STRING,
+      source: DataTypes.STRING,
+      target: DataTypes.STRING,
       source_handle: DataTypes.STRING,
       target_handle: DataTypes.STRING,
       edge_id: DataTypes.STRING,

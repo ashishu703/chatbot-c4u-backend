@@ -16,8 +16,8 @@ module.exports = (sequelize, DataTypes) => {
       contact_limit: DataTypes.INTEGER,
       allow_api: DataTypes.BOOLEAN,
       is_trial: DataTypes.BOOLEAN,
-      price: DataTypes.BIGINT,
-      price_strike: DataTypes.BIGINT,
+      price: DataTypes.INTEGER,
+      price_strike: DataTypes.INTEGER,
       plan_duration_in_days: DataTypes.INTEGER,
     },
     {

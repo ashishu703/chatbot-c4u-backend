@@ -3,29 +3,29 @@ const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFi
 const FlowIdException = require("../exceptions/CustomExceptions/FlowIdException");
 const FlowService = require("../services/ChatFlowService");
 const { __t } = require("../utils/locale.utils");
-const {formSuccess} = require("../utils/response.utils");
+const { formSuccess } = require("../utils/response.utils");
 class FlowController {
   flowService;
   constructor() {
     this.flowService = new FlowService();
   }
-   async addFlow(req, res, next) {
+  async addFlow(req, res, next) {
     try {
       const { title, nodes, edges, flowId } = req.body;
-      const user = req.decode;
+      const { uid } = req.decode
 
       if (!title || !nodes || !edges || !flowId) {
         throw new FillAllFieldsException();
       }
 
-     await this.flowService.addFlow({ title, nodes, edges, flowId, user });
-      return formSuccess(res,{ msg: __t("flow_saved") });
+      await this.flowService.addFlow({ title, nodes, edges, flowId, uid });
+      return formSuccess(res, { msg: __t("flow_saved") });
     } catch (err) {
       next(err);
     }
   }
 
-   async getFlows(req, res, next) {
+  async getFlows(req, res, next) {
     try {
       const query = req.query;
       const user = req.decode;
@@ -33,18 +33,18 @@ class FlowController {
         where: { uid: user.uid },
         ...query,
       });
-      return formSuccess(res,{ ...flows });
+      return formSuccess(res, { ...flows });
     } catch (err) {
       next(err);
     }
   }
 
-   async deleteFlow(req, res, next) {
+  async deleteFlow(req, res, next) {
     try {
       const { id, flowId } = req.body;
       const user = req.decode;
-     await this.flowService.deleteFlow(id, flowId, user.uid);
-      return formSuccess(res,{ msg: __t("flow_deleted") });
+      await this.flowService.deleteFlow(id, flowId, user.uid);
+      return formSuccess(res, { msg: __t("flow_deleted") });
     } catch (err) {
       next(err);
     }
@@ -53,40 +53,42 @@ class FlowController {
   async getByFlowId(req, res, next) {
     try {
       const { flowId } = req.body;
+      const { uid } = req.decode
 
       if (!flowId) {
         throw new FlowIdException();
       }
 
-      const { nodes, edges } = await this.flowService.getFlowById(
-        req.decode.uid,
+
+      const flow = await this.flowService.getFlowById(
+        uid,
         flowId
       );
 
-      return formSuccess(res,{ nodes, edges });
+      return formSuccess(res, flow);
     } catch (err) {
       next(err);
     }
   }
 
 
-   async getActivity(req, res, next) {
+  async getActivity(req, res, next) {
     try {
       const { flowId } = req.body;
       const user = req.decode;
       const result = await this.flowService.getActivity(flowId, user.uid);
-      return formSuccess(res,result);
+      return formSuccess(res, result);
     } catch (err) {
       next(err);
     }
   }
 
-   async removeNumberFromActivity(req, res, next) {
+  async removeNumberFromActivity(req, res, next) {
     try {
       const { type, number, flowId } = req.body;
       const user = req.decode;
-    await this.flowService.removeNumberFromActivity(type, number, flowId, user.uid);
-      return formSuccess(res,{msg: __t("number_removed") });
+      await this.flowService.removeNumberFromActivity(type, number, flowId, user.uid);
+      return formSuccess(res, { msg: __t("number_removed") });
     } catch (err) {
       next(err);
     }

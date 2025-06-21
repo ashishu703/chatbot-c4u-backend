@@ -9,19 +9,19 @@ class FlowService {
     this.nodeRepository = new FlowNodeRepository();
     this.edgeRepository = new FlowEdgeRepository();
   }
-  async addFlow({ title, nodes, edges, flowId, user }) {
+  async addFlow({ title, nodes, edges, flowId, uid }) {
 
     const flow = await this.flowRepository.updateOrCreate({
-      uid: user.uid,
+      uid: uid,
       flow_id: flowId,
       title,
     }, {
       flow_id: flowId,
-      uid: user.uid
+      uid: uid
     });
 
     for (const node of nodes) {
-      this.nodeRepository.create({
+      await this.nodeRepository.updateOrCreate({
         "node_id": node.id,
         "flow_id": flow.id,
         "type": node.type,
@@ -29,20 +29,25 @@ class FlowService {
         "data": JSON.stringify(node.data),
         "position": JSON.stringify(node.position),
         "position_absolute": JSON.stringify(node.positionAbsolute),
-        "uid": user.uid,
+        "uid": uid,
+      }, {
+        "uid": uid,
+        "node_id": node.id,
       });
     };
 
     for (const edge of edges) {
-      this.edgeRepository.create({
+      await this.edgeRepository.updateOrCreate({
         "flow_id": flow.id,
         "edge_id": edge.id,
         "source": edge.source,
         "source_handle": edge.sourceHandle,
-        "uid": user.uid,
+        "uid": uid,
         "target": edge.target,
         "target_handle": edge.targetHandle,
-        "uid": user.uid,
+      }, {
+        "uid": uid,
+        "edge_id": edge.id,
       });
     };
 
@@ -58,9 +63,12 @@ class FlowService {
     });
   }
 
-  async getFlowById(id) {
-    return this.flowRepository.find({
-      id
+  async getFlowById(uid, flowId) {
+    return this.flowRepository.findFirst({
+      where: {
+        uid,
+        flow_id: flowId
+      }
     }, ["nodes", "edges"]);
   }
 

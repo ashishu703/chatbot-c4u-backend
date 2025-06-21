@@ -42,11 +42,11 @@ module.exports = {
         defaultValue: false,
       },
       price: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       price_strike: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       plan_duration_in_days: {
