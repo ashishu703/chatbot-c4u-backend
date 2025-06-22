@@ -18,7 +18,9 @@ class ChatService {
   }
 
   async getMyAssignedChats(agent_uid, owner_uid) {
-    const agentChats = await this.agentChatRepository.findByAgentId(agent_uid);
+    const agentChats = await this.agentChatRepository.find({
+  where: { uid: agent_uid }
+});
     if (!agentChats.length) {
       return [];
     }

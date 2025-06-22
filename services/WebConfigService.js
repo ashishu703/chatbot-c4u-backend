@@ -1,5 +1,4 @@
 const PleaseProvideAppNameException = require("../exceptions/CustomExceptions/PleaseProvideAppNameException");
-const WebConfigNotFoundException = require("../exceptions/CustomExceptions/WebConfigNotFoundException");
 const WebConfigRepository = require("../repositories/WebPublicRepository");
 const { getFileExtension } = require("../utils/file.utils");
 const path = require("path");
@@ -92,7 +91,6 @@ class WebConfigService {
       whatsapp_config_id,
     };
 
-    // ✅ Remove undefined values to prevent PostgreSQL errors
     const cleanedData = Object.fromEntries(
       Object.entries(configData).filter(([_, v]) => v !== undefined)
     );

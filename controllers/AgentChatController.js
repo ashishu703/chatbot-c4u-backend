@@ -8,13 +8,6 @@ class AgentChatController {
     this.chatService = new ChatService();
   }
 
-
- 
-
-
-
- 
-
   async getMyAssignedChats(req, res, next) {
     try {
       const chats = await this.chatService.getMyAssignedChats(req.decode.uid, req.owner.uid);
