@@ -21,9 +21,6 @@ class ContactService {
     return await this.contactRepository.create({ email, name, mobile, content });
   }
   async getContactLeads(query) {
-    if (!uid) {
-      throw new UidRequiredException();
-    }
     return await this.contactRepository.paginate(query);
   }
 
