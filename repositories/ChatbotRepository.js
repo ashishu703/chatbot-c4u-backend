@@ -1,4 +1,4 @@
-const { Chatbot, ChatbotChat } = require("../models");
+const { Chatbot, ChatbotChat, SocialAccount, FacebookPage, Chat, Flow, FlowNode, FlowEdge } = require("../models");
 const ChatbotChatRepository = require("./ChatbotChatRepository");
 const Repository = require("./Repository");
 
@@ -92,6 +92,29 @@ class ChatbotRepository extends Repository {
     const chatbot = await this.model.findByPk(chatbotId);
     return chatbot;
   }
+
+
+  async getAssignedBots(uid, chatId) {
+    return this.model.findAll({
+      where: { uid },
+      include: [
+        {
+          model: ChatbotChat,
+          as: "chatbotChats",
+          where: { chat_id: chatId },
+          required: true,
+        }
+      ]
+    });
+  }
+
+  async getGeneralBots(uid) {
+    return this.model.findAll({
+      where: { uid },
+      where: { for_all: true },
+    });
+  }
+
 
 }
 

@@ -32,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "chat_id",
         as: "chatbotChats",
       });
+      Chat.hasOne(models.AgentChat, {
+        foreignKey: "chat_id",
+        as: "agentChat",
+      });
     }
   }
   Chat.init(

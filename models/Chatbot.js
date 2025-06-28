@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       uid: DataTypes.STRING,
       title: DataTypes.STRING,
-      for_all: DataTypes.INTEGER,
+      for_all: DataTypes.BOOLEAN,
       flow_id: DataTypes.INTEGER,
       active: DataTypes.INTEGER,
     },

@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       FlowNode.belongsTo(models.Flow, {
         foreignKey: "flow_id",
+        as: "flow",
       });
     }
   }

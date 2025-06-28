@@ -27,13 +27,10 @@ function convertWebhookReciveMessageToJsonObj(messageObj) {
 }
 
 function convertWebhookMessageToDBMessage(messageObj) {
-  let type = TEXT,
+  let type = messageObj.getType(),
     attchment_url = undefined;
 
-  if (
-    messageObj.hasAttachment()
-  ) {
-    type = messageObj.getAttachmentType();
+  if (messageObj.hasAttachment()) {
     attchment_url = messageObj.getAttachmentUrl();
   }
 

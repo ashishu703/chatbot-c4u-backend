@@ -138,7 +138,7 @@ class WhatsappChatController {
                 "account",
             ]);
 
-            const result = await (new WhatsappChatService(null, chat.account.token)).send(
+            const result = await (new WhatsappChatService(null, chat.account.token)).sendText(
                 chat,
                 {
                     wabaId: chat.account.social_user_id,

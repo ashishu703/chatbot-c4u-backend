@@ -7,10 +7,6 @@ class AgentRepository extends Repository {
     super(Agent);
   }
 
-  async findByEmail(email) {
-    return this.findFirst({ where: { email } });
-  }
-
   async findByOwner(owner_uid) {
     return this.find({ where: { owner_uid } });
   }

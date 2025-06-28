@@ -3,7 +3,7 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class ChatbotChat extends Model {
     static associate(models) {
-      ChatbotChat.belongsTo(models.User, {
+      ChatbotChat.belongsTo(models.Chat, {
         foreignKey: "chat_id",
         as: "chat",
       });

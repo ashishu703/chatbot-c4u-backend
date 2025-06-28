@@ -1,4 +1,5 @@
 const { TEXT, IMAGE, VIDEO, AUDIO, DOCUMENT } = require("../../types/message.types");
+const { REQUEST_API, DISABLE_CHAT_TILL, ASSIGN_AGENT } = require("../../types/specified-messages.types");
 const { dataGet } = require("../../utils/others.utils");
 
 
@@ -24,20 +25,28 @@ class WhatsappMessageDto {
     getMessageText() {
         if (this.isTextMessage())
             return dataGet(this.data, "text.body");
-        else if (
-            this.isImageMessage() ||
-            this.isVideoMessage() ||
-            this.isAudioMessage()
-        )
-            return this.getCaption();
-        else if (this.isDocumentMessage())
-            return this.getFileName();
+        else if (this.isInteractive())
+            return this.getInteractiveTitle();
+        else if (this.hasAttachment())
+            if (this.isDocumentMessage())
+                return this.getFileName();
+            else
+                return this.getCaption();
         return "";
     }
 
 
     getType() {
         return dataGet(this.data, "type");
+    }
+
+    getInteractiveType() {
+        return dataGet(this.data, "interactive.type");
+    }
+
+    getInteractiveTitle() {
+        const intrativeType = this.getInteractiveType();
+        return dataGet(this.data, `interactive.${intrativeType}.title`);
     }
 
     isTextMessage() {
@@ -63,13 +72,33 @@ class WhatsappMessageDto {
     isReaction() {
         return this.getType() === "reaction";
     }
+    isInteractive() {
+        return this.getType() === "interactive";
+    }
+
+    isAction() {
+        const actionName = this.getInteractiveTitle();
+
+        return [
+            REQUEST_API,
+            DISABLE_CHAT_TILL,
+            ASSIGN_AGENT
+        ].includes(actionName) ? true : false
+    }
+
+
 
     getEmoji() {
         return dataGet(this.data, "reaction.emoji");
     }
 
     hasAttachment() {
-        if (this.isImageMessage() || this.isVideoMessage() || this.isAudioMessage() || this.isDocumentMessage())
+        if (
+            this.isImageMessage() ||
+            this.isVideoMessage() ||
+            this.isAudioMessage() ||
+            this.isDocumentMessage()
+        )
             return true;
         return false;
     }

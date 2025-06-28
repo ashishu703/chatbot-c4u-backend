@@ -5,6 +5,7 @@ const WhatsappMessageChangeDto = require("../dtos/Whatsapp/WhatsappMessageChange
 const WhatsappWebhookDto = require("../dtos/Whatsapp/WhatsappWebhookDto");
 const ProfileNotFoundException = require("../exceptions/CustomExceptions/ProfileNotFoundException");
 const SocketHelper = require("../helper/SocketHelper");
+const AgentChatRepository = require("../repositories/AgentChatRepository");
 const ChatRepository = require("../repositories/ChatRepository");
 const MessageRepository = require("../repositories/MessageRepository");
 const SocialAccountRepository = require("../repositories/SocialAccountRepository");
@@ -12,9 +13,11 @@ const { OPEN } = require("../types/chat-status.types");
 const { INCOMING, OUTGOING } = require("../types/conversation-route.types");
 const { PENDING } = require("../types/conversation-status.types");
 const { TEXT, AUDIO, IMAGE, VIDEO, DOCUMENT } = require("../types/message.types");
+const { REQUEST_API, DISABLE_CHAT_TILL, ASSIGN_AGENT } = require("../types/specified-messages.types");
 const { getCurrentTimeStampInSeconds } = require("../utils/date.utils");
 const { convertWebhookMessageToDBMessage } = require("../utils/messages.utils");
 const { dataGet } = require("../utils/others.utils");
+const ChatbotAutomationService = require("./ChatbotAutomationService");
 const ChatIOService = require("./ChatIOService");
 const WhatsappMediaService = require("./WhatsappMediaService");
 
@@ -27,6 +30,7 @@ class WhatsappChatService {
     this.chatRepository = new ChatRepository();
     this.messageRepository = new MessageRepository();
     this.whatsappMediaApi = new WhatsappMediaApi();
+    this.agentChatRepository = new AgentChatRepository();
     this.messageApi = new WhatsappMessageApi(user, accessToken);
   }
 
@@ -140,18 +144,19 @@ class WhatsappChatService {
   async processIncomingMessage(messageObj, chat, whatsappProfile) {
     const chatId = chat.id;
 
-    if (messageObj.isTextMessage() || messageObj.hasAttachment()) {
-      let dbMessageObj;
-      if (messageObj.isTextMessage()) {
-        dbMessageObj = convertWebhookMessageToDBMessage(messageObj);
-      } else if (messageObj.hasAttachment()) {
+    if (messageObj.isReaction()) {
+      await this.processReaction(messageObj);
+    }
+    else {
+      if (messageObj.hasAttachment()) {
         const attachmentId = messageObj.getAttachmentId();
         await this.whatsappMediaApi.initMeta();
         const attachmentUrl = await (new WhatsappMediaService(null, whatsappProfile.token))
           .downloadAndSaveMedia(attachmentId);
         messageObj.setAttachmentUrl(`${backendURI}/meta-media/${attachmentUrl}`);
-        dbMessageObj = convertWebhookMessageToDBMessage(messageObj);
       }
+
+      let dbMessageObj = convertWebhookMessageToDBMessage(messageObj);
 
       const message = await this.messageRepository.createIfNotExists(
         {
@@ -165,6 +170,8 @@ class WhatsappChatService {
           chat_id: chatId,
         }
       );
+
+
       this.emitNewMessageEvent(message, chatId);
       await this.chatRepository.updateLastMessage(
         chatId,
@@ -172,9 +179,7 @@ class WhatsappChatService {
         messageObj.getMessageTimestamp()
       );
       await this.emitUpdateConversationEvent(chat);
-    }
-    else if (messageObj.isReaction()) {
-      await this.processReaction(messageObj);
+      await (new ChatbotAutomationService(message)).initBot();
     }
   }
 
@@ -209,7 +214,9 @@ class WhatsappChatService {
     const agentChat = chat.agentChat ?? null;
 
     if (agentChat) {
-      const agentChats = await this.agentChatRepository.find({ uid: agentChat.uid });
+      const agentChats = await this.agentChatRepository.find({
+        where: { uid: agentChat.uid }
+      });
       const chats = agentChats.map((i) => i?.chat);
       this.socketHelper.pushAgentChats(chats);
     }
@@ -227,26 +234,7 @@ class WhatsappChatService {
     this.socketHelper.pushUpdateDelivery(message);
   }
 
-  async send(chat, { wabaId, senderId, text }) {
 
-    await this
-      .messageApi
-      .setWabaId(wabaId)
-      .initMeta();
-
-    const payload = {
-      to: senderId,
-      type: TEXT,
-      text: {
-        preview_url: true,
-        body: text
-      }
-    };
-    const result = await this.messageApi.send(payload);
-
-
-    return this.storeMessage(chat, result, text);
-  }
 
   async storeMessage(chat, apiResponse, text = "", attchment_url = "", type = TEXT) {
 
@@ -299,6 +287,27 @@ class WhatsappChatService {
     );
     await this.emitUpdateConversationEvent(chat);
     return message;
+  }
+
+  async sendText(chat, { wabaId, senderId, text }) {
+
+    await this
+      .messageApi
+      .setWabaId(wabaId)
+      .initMeta();
+
+    const payload = {
+      to: senderId,
+      type: TEXT,
+      text: {
+        preview_url: true,
+        body: text
+      }
+    };
+
+    await this.send(payload);
+
+    return this.storeMessage(chat, result, text);
   }
 
 
@@ -355,15 +364,20 @@ class WhatsappChatService {
       .initMeta();
 
     const payload = {
-      to: senderId,
       type,
       [type]: {
         link: url,
         caption
       }
     };
-    return this.messageApi.send(payload);
+    return this.send(payload);
   }
+
+  async send(payload) {
+    return this.messageApi.send({ payload });
+  }
+
+
 
 };
 

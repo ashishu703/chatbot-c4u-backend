@@ -1,6 +1,8 @@
 const { Op } = require("sequelize");
-const { Chat } = require("../models");
+const { Chat, ChatbotChat, Chatbot, Flow, FlowNode, FlowEdge, FacebookPage, SocialAccount } = require("../models");
 const Repository = require("./Repository");
+const { ACTIVE } = require('../types/chatbot-status.types');
+
 
 class ChatRepository extends Repository {
   constructor() {
@@ -64,8 +66,47 @@ class ChatRepository extends Repository {
     return this.update({ chat_note: note }, { chat_id });
   }
   async updateTags(chat_id, tags) {
-    
+
     return this.update({ chat_tags: tags }, { chat_id });
+  }
+
+  async findWithChatbotDependencies(chatId) {
+    return this.findFirst({ where: { id: chatId } }, [
+      { model: FacebookPage, as: "page" },
+      { model: SocialAccount, as: "account", required: true },
+      {
+        model: ChatbotChat,
+        as: "chatbotChats",
+        include: [{
+          model: Chatbot,
+          as: "chatbot",
+          where: { active: ACTIVE },
+          required: true,
+          include: [{
+            model: Flow,
+            as: "flow",
+            include: [
+              {
+                model: FlowNode,
+                as: "nodes",
+                required: true,
+              },
+              {
+                model: FlowEdge,
+                as: "edges",
+                required: true,
+              },
+            ]
+          }],
+        }],
+      },
+    ]);
+  }
+
+  async findWithAccount(id) {
+    return this.findFirst({
+      where: { id }
+    },  ['account'] );
   }
 }
 

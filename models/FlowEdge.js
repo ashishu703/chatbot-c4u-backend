@@ -5,6 +5,17 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       FlowEdge.belongsTo(models.Flow, {
         foreignKey: "flow_id",
+        as: "flow",
+      });
+      FlowEdge.belongsTo(models.FlowNode, {
+        foreignKey: "source",
+        targetKey: "node_id",
+        as: "sourceNode",
+      });
+      FlowEdge.belongsTo(models.FlowNode, {
+        foreignKey: "target",
+        targetKey: "node_id",
+        as: "targetNode",
       });
     }
   }

@@ -1,4 +1,4 @@
-const FlowRepository = require("../repositories/chatFlowRepository");
+const FlowRepository = require("../repositories/FlowRepository");
 const FlowNotfoundException = require("../exceptions/customExceptions/FlowNotfoundException");
 const FlowEdgeRepository = require("../repositories/FlowEdgeRepository");
 const FlowNodeRepository = require("../repositories/FlowNodeRepository");

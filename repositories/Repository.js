@@ -1,11 +1,11 @@
 const { Op, literal } = require("sequelize");
 const paginate = require("../utils/paginate.utils");
 class Repository {
-  constructor(model) {
-    this.model = model;
-  }
+    constructor(model) {
+        this.model = model;
+    }
 
-  async create(data) {
+    async create(data) {
         const record = await this.model.create(data);
         return record.toJSON();
     }
@@ -32,7 +32,7 @@ class Repository {
             ...condition,
             include: relations
         });
-    
+
         return records.map(record => record.toJSON());
     }
 
@@ -40,8 +40,12 @@ class Repository {
         return this.model.count(condition);
     }
 
+    async getAgentByEmail(owner_uid, email) {
+        return this.model.findOne({ where: { email, owner_uid } });
+    }
+
     async findFirst(condition = {}, relations = []) {
-  
+
         const record = await this.model.findOne({
             ...condition,
             include: relations
@@ -84,17 +88,17 @@ class Repository {
         return records.map(record => record.toJSON());
     }
 
-  async createIfNotExists(data, uniqueKeys = {}) {
-    const [record, created] = await this.model.findOrCreate({
-      where: uniqueKeys,
-      defaults: data,
-    });
-    return record.toJSON();
-  }
+    async createIfNotExists(data, uniqueKeys = {}) {
+        const [record, created] = await this.model.findOrCreate({
+            where: uniqueKeys,
+            defaults: data,
+        });
+        return record.toJSON();
+    }
 
-  async paginate(query) {
-   return paginate(this.model, { ...query });
-  }
+    async paginate(query) {
+        return paginate(this.model, { ...query });
+    }
 }
 
 module.exports = Repository;
