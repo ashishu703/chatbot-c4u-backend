@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const TranslationController = require("../controllers/TranslationController");
-const ContactController = require("../controllers/ContactController");
+const ContactFormController = require("../controllers/ContactFormController");
 const WebConfigController = require("../controllers/WebConfigController");
 const ThemeController = require("../controllers/ThemeController");
 const WaLinkController = require("../controllers/WaLinkController");
 const adminMiddleware = require("../middlewares/admin.middleware");
 
-const contactController = new ContactController();
+const contactFormController = new ContactFormController();
 const translationController = new TranslationController();
 const webConfigController = new WebConfigController();
 const themeController = new ThemeController();
@@ -40,7 +40,7 @@ router.post(
 // Contact form
 router.post(
   "/submit_contact_form",
-  contactController.submitContactForm.bind(contactController)
+  contactFormController.submitContactForm.bind(contactFormController)
 );
 
 // Web config

@@ -2,11 +2,9 @@ const bcrypt = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const AgentRepository = require("../repositories/AgentRepository");
 const AgentTaskRepository = require("../repositories/AgentTaskRepository");
-const { __t } = require("../utils/locale.utils");
 const EmailAlreadyInUseException = require("../exceptions/CustomExceptions/EmailAlreadyInUseException");
 const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException");
 const AgentNotFoundException = require("../exceptions/CustomExceptions/AgentNotFoundException");
-const { COMPLETED } = require("../types/tasks.types");
 const { AGENT } = require("../types/roles.types");
 const { tokenExpirationTime, passwordEncryptionRounds, jwtKey } = require("../config/app.config");
 const { generateUid, encryptPassword } = require("../utils/auth.utils");
@@ -70,7 +68,7 @@ async addAgent({ owner_uid, name, password, email, mobile, comments }) {
   }
 
   async getAgentById(uid) {
-    const agent = await this.agentRepository.findById(uid);
+    const agent = await this.agentRepository.findByUid(uid);
     if (!agent) {
       throw new AgentNotFoundException();
     }

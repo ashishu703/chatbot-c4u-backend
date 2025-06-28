@@ -12,7 +12,7 @@ class OrderController {
     try {
       const query = req.query;
       const orders = await this.orderRepository.getOrders(query);
-      return formSuccess(res,{ data: orders });
+      return formSuccess(res, orders);
     } catch (err) {
       next(err);
     }

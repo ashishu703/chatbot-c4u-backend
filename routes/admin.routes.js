@@ -10,7 +10,7 @@ const FaqController = require("../controllers/FaqController");
 const PageController = require("../controllers/PageController");
 const TestimonialController = require("../controllers/TestimonialController");
 const OrderController = require("../controllers/OrderController");
-const ContactController = require("../controllers/ContactController");
+const ContactFormController = require("../controllers/ContactFormController");
 const SmtpController = require("../controllers/SmtpController");
 const DashboardController = require("../controllers/DashboardController");
 const SocialController = require("../controllers/SocialController");
@@ -18,7 +18,7 @@ const LinkController = require("../controllers/LinkController");
 
 const adminController = new AdminController();
 const planController = new PlanController();
-const contactController = new ContactController();
+const contactFormController = new ContactFormController();
 const testimonialController = new TestimonialController();
 const userController = new UserController();
 const pageController = new PageController();
@@ -181,12 +181,12 @@ router.get(
 router.get(
   "/get_contact_leads",
   adminValidator,
-  contactController.getContactLeads.bind(contactController)
+  contactFormController.getContactLeads.bind(contactFormController)
 );
 router.post(
   "/del_contact_entry",
   adminValidator,
-  contactController.deleteContactEntry.bind(contactController)
+  contactFormController.deleteContactEntry.bind(contactFormController)
 );
 
 router.get(
