@@ -1,22 +1,22 @@
-const RoomRepository = require("../repositories/RoomRepository");
-const { getIOInstance } = require("../socket");
+const { getIOInstance } = require("../utils/socket.utils");
+
 
 class IOService {
   io;
-  uid;
-  room;
-  constructor(uid) {
+  constructor() {
+
+  }
+
+  initIO() {
     this.io = getIOInstance();
-    this.uid = uid;
-    this.roomRepository = new RoomRepository();
   }
 
-  async initSocket() {
-    this.room = await this.roomRepository.findByUserId(this.uid);
+
+
+  async emit(socketId, event, data) {
+    this.io.to(socketId).emit(event, data);
   }
 
-  async emit(event, data) {
-    this.io.to(this.room?.socket_id).emit(event, data);
-  }
+
 };
 module.exports = IOService

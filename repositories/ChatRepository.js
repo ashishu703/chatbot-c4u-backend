@@ -62,6 +62,14 @@ class ChatRepository extends Repository {
       });
   }
 
+  async findInboxChatsWithIds(ids, query = {}) {
+    return this.model.findAll(
+      {
+        where: { id: { [Op.in]: ids } },
+        include: ["lastMessage", "page", "account"],
+      });
+  }
+
   async updateNote(chat_id, note) {
     return this.update({ chat_note: note }, { chat_id });
   }
@@ -103,10 +111,10 @@ class ChatRepository extends Repository {
     ]);
   }
 
-  async findWithAccount(id) {
+  async findWithAccountAndDisablity(id) {
     return this.findFirst({
       where: { id }
-    },  ['account'] );
+    }, ['account', 'disablity']);
   }
 }
 

@@ -1,5 +1,6 @@
 const { SENT, OPEN } = require("../types/conversation-status.types");
-const { TEXT } = require("../types/message.types");
+const { BUTTON, BUTTON_REPLY, LIST_REPLY } = require("../types/message-interactive.types");
+const { TEXT, INTERACTIVE } = require("../types/message.types");
 const { MESSANGER, INSTAGRAM } = require("../types/social-platform-types");
 
 function convertWebhookReciveMessageToJsonObj(messageObj) {
@@ -98,10 +99,57 @@ function combineNames({ first_name, last_name }) {
   return `${first_name} ${last_name}`;
 }
 
+
+function whatsappMessageDtoToSaveableBody(dto) {
+  if (dto.isTextMessage()) {
+    return {
+      text: dto.getMessageText(),
+      reaction: "",
+    }
+  } else if (dto.hasAttachment()) {
+    const caption = dto.getCaption();
+    const fileName = dto.getFileName();
+    const link = dto.getAttachmentUrl() ?? dto.getOriginalLink();
+    return {
+      text: caption,
+      fileName,
+      attchment_url: link,
+      reaction: "",
+    }
+  } else if (dto.isInteractive()) {
+    return { ...dto.getMainContentBody(), reaction: "" }
+  }
+  return {};
+}
+
+function extractTextFromWhatsappMessage(message) {
+  const { body, type } = message;
+
+  switch (type) {
+    case TEXT:
+      return body.text;
+    case INTERACTIVE:
+      const {
+        type: interactiveType
+      } = body;
+      switch (interactiveType) {
+        case BUTTON_REPLY:
+          return body.button_reply?.title;
+        case LIST_REPLY:
+          return body.list_reply?.title;
+      }
+  }
+
+
+  return "";
+}
+
 module.exports = {
   convertWebhookReciveMessageToJsonObj,
   convertMessangerWebhookToDBChatCreateObject,
   convertInstagramWebhookToDBChatCreateObject,
   convertWebhookToDBChatUpdateObject,
   convertWebhookMessageToDBMessage,
+  whatsappMessageDtoToSaveableBody,
+  extractTextFromWhatsappMessage,
 };

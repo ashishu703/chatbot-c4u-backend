@@ -388,6 +388,10 @@ module.exports = class CustomExceptionMessages {
         message: __t("user_already_exists"),
         statusCode: 401,
       },
+      ChatDisabledException: {
+        message: __t("chat_disabled"),
+        statusCode: 401,
+      },
     }[type];
   }
 };

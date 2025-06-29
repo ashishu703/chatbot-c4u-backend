@@ -36,6 +36,20 @@ class AgentChatRepository extends Repository {
   async findByAgentId(uid) {
     return this.find({ where: { uid } }, ["chat"]);
   }
+
+  async findWithInboxChats(uid) {
+    return this.find({
+      where: {
+        uid
+      },
+      include: [
+        {
+          model: Chat,
+          include: ["lastMessage", "page", "account"],
+        },
+      ],
+    });
+  }
 }
 
 module.exports = AgentChatRepository;

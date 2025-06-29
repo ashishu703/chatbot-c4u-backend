@@ -18,6 +18,10 @@ class WhatsappMessageDto {
         return this.data;
     }
 
+    getMainContentBody() {
+        return dataGet(this.data, `${this.getType()}`, {});
+    }
+
     getId() {
         if (this.isReaction())
             return dataGet(this.data, "reaction.message_id");
@@ -120,6 +124,11 @@ class WhatsappMessageDto {
 
     getAttachmentUrl() {
         return this.attachmentUrl
+    }
+
+    getOriginalLink() {
+        const type = this.getType();
+        return dataGet(this.data, `${type}.link`);
     }
 
     getAttachmentType() {

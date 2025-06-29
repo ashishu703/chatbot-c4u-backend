@@ -165,5 +165,6 @@
     "please_provide_app_name": "Veuillez fournir le nom de l'application",
     "web_config_not_found": "Configuration web non trouvée",
     "profile_not_found": "Profile not found",
-    "page_not_found": "Page non trouvée"
+    "page_not_found": "Page non trouvée",
+    "chat_disabled": "Chat est disabled"
 }

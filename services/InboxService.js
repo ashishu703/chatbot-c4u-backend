@@ -14,7 +14,6 @@ const {
   updateMetaTempletInMsg,
   getUserPlanDays,
 } = require("../functions/function");
-const { getIOInstance } = require("../socket");
 const UserPlanExpiredException = require("../exceptions/CustomExceptions/UserPlanExpiredException");
 const PhoneIdMismatchException = require("../exceptions/CustomExceptions/PhoneIdMismatchException");
 const TokenNotVerifiedException = require("../exceptions/CustomExceptions/TokenNotVerifiedException");
@@ -250,7 +249,7 @@ class InboxService {
   }
 
   async getAssignedChatAgent(owner_uid, chat_id) {
-    const agentChat = await this.agentChatRepository.find(
+    const agentChat = await this.agentChatRepository.findFirst(
       {
         where: {
           owner_uid,
@@ -260,12 +259,10 @@ class InboxService {
       ["agent"]
     );
 
-    if (!agentChat?.agent) {
-      return {};
-    }
+    if (!agentChat) return null
 
     return {
-      ...agent,
+      ...agentChat.agent,
       chat_id: agentChat.chat_id,
       owner_uid: agentChat.owner_uid,
     };
@@ -275,7 +272,7 @@ class InboxService {
     await this.agentChatRepository.delete({ owner_uid, uid, chat_id });
   }
 
-   async updateAgentInChat(owner_uid, agentUid, chat_id) {
+  async updateAgentInChat(owner_uid, agentUid, chat_id) {
     if (agentUid) {
       await this.agentChatRepository.deleteByChatId(owner_uid, chat_id);
       await this.agentChatRepository.create({

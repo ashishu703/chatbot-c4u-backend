@@ -1,11 +1,11 @@
-const WhatsappChatService = require("../services/WhatsappChatService");
+const WhatsappWebhookService = require("../services/WhatsappWebhookService");
 const { verifyMetaWebhook } = require("../utils/facebook.utils");
 const { formSuccess } = require("../utils/response.utils");
 
 
 class WhatsappWebhookController {
     constructor() {
-        this.whatsappWebhookService = new WhatsappChatService();
+        this.whatsappWebhookService = new WhatsappWebhookService();
     }
     async handleWebhook(req, res, next) {
         try {

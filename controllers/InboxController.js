@@ -123,6 +123,7 @@ class InboxController {
     try {
       const { chatId } = req.body;
       const agent = await this.inboxService.getAssignedChatAgent(req.decode.uid, chatId);
+
       return formSuccess(res, { data: agent });
     } catch (err) {
       next(err);

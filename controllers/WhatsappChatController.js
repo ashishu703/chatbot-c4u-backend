@@ -154,26 +154,6 @@ class WhatsappChatController {
         }
     }
 
-    // async sendMetaTemplate(req, res, next) {
-    //     try {
-    //         const { template, senderId, toName, chatId, example } = req.body;
-    //         const user = req.decode;
-    //         if (!template) {
-    //             throw new ProvideTemplateException();
-    //         }
-    //         await this.inboxService.sendMetaTemplate(user.uid, {
-    //             template,
-    //             senderId,
-    //             toName,
-    //             chatId,
-    //             example,
-    //         });
-    //         return formSuccess(res, { msg: __t(template_message_sent) });
-    //     } catch (err) {
-    //         next(err);
-    //     }
-    // }
-
 
 }
 
