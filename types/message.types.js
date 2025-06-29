@@ -5,4 +5,6 @@ module.exports = {
     FILE: 'file',
     DOCUMENT: 'document',
     AUDIO: 'audio',
+    INTERACTIVE: 'interactive',
+    REACTION: 'reaction',
 };

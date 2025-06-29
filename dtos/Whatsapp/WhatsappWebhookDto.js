@@ -2,7 +2,7 @@ const { dataGet } = require("../../utils/others.utils");
 const WhatsappMessageChangeDto = require("./WhatsappMessageChangeDto");
 
 class WhatsappWebhookDto {
-    constructor(data) {
+    constructor(data = {}) {
         this.data = data;
     }
 

@@ -3,7 +3,7 @@ const { createChatId } = require("../../utils/facebook.utils");
 const { dataGet } = require("../../utils/others.utils");
 
 class InstagramMessagesDto {
-    constructor(data) {
+    constructor(data = {}) {
         this.data = data;
     }
 

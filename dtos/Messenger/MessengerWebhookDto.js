@@ -2,7 +2,7 @@ const { dataGet } = require("../../utils/others.utils");
 const MessengerMessagesDto = require("./MessengerMessagesDto");
 const MessengerMessageChangeDto = require("./MessengerMessageChangeDto");
 class MessengerWebhookDto {
-    constructor(data) {
+    constructor(data = {}) {
         this.data = data;
     }
 

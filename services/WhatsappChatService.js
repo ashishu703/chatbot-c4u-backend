@@ -1,7 +1,6 @@
 const WhatsappMediaApi = require("../api/Whatsapp/WhatsappMediaApi");
 const WhatsappMessageApi = require("../api/Whatsapp/WhatsappMessageApi");
 const { backendURI } = require("../config/app.config");
-const WhatsappMessageChangeDto = require("../dtos/Whatsapp/WhatsappMessageChangeDto");
 const WhatsappWebhookDto = require("../dtos/Whatsapp/WhatsappWebhookDto");
 const ProfileNotFoundException = require("../exceptions/CustomExceptions/ProfileNotFoundException");
 const SocketHelper = require("../helper/SocketHelper");

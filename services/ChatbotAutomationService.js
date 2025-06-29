@@ -8,6 +8,8 @@ const WhatsappMessageApi = require("../api/Whatsapp/WhatsappMessageApi");
 const { ASSIGN_AGENT, DISABLE_CHAT_TILL, REQUEST_API } = require("../types/specified-messages.types");
 const DisabledChatRepository = require("../repositories/DisabledChatRepository");
 const { millisecondsToSeconds } = require("../utils/date.utils");
+const fetch = require("node-fetch");
+const WhatsappMessageDto = require("../dtos/Whatsapp/WhatsappMessageDto");
 
 class ChatbotAutomationService {
 
@@ -76,7 +78,7 @@ class ChatbotAutomationService {
       } else if (text === DISABLE_CHAT_TILL) {
         this.disableChatWithEdge(edge);
       } else if (text === REQUEST_API) {
-        
+        this.requestApiWithEdge(edge);
       } else {
         await this.respondWithEdge(edge);
       }
@@ -89,17 +91,22 @@ class ChatbotAutomationService {
 
   async respondWithEdge(edge) {
     const { targetNode } = edge;
-    const { sender_id: senderId } = this.chat;
     if (targetNode) {
       const { msgContent } = targetNode.data;
-      await this.initApi();
-      await this.messageApi.send({
-        ...msgContent,
-        to: senderId
-      });
+      await this.send(msgContent);
     }
     else
-      console.log(`No target node found for message: ${text} `);
+      console.log(`No target node found for message:  `);
+  }
+
+
+  async send(payload) {
+    await this.initApi();
+    const { sender_id: senderId } = this.chat;
+    return this.messageApi.send({
+      ...payload,
+      to: senderId
+    });
   }
 
   async assignAgentWithEdge(edge) {
@@ -116,11 +123,10 @@ class ChatbotAutomationService {
       }
       else console.log(`Agent not found: ${agentEmail}`);
     }
-    else console.log(`No target node found for message: ${text} `);
+    else console.log(`No target node found for message:  `);
   }
 
   async disableChatWithEdge(edge) {
-
     const { targetNode } = edge;
     const { chat_id: chatId } = this.message;
 
@@ -133,7 +139,42 @@ class ChatbotAutomationService {
       }, { chat_id: chatId });
       console.log(`Chat disabled: ${chatId}`);
     }
-    else console.log(`No target node found for message: ${text} `);
+    else console.log(`No target node found for message:  `);
+  }
+
+  async requestApiWithEdge(edge) {
+
+    const { targetNode, flow_id: flowId } = edge;
+
+    if (targetNode) {
+      const { node_id: nodeId, data: nodeData } = targetNode;
+      const { type, url, headers } = nodeData.msgContent;
+
+      const requestHeader = headers.reduce((acc, { name, value }) => {
+        acc[name] = value;
+        return acc;
+      }, {});;
+
+      fetch(url, { method: type, headers: requestHeader }).then(async (response) => {
+        const data = await response.json();
+        const responseEdge = await this.edgeRepository.findEdgeUsingSourceWithTargetNode(flowId, nodeId);
+        if (responseEdge && responseEdge.targetNode) {
+          const { msgContent } = responseEdge.targetNode.data;
+
+          const responseContent = (new WhatsappMessageDto(msgContent))
+            .applyVariables(data)
+            .getContent();
+
+          await this.send(responseContent);
+
+        }
+        else console.log(`No target node found for message:  `);
+      }).catch(error => {
+        console.log("Chatbot API Failed: ", error);
+      });
+
+    }
+    else console.log(`No target node found for message:  `);
   }
 
 };

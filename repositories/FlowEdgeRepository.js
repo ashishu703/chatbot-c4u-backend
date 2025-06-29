@@ -20,6 +20,16 @@ class FlowEdgeRepository extends Repository {
     });
   }
 
+  async findEdgeUsingSourceWithTargetNode(flowId, sourceId) {
+    return this.model.findOne({
+      where: {
+        flow_id: flowId,
+        source: sourceId,
+      },
+      include: ["targetNode"],
+    });
+  }
+
 
   async findFirstEdgeWithTargetNode(flowId) {
     return this.model.findOne({

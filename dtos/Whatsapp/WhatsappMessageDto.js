@@ -1,15 +1,21 @@
-const { TEXT, IMAGE, VIDEO, AUDIO, DOCUMENT } = require("../../types/message.types");
+const { LIST, BUTTON } = require("../../types/message-interactive.types");
+const { TEXT, IMAGE, VIDEO, AUDIO, DOCUMENT, INTERACTIVE, REACTION } = require("../../types/message.types");
 const { REQUEST_API, DISABLE_CHAT_TILL, ASSIGN_AGENT } = require("../../types/specified-messages.types");
+const { replacePlaceholders } = require("../../utils/flow-nodes.utils");
 const { dataGet } = require("../../utils/others.utils");
 
 
 class WhatsappMessageDto {
-    constructor(data) {
+    constructor(data = {}) {
         this.data = data;
     }
 
     getFrom() {
         return dataGet(this.data, "from");
+    }
+
+    getContent() {
+        return this.data;
     }
 
     getId() {
@@ -28,10 +34,7 @@ class WhatsappMessageDto {
         else if (this.isInteractive())
             return this.getInteractiveTitle();
         else if (this.hasAttachment())
-            if (this.isDocumentMessage())
-                return this.getFileName();
-            else
-                return this.getCaption();
+            return this.getCaption();
         return "";
     }
 
@@ -70,10 +73,10 @@ class WhatsappMessageDto {
     }
 
     isReaction() {
-        return this.getType() === "reaction";
+        return this.getType() === REACTION;
     }
     isInteractive() {
-        return this.getType() === "interactive";
+        return this.getType() === INTERACTIVE;
     }
 
     isAction() {
@@ -93,14 +96,7 @@ class WhatsappMessageDto {
     }
 
     hasAttachment() {
-        if (
-            this.isImageMessage() ||
-            this.isVideoMessage() ||
-            this.isAudioMessage() ||
-            this.isDocumentMessage()
-        )
-            return true;
-        return false;
+        return [IMAGE, VIDEO, AUDIO, DOCUMENT].includes(this.getType());
     }
 
     getAttachmentId() {
@@ -128,6 +124,82 @@ class WhatsappMessageDto {
 
     getAttachmentType() {
         return this.getType()
+    }
+
+    applyVariables(variables) {
+        const type = this.getType();
+        switch (type) {
+            case TEXT:
+                this.applyTextVariables(variables);
+                break;
+            case VIDEO:
+                this.applyVideoVariables(variables);
+                break;
+            case IMAGE:
+                this.applyImageVariables(variables);
+                break;
+            case DOCUMENT:
+                this.applyDocumentVariables(variables);
+                break;
+            case AUDIO:
+                this.applyAudioVariables(variables);
+                break;
+            case INTERACTIVE:
+                this.applyInteractiveVariables(variables);
+                break;
+            default:
+                break;
+        }
+        return this;
+    }
+
+
+    applyInteractiveVariables(variables) {
+        const type = this.getInteractiveType();
+        switch (type) {
+            case LIST:
+                this.applyListInteractiveVariables(variables);
+                break;
+            case BUTTON:
+                this.applyButtonInteractiveVariables(variables);
+                break;
+            default:
+                break;
+        }
+    }
+
+    applyListInteractiveVariables(variables) {
+        this.data.interactive.header.text = replacePlaceholders(this.data.interactive.header.text, variables);
+        this.data.interactive.body.text = replacePlaceholders(this.data.interactive.body.text, variables);
+        this.data.interactive.footer.text = replacePlaceholders(this.data.interactive.footer.text, variables);
+    }
+
+    applyButtonInteractiveVariables(variables) {
+        this.data.interactive.body.text = replacePlaceholders(this.data.interactive.body.text, variables);
+    }
+
+
+    applyTextVariables(variables) {
+        this.data.text.body = replacePlaceholders(this.data.text.body, variables);
+    }
+
+    applyVideoVariables(variables) {
+        this.data.video.caption = replacePlaceholders(this.data.video.caption, variables);
+        this.data.video.link = replacePlaceholders(this.data.video.link, variables);
+    }
+
+    applyImageVariables(variables) {
+        this.data.image.caption = replacePlaceholders(this.data.image.caption, variables);
+        this.data.image.link = replacePlaceholders(this.data.image.link, variables);
+    }
+
+    applyDocumentVariables(variables) {
+        this.data.document.caption = replacePlaceholders(this.data.document.caption, variables);
+        this.data.document.link = replacePlaceholders(this.data.document.link, variables);
+    }
+
+    applyAudioVariables(variables) {
+        this.data.audio.link = replacePlaceholders(this.data.audio.link, variables);
     }
 
 }

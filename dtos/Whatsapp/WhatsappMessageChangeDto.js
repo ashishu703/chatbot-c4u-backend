@@ -5,7 +5,7 @@ const WhatsappMessageDto = require("./WhatsappMessageDto");
 const WhatsappMessageStatusDto = require("./WhatsappMessageStatusDto");
 
 class WhatsappMessageChangeDto {
-    constructor(data) {
+    constructor(data = {}) {
         this.data = data;
     }
 

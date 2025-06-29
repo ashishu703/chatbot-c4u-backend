@@ -3,7 +3,7 @@ const InstagramMessageChangeDto = require("./InstagramMessageChangeDto");
 const InstagramMessagesDto = require("./InstagramMessagesDto");
 
 class InstagramWebhookDto {
-    constructor(data) {
+    constructor(data = {}) {
         this.data = data;
     }
 

@@ -3,7 +3,7 @@ const { dataGet } = require("../../utils/others.utils");
 
 
 class WhatsappMessageStatusDto {
-    constructor(data) {
+    constructor(data = {}) {
         this.data = data;
     }
 
