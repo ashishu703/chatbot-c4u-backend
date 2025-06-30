@@ -1,3 +1,4 @@
+const moment = require("moment-timezone");
 function addDaysToCurrentTimestamp(days) {
   const currentTimestamp = Date.now();
   const millisecondsToAdd = parseInt(days || 0) * 24 * 60 * 60 * 1000;
@@ -38,8 +39,16 @@ function getNumberOfDaysFromTimestamp(timestamp) {
   return Math.ceil((timestamp - currentTimestamp) / millisecondsInADay);
 }
 
+function hasDatePassedInTimezone(timezone, date) {
+  const momentDate = moment.tz(date, timezone);
+  const currentMoment = moment.tz(timezone);
+  return momentDate.isBefore(currentMoment);
+}
+
+
 module.exports = {
   addDaysToCurrentTimestamp,
+  hasDatePassedInTimezone,
   secondsToMilliseconds,
   millisecondsToSeconds,
   getNumberOfDaysFromTimestamp,

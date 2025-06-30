@@ -7,7 +7,7 @@ const { INCOMING } = require("../types/conversation-route.types");
 const WhatsappMessageApi = require("../api/Whatsapp/WhatsappMessageApi");
 const { ASSIGN_AGENT, DISABLE_CHAT_TILL, REQUEST_API } = require("../types/specified-messages.types");
 const DisabledChatRepository = require("../repositories/DisabledChatRepository");
-const { millisecondsToSeconds } = require("../utils/date.utils");
+const { millisecondsToSeconds, hasDatePassedInTimezone, secondsToMilliseconds } = require("../utils/date.utils");
 const fetch = require("node-fetch");
 const WhatsappMessageDto = require("../dtos/Whatsapp/WhatsappMessageDto");
 const WhatsappChatService = require("./WhatsappChatService");
@@ -32,15 +32,14 @@ class ChatbotAutomationService {
     this.chat = chat;
     this.account = chat.account;
     const disablity = chat.disablity;
-
     this.checkIfChatIsDisabled(disablity);
-
   }
 
   checkIfChatIsDisabled(disablity) {
     if (disablity) {
-      
-      throw new ChatDisabledException();
+      const { timezone, timestamp } = disablity;
+      if (!hasDatePassedInTimezone(timezone, secondsToMilliseconds(timestamp)))
+        throw new ChatDisabledException();
     }
   }
 
@@ -67,7 +66,10 @@ class ChatbotAutomationService {
         }
       }
     } catch (error) {
-      console.error(error);
+      if (error instanceof ChatDisabledException)
+        console.log("Chat Disabled");
+      else
+        console.error(error);
     }
   }
 
