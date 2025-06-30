@@ -1,0 +1,88 @@
+"use strict";
+
+const { PENDING } = require('../types/broadcast-delivery-status.types');
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable("broadcast_logs", {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER,
+      },
+      uid: {
+        type: Sequelize.STRING,
+        allowNull: true,
+        references: {
+          model: "users",
+          key: "uid",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
+      broadcast_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "broadcasts",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      },
+      templet_name: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      is_read: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+      meta_msg_id: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      sender_id: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      send_to: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      delivery_status: {
+        type: Sequelize.STRING,
+        defaultValue: PENDING,
+      },
+      delivery_time: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      err: {
+        type: Sequelize.JSON,
+        allowNull: true,
+      },
+      example: {
+        type: Sequelize.JSON,
+        allowNull: true,
+      },
+      contact: {
+        type: Sequelize.JSON,
+        allowNull: true,
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+      },
+    });
+  },
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable("broadcast_logs");
+  },
+};
