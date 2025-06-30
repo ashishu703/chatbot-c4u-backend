@@ -1,10 +1,9 @@
 const AgentService = require("../services/AgentService");
-const { isValidEmail } = require("../functions/function");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException");
 const {formSuccess} = require("../utils/response.utils");
 const { __t } = require("../utils/locale.utils");
-const { where } = require("sequelize");
+const { isValidEmail } = require("../utils/validation.utils");
 class AgentController {
   constructor() {
     this.agentService = new AgentService();

@@ -1,4 +1,3 @@
-const { convertNumberToRandomString } = require("../functions/function");
 const WebPublicRepository = require("../repositories/WebPublicRepository");
 const FacebookException = require("./../exceptions/FacebookException");
 

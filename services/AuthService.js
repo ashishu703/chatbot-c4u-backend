@@ -1,7 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
-const { isValidEmail } = require("../functions/function");
 const { generateToken, comparePassword } = require("../utils/auth.utils");
 const { User } = require("../models");
 const WebPublicRepository = require("../repositories/WebPublicRepository");
@@ -26,6 +25,7 @@ const {
   generateUid,
   encryptPassword,
 } = require("../utils/auth.utils");
+const { isValidEmail } = require("../utils/validation.utils");
 
 class AuthService {
   constructor() {

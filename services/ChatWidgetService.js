@@ -1,11 +1,11 @@
 const randomstring = require("randomstring");
 const path = require("path");
 const ChatWidgetRepository = require("../repositories/ChatWidgetRepository");
-const getFileExtension = require("../functions/function");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const LogoRequiredException = require("../exceptions/CustomExceptions/LogoRequiredException");
 const { UPLOAD } = require("../types/widget-logo.types");
 const { generateUid } = require("../utils/auth.utils");
+const { getFileExtension } = require("../utils/validation.utils");
 class ChatWidgetService {
 
   constructor() {

@@ -1,8 +1,8 @@
-const { sendEmail } = require("../functions/function");
 const SmtpRepository = require("../repositories/smtpRepository");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const { getRecoverEmailTemplate, getWelcomeEmailTemplate } = require("../emails/returnEmails");
 const WebPublicRepository = require("../repositories/WebPublicRepository");
+const { sendEmail } = require("../utils/email.utils");
 class EmailService {
   smtpConfig;
   appConfig;

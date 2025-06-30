@@ -1,11 +1,9 @@
-const randomstring = require("randomstring");
 const UserRepository = require("../repositories/UserRepository");
 const AdminRepository = require("../repositories/AdminRepository");
 const MetaApiRepository = require("../repositories/metaApiRepository");
 const ContactRepository = require("../repositories/ContactRepository");
 const BroadcastRepository = require("../repositories/broadcastRepository");
 const BroadcastLogRepository = require("../repositories/broadcastLogRepository");
-const { getMetaNumberDetail } = require("../functions/function");
 const MetaApiKeysNotfoundException = require("../exceptions/CustomExceptions/MetaApiKeysNotfoundException");
 const AdminNotFoundException = require("../exceptions/CustomExceptions/AdminNotFoundException");
 const PhonebookNoMobileException = require("../exceptions/CustomExceptions/PhonebookNoMobileException");

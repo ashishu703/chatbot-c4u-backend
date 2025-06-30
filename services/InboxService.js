@@ -1,25 +1,9 @@
-const path = require("path");
 const MetaApiRepository = require("../repositories/metaApiRepository");
 const UserRepository = require("../repositories/UserRepository");
 const ChatRepository = require("../repositories/ChatRepository");
 const ContactRepository = require("../repositories/ContactRepository");
 const RoomsRepository = require("../repositories/RoomRepository");
 const MessageRepository = require("../repositories/MessageRepository");
-const {
-  saveWebhookConversation,
-  sendMetaMsg,
-  sendMetatemplet,
-  updateMetaTempletInMsg,
-  getUserPlanDays,
-} = require("../functions/function");
-const UserPlanExpiredException = require("../exceptions/CustomExceptions/UserPlanExpiredException");
-const PhoneIdMismatchException = require("../exceptions/CustomExceptions/PhoneIdMismatchException");
-const TokenNotVerifiedException = require("../exceptions/CustomExceptions/TokenNotVerifiedException");
-const RoomNotFoundException = require("../exceptions/CustomExceptions/RoomNotFoundException");
-const InvalidTemplateDataException = require("../exceptions/CustomExceptions/InvalidTemplateDataException");
-const InvalidMessageTypeException = require("../exceptions/CustomExceptions/InvalidMessageTypeException");
-const CheckMetaApiKeysException = require("../exceptions/CustomExceptions/CheckMetaApiKeysException");
-const CheckApiException = require("../exceptions/CustomExceptions/CheckApiException");
 const ChatNotFoundException = require("../exceptions/CustomExceptions/ChatNotFoundException");
 const AgentChatRepository = require("../repositories/AgentChatRepository");
 const { mergeArrays } = require("../utils/others.utils");
@@ -35,25 +19,7 @@ class InboxService {
     this.messageRepository = new MessageRepository();
     this.agentChatRepository = new AgentChatRepository();
   }
-  async handleWebhook(uid, body) {
-    const days = await getUserPlanDays(uid);
-    if (days < 1) {
-      throw new UserPlanExpiredException();
-    }
-
-    if (body?.entry?.[0]?.changes?.[0]?.value?.metadata?.phone_number_id) {
-      const metaApi = await this.metaApiRepository.findByUid(uid);
-      if (metaApi) {
-        const checkNumber =
-          body.entry[0].changes[0].value.metadata.phone_number_id;
-        if (checkNumber !== metaApi.business_phone_number_id) {
-          throw new PhoneIdMismatchException();
-        }
-      }
-    }
-
-    await saveWebhookConversation(body, uid);
-  }
+  
 
   async getChats(uid, query = {}) {
     return this.chatRepository.findInboxChats(uid);
@@ -62,32 +28,6 @@ class InboxService {
   async getConversation(uid, chatId, query = {}) {
     return this.messageRepository.findInboxMessages(uid, chatId);
   }
-
-
-
-  async verifyWebhook(uid, mode, token, challenge) {
-    const user = await this.userRepository.findById(uid);
-    if (!user) {
-      throw new TokenNotVerifiedException();
-    }
-
-    if (mode === "subscribe" && token === uid) {
-      return challenge;
-    }
-    throw new TokenNotVerifiedException();
-  }
-
-  async testSocket() {
-    const uid = "lWvj6K0xI0FlSKJoyV7ak9DN0mzvKJK8";
-    const room = await this.roomsRepository.findByUid(uid);
-    if (!room) {
-      throw new RoomNotFoundException();
-    }
-    const io = getIOInstance();
-    io.to(room.socket_id).emit("update_conversations", "msg");
-    return true;
-  }
-
 
   async deleteChat(uid, chatId) {
     return this.chatRepository.delete({ uid, id: chatId });
