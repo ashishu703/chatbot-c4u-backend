@@ -195,7 +195,6 @@ class InstagramWebhookService {
       {
         ...dbMessageObj,
         uid: chat.uid,
-        owner_id: chat.uid,
         chat_id: chatId,
         route: INCOMING,
       },

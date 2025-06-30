@@ -46,6 +46,13 @@ class InstagramAuthApi extends InstagramApi {
             access_token: this.accessToken,
         });
     }
+
+    async subscribeWebhook() {
+        return this.post("/me/subscribed_apps", {}, {
+            access_token: this.accessToken,
+            subscribed_fields: this.subscribedFields.join(",")
+        });
+    }
 };
 
 module.exports = InstagramAuthApi

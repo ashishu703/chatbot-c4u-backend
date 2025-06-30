@@ -21,6 +21,10 @@ class InstagramApi extends SocialApi {
         this.APIURL = `https://graph.instagram.com/${instagram_graph_version}`;
         this.scopes = instagram_auth_scopes;
         this.redirectUri = instagram_redirect_url;
+        this.subscribedFields = [
+            "messages",
+            "messaging_seen"
+        ];
     }
 
 

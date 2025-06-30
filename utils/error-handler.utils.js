@@ -4,6 +4,8 @@ function errorHandler(err, req, res, next) {
 
   const status = err.status || 500;
 
+  console.log(err);
+
   logger.error({
     message: err.message,
     stack: err.stack,
