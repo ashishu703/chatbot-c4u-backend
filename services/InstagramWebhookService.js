@@ -12,7 +12,6 @@ const { OPEN } = require("../types/chat-status.types");
 const InstagramWebhookDto = require("../dtos/Instagram/InstagramWebhookDto");
 const { READ } = require("../types/conversation-status.types");
 const { OUTGOING, INCOMING } = require("../types/conversation-route.types");
-const SocketHelper = require("./../helper/SocketHelper");
 class InstagramWebhookService {
 
 
