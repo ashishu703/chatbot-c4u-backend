@@ -9,6 +9,12 @@ class IOService {
 
   initIO() {
     this.io = getIOInstance();
+    return this;
+  }
+
+  setIO(io) {
+    this.io = io;
+    return this;
   }
 
 

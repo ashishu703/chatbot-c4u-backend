@@ -1,75 +1,42 @@
 const jwt = require("jsonwebtoken");
-const { query } = require("../database/dbpromise");
+const AgentRepository = require("../repositories/AgentRepository");
+const HttpException = require("../utils/http-exception.utils");
 
 const validateAgent = async (req, res, next) => {
   try {
     const token = req.get("Authorization");
     if (!token) {
-      return res.json({ msg: "No token found", logout: true });
+      throw new HttpException("No token found", 400);
     }
 
     jwt.verify(token.split(" ")[1], process.env.JWTKEY, async (err, decode) => {
       if (err) {
-        return res.json({
-          success: false,
-          msg: "Invalid token found",
-          logout: true,
-        });
+        throw new HttpException("Invalid token found", 400);
       }
 
       const { email } = decode;
 
       if (!email) {
-        return res.json({
-          success: false,
-          msg: "Invalid token payload",
-          logout: true,
-        });
+        throw new HttpException("Invalid token payload", 400);
       }
 
-      const getAgent = await query(
-        "SELECT * FROM agents WHERE email = $1",
-        [email]
-      );
+      const agent = await (new AgentRepository()).findByEmail(email, ["owner"]);
 
-      if (getAgent.length < 1) {
-        return res.json({
-          success: false,
-          msg: "Invalid credentials or token",
-          logout: true,
-        });
+      if (!agent) {
+        throw new HttpException("Invalid credentials or token", 400);
       }
 
-      if (getAgent[0]?.is_active < 1) {
-        return res.json({
-          msg: "You are an inactive agent.",
-          logout: true,
-          success: false,
-        });
+
+
+      if (!agent.is_active) {
+        throw new HttpException("You are an inactive agent.", 400);
       }
 
-      const getOwner = await query("SELECT * FROM users WHERE uid = $1", [
-        getAgent[0]?.owner_uid,
-      ]);
+      req.owner = agent.owner;
+      req.decode = decode;
+      next();
 
-      if (getOwner.length < 1) {
-        return res.json({
-          msg: "Agent Owner not found",
-          success: false,
-        });
-      }
 
-      if (getAgent[0].role === "agent") {
-        req.owner = getOwner[0];
-        req.decode = decode;
-        next();
-      } else {
-        return res.json({
-          success: false,
-          msg: "Unauthorized token",
-          logout: true,
-        });
-      }
     });
   } catch (err) {
     console.log(err);

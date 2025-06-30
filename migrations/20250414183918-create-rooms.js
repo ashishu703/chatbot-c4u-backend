@@ -13,12 +13,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
         unique: true,
-        references: {
-          model: "users",
-          key: "uid",
-        },
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE",
       },
       socket_id: {
         type: Sequelize.STRING,

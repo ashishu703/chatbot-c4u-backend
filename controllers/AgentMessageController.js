@@ -13,15 +13,15 @@ class AgentMessageController {
   }
    async sendText(req, res, next) {
     try {
-      const { text, toNumber, toName, chatId } = req.body;
-      if (!text || !toNumber || !toName || !chatId) {
+      const { text, senderId, toName, chatId } = req.body;
+      if (!text || !senderId || !toName || !chatId) {
         throw new NotEnoughInputProvidedException();
       }
       const resp = await this.chatService.sendMessage({
         ownerUid: req.owner.uid,
         type: "text",
         content: { preview_url: true, body: text },
-        toNumber,
+        senderId,
         toName,
         chatId,
         agentEmail: req.decode.email,
@@ -34,15 +34,15 @@ class AgentMessageController {
 
    async sendAudio(req, res, next) {
     try {
-      const { url, toNumber, toName, chatId } = req.body;
-      if (!url || !toNumber || !toName || !chatId) {
+      const { url, senderId, toName, chatId } = req.body;
+      if (!url || !senderId || !toName || !chatId) {
         throw new NotEnoughInputProvidedException();
       }
       const resp = await this.chatService.sendMessage({
         ownerUid: req.owner.uid,
         type: "audio",
         content: { link: url },
-        toNumber,
+        senderId,
         toName,
         chatId,
         agentEmail: req.decode.email,
@@ -68,15 +68,15 @@ class AgentMessageController {
 
    async sendDocument(req, res, next) {
     try {
-      const { url, toNumber, toName, chatId, caption } = req.body;
-      if (!url || !toNumber || !toName || !chatId) {
+      const { url, senderId, toName, chatId, caption } = req.body;
+      if (!url || !senderId || !toName || !chatId) {
         throw new NotEnoughInputProvidedException();
       }
       const resp = await this.chatService.sendMessage({
         ownerUid: req.owner.uid,
         type: "document",
         content: { link: url, caption: caption || "" },
-        toNumber,
+        senderId,
         toName,
         chatId,
         agentEmail: req.decode.email,
@@ -89,15 +89,15 @@ class AgentMessageController {
 
    async sendVideo(req, res, next) {
     try {
-      const { url, toNumber, toName, chatId, caption } = req.body;
-      if (!url || !toNumber || !toName || !chatId) {
+      const { url, senderId, toName, chatId, caption } = req.body;
+      if (!url || !senderId || !toName || !chatId) {
         throw new NotEnoughInputProvidedException();
       }
       const resp = await this.chatService.sendMessage({
         ownerUid: req.owner.uid,
         type: "video",
         content: { link: url, caption: caption || "" },
-        toNumber,
+        senderId,
         toName,
         chatId,
         agentEmail: req.decode.email,
@@ -110,15 +110,15 @@ class AgentMessageController {
 
    async sendImage(req, res, next) {
     try {
-      const { url, toNumber, toName, chatId, caption } = req.body;
-      if (!url || !toNumber || !toName || !chatId) {
+      const { url, senderId, toName, chatId, caption } = req.body;
+      if (!url || !senderId || !toName || !chatId) {
         throw new NotEnoughInputProvidedException();
       }
       const resp = await this.chatService.sendMessage({
         ownerUid: req.owner.uid,
         type: "image",
         content: { link: url, caption: caption || "" },
-        toNumber,
+        senderId,
         toName,
         chatId,
         agentEmail: req.decode.email,

@@ -11,6 +11,10 @@ class AgentRepository extends Repository {
     return this.find({ where: { owner_uid } });
   }
 
+  async findByEmail(email, relations = []) {
+    return this.model.findOne({ where: { email }, include: relations });
+  }
+
 
   async updateActiveness(uid, is_active) {
     return this.update({ is_active }, { uid });

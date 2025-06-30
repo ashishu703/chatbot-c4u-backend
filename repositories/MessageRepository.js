@@ -45,5 +45,6 @@ class MessageRepository extends Repository {
     return this.find({ where: { chat_id: chatId, uid }, order: [["createdAt", "ASC"]] });
   }
 
+
 };
 module.exports = MessageRepository

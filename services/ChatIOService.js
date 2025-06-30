@@ -1,5 +1,3 @@
-const { where } = require("sequelize");
-const SocketHelper = require("../helper/SocketHelper");
 const AgentChatRepository = require("../repositories/AgentChatRepository");
 const ChatRepository = require("../repositories/ChatRepository");
 const IOService = require("./IOService");
@@ -8,6 +6,7 @@ const {
   PUSH_NEW_MSG,
   PUSH_NEW_REACTION,
   UPDATE_DELIVERY_STATUS,
+  UPDATE_CHAT_STATUS,
 } = require("../types/socket-message.types");
 const RoomRepository = require("../repositories/RoomRepository");
 
@@ -26,6 +25,10 @@ class ChatIOService extends IOService {
 
   async init() {
     this.initIO();
+    this.initChat();
+  }
+
+  async initChat() {
     if (this.chat) {
       await this.initUserRoom(this.chat.uid);
 
@@ -66,6 +69,19 @@ class ChatIOService extends IOService {
       const agentChats = await this.agentChatRepository.findWithInboxChats(this.agentRoom.uid);
       const chats = agentChats.map((i) => i?.chat);
       this.emit(this.agentRoom.socket_id, UPDATE_CONVERSATION, chats);
+    }
+  }
+
+  async emitUpdateConversationStatusEvent() {
+    if (this.userRoom) {
+      const chats = await this.chatRepository.findInboxChats(this.userRoom.uid);
+      this.emit(this.userRoom.socket_id, UPDATE_CHAT_STATUS, chats);
+    }
+
+    if (this.agentRoom) {
+      const agentChats = await this.agentChatRepository.findWithInboxChats(this.agentRoom.uid);
+      const chats = agentChats.map((i) => i?.chat);
+      this.emit(this.agentRoom.socket_id, UPDATE_CHAT_STATUS, chats);
     }
   }
 

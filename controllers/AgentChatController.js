@@ -1,17 +1,19 @@
-const ChatService = require("../services/chatService");
 const InvalidRequestException = require("../exceptions/CustomExceptions/InvalidRequestException");
 const { formSuccess } = require("../utils/response.utils");
 const { __t } = require("../utils/locale.utils");
+const InboxService = require("../services/InboxService");
 class AgentChatController {
-  chatService;
+  inboxService;
   constructor() {
-    this.chatService = new ChatService();
+    this.inboxService = new InboxService();
   }
 
   async getMyAssignedChats(req, res, next) {
     try {
-      const chats = await this.chatService.getMyAssignedChats(req.decode.uid, req.owner.uid);
-      return formSuccess(res,{ data: chats });
+      const { uid: agentId } = req.decode;
+      const { uid: ownerId } = req.owner;
+      const chats = await this.inboxService.getAgentAssignedChats(agentId, ownerId);
+      return formSuccess(res, { data: chats });
     } catch (err) {
       next(err);
     }
@@ -20,8 +22,9 @@ class AgentChatController {
   async getConversation(req, res, next) {
     try {
       const { chatId } = req.body;
-      const data = await this.chatService.getConversation(req.owner.uid, chatId);
-      return formSuccess(res,{ data });
+      const { uid } = req.owner;
+      const data = await this.inboxService.getConversation(uid, chatId);
+      return formSuccess(res, { data });
     } catch (err) {
       next(err);
     }
@@ -33,8 +36,8 @@ class AgentChatController {
       if (!status || !chatId) {
         throw new InvalidRequestException();
       }
-      await this.chatService.changeChatTicketStatus(chatId, status);
-      return formSuccess(res,{ msg: __t("chat_status_updated"), });
+      await this.inboxService.changeChatTicketStatus(chatId, status);
+      return formSuccess(res, { msg: __t("chat_status_updated"), });
     } catch (err) {
       next(err);
     }

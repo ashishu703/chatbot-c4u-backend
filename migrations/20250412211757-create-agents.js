@@ -1,4 +1,7 @@
 "use strict";
+
+const { ACTIVE } = require('../types/agent-status.types');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -19,16 +22,10 @@ module.exports = {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       },
-
-
       uid: {
         type: Sequelize.STRING,
         allowNull: true,
         unique: true,
-      },
-      role: {
-        type: Sequelize.STRING,
-        defaultValue: "agent",
       },
       email: {
         type: Sequelize.STRING,
@@ -51,10 +48,9 @@ module.exports = {
         allowNull: true,
       },
       is_active: {
-        type: Sequelize.INTEGER,
-        defaultValue: "1",
+        type: Sequelize.BOOLEAN,
+        defaultValue: ACTIVE,
       },
-
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

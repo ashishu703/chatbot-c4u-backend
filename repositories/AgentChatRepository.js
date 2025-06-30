@@ -41,14 +41,16 @@ class AgentChatRepository extends Repository {
     return this.find({
       where: {
         uid
-      },
-      include: [
+      }
+    },
+      [
         {
           model: Chat,
+          as: "chat",
           include: ["lastMessage", "page", "account"],
         },
-      ],
-    });
+      ]
+    );
   }
 }
 

@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 const { Admin } = require("../models");
-const HttpException = require("./http-exception.middleware");
 
 const adminValidator = async (req, res, next) => {
   try {

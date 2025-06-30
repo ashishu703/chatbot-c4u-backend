@@ -1,5 +1,4 @@
 const socketIO = require("socket.io");
-const { frontendURI } = require("../config/app.config");
 const RoomRepository = require("../repositories/RoomRepository");
 const ChatRepository = require("../repositories/ChatRepository");
 
@@ -53,16 +52,12 @@ function initializeSocket(server) {
 
     socket.on("change_ticket_status", async ({ uid, status, chatId }) => {
       try {
+        const ChatIOService = require("../services/ChatIOService");
         await chatRepository.updateStatus(chatId, status);
-
-        const chats = await chatRepository.findInboxChats(uid);
-        const socketRoom = await roomRepository.findByUid(uid);
-
-        if (socketRoom?.socket_id) {
-          io.to(socketRoom.socket_id).emit("update_chats", chats);
-        } else {
-          console.log(`Socket ID not found for user ${uid}`);
-        }
+        const chat = await chatRepository.findByChatId(chatId);
+        const ioService = (new ChatIOService()).setChat(chat);
+        await ioService.setIO(io).initChat();
+        ioService.emitUpdateConversationStatusEvent();
       } catch (error) {
         console.error("Error executing database queries:", error);
       }

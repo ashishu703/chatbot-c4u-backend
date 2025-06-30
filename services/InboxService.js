@@ -7,8 +7,6 @@ const RoomsRepository = require("../repositories/RoomRepository");
 const MessageRepository = require("../repositories/MessageRepository");
 const {
   saveWebhookConversation,
-  mergeArrays,
-  readJSONFile,
   sendMetaMsg,
   sendMetatemplet,
   updateMetaTempletInMsg,
@@ -24,6 +22,7 @@ const CheckMetaApiKeysException = require("../exceptions/CustomExceptions/CheckM
 const CheckApiException = require("../exceptions/CustomExceptions/CheckApiException");
 const ChatNotFoundException = require("../exceptions/CustomExceptions/ChatNotFoundException");
 const AgentChatRepository = require("../repositories/AgentChatRepository");
+const { mergeArrays } = require("../utils/others.utils");
 
 class InboxService {
 
@@ -64,6 +63,8 @@ class InboxService {
     return this.messageRepository.findInboxMessages(uid, chatId);
   }
 
+
+
   async verifyWebhook(uid, mode, token, challenge) {
     const user = await this.userRepository.findById(uid);
     if (!user) {
@@ -87,130 +88,6 @@ class InboxService {
     return true;
   }
 
-  async sendMessage(
-    uid,
-    { content, toName, toNumber, chatId, msgType, type, url, caption, text }
-  ) {
-    let msgObj, savObj;
-
-    switch (type) {
-      case "template":
-        if (!content || !msgType) {
-          throw new InvalidTemplateDataException();
-        }
-        msgObj = content;
-        savObj = {
-          type: msgType,
-          metaChatId: "",
-          msgContext: content,
-          reaction: "",
-          timestamp: "",
-          senderName: toName,
-          senderMobile: toNumber,
-          status: "sent",
-          star: false,
-          route: "OUTGOING",
-        };
-        break;
-      case "image":
-      case "video":
-      case "document":
-        msgObj = { type, [type]: { link: url, caption: caption || "" } };
-        savObj = {
-          type,
-          metaChatId: "",
-          msgContext: { type, [type]: { link: url, caption: caption || "" } },
-          reaction: "",
-          timestamp: "",
-          senderName: toName,
-          senderMobile: toNumber,
-          status: "sent",
-          star: false,
-          route: "OUTGOING",
-        };
-        break;
-      case "audio":
-        msgObj = { type, audio: { link: url } };
-        savObj = {
-          type,
-          metaChatId: "",
-          msgContext: { type, audio: { link: url } },
-          reaction: "",
-          timestamp: "",
-          senderName: toName,
-          senderMobile: toNumber,
-          status: "sent",
-          star: false,
-          route: "OUTGOING",
-        };
-        break;
-      case "text":
-        msgObj = { type, text: { preview_url: true, body: text } };
-        savObj = {
-          type,
-          metaChatId: "",
-          msgContext: { type, text: { preview_url: true, body: text } },
-          reaction: "",
-          timestamp: "",
-          senderName: toName,
-          senderMobile: toNumber,
-          status: "sent",
-          star: false,
-          route: "OUTGOING",
-        };
-        break;
-      default:
-        throw new InvalidMessageTypeException();
-    }
-
-    return await sendMetaMsg(uid, msgObj, toNumber, savObj, chatId);
-  }
-
-  async sendMetaTemplate(uid, { template, toNumber, toName, chatId, example }) {
-    const metaApi = await this.metaApiRepository.findByUid(uid);
-    if (!metaApi) {
-      throw new CheckMetaApiKeysException();
-    }
-
-    const resp = await sendMetatemplet(
-      toNumber,
-      metaApi.business_phone_number_id,
-      metaApi.access_token,
-      template,
-      example
-    );
-
-    if (resp.error) {
-      throw new CheckApiException();
-    }
-
-    const savObj = {
-      type: "text",
-      metaChatId: "",
-      msgContext: {
-        type: "text",
-        text: {
-          preview_url: true,
-          body: `{{TEMPLET_MESSAGE}} | ${template?.name}`,
-        },
-      },
-      reaction: "",
-      timestamp: "",
-      senderName: toName,
-      senderMobile: toNumber,
-      status: "sent",
-      star: false,
-      route: "OUTGOING",
-    };
-
-    await updateMetaTempletInMsg(
-      uid,
-      savObj,
-      chatId,
-      resp.data?.messages?.[0]?.id
-    );
-    return true;
-  }
 
   async deleteChat(uid, chatId) {
     return this.chatRepository.delete({ uid, id: chatId });
@@ -283,6 +160,28 @@ class InboxService {
     } else {
       await this.agentChatRepository.deleteByChatId(owner_uid, chat_id);
     }
+  }
+
+
+  async getAgentAssignedChats(agentId, ownerId) {
+
+    const agentChats = await this.agentChatRepository.findWithInboxChats(agentId);
+
+    const chats = agentChats
+      .map(agentChat => agentChat.chat)
+      .filter(Boolean);
+
+    const contacts = await this.contactRepository.findByUid(ownerId);
+
+    return mergeArrays(contacts, chats);
+  }
+
+ 
+
+
+
+  async changeChatTicketStatus(chatId, status) {
+    await this.chatRepository.updateStatus(chatId, status);
   }
 
 }

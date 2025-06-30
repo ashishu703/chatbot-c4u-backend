@@ -1,3 +1,4 @@
+
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
@@ -8,6 +9,11 @@ module.exports = (sequelize, DataTypes) => {
         sourceKey: "uid",
         as: "tasks",
       });
+      Agent.hasOne(models.User, {
+        foreignKey: "uid",
+        sourceKey: "owner_uid",
+        as: "owner",
+      })
     }
   }
   Agent.init(
@@ -20,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       name: DataTypes.STRING,
       mobile: DataTypes.STRING,
       comments: DataTypes.TEXT,
-      is_active: DataTypes.INTEGER,
+      is_active: DataTypes.BOOLEAN,
     },
     {
       sequelize,
