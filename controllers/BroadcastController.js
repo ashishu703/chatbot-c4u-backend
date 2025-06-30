@@ -47,8 +47,9 @@ class BroadcastController {
   async getBroadcasts(req, res, next) {
     try {
       const user = req.decode;
-      const broadcasts = await this.broadcastService.getBroadcasts(user.uid);
-      return formSuccess(res, { data: broadcasts });
+      const query = req.query;
+      const broadcasts = await this.broadcastService.getBroadcasts(user.uid, query);
+      return formSuccess(res, broadcasts);
     } catch (err) {
       next(err);
     }

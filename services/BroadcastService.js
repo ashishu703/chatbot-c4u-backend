@@ -183,19 +183,12 @@ class DashboardService {
   }
 
   async deleteBroadcast(broadcast_id, uid) {
-    return this.broadcastRepository.delete({broadcast_id, uid});
+    return this.broadcastRepository.delete({ broadcast_id, uid });
   }
 
 
-  async getBroadcasts(uid) {
-    return this.broadcastRepository.find(
-      {
-        where: {
-          uid,
-        }
-      },
-      ["phonebook"]
-    );
+  async getBroadcasts(uid, query = {}) {
+    return this.broadcastRepository.paginate({ where: { uid }, include: ["phonebook"], ...query });
   }
 
   async getBroadcastLogs(broadcast_id, uid) {
