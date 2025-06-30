@@ -2,7 +2,6 @@ const AgentService = require("../services/AgentService");
 const TypeCommentException = require("../exceptions/CustomExceptions/TypeCommentException");
 const { formSuccess } = require("../utils/response.utils");
 const { __t } = require("../utils/locale.utils");
-const { where } = require("sequelize");
 class AgentTaskController {
   agentService;
   constructor() {
@@ -10,6 +9,7 @@ class AgentTaskController {
   }
   async getMyTasks(req, res, next) {
     try {
+
       const query = req.query;
       const tasks = await this.agentService.getAgentTasks({
         where: {

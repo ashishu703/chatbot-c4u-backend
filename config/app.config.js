@@ -1,3 +1,5 @@
+const path = require('path');
+
 const defaultAppConfig = {
     currency_code: "USD",
     logo: "",
@@ -26,6 +28,16 @@ const defaultAppConfig = {
     whatsapp_config_id: "",
 }
 
+const errorLogConfig = {
+    filename: 'error-%DATE%.log',
+    dirname: path.join(__dirname, '../logs'),
+    datePattern: 'YYYY-MM-DD',
+    zippedArchive: false,
+    maxSize: '20m',
+    maxFiles: '14d',
+    level: 'error',
+}
+
 const tokenExpirationTime = "7d"
 const passwordEncryptionRounds = process.env.SALT_ROUNDS
 const jwtKey = process.env.JWTKEY
@@ -37,6 +49,9 @@ const defaultTimeZone = "Asia/Kolkata";
 const paypalUrl = process.env.PAYPAL_URL
 const whatsAppAccountPin = process.env.WHATSAPP_ACCOUNT_PIN
 const port = process.env.PORT
+const appEnv = process.env.NODE_ENV
+
+
 
 module.exports = {
     defaultAppConfig,
@@ -51,4 +66,6 @@ module.exports = {
     paypalUrl,
     whatsAppAccountPin,
     port,
+    appEnv,
+    errorLogConfig
 };

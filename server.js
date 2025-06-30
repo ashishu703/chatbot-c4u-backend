@@ -50,6 +50,7 @@ const apiRoute = require('./routes/apiv2.routes.js')
 app.use('/api/v1', apiRoute)
 
 const agentRoute = require('./routes/agent.routes.js')
+const { errorHandler } = require('./utils/error-handler.utils.js')
 app.use('/api/agent', agentRoute)
 
 
@@ -62,7 +63,7 @@ app.use('/api/whatsapp', require('./routes/whatsapp.routes.js'))
 app.use('/api/quick-replies', require('./routes/quick-replies.routes.js'))
 
 
-
+app.use(errorHandler);
 
 
 const currentDir = process.cwd();
