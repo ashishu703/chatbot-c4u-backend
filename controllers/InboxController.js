@@ -20,7 +20,7 @@ class InboxController {
       const user = req.decode;
       const query = req.query;
       const chats = await this.inboxService.getChats(user.uid, query);
-      return formSuccess(res, { data: chats });
+      return formSuccess(res, chats);
     } catch (err) {
       next(err);
     }
@@ -32,7 +32,7 @@ class InboxController {
       const query = req.query;
       const user = req.decode;
       const conversation = await this.inboxService.getConversation(user.uid, chatId, query);
-      return formSuccess(res, { data: conversation });
+      return formSuccess(res, conversation);
     } catch (err) {
       next(err);
     }

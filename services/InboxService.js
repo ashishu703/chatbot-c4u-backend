@@ -22,11 +22,11 @@ class InboxService {
   
 
   async getChats(uid, query = {}) {
-    return this.chatRepository.findInboxChats(uid);
+    return this.chatRepository.paginateInboxChats(uid, query);
   }
 
   async getConversation(uid, chatId, query = {}) {
-    return this.messageRepository.findInboxMessages(uid, chatId);
+    return this.messageRepository.paginateInboxMessages(uid, chatId, query);
   }
 
   async deleteChat(uid, chatId) {

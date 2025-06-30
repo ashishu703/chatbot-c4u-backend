@@ -62,12 +62,13 @@ class ChatRepository extends Repository {
       });
   }
 
-  async findInboxChatsWithIds(ids, query = {}) {
-    return this.model.findAll(
-      {
-        where: { id: { [Op.in]: ids } },
-        include: ["lastMessage", "page", "account"],
-      });
+  async paginateInboxChats(uid, query = {}) {
+    return this.paginate({
+      where: { uid },
+      include: ["lastMessage", "page", "account"],
+      order: [["createdAt", "DESC"]],
+      ...query
+    });
   }
 
   async updateNote(chat_id, note) {

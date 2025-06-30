@@ -24,7 +24,7 @@ class AgentChatController {
       const { chatId } = req.body;
       const { uid } = req.owner;
       const data = await this.inboxService.getConversation(uid, chatId);
-      return formSuccess(res, { data });
+      return formSuccess(res, data);
     } catch (err) {
       next(err);
     }

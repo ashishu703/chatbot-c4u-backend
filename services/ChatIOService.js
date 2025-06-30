@@ -61,7 +61,7 @@ class ChatIOService extends IOService {
 
   async emitUpdateConversationEvent() {
     if (this.userRoom) {
-      const chats = await this.chatRepository.findInboxChats(this.userRoom.uid);
+      const { data: chats } = await this.chatRepository.paginateInboxChats(this.userRoom.uid);
       this.emit(this.userRoom.socket_id, UPDATE_CONVERSATION, chats);
     }
 
@@ -74,7 +74,7 @@ class ChatIOService extends IOService {
 
   async emitUpdateConversationStatusEvent() {
     if (this.userRoom) {
-      const chats = await this.chatRepository.findInboxChats(this.userRoom.uid);
+      const { data: chats } = await this.chatRepository.paginateInboxChats(this.userRoom.uid);
       this.emit(this.userRoom.socket_id, UPDATE_CHAT_STATUS, chats);
     }
 
