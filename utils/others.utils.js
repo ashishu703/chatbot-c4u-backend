@@ -54,5 +54,32 @@ function dataGet(target, key, defaultValue = null) {
   return target;
 }
 
+function convertNumberToRandomString(number) {
+  const mapping = {
+    0: "i",
+    1: "j",
+    2: "I",
+    3: "u",
+    4: "I",
+    5: "U",
+    6: "S",
+    7: "D",
+    8: "B",
+    9: "j",
+  };
 
-module.exports = { generateRandomNumber, mergeArrays, dataGet };
+  const numStr = number.toString();
+  let result = "";
+  for (let i = 0; i < numStr.length; i++) {
+    const digit = numStr[i];
+    result += mapping[digit];
+  }
+  return result;
+}
+
+function createChatId(senderId, receiverId) {
+  return convertNumberToRandomString(senderId + receiverId);
+}
+
+
+module.exports = { generateRandomNumber, mergeArrays, dataGet, createChatId };

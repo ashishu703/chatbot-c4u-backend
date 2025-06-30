@@ -3,17 +3,17 @@ const EdgeRepository = require("../repositories/FlowEdgeRepository");
 const ChatRepository = require("../repositories/ChatRepository");
 const AgentChatRepository = require("../repositories/AgentChatRepository");
 const AgentRepository = require("../repositories/AgentRepository");
-const { INCOMING } = require("../types/conversation-route.types");
 const WhatsappMessageApi = require("../api/Whatsapp/WhatsappMessageApi");
-const { ASSIGN_AGENT, DISABLE_CHAT_TILL, REQUEST_API } = require("../types/specified-messages.types");
 const DisabledChatRepository = require("../repositories/DisabledChatRepository");
-const { millisecondsToSeconds, hasDatePassedInTimezone, secondsToMilliseconds } = require("../utils/date.utils");
-const fetch = require("node-fetch");
 const WhatsappMessageDto = require("../dtos/Whatsapp/WhatsappMessageDto");
 const WhatsappChatService = require("./WhatsappChatService");
+const ChatDisabledException = require("../exceptions/CustomExceptions/ChatDisabledException");
+const fetch = require("node-fetch");
+const { INCOMING } = require("../types/conversation-route.types");
+const { ASSIGN_AGENT, DISABLE_CHAT_TILL, REQUEST_API } = require("../types/specified-messages.types");
+const { millisecondsToSeconds, hasDatePassedInTimezone, secondsToMilliseconds } = require("../utils/date.utils");
 const { dataGet } = require("../utils/others.utils");
 const { whatsappMessageDtoToSaveableBody, extractTextFromWhatsappMessage } = require("../utils/messages.utils");
-const ChatDisabledException = require("../exceptions/CustomExceptions/ChatDisabledException");
 
 class ChatbotAutomationService {
 
@@ -61,9 +61,7 @@ class ChatbotAutomationService {
 
       if (route == INCOMING) {
         let chatbots = await this.getBots();
-        for (const chatbot of chatbots) {
-          await this.executeChatbot(chatbot);
-        }
+        await Promise.all(chatbots.map(chatbot => this.executeChatbot(chatbot)));
       }
     } catch (error) {
       if (error instanceof ChatDisabledException)

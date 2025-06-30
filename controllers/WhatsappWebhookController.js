@@ -1,5 +1,5 @@
 const WhatsappWebhookService = require("../services/WhatsappWebhookService");
-const { verifyMetaWebhook } = require("../utils/facebook.utils");
+const { verifyMetaWebhook } = require("../utils/meta.utils");
 const { formSuccess } = require("../utils/response.utils");
 
 

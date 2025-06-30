@@ -1,5 +1,5 @@
 const { getCurrentTimeStampInSeconds } = require("../../utils/date.utils");
-const { createChatId } = require("../../utils/facebook.utils");
+const { createChatId } = require("../../utils/others.utils");
 const { dataGet } = require("../../utils/others.utils");
 const WhatsappMessageDto = require("./WhatsappMessageDto");
 const WhatsappMessageStatusDto = require("./WhatsappMessageStatusDto");

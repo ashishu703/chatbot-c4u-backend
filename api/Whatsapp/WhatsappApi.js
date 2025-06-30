@@ -1,6 +1,6 @@
 const WebPublicRepository = require("../../repositories/WebPublicRepository");
 const SocialApi = require("../SocialApi");
-const { handleApiResponse } = require("../../utils/facebook.utils");
+const { handleApiResponse } = require("../../utils/meta.utils");
 class WhatsappApi extends SocialApi {
     webhookVerificationToken;
     constructor(user = null, accessToken = null, wabaId = null) {

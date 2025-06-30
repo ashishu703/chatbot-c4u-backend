@@ -166,13 +166,11 @@ class InstagramWebhookService {
     const chatId = chat.id;
 
     const dbMessageObj = convertWebhookMessageToDBMessage(messageObj);
-
-
+   
     const message = await this.messageRepository.createIfNotExists(
       {
         ...dbMessageObj,
         uid: chat.uid,
-        owner_id: chat.uid,
         chat_id: chatId,
         route: OUTGOING,
       },
@@ -192,6 +190,7 @@ class InstagramWebhookService {
   async processIncomingMessage(messageObj, chat) {
     const chatId = chat.id;
     const dbMessageObj = convertWebhookMessageToDBMessage(messageObj);
+
     const message = await this.messageRepository.createIfNotExists(
       {
         ...dbMessageObj,
@@ -239,7 +238,7 @@ class InstagramWebhookService {
 
 
 
-  
+
 
 };
 

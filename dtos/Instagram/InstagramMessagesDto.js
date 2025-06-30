@@ -1,5 +1,6 @@
+const { TEXT } = require("../../types/message.types");
 const { millisecondsToSeconds } = require("../../utils/date.utils");
-const { createChatId } = require("../../utils/facebook.utils");
+const { createChatId } = require("../../utils/others.utils");
 const { dataGet } = require("../../utils/others.utils");
 
 class InstagramMessagesDto {
@@ -78,6 +79,11 @@ class InstagramMessagesDto {
     }
     getAttachmentUrl() {
         return dataGet(this.data, "message.attachments.0.payload.url");
+    }
+
+    getType() {
+        if (this.hasAttachment()) return this.getAttachmentType();
+        return TEXT;
     }
 
 

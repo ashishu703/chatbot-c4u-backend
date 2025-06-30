@@ -1,5 +1,5 @@
 const InstagramWebhookService = require("../services/InstagramWebhookService");
-const { verifyMetaWebhook } = require("../utils/facebook.utils");
+const { verifyMetaWebhook } = require("../utils/meta.utils");
 const { __t } = require("../utils/locale.utils");
 const { formSuccess } = require("../utils/response.utils");
 

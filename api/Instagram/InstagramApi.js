@@ -1,6 +1,6 @@
 const WebPublicRepository = require("../../repositories/WebPublicRepository");
 const SocialApi = require("../SocialApi");
-const { handleApiResponse } = require("../../utils/facebook.utils");
+const { handleApiResponse } = require("../../utils/meta.utils");
 class InstagramApi extends SocialApi {
     constructor(user = null, accessToken = null) {
         super(user, accessToken);

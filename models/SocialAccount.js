@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
   SocialAccount.init(
     {
       platform: DataTypes.STRING,
-      avatar: DataTypes.STRING,
+      avatar: DataTypes.TEXT,
       uid: DataTypes.STRING,
       social_user_id: DataTypes.STRING,
       social_account_id: DataTypes.TEXT,

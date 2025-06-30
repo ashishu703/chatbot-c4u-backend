@@ -1,6 +1,6 @@
 const WebPublicRepository = require("../../repositories/WebPublicRepository");
 const SocialApi = require("../SocialApi");
-const { handleApiResponse } = require("../../utils/facebook.utils");
+const { handleApiResponse } = require("../../utils/meta.utils");
 const { metaApiVersion } = require("../../config/app.config");
 class MessengerApi extends SocialApi {
     constructor(user = null, accessToken = null) {
