@@ -59,7 +59,7 @@ This solution is ideal for customer support, sales teams, and automation-focused
 
 ### 1. Clone the Repository
 ```bash
-git clone httpsgithub.comcitexsoftOmnichannel-ProMax-be
+git clone https://github.com/citexsoft/Omnichannel-ProMax-be
 cd Omnichannel-ProMax-be
 ```
 
