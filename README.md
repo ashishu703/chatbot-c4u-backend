@@ -87,7 +87,7 @@ yarn  migration:migrate
 yarn start
 ```
 
-## 🏗️ Development Guid
+## 🏗️ Development Guide
 ### 1. Initialize Sequelize
 ```bash
 yarn  migration:init
