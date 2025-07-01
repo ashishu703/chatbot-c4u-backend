@@ -28,7 +28,7 @@ This solution is ideal for customer support, sales teams, and automation-focused
 - Nodemon for development
 
 ## 📁 Project Structure
-pre
+```
 ├── api
 ├── client
 ├── config
@@ -51,7 +51,7 @@ pre
 ├── statics
 ├── types
 ├── utils
-pre
+```
 
 
 
