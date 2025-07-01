@@ -74,12 +74,12 @@ yarn intall
 
 ### 4. Initialize Sequelize
 ```bash
-yarn  migrationinit
+yarn  migration:init
 ```
 
 ### 5. Run Migrations
 ```bash
-yarn  migrationmigrate
+yarn  migration:migrate
 ```
 
 ### 6. Start the Server
@@ -90,26 +90,26 @@ yarn start
 ## 🏗️ Development Guid
 ### 1. Initialize Sequelize
 ```bash
-yarn  migrationinit
+yarn  migration:init
 ```
 
 ### 2. Create Model and Migration
 ```bash
-yarn migrationcreate ModelName
+yarn migration:create ModelName
 ```
 
 ### 3. Run Migrations
 ```bash
-yarn  migrationmigrate
+yarn  migration:migrate
 ```
 
 ### 4. Rollback Migrations
 ```bash
-yarn  migrationrollback
+yarn  migration:rollback
 ```
 
 
 ### 4. Rollback All Migrations
 ```bash
-yarn migrationrollbackall
+yarn migration:rollback:all
 ```
