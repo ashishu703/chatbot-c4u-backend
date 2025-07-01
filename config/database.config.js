@@ -5,8 +5,8 @@ module.exports = {
     username: process.env.DBUSER,
     password: process.env.DBPASS,
     database: process.env.DBNAME,
-    host: process.env.HOST,
-    dialect: "postgres",
+    host: process.env.DBHOST,
+    dialect: process.env.DIALECT,
     logging: false,
     schema: process.env.SCHEMA
   },
@@ -14,8 +14,8 @@ module.exports = {
     username: process.env.DBUSER,
     password: process.env.DBPASS,
     database: process.env.DBNAME,
-    host: process.env.HOST,
-    dialect: "postgres",
+    host: process.env.DBHOST,
+    dialect: process.env.DIALECT,
     logging: false,
     schema: process.env.SCHEMA
   },
@@ -23,8 +23,8 @@ module.exports = {
     username: process.env.DBUSER,
     password: process.env.DBPASS,
     database: process.env.DBNAME,
-    host: process.env.HOST,
-    dialect: "postgres",
+    host: process.env.DBHOST,
+    dialect: process.env.DIALECT,
     logging: false,
     schema: process.env.SCHEMA
   },
