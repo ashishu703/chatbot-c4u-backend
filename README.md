@@ -1,4 +1,4 @@
-# 📦 Omnichannel-ProMax-BE
+# 📦 Omnichat-Raj-BE
 
 This project is a full-featured multi-channel inbox management system designed for businesses to streamline communication across major messaging platforms. It supports seamless integration with Instagram, WhatsApp, and Messenger, allowing users to manage conversations from a single dashboard.
 
