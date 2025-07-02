@@ -47,6 +47,7 @@ This solution is ideal for customer support, sales teams, and automation-focused
 ├── node_modules
 ├── repositories
 ├── routes
+├── seeders
 ├── services
 ├── statics
 ├── types
@@ -54,6 +55,17 @@ This solution is ideal for customer support, sales teams, and automation-focused
 ```
 
 
+## Admin Login Credentials
+
+### Email 
+```bash
+admin@mbg.com
+```
+
+### Password
+```bash
+admin
+```
 
 ## 🛠️ Installation & Setup
 
@@ -72,6 +84,7 @@ yarn intall
 - Copy .env.example as .env
 - Fill all the database credentials
 
+
 ### 4. Initialize Sequelize
 ```bash
 yarn  migration:init
@@ -82,7 +95,12 @@ yarn  migration:init
 yarn  migration:migrate
 ```
 
-### 6. Start the Server
+### 6. Run Seeder
+```bash
+yarn seed:execute
+```
+
+### 7. Start the Server
 ```bash
 yarn start
 ```
@@ -112,4 +130,31 @@ yarn  migration:rollback
 ### 4. Rollback All Migrations
 ```bash
 yarn migration:rollback:all
+```
+
+
+### 5. Create Seeder
+```bash
+yarn seed:create SeederName
+```
+
+### 6. Execute Seeder
+```bash
+yarn seed:execute
+```
+
+### 7. Execute Seeder
+```bash
+yarn seed:execute
+```
+
+
+### 8. Rollback Seeder
+```bash
+yarn seed:rollback SeederName
+```
+
+### 9. Rollback All Seeders
+```bash
+yarn seed:rollback:all
 ```
