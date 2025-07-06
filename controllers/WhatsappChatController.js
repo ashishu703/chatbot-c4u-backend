@@ -1,7 +1,5 @@
-const WhatsappMessageChangeDto = require("../dtos/Whatsapp/WhatsappMessageChangeDto");
 const ChatRepository = require("../repositories/ChatRepository");
 const WhatsappChatService = require("../services/WhatsappChatService");
-const { TEXT } = require("../types/message.types");
 const { formSuccess } = require("../utils/response.utils");
 
 
@@ -10,26 +8,7 @@ class WhatsappChatController {
         this.whatsappChatService = new WhatsappChatService();
         this.chatRepository = new ChatRepository();
     }
-    // async sendTemplate(req, res, next) {
-    //     try {
-    //         const { content, toName, senderId, chatId, msgType } = req.body;
-    //         const user = req.decode;
-    //         if (!content || !toName || !senderId || !msgType) {
-    //             throw new InvalidRequestException();
-    //         }
-    //         const result = await this.inboxService.sendMessage(user.uid, {
-    //             content,
-    //             toName,
-    //             senderId,
-    //             chatId,
-    //             msgType,
-    //             type: "template",
-    //         });
-    //         return formSuccess(res, result);
-    //     } catch (err) {
-    //         next(err);
-    //     }
-    // }
+
 
     async sendImage(req, res, next) {
         try {

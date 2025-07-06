@@ -1,4 +1,4 @@
-const WidgetService = require('../services/widgetService');
+const WidgetService = require('../services/WidgetService');
 const { formSuccess } = require('../utils/response.utils');
 
 class WidgetController {

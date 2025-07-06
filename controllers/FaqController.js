@@ -1,4 +1,4 @@
-const FaqRepository = require("../repositories/faqRepository");
+const FaqRepository = require("../repositories/FaqRepository");
 const {formSuccess} = require("../utils/response.utils");
 const{ __t } = require("../utils/locale.utils")
 class FaqController {

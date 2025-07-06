@@ -1,4 +1,3 @@
-const { where } = require("sequelize");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const FlowIdException = require("../exceptions/CustomExceptions/FlowIdException");
 const FlowService = require("../services/ChatFlowService");

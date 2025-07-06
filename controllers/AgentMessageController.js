@@ -1,5 +1,5 @@
-const ChatService = require("../services/chatService");
-const FileService = require("../services/fileService");
+const ChatService = require("../services/ChatService");
+const FileService = require("../services/FileService");
 const NotEnoughInputProvidedException = require("../exceptions/CustomExceptions/NotEnoughInputProvidedException");
 const NoFilesWereUploadedException = require("../exceptions/CustomExceptions/NoFilesWereUploadedException");
 const { formSuccess } = require("../utils/response.utils");

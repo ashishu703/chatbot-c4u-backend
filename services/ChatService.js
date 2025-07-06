@@ -3,11 +3,6 @@ const ChatRepository = require("../repositories/ChatRepository");
 const ContactRepository = require("../repositories/ContactRepository");
 const AgentRepository = require("../repositories/AgentRepository");
 
-const ChatNotFoundException = require("../exceptions/CustomExceptions/ChatNotFoundException");
-const { mergeArrays } = require("../utils/others.utils");
-const { OUTGOING } = require("../types/conversation-route.types");
-const { SENT } = require("../types/conversation-status.types");
-const { where } = require("sequelize");
 
 class ChatService {
   constructor() {

@@ -1,4 +1,4 @@
-const TestimonialRepository = require("../repositories/testimonialRepository");
+const TestimonialRepository = require("../repositories/TestimonialRepository");
 const { formSuccess } = require("../utils/response.utils");
 const{ __t }=require("../utils/locale.utils")
 

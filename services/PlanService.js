@@ -1,8 +1,6 @@
 const PlanRepository = require("../repositories/planRepository");
 const UserRepository = require("../repositories/UserRepository");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
-const UserNotFoundException = require("../exceptions/CustomExceptions/UserNotFoundException");
-const InvalidUidOrPlanException = require("../exceptions/CustomExceptions/InvalidUidOrPlanException");
 const InvalidPlanFoundException = require("../exceptions/CustomExceptions/InvalidPlanFoundException");
 const { addDaysToCurrentTimestamp, millisecondsToSeconds } = require("../utils/date.utils");
 

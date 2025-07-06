@@ -4,7 +4,7 @@ const PasswordRequiredException = require("../exceptions/CustomExceptions/Passwo
 const UserNotFoundException = require("../exceptions/CustomExceptions/UserNotFoundException");
 const AdminRepository = require("../repositories/AdminRepository");
 const { generateToken, comparePassword, createAdminPasswordRecoveryUrl, validateTimeExpiration, encryptPassword } = require("../utils/auth.utils");
-const EmailService = require("./emailService");
+const EmailService = require("./EmailService");
 const UserAlreadyExistException = require("../exceptions/CustomExceptions/UserAlreadyExistException");
 const { ADMIN } = require("../types/roles.types");
 

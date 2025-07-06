@@ -34,7 +34,7 @@
     "user_was_updated": "L'utilisateur a été mis à jour.",
     "user_was_deleted": "L'utilisateur a été supprimé.",
     "an_error_occurred": "Une erreur s'est produite.",
-    "facebook_error": "Une erreur est survenue avec Facebook",
+    "api_error": "Une erreur est survenue avec l'API",
     "twitter_error": "Une erreur est survenue avec Twitter",
     "google_error": "Une erreur est survenue avec Google",
     "provide_password": "Veuillez fournir un mot de passe",

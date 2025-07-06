@@ -2,7 +2,6 @@ const TempletService = require("../services/TempletService");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const { formSuccess } = require("../utils/response.utils");
 const { __t } = require("../utils/locale.utils");
-const { where } = require("sequelize");
 class TempletController {
   templetService;
   constructor() {

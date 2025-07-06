@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const ApiV2Controller = require("../controllers/apiv2Controller");
+const ApiV2Controller = require("../controllers/Apiv2Controller");
 
 const apiv2Controller = new ApiV2Controller();
 

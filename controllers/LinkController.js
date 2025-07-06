@@ -1,4 +1,4 @@
-const LinkRepository = require("../repositories/linkRepository");
+const LinkRepository = require("../repositories/LinkRepository");
 const { formSuccess } = require("../utils/response.utils");
 const { __t }= require("../utils/locale.utils")
 

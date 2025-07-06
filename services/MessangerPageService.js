@@ -1,7 +1,6 @@
 const ChatRepository = require("../repositories/ChatRepository");
 const FacebookPageRepository = require("../repositories/FacebookPageRepository");
 const MessengerPageApi = require("../api/Messanger/MessengerPageApi");
-const { MESSANGER } = require("../types/social-platform-types");
 const { INACTIVE } = require("../types/facebook-page-status.types");
 const { Op } = require("sequelize");
 

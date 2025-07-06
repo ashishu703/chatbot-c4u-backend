@@ -1,12 +1,4 @@
-const WhatsappMediaApi = require('../api/Whatsapp/WhatsappMediaApi');
-const { backendURI } = require('../config/app.config');
-const FillAllFieldsException = require('../exceptions/CustomExceptions/FillAllFieldsException');
-const MetaApiKeysNotfoundException = require('../exceptions/CustomExceptions/MetaApiKeysNotfoundException');
-const SocialAccountRepository = require('../repositories/SocialAccountRepository');
-const WhatsappTempleteMediaRepository = require('../repositories/WhatsappTempleteMediaRepository');
 const WhatsappMediaService = require('../services/WhatsappMediaService');
-const { generateUid } = require('../utils/auth.utils');
-const { uploadMetaFiles, getFileInfo } = require('../utils/file.utils');
 const { formSuccess } = require('../utils/response.utils');
 
 class WhatsappMediaController {

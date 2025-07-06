@@ -1,4 +1,3 @@
-const PlanNoChatbotPermissionException = require("../exceptions/CustomExceptions/PlanNoChatbotPermissionException");
 const ChatbotRepository = require("../repositories/ChatbotRepository");
 const UserRepository = require("../repositories/UserRepository");
 

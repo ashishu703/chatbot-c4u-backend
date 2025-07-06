@@ -1,4 +1,3 @@
-const FacebookException = require("../exceptions/FacebookException");
 const InstagramAuthService = require("../services/InstagramAuthService");
 const InstagramProfileService = require("../services/InstagramProfileService");
 const { formSuccess } = require("../utils/response.utils");

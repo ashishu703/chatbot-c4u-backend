@@ -6,7 +6,7 @@ const EmailAlreadyInUseException = require("../exceptions/CustomExceptions/Email
 const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException");
 const AgentNotFoundException = require("../exceptions/CustomExceptions/AgentNotFoundException");
 const { AGENT } = require("../types/roles.types");
-const { tokenExpirationTime, passwordEncryptionRounds, jwtKey } = require("../config/app.config");
+const { tokenExpirationTime, jwtKey } = require("../config/app.config");
 const { generateUid, encryptPassword } = require("../utils/auth.utils");
 class AgentService {
   constructor() {

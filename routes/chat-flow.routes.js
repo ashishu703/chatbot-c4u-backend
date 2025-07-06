@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const ChatFlowController = require("../controllers/chatFlowController");
+const ChatFlowController = require("../controllers/ChatFlowController");
 const validateUser = require("../middlewares/user.middleware");
 const { checkPlan } = require("../middlewares/plan.middleware");
 

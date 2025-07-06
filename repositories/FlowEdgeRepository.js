@@ -1,4 +1,3 @@
-const { Op } = require("sequelize");
 const { FlowEdge } = require("../models");
 const Repository = require("./Repository");
 const { INITIAL_MESSAGE } = require("../types/specified-messages.types");

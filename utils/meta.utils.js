@@ -1,11 +1,11 @@
 const WebPublicRepository = require("../repositories/WebPublicRepository");
-const FacebookException = require("../exceptions/FacebookException");
+const ApiException = require("../exceptions/ApiException");
 
 async function handleApiResponse(response) {
   if (!response.ok) {
     const errorData = await response.json();
     const { code, message, type } = errorData.error || {};
-    throw new FacebookException(
+    throw new ApiException(
       message || "An error occurred",
       type || "Unknown",
       code || response.status

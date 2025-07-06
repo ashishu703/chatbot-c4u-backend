@@ -1,50 +1,24 @@
 const jwt = require("jsonwebtoken");
-const { User } = require("../models");
-const HttpException = require("../utils/http-exception.utils");
+const UserRepository = require("../repositories/UserRepository");
+const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException");
+const { jwtKey } = require("../config/app.config");
+const { USER } = require("../types/roles.types");
 
 const validateUser = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      throw new HttpException("No token found", 400);
-    }
-
+    if (!authHeader || !authHeader.startsWith("Bearer ")) throw new Error("No token found");
     const token = authHeader.split(" ")[1];
-
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || process.env.JWTKEY
-    );
-
-    const user = await User.findOne({ where: { uid: decoded.uid } });
-
-    if (!user) {
-      throw new HttpException("User not found", 404);
-    }
-
+    const decoded = jwt.verify(token, jwtKey);
+    if (decoded.role !== USER) throw new Error("Invalid token found");
+    const user = await (new UserRepository()).findFirst({ where: { uid: decoded.uid } });
+    if (!user) throw new Error("User not found");
     req.user = user;
     req.decode = decoded;
-
     next();
   } catch (err) {
-    console.error(err);
-    if (err.name === "TokenExpiredError") {
-      return res
-        .status(401)
-        .json({ success: false, message: "Token has expired" });
-    }
-    if (err instanceof HttpException) {
-      return res
-        .status(err.status)
-        .json({ success: false, message: err.message });
-    }
-    res
-      .status(401)
-      .json({
-        success: false,
-        message: err.message || "Authentication Failed",
-      });
+    console.error("Server error in validateUser:", err);
+    throw new InvalidCredentialsException();
   }
 };
 

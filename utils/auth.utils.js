@@ -5,7 +5,7 @@ const InvalidCredentialsException = require("../exceptions/CustomExceptions/Inva
 const CredentialsNotProvided = require("../exceptions/CustomExceptions/CredentialsNotProvided");
 const TokenExpiredEXception = require("../exceptions/CustomExceptions/TokenExpiredEXception");
 const Randomstring = require("randomstring");
-const { passwordEncryptionRounds, jwtKey, tokenExpirationTime, frontendURI } = require("../config/app.config");
+const { jwtKey, tokenExpirationTime, frontendURI } = require("../config/app.config");
 
 function generateToken(payload, expiresIn = tokenExpirationTime) {
   return jwt.sign(payload, jwtKey, { expiresIn });

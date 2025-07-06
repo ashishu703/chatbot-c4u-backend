@@ -1,4 +1,3 @@
-const { Op, literal } = require("sequelize");
 const paginate = require("../utils/paginate.utils");
 class Repository {
     constructor(model) {

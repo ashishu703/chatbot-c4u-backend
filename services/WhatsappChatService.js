@@ -1,5 +1,4 @@
 const WhatsappMessageApi = require("../api/Whatsapp/WhatsappMessageApi");
-const { backendURI } = require("../config/app.config");
 const WhatsappMessageDto = require("../dtos/Whatsapp/WhatsappMessageDto");
 const ChatRepository = require("../repositories/ChatRepository");
 const MessageRepository = require("../repositories/MessageRepository");

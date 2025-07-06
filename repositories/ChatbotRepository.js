@@ -1,4 +1,4 @@
-const { Chatbot, ChatbotChat, SocialAccount, FacebookPage, Chat, Flow, FlowNode, FlowEdge } = require("../models");
+const { Chatbot, ChatbotChat } = require("../models");
 const ChatbotChatRepository = require("./ChatbotChatRepository");
 const Repository = require("./Repository");
 

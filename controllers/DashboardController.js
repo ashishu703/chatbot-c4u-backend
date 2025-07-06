@@ -1,6 +1,6 @@
 const AdminNotFoundException = require('../exceptions/CustomExceptions/AdminNotFoundException');
 const UserNotFoundException = require('../exceptions/CustomExceptions/UserNotFoundException');
-const DashboardService = require('../services/dashboardService');
+const DashboardService = require('../services/DashboardService');
 const {formSuccess} = require("../utils/response.utils");
 class DashboardController {
   dashboardService;

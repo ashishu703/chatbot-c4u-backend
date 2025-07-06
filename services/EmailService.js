@@ -1,4 +1,4 @@
-const SmtpRepository = require("../repositories/smtpRepository");
+const SmtpRepository = require("../repositories/SmtpRepository");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const { getRecoverEmailTemplate, getWelcomeEmailTemplate } = require("../emails/returnEmails");
 const WebPublicRepository = require("../repositories/WebPublicRepository");

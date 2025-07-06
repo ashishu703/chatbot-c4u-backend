@@ -1,5 +1,5 @@
-const FileService = require("../services/fileService");
-const BrandRepository = require("../repositories/brandRepository");
+const FileService = require("../services/FileService");
+const BrandRepository = require("../repositories/BrandRepository");
 const {formSuccess} = require("../utils/response.utils");
 const { __t } = require("../utils/locale.utils");
 class BrandController {

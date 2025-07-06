@@ -1,4 +1,4 @@
-const MediaService = require("../services/mediaService");
+const MediaService = require("../services/MediaService");
 const { formSuccess } = require("../utils/response.utils");
 
 class MediaController {

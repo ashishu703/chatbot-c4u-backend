@@ -14,7 +14,7 @@ const AuthController = require("../controllers/AuthController");
 const WhatsappMediaController = require("../controllers/WhatsappMediaController");
 const ChatWidgetController = require("../controllers/ChatWidgetController");
 const MediaController = require("../controllers/MediaController");
-const ChatController = require("../controllers/chatController");
+const ChatController = require("../controllers/ChatController");
 const SmiController = require("../controllers/SmiController");
 
 const authController = new AuthController();

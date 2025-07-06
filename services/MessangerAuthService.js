@@ -1,4 +1,3 @@
-const FacebookProfileService = require("./FacebookProfileService");
 const MessengerAuthApi = require("../api/Messanger/MessengerAuthApi");
 const MessengerProfileApi = require("../api/Messanger/MessengerProfileApi");
 const SocialAccountRepository = require("../repositories/SocialAccountRepository");

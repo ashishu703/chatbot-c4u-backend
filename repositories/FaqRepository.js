@@ -1,4 +1,3 @@
-const { query } = require("express-validator");
 const { Faq } = require("../models");
 const Repository = require("./Repository");
 

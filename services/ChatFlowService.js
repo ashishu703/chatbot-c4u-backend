@@ -1,5 +1,5 @@
 const FlowRepository = require("../repositories/FlowRepository");
-const FlowNotfoundException = require("../exceptions/customExceptions/FlowNotfoundException");
+const FlowNotfoundException = require("../exceptions/CustomExceptions/FlowNotfoundException");
 const FlowEdgeRepository = require("../repositories/FlowEdgeRepository");
 const FlowNodeRepository = require("../repositories/FlowNodeRepository");
 const { DISABLED, AI } = require("../types/flow.types");

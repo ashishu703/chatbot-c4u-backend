@@ -1,9 +1,9 @@
 const moment = require("moment-timezone");
-const BroadcastRepository = require("../repositories/broadcastRepository");
+const BroadcastRepository = require("../repositories/BroadcastRepository");
 const { QUEUE, ACTIVE_PLAN_NOT_FOUND, FINISHED } = require("../types/broadcast-execution-status.types");
 const { getNumberOfDaysFromTimestamp } = require("../utils/date.utils");
 const SocialAccountRepository = require("../repositories/SocialAccountRepository");
-const BroadcastLogRepository = require("../repositories/broadcastLogRepository");
+const BroadcastLogRepository = require("../repositories/BroadcastLogRepository");
 const { PENDING, SENT, FAILED } = require("../types/broadcast-delivery-status.types");
 const WhatsappTemplateApi = require("../api/Whatsapp/WhatsappTemplateApi");
 const { dataGet } = require("../utils/others.utils");

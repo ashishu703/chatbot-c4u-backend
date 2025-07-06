@@ -1,6 +1,6 @@
-const randomstring = require("randomstring");
 const path = require("path");
 const NoFilesWereUploadedException = require("../exceptions/CustomExceptions/NoFilesWereUploadedException");
+const { generateUid } = require("../utils/auth.utils");
 function getFileExtension(filename) {
   return filename.split(".").pop();
 }
@@ -11,7 +11,7 @@ class MediaService {
       throw new NoFilesWereUploadedException();
     }
 
-    const randomString = randomstring.generate();
+    const randomString = generateUid();
     const file = files.file;
     const filename = `${randomString}.${getFileExtension(file.name)}`;
     const filePath = path.join(__dirname, "../client/public/media", filename);

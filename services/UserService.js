@@ -23,7 +23,7 @@ const { PENDING: PENDING_TASK } = require("../types/tasks.types");
 const ChatbotRepository = require("../repositories/ChatbotRepository");
 const { encryptPassword, generateToken } = require("../utils/auth.utils");
 const { USER } = require("../types/roles.types");
-const PhonebookRepository = require("../repositories/phonebookRepository");
+const PhonebookRepository = require("../repositories/PhonebookRepository");
 const WhatsappProfileApi = require("../api/Whatsapp/WhatsappProfileApi");
 const { backendURI } = require("../config/app.config");
 

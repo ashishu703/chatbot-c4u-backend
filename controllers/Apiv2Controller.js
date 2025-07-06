@@ -1,6 +1,6 @@
 const ApiKeysNotFoundException = require("../exceptions/CustomExceptions/ApiKeysNotFoundException");
 const MessageObjectKeyIsRequiredException = require("../exceptions/CustomExceptions/MessageObjectKeyIsRequiredException");
-const MetaService = require("../services/metaService");
+const MetaService = require("../services/MetaService");
 const ProvideSendToKeyException = require("../exceptions/CustomExceptions/ProvideSendToKeyException");
 const ProvideTempletNameException = require("../exceptions/CustomExceptions/ProvideTempletNameException");
 const ProvideExampleArrArrayException = require("../exceptions/CustomExceptions/ProvideExampleArrArrayException");

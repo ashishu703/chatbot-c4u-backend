@@ -1,5 +1,5 @@
-const PageRepository = require("../repositories/pageRepository");
-const FileService = require("../services/fileService");
+const PageRepository = require("../repositories/PageRepository");
+const FileService = require("../services/FileService");
 const NoFilesWereUploadedException = require("../exceptions/CustomExceptions/NoFilesWereUploadedException");
 const { formSuccess } = require("../utils/response.utils");
 const{ __t } = require("../utils/locale.utils")

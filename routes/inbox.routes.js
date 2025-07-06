@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const InboxController = require("../controllers/inboxController");
+const InboxController = require("../controllers/InboxController");
 const validateUser = require("../middlewares/user.middleware");
 
 const inboxController = new InboxController();

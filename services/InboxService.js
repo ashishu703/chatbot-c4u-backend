@@ -1,4 +1,4 @@
-const MetaApiRepository = require("../repositories/metaApiRepository");
+const MetaApiRepository = require("../repositories/MetaApiRepository");
 const UserRepository = require("../repositories/UserRepository");
 const ChatRepository = require("../repositories/ChatRepository");
 const ContactRepository = require("../repositories/ContactRepository");

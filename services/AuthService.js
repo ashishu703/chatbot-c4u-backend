@@ -18,7 +18,7 @@ const RecoveryUserNotFoundException = require("../exceptions/CustomExceptions/Re
 const PasswordRequiredException = require("../exceptions/CustomExceptions/PasswordRequiredException");
 const { USER } = require("../types/roles.types");
 const { jwtKey } = require("../config/app.config");
-const EmailService = require("./emailService");
+const EmailService = require("./EmailService");
 const UserRepository = require("../repositories/UserRepository");
 const {
   decodeToken,

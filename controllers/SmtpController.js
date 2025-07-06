@@ -1,5 +1,5 @@
-const EmailService = require("../services/emailService");
-const SmtpRepository = require("../repositories/smtpRepository");
+const EmailService = require("../services/EmailService");
+const SmtpRepository = require("../repositories/SmtpRepository");
 const { formSuccess } = require("../utils/response.utils");
 const{ __t }=require("../utils/locale.utils")
 

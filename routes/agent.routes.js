@@ -4,9 +4,9 @@ const validateUser = require("../middlewares/user.middleware");
 const validateAgent = require("../middlewares/agent.middleware");
 const { checkPlan } = require("../middlewares/plan.middleware");
 const AgentController = require("../controllers/AgentController");
-const AgentChatController = require("../controllers/agentChatController");
-const AgentMessageController = require("../controllers/agentMessageController");
-const AgentTaskController = require("../controllers/agentTaskController");
+const AgentChatController = require("../controllers/AgentChatController");
+const AgentMessageController = require("../controllers/AgentMessageController");
+const AgentTaskController = require("../controllers/AgentTaskController");
 
 const agentController = new AgentController();
 const agentChatController = new AgentChatController();

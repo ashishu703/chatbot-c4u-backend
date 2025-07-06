@@ -1,9 +1,6 @@
 const MetaRepository = require("../repositories/MetaRepository");
 const {
   getBusinessPhoneNumber,
-  createMetaTemplet,
-  getAllTempletsMeta,
-  delMetaTemplet,
   getSessionUploadMediaMeta,
   uploadFileMeta,
 } = require("../utils/meta-api.utils");
@@ -11,10 +8,7 @@ const randomstring = require("randomstring");
 const path = require("path");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const CheckYourDetailsException = require("../exceptions/CustomExceptions/CheckYourDetailsException");
-const FillMetaApiKeysException = require("../exceptions/CustomExceptions/FillMetaApiKeysException");
-const TemplateCreationFailedException = require("../exceptions/CustomExceptions/TemplateCreationFailedException");
 const CheckMetaApiKeysException = require("../exceptions/CustomExceptions/CheckMetaApiKeysException");
-const CheckApiException = require("../exceptions/CustomExceptions/CheckApiException");
 const TemplateNameRequiredException = require("../exceptions/CustomExceptions/TemplateNameRequiredException");
 const NoFilesWereUploadedException = require("../exceptions/CustomExceptions/NoFilesWereUploadedException");
 const UploadSessionFailedException = require("../exceptions/CustomExceptions/UploadSessionFailedException");

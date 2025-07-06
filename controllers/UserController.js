@@ -1,10 +1,7 @@
 const UserService = require('../services/UserService');
-const HttpException = require('../middlewares/http-exception.middleware');
 const TokenMissingOrInvalidExecption = require('../exceptions/CustomExceptions/TokenMissingOrInvalidExecption');
 const { formSuccess } = require('../utils/response.utils');
 const{ __t }= require("../utils/locale.utils");
-const { where } = require('sequelize');
-const { query } = require('express-validator');
 class UserController {
   userService;
 

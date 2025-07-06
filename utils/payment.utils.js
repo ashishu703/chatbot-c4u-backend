@@ -1,5 +1,3 @@
-const Stripe = require("stripe");
-const randomstring = require("randomstring");
 
 // Placeholder for rzCapturePayment
 const rzCapturePayment = async (paymentId, amount, rzId, rzKey) => {

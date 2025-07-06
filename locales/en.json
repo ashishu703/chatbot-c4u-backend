@@ -35,7 +35,7 @@
     "user_was_deleted": "User was deleted.",
     "web_config_updated": "Web config updated.",
     "an_error_occurred": "An error occurred",
-    "facebook_error": "An error occurred with Facebook",
+    "api_error": "An error occurred with API",
     "twitter_error": "An error occurred with Twitter",
     "google_error": "An error occurred with Google",
     "provide_password": "Please provide a password",

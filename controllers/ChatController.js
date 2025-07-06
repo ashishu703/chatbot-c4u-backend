@@ -1,5 +1,4 @@
-const TypeTagException = require("../exceptions/CustomExceptions/TypeTagException");
-const ChatService = require("../services/chatService");
+const ChatService = require("../services/ChatService");
 const { __t } = require("../utils/locale.utils");
 const {formSuccess} = require("../utils/response.utils");
 class ChatController {

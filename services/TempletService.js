@@ -1,4 +1,3 @@
-const WhatsappTemplateApi = require("../api/Whatsapp/WhatsappTemplateApi");
 const { backendURI } = require("../config/app.config");
 const TempletRepository = require("../repositories/templetRepository");
 

@@ -7,8 +7,8 @@ module.exports = class CustomExceptionMessages {
         message: __t("an_error_occurred"),
         statusCode: 500,
       },
-      FacebookException: {
-        message: __t("facebook_error"),
+      ApiException: {
+        message: __t("api_error"),
         statusCode: 500,
       },
       TwitterException: {

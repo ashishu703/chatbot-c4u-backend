@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const PhonebookController = require("../controllers/phonebookController");
+const PhonebookController = require("../controllers/PhonebookController");
 const validateUser = require("../middlewares/user.middleware");
 const { checkPlan } = require("../middlewares/plan.middleware");
 

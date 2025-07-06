@@ -1,5 +1,4 @@
 const ChatRepository = require("../repositories/ChatRepository");
-const InstagramAccountRepository = require("../repositories/InstagramAccountRepository");
 const InstagramChatService = require("../services/InstagramChatService");
 const { IMAGE, VIDEO, FILE, AUDIO } = require("../types/message.types");
 const { __t } = require("../utils/locale.utils");
