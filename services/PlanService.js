@@ -1,4 +1,4 @@
-const PlanRepository = require("../repositories/planRepository");
+const PlanRepository = require("../repositories/PlanRepository");
 const UserRepository = require("../repositories/UserRepository");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const InvalidPlanFoundException = require("../exceptions/CustomExceptions/InvalidPlanFoundException");
