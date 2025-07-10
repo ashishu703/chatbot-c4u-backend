@@ -1,5 +1,5 @@
 const { backendURI } = require("../config/app.config");
-const TempletRepository = require("../repositories/templetRepository");
+const TempletRepository = require("../repositories/TempletRepository");
 
 class TempletService {
   constructor() {
