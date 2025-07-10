@@ -1,4 +1,4 @@
-const PhonebookRepository = require("../repositories/phonebookRepository");
+const PhonebookRepository = require("../repositories/PhonebookRepository");
 const ContactRepository = require("../repositories/ContactRepository");
 const {
   parseCSVFile,
