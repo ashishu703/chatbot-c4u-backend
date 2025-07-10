@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const BroadcastController = require("../controllers/broadcastController");
+const BroadcastController = require("../controllers/BroadcastController");
 const validateUser = require("../middlewares/user.middleware");
 const { checkPlan } = require("../middlewares/plan.middleware");
 
