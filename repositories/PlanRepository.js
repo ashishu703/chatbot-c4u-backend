@@ -34,6 +34,12 @@ class PlanRepository extends Repository {
   async deletePlan(id) {
     return this.delete({ id });
   }
+  async findPlanById(id) {
+    return this.findById(id);
+  }
+  async getPlanById(id) {
+    return this.find({ where: { id } }); 
+  }
 
 }
 

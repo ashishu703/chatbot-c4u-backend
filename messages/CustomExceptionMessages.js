@@ -392,6 +392,14 @@ module.exports = class CustomExceptionMessages {
         message: __t("chat_disabled"),
         statusCode: 401,
       },
+      InvalidPlanIdException:{
+        message:__t("invalid_plan_id"),
+        statusCode:400,
+      },
+      StripeSecretKeyIsMissing:{
+        message:__t("stripe_secret_key_is_missing"),
+        statusCode:400,
+      }
     }[type];
   }
 };

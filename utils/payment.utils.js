@@ -6,7 +6,7 @@ const rzCapturePayment = async (paymentId, amount, rzId, rzKey) => {
 };
 
 const updateUserPlan = async (plan, uid) => {
-  // Replace with your implementation
+  
   console.log(`Updating plan ${plan.id} for user ${uid}`);
 };
 

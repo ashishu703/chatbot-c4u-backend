@@ -169,5 +169,7 @@
     "page_not_found": "Page not found",
     "credentials_not_provided": "Credentials not provided",
     "user_already_exists": "User already exists",
-    "chat_disabled" : "Chat is disabled"
+    "chat_disabled" : "Chat is disabled",
+    "invalid_plan_id":"invalid plan id",
+    "stripe_secret_key_is_missing":"Stripe secret key is missing"
 }

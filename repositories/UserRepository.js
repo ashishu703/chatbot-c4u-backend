@@ -1,9 +1,9 @@
-const { User } = require("../models");
+const { User, Plan, WebPrivate } = require("../models");
 const { addDaysToCurrentTimestamp } = require("../utils/date.utils");
 const Repository = require("./Repository");
 class UserRepository extends Repository {
   constructor() {
-    super(User);
+    super(User, Plan, WebPrivate);
   }
 
   async findByEmail(email) {
@@ -18,30 +18,29 @@ class UserRepository extends Repository {
     return this.findFirst({ where: { api_key } });
   }
 
- async updatePlan(uid, plan) {
-   try {
-     const planDays = parseInt(plan.plan_duration_in_days || 0);
-     const timeStamp = addDaysToCurrentTimestamp(planDays);
+  async updatePlan(uid, plan) {
+    const planDays = parseInt(plan.plan_duration_in_days || 0);
+    const timeStamp = addDaysToCurrentTimestamp(planDays);
 
-     const user = await User.findOne({ where: { uid } });
-     if (!user) {
-       const err = new Error("User not found");
-       err.status = 404;
-       throw err;
-     }
+    const user = await User.findOne({ where: { uid } });
+    if (!user) {
+      const err = new Error("User not found");
+      err.status = 404;
+      throw err;
+    }
 
-     return await user.update({
-       plan: JSON.stringify(plan),
-       plan_expire: timeStamp,
-       trial: plan.is_trial ? 1 : 0,
-     });
-   } catch (error) {
-     console.error("Error updating user plan in UserRepository:", error);
-     throw error;
-   }
- }
+    return await user.update({
+      plan: JSON.stringify(plan),
+      plan_expire: timeStamp,
+      trial: plan.is_trial ? 1 : 0,
+    });
+  }
 
- 
+  async updateByUid(uid, updateData) {
+    const user = await this.model.findOne({ where: { uid } });
+    if (!user) throw new Error("User not found");
+    return await user.update(updateData);
+  }
 }
 
 module.exports = UserRepository;

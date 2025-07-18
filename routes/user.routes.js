@@ -16,6 +16,7 @@ const ChatWidgetController = require("../controllers/ChatWidgetController");
 const MediaController = require("../controllers/MediaController");
 const ChatController = require("../controllers/ChatController");
 const SmiController = require("../controllers/SmiController");
+const PaymentController = require("../controllers/PaymentController");
 
 const authController = new AuthController();
 const adminController = new AdminController();
@@ -28,9 +29,9 @@ const socialController = new SocialController();
 const linkController = new LinkController();
 const chatWidgetController = new ChatWidgetController();
 const mediaController = new MediaController();
-const chatController = new ChatController();
 const whatsappMediaController = new WhatsappMediaController();
 const smiController = new SmiController();
+const paymentController = new PaymentController();
 
 router.get("/verify", authController.verify.bind(authController));
 router.post("/signup", authController.signup.bind(authController));
@@ -39,10 +40,7 @@ router.post(
   "/login_with_google",
   authController.loginWithGoogle.bind(authController)
 );
-router.post(
-  "/send_resovery",
-  authController.sendRecovery.bind(authController)
-);
+router.post("/send_resovery", authController.sendRecovery.bind(authController));
 router.get(
   "/modify_password",
   adminValidator,
@@ -171,8 +169,6 @@ router.post(
   chatWidgetController.deleteWidget.bind(chatWidgetController)
 );
 
-
-
 router.get(
   "/get_smtp",
   adminValidator,
@@ -247,4 +243,31 @@ router.get(
   userController.getUser.bind(userController)
 );
 
+router.post(
+  "/get_plan_details",
+  userController.getPlanDetails.bind(userController)
+);
+
+router.get(
+  "/get_payment_details",
+  validateUser,
+  paymentController.getPaymentDetails.bind(paymentController)
+);
+
+router.post(
+  "/create_stripe_session",
+  validateUser,
+  paymentController.createStripeSession.bind(paymentController)
+);
+
+router.get(
+  "/stripe_payment",
+  paymentController.stripePayment.bind(paymentController)
+);
+
+router.post(
+  "/pay_with_paypal",
+  validateUser,
+  paymentController.payWithPaypal.bind(paymentController)
+);
 module.exports = router;
