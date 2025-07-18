@@ -1,4 +1,4 @@
-const { Order, User, Plan } = require("../models");
+const { Order, Plan } = require("../models");
 const Repository = require("./Repository");
 
 class OrderRepository extends Repository {
@@ -13,17 +13,26 @@ class OrderRepository extends Repository {
     return this.find();
   }
 
-  async createOrder(orderData) {
-    return this.create(orderData);
+  async createOrder(uid, payment_mode, amount, orderID) {
+    return this.create({
+      uid,
+      payment_mode,
+      amount,
+      data: orderID,
+    });
   }
 
-  async updateOrder(data, updateData) {
-    return this.update(updateData, { data });
+
+  async findById(planId) {
+    return Plan.findByPk(planId);
   }
 
-  async findOrderByData(data) {
-    return this.findFirst({ where: { data } });
-  }
+  async findOrderByData(orderToken) {
+  return Order.findOne({ where: { data: orderToken } }); 
+}
+async updateOrder(orderToken, data) {
+  return Order.update(data, { where: { data: orderToken } }); 
+}
 
   async findActiveOrderByUid(uid) {
     return this.findFirst({
@@ -31,6 +40,10 @@ class OrderRepository extends Repository {
       include: [{ model: Plan, as: "plan" }],
       order: [["createdAt", "DESC"]],
     });
+  }
+
+  async updateTokenByOrderId(orderID, token) {
+    return this.model.update({ s_token: token }, { where: { data: orderID } });
   }
 }
 

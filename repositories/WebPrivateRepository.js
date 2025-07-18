@@ -7,7 +7,15 @@ class WebPrivateRepository extends Repository {
   }
 
   async updateWebPrivate(data) {
-    return this.update(data, { id: 1 });
+    const [record, created] = await WebPrivate.findOrCreate({
+      where: { id: 1 },
+      defaults: { ...data, id: 1 },
+    });
+    if (!created) {
+      await record.update(data);
+    }
+
+    return record;
   }
 
   async getWebPrivate() {
@@ -17,6 +25,23 @@ class WebPrivateRepository extends Repository {
       console.error("Error fetching WebPrivate:", error);
       throw error;
     }
+  }
+
+    async getStripeKeys() {
+    const result = await this.findFirst();
+    return {
+      publishableKey: result?.pay_stripe_id,
+      secretKey: result?.pay_stripe_key
+    };
+  }
+
+
+  async getWebPrivateDetails() {
+    return await WebPrivate.findOne({ where: { id: 1 } });
+  }
+
+  async findPaymentById(id) {
+    return await this.findByPk(id);
   }
 }
 

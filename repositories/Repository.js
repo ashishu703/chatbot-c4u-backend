@@ -99,6 +99,8 @@ class Repository {
     async paginate(query) {
         return paginate(this.model, { ...query });
     }
+    
+    
 }
 
 module.exports = Repository;

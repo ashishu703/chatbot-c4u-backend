@@ -1,6 +1,6 @@
 "use strict";
 
-const { defaultTimeZone } = require('../config/app.config');
+const { defaultTimeZone } = require("../config/app.config");
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -49,9 +49,10 @@ module.exports = {
         onUpdate: "CASCADE",
       },
       plan_expiration: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.DATE,
         allowNull: true,
       },
+
       api_key: {
         type: Sequelize.STRING,
         allowNull: true,
@@ -59,12 +60,12 @@ module.exports = {
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
     });
   },

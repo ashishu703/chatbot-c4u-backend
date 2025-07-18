@@ -56,7 +56,7 @@ module.exports = (sequelize, DataTypes) => {
       timezone: DataTypes.STRING,
       plan_id: DataTypes.TEXT,
       api_key: DataTypes.STRING,
-      plan_expiration: DataTypes.BIGINT,
+      plan_expiration: DataTypes.DATE,
     },
     {
       sequelize,

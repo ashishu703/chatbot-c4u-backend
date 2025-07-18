@@ -26,11 +26,15 @@ const { USER } = require("../types/roles.types");
 const PhonebookRepository = require("../repositories/PhonebookRepository");
 const WhatsappProfileApi = require("../api/Whatsapp/WhatsappProfileApi");
 const { backendURI } = require("../config/app.config");
+const PlanRepository = require("../repositories/PlanRepository")
+const WebPrivateRepository= require("../repositories/WebPrivateRepository")
 
 class UserService {
   userRepository;
   agentTaskRepository;
   agentRepository;
+  planRepository
+  WebPrivateRepository
 
   constructor() {
     this.userRepository = new UserRepository();
@@ -41,6 +45,8 @@ class UserService {
     this.phonebookRepository = new PhonebookRepository();
     this.contactRepository = new ContactRepository();
     this.agentRepository = new AgentRepository();
+    this.planRepository= new PlanRepository();
+    this.WebPrivateRepository = new WebPrivateRepository();
   }
 
   async getUsers(query) {
@@ -318,6 +324,15 @@ class UserService {
     }
     return agent;
   }
+
+  async getPlanDetails(id) {
+    return await this.planRepository.findPlanById(id);
+  }
+
+  async getPaymentDetails (id) {
+  return await this.WebPrivateRepository.findPaymentById(id);
+}
+
 }
 
 module.exports = UserService;
