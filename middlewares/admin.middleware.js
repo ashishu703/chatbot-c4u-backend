@@ -13,15 +13,14 @@ const adminValidator = async (req, res, next) => {
     if (!authHeader || !authHeader.startsWith("Bearer ")) throw new Error("No token found");
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, jwtKey);
-    if (decoded.role !== ADMIN) throw new Error("Invalid token found");
+    if (decoded.role !== ADMIN) throw new InvalidCredentialsException();
     const admin = await (new AdminRepository()).findFirst({ where: { uid: decoded.uid } });
-    if (!admin) throw new Error("Admin not found");
+    if (!admin) throw new InvalidCredentialsException();
     req.decode = decoded;
     req.user = decoded;
     next();
   } catch (err) {
-    console.error("Server error in adminValidator:", err);
-    throw new InvalidCredentialsException()
+    next(err);
   }
 };
 

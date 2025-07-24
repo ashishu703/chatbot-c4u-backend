@@ -7,24 +7,24 @@ const { USER } = require("../types/roles.types");
 const validateUser = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) throw new Error("No token found");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) throw new InvalidCredentialsException();
 
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, jwtKey);
 
-    if (decoded.role !== USER) throw new Error("Invalid token found");
+    if (decoded.role !== USER) throw new InvalidCredentialsException();
 
     const uid = decoded.uid || decoded.id;
 
     const user = await (new UserRepository()).findFirst({ where: { uid } });
-    if (!user) throw new Error("User not found");
+    if (!user) throw new InvalidCredentialsException();
 
     req.user = user;
-    req.decode = { ...decoded, uid }; 
+    req.decode = { ...decoded, uid };
 
     next();
   } catch (err) {
-    throw new InvalidCredentialsException();
+    next(err);
   }
 };
 
