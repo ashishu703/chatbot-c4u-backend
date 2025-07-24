@@ -6,7 +6,7 @@ const {
 } = require("../utils/messages.utils");
 const ChatIOService = require("./ChatIOService");
 const MessengerProfileApi = require("../api/Messanger/MessengerProfileApi");
-const { DELIVERED,  SENT } = require("../types/broadcast-delivery-status.types");
+const { DELIVERED, SENT } = require("../types/broadcast-delivery-status.types");
 const MessengerWebhookDto = require("../dtos/Messenger/MessengerWebhookDto");
 const MessageRepository = require("../repositories/MessageRepository");
 const { INCOMING, OUTGOING } = require("../types/conversation-route.types");
@@ -22,23 +22,23 @@ class MessangerWebhookService {
     this.ioService = new ChatIOService();
   }
 
- 
+
 
   async processIncomingMessages(payload) {
     const { object, entry } = payload;
-    entry.forEach((entryObj) => {
 
+    for (const entryObj of entry) {
       const webhookDto = new MessengerWebhookDto(entryObj);
 
       if (webhookDto.isMessage()) {
         const messages = webhookDto.getMessages();
-        messages?.forEach(async (messageObj) => {
-          await this.processWebhookEntry(messageObj);
-        });
+        if (messages) {
+          for (const messageObj of messages) {
+            await this.processWebhookEntry(messageObj);
+          }
+        }
       }
-
-
-    });
+    }
   }
 
   async processWebhookEntry(messageObj) {
@@ -207,7 +207,7 @@ class MessangerWebhookService {
     }
   }
 
-  
+
 };
 
 
