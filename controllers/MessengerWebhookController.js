@@ -1,6 +1,6 @@
 const MessangerWebhookService = require("../services/MessangerWebhookService");
 const { verifyMetaWebhook } = require("../utils/meta.utils");
-const { formSuccess } = require("../utils/response.utils");
+const { formWebhookResponse } = require("../utils/response.utils");
 
 class MessengerWebhookController {
   constructor() {
@@ -8,15 +8,16 @@ class MessengerWebhookController {
   async handleWebhook(req, res, next) {
     try {
       const webhookPayload = req.body;
-
-      console.log({
+      console.log("Messenger Webhook Payload", {
         Messenger: JSON.stringify(webhookPayload)
       })
-
       await (new MessangerWebhookService()).processIncomingMessages(webhookPayload);
-      return formSuccess(res, { msg: "success" });
+      return formWebhookResponse(res);
     } catch (err) {
-      next(err);
+      console.log({
+        error: err
+      });
+      return formWebhookResponse(res);
     }
   }
 

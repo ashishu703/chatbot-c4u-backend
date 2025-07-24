@@ -1,9 +1,8 @@
 const InstagramWebhookService = require("../services/InstagramWebhookService");
 const { verifyMetaWebhook } = require("../utils/meta.utils");
-const { __t } = require("../utils/locale.utils");
-const { formSuccess } = require("../utils/response.utils");
+const { formWebhookResponse } = require("../utils/response.utils");
 
-class InstagramWebhookController  {
+class InstagramWebhookController {
   async handleWebhook(req, res, next) {
     try {
       const webhookPayload = req.body;
@@ -11,9 +10,12 @@ class InstagramWebhookController  {
         Instagram: JSON.stringify(webhookPayload)
       });
       await (new InstagramWebhookService()).processIncomingWebhook(webhookPayload);
-      return formSuccess(res, { msg: __t("success") });
+      return formWebhookResponse(res);
     } catch (err) {
-      next(err);
+      console.log({
+        error: err
+      });
+      return formWebhookResponse(res);
     }
   }
 

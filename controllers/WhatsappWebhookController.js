@@ -1,6 +1,6 @@
 const WhatsappWebhookService = require("../services/WhatsappWebhookService");
 const { verifyMetaWebhook } = require("../utils/meta.utils");
-const { formSuccess } = require("../utils/response.utils");
+const { formWebhookResponse } = require("../utils/response.utils");
 
 
 class WhatsappWebhookController {
@@ -14,9 +14,12 @@ class WhatsappWebhookController {
                 Whatsapp: JSON.stringify(webhookPayload)
             })
             await this.whatsappWebhookService.processIncomingWebhook(webhookPayload);
-            return formSuccess(res, {});
+            return formWebhookResponse(res);
         } catch (err) {
-            next(err);
+            console.log({
+                error: err
+            });
+            return formWebhookResponse(res);
         }
     }
 
