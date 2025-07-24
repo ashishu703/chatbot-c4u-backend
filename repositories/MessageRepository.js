@@ -50,7 +50,6 @@ class MessageRepository extends Repository {
   async paginateInboxMessages(uid, chatId, query = {}) {
     return this.paginate({
       where: { chat_id: chatId, uid },
-      orderDirection: "ASC",
       ...query
     });
   }
