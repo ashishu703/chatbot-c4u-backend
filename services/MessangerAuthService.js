@@ -19,8 +19,7 @@ class MessangerAuthService {
 
 
   async saveCurrentSession(token) {
-    await this.profileApi.initMeta();
-    const profile = await this.profileApi.fetchOwnerProfile()
+    const profile = await this.authApi.fetchOwnerProfile()
     const {
       id, picture: pictureObject, name, short_name: username
     } = profile;

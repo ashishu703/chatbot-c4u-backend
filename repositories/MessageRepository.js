@@ -42,12 +42,12 @@ class MessageRepository extends Repository {
   }
 
   async findInboxMessages(uid, chatId, query = {}) {
-    return this.find({ where: { chat_id: chatId, uid }, order: [["createdAt", "DESC"]] });
+    return this.find({ where: { chat_id: chatId, uid }, order: [["createdAt", "ASC"]] });
   }
   async paginateInboxMessages(uid, chatId, query = {}) {
     return this.paginate({
       where: { chat_id: chatId, uid },
-      order: [["createdAt", "DESC"]],
+      order: [["createdAt", "ASC"]],
       ...query
     });
   }
