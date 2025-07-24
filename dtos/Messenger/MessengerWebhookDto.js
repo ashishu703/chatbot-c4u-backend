@@ -9,13 +9,13 @@ class MessengerWebhookDto {
         return !!dataGet(this.data, "messaging");
     }
 
-   
+
     getMessages() {
         const messages = dataGet(this.data, "messaging");
         return messages.map((message) => new MessengerMessagesDto(message));
     }
 
-   
+
 
 
 }

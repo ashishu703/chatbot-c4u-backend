@@ -37,11 +37,11 @@ class MessengerMessagesDto {
         return !!dataGet(this.data, "message");
     }
 
-    isDeliveryEvent(){
+    isDeliveryEvent() {
         return !!dataGet(this.data, "delivery");
     }
 
-    isReadEvent(){
+    isReadEvent() {
         return !!dataGet(this.data, "read");
     }
 
@@ -96,7 +96,10 @@ class MessengerMessagesDto {
         return dataGet(this.data, "message.attachments.0.payload.url");
     }
 
-
+    getType() {
+        if (this.hasAttachment()) return this.getAttachmentType();
+        return TEXT;
+    }
 }
 
 module.exports = MessengerMessagesDto;
