@@ -103,16 +103,16 @@ class MessangerWebhookService {
 
     return this.chatRepository.createIfNotExists(
       {
-        "chat_id": chatId,
-        "avatar": profile_pic,
-        "uid": facebookPage.uid,
-        "account_id": facebookPage.account.id,
-        "page_id": facebookPage.id,
-        "chat_note": "",
-        "chat_tags": [],
-        "sender_name": `${first_name} ${last_name}`,
-        "sender_id": senderId,
-        "chat_status": OPEN,
+        chat_id: chatId,
+        avatar: profile_pic,
+        uid: facebookPage.uid,
+        account_id: facebookPage.account.id,
+        page_id: facebookPage.id,
+        chat_note: "",
+        chat_tags: [],
+        sender_name: `${first_name} ${last_name}`,
+        sender_id: senderId,
+        chat_status: OPEN,
       },
       {
         chat_id: chatId,
@@ -130,7 +130,6 @@ class MessangerWebhookService {
       {
         ...dbMessageObj,
         uid: chat.uid,
-        owner_id: chat.uid,
         chat_id: chatId,
         route: OUTGOING,
       },
@@ -154,7 +153,6 @@ class MessangerWebhookService {
       {
         ...dbMessageObj,
         uid: chat.uid,
-        owner_id: chat.uid,
         chat_id: chatId,
         route: INCOMING,
       },

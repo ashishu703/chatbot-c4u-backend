@@ -144,15 +144,15 @@ class InstagramWebhookService {
 
     return this.chatRepository.createIfNotExists(
       {
-        "chat_id": chatId,
-        "avatar": profile_pic,
-        "uid": instagramProfile.uid,
-        "account_id": instagramProfile.id,
-        "chat_note": "",
-        "chat_tags": [],
-        "sender_name": name,
-        "sender_id": senderId,
-        "chat_status": OPEN,
+        chat_id: chatId,
+        avatar: profile_pic,
+        uid: instagramProfile.uid,
+        account_id: instagramProfile.id,
+        chat_note: "",
+        chat_tags: [],
+        sender_name: name,
+        sender_id: senderId,
+        chat_status: OPEN,
       },
       {
         chat_id: chatId,

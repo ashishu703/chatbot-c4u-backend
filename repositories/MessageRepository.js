@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const { Message } = require("../models");
 const { READ } = require("../types/conversation-status.types");
 const Repository = require("./Repository");
@@ -34,7 +35,9 @@ class MessageRepository extends Repository {
       }
     });
     return this.find({
-      chat_id: chatId
+      where: {
+        chat_id: chatId
+      }
     });
   }
   async updateConversationReaction(messageId, reaction) {
