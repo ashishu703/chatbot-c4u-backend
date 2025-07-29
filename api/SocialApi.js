@@ -69,21 +69,27 @@ class SocialApi {
     }
 
     async handleResponse(response) {
+        console.log("response___", response);
         const contentType = response.headers.get("content-type");
 
         if (!response.ok) {
             if (contentType && contentType.includes("application/json")) {
                 const parsedError = await response.json();
-                const userMessage =
-                    parsedError?.error?.error_user_msg ||
-                    parsedError?.error?.message ||
-                    "Unknown error occurred";
 
-                // Throw a proper CustomException with the message
-                throw new CustomException(userMessage, response.status);
+                // Log full Meta error for debugging (optional)
+                console.error("Meta API Error:", parsedError);
+
+                const userMsg = parsedError?.error?.error_user_msg;
+                const devMsg = parsedError?.error?.message;
+
+                const finalMessage = userMsg || devMsg || "Unknown error from Meta API";
+
+                const error = new Error(finalMessage, response.status);
+                error.meta = parsedError; // optional: pass full meta error for dev
+                throw error;
             } else {
                 const errorText = await response.text();
-                throw new CustomException(`Request failed: ${response.status} - ${errorText}`, response.status);
+                throw new Error(`Request failed: ${response.status} - ${errorText}`, response.status);
             }
         }
 
