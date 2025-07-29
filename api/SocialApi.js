@@ -52,7 +52,7 @@ class SocialApi {
         };
 
         const response = await fetch(fullUrl, options);
-
+      
         return this.handleResponse(response);
     }
 
@@ -68,35 +68,7 @@ class SocialApi {
         return this.request("DELETE", url, null, query, customHeaders, forcedOptions = {});
     }
 
-    async handleResponse(response) {
-        console.log("response___", response);
-        const contentType = response.headers.get("content-type");
-
-        if (!response.ok) {
-            if (contentType && contentType.includes("application/json")) {
-                const parsedError = await response.json();
-
-                // Log full Meta error for debugging (optional)
-                console.error("Meta API Error:", parsedError);
-
-                const userMsg = parsedError?.error?.error_user_msg;
-                const devMsg = parsedError?.error?.message;
-
-                const finalMessage = userMsg || devMsg || "Unknown error from Meta API";
-
-                const error = new Error(finalMessage, response.status);
-                error.meta = parsedError; // optional: pass full meta error for dev
-                throw error;
-            } else {
-                const errorText = await response.text();
-                throw new Error(`Request failed: ${response.status} - ${errorText}`, response.status);
-            }
-        }
-
-        return contentType && contentType.includes("application/json")
-            ? response.json()
-            : response.text();
-    }
+    
 }
 
 module.exports = SocialApi;

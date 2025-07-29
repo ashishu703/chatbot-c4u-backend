@@ -4,13 +4,22 @@ const ApiException = require("../exceptions/ApiException");
 async function handleApiResponse(response) {
   if (!response.ok) {
     const errorData = await response.json();
-    const { code, message, type } = errorData.error || {};
+    const {
+      code,
+      message,
+      type,
+      error_user_msg
+    } = errorData.error || {};
+
+    const userFriendlyMessage = error_user_msg || message || "An error occurred";
+
     throw new ApiException(
-      message || "An error occurred",
+      userFriendlyMessage,
       type || "Unknown",
       code || response.status
     );
   }
+
   return await response.json();
 }
 
