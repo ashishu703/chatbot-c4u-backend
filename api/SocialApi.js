@@ -71,19 +71,19 @@ class SocialApi {
     async handleResponse(response) {
         const contentType = response.headers.get("content-type");
 
-        let parsedError;
         if (!response.ok) {
-            // Try parsing JSON if possible
             if (contentType && contentType.includes("application/json")) {
-                parsedError = await response.json();
-                const userMessage = parsedError?.error?.error_user_msg || parsedError?.error?.message || "Unknown error occurred";
-                const error = new Error(userMessage);
-                error.meta = parsedError;
-                throw error;
+                const parsedError = await response.json();
+                const userMessage =
+                    parsedError?.error?.error_user_msg ||
+                    parsedError?.error?.message ||
+                    "Unknown error occurred";
+
+                // Throw a proper CustomException with the message
+                throw new CustomException(userMessage, response.status);
             } else {
-                // fallback to text if not JSON
                 const errorText = await response.text();
-                throw new Error(`Request failed: ${response.status} - ${errorText}`);
+                throw new CustomException(`Request failed: ${response.status} - ${errorText}`, response.status);
             }
         }
 
