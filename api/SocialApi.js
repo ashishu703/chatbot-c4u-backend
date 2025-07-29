@@ -52,12 +52,13 @@ class SocialApi {
         };
 
 
-        console.log({
-            options
-        });
+
 
         const response = await fetch(fullUrl, options);
-      
+        console.log({
+            options,
+            response
+        });
         return this.handleResponse(response);
     }
 
