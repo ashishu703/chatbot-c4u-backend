@@ -14,9 +14,12 @@ class WhatsappTemplateController {
     async addTemplate(req, res, next) {
         try {
             const account = await this.socialAccountRepository.getWhatsappAccount(req.decode.uid);
-            await (new WhatsappTemplateService(null, account.token, account.social_account_id)).addTemplate(req.body);
-            return formSuccess(res, { msg: __t("template_pending_review") });
+            const response = await (new WhatsappTemplateService(null, account.token, account.social_account_id)).addTemplate(req.body);
+            return formSuccess(res, { msg: __t("template_pending_review"), response });
         } catch (err) {
+            console.log({
+                catch: err
+            });
             next(err);
         }
     }

@@ -51,19 +51,9 @@ class SocialApi {
             ...forcedOptions
         };
 
-
-
-        try {
-            const response = await fetch(fullUrl, options);
-            return this.handleResponse(response);
-
-        } catch (error) {
-            console.log({
-                error
-            });
-            throw error;
-        }
-
+        const response = await fetch(fullUrl, options);
+      
+        return this.handleResponse(response);
     }
 
     get(url, query = {}, customHeaders = {}, forcedOptions = {}) {
@@ -79,14 +69,10 @@ class SocialApi {
     }
 
     async handleResponse(response) {
-        if (response.error) {
-            if (response.error.error_user_msg || response.error.message) {
-                throw new Error(response?.error?.error_user_msg || response?.error?.message);
-            }
+        if (!response.ok) {
             const error = await response.text();
             throw new Error(`Request failed: ${response.status} - ${error}`);
         }
-
         return response.json();
     }
 }
