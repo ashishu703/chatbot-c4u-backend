@@ -15,14 +15,13 @@ function errorHandler(err, req, res, next) {
     });
   }
   else {
-    es.status(400).json({
+    return res.status(400).json({
       success: false,
       message: err.message || 'Internal Server Error',
       ...(appEnv === 'development' && { stack: err.stack }),
     });
   }
 
-  r
 }
 
 module.exports = {
