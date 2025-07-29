@@ -61,6 +61,10 @@ class SocialApi {
     }
 
     post(url, data = {}, query = {}, customHeaders = {}, forcedOptions = {}) {
+        console.log({
+            url: url,
+            data: data
+        })
         return this.request("POST", url, data, query, customHeaders, forcedOptions = {});
     }
 
