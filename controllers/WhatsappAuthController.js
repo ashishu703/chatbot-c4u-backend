@@ -11,7 +11,7 @@ class MessangerAuthController {
         try {
             const {
                 code,
-                business_id,
+                phone_number_id,
                 waba_id
             } = req.body
 
@@ -20,7 +20,7 @@ class MessangerAuthController {
             const authService = new WhatsappAuthService(user);
             const accountInfo = await authService.initiateUserAuth(
                 code,
-                business_id,
+                phone_number_id,
                 waba_id
             );
             if (!accountInfo) throw new Error("Authentication Failed");
