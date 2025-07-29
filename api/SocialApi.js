@@ -52,7 +52,7 @@ class SocialApi {
         };
 
         const response = await fetch(fullUrl, options);
-      
+
         return this.handleResponse(response);
     }
 
@@ -69,11 +69,27 @@ class SocialApi {
     }
 
     async handleResponse(response) {
+        const contentType = response.headers.get("content-type");
+
+        let parsedError;
         if (!response.ok) {
-            const error = await response.text();
-            throw new Error(`Request failed: ${response.status} - ${error}`);
+            // Try parsing JSON if possible
+            if (contentType && contentType.includes("application/json")) {
+                parsedError = await response.json();
+                const userMessage = parsedError?.error?.error_user_msg || parsedError?.error?.message || "Unknown error occurred";
+                const error = new Error(userMessage);
+                error.meta = parsedError;
+                throw error;
+            } else {
+                // fallback to text if not JSON
+                const errorText = await response.text();
+                throw new Error(`Request failed: ${response.status} - ${errorText}`);
+            }
         }
-        return response.json();
+
+        return contentType && contentType.includes("application/json")
+            ? response.json()
+            : response.text();
     }
 }
 
