@@ -11,7 +11,7 @@ const whatsappTemplateController = new WhatsappTemplateController();
 
 
 router.post(
-  "/auth_init",
+  "/auth-init",
   validateUser,
   authController.initiateUserAuth.bind(authController)
 );
