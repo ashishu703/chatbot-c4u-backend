@@ -84,6 +84,9 @@ class SocialApi {
 
     async handleResponse(response) {
         if (!response.ok) {
+            if (response.error && (response?.error?.error_user_msg || response?.error?.message)) {
+                throw new Error(response?.error?.error_user_msg || response?.error?.message);
+            }
             const error = await response.text();
             throw new Error(`Request failed: ${response.status} - ${error}`);
         }
