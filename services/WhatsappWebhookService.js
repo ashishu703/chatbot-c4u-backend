@@ -29,25 +29,29 @@ class WhatsappWebhookService {
 
   async processIncomingWebhook(payload) {
     const { entry } = payload;
-    entry.forEach(async (entryObj) => {
+    for (const entryObj of entry) {
       const webhookDto = new WhatsappWebhookDto(entryObj);
-
-      const changes = webhookDto.getChanges();
-
-      const account = await this.socialAccountRepository.findFirst({
-        where: { social_account_id: webhookDto.getWabaId() }
-      })
-
-      if (!account) {
-        throw new ProfileNotFoundException();
+      if (webhookDto.isSubscriptionEvent()) {
+        //handle subscription event
       }
+      else {
+        const changes = webhookDto.getChanges();
 
-      changes?.forEach(async (change) => {
-        await this.processWebhookEntry(change, account);
-      });
+        const account = await this.socialAccountRepository.findFirst({
+          where: { social_account_id: webhookDto.getWabaId() },
+        });
 
+        if (!account) {
+          throw new ProfileNotFoundException();
+        }
 
-    });
+        if (changes) {
+          for (const change of changes) {
+            await this.processWebhookEntry(change, account);
+          }
+        }
+      }
+    }
   }
 
   async processWebhookEntry(messageObj, whatsappProfile) {

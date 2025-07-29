@@ -15,6 +15,10 @@ class WhatsappWebhookDto {
         return changes.map((change) => new WhatsappMessageChangeDto(change));
     }
 
+    isSubscriptionEvent(){
+        return dataGet(this.data, "changes.0.value.event") === 'PARTNER_APP_INSTALLED';
+    }
+
 
 }
 
