@@ -53,13 +53,17 @@ class SocialApi {
 
 
 
+        try {
+            const response = await fetch(fullUrl, options);
+            return this.handleResponse(response);
 
-        const response = await fetch(fullUrl, options);
-        console.log({
-            options,
-            response
-        });
-        return this.handleResponse(response);
+        } catch (error) {
+            console.log({
+                error
+            });
+            throw error;
+        }
+
     }
 
     get(url, query = {}, customHeaders = {}, forcedOptions = {}) {
