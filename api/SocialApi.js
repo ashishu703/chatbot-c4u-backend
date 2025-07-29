@@ -51,6 +51,11 @@ class SocialApi {
             ...forcedOptions
         };
 
+
+        console.log({
+            options
+        });
+
         const response = await fetch(fullUrl, options);
       
         return this.handleResponse(response);

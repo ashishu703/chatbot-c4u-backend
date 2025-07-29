@@ -6,7 +6,7 @@ class WhatsappTemplateApi extends WhatsappApi {
     }
 
     async createTemplete(body) {
-        return this.post(`/${this.wabaId}/message_templates`, JSON.stringify(body));
+        return this.post(`/${this.wabaId}/message_templates`, body);
     }
 
     async getTempletes() {
