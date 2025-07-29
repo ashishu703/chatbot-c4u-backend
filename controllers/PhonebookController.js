@@ -102,6 +102,7 @@ class PhonebookController {
         where: {
           uid: user.uid,
         },
+        include: ["phonebook"],
         ...query,
       });
       return formSuccess(res, { ...contacts });
