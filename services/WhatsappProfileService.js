@@ -22,7 +22,7 @@ class WhatsappProfileService {
 
   async deleteProfile(wabaId) {
     const profile = await this.socialAccountRepository.findFirst({
-      social_account_id: wabaId
+      where: { social_account_id: wabaId }
     });
     await this.whatsappAuthApi.initMeta();
 

@@ -20,10 +20,6 @@ class IOService {
 
 
   async emit(socketId, event, data) {
-    console.log("SOCKET_EVENT", {
-      event,
-      data
-    })
     this.io.to(socketId).emit(event, data);
   }
 
