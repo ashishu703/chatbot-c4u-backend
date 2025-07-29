@@ -6,6 +6,10 @@ class WhatsappTemplateApi extends WhatsappApi {
     }
 
     async createTemplete(body) {
+        console.log({
+            check : body,
+            url : `/${this.wabaId}/message_templates`
+        });
         return this.post(`/${this.wabaId}/message_templates`, body);
     }
 
