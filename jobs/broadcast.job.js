@@ -49,7 +49,8 @@ async function processBroadcast(campaign) {
 
     const user = account.user;
 
-    const planDays = getNumberOfDaysFromTimestamp(user.plan_expire);
+    const planDays = getNumberOfDaysFromTimestamp(user.plan_expiration);
+    
     if (planDays < 1) {
       return broadcastRepository.updateStatus(
         campaign.broadcast_id,
@@ -128,7 +129,7 @@ async function runBroadcastJob() {
 
 
 async function sendTemplate(message, account) {
-  const template = JSON.parse(message.broadcast.templet);
+  const template = message.broadcast.templet;
 
   const messagePayload = await templetService.prepareTemplate(
     template,

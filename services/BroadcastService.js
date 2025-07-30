@@ -191,7 +191,7 @@ class DashboardService {
   }
 
   async getBroadcastLogs(broadcast_id, uid) {
-    const logs = await this.broadcastLogRepository.find({ broadcast_id, uid });
+    const logs = await this.broadcastLogRepository.find({where: { broadcast_id, uid }});
 
     const getSent = logs?.filter(i => i.delivery_status === "sent")
 

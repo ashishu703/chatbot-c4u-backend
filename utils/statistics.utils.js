@@ -22,8 +22,8 @@ async function getUserSignupsByMonth() {
   const users = await (new UserRepository()).find();
   const { paidUsers, unpaidUsers } = users.reduce(
     (acc, user) => {
-      const planExpire = user.plan_expire
-        ? new Date(parseInt(user.plan_expire))
+      const planExpire = user.plan_expiration
+        ? new Date(parseInt(user.plan_expiration))
         : null;
       const isPaid = planExpire ? planExpire > currentDate : false;
       if (isPaid) {

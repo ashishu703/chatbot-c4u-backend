@@ -31,7 +31,7 @@ class UserRepository extends Repository {
 
     return await user.update({
       plan: JSON.stringify(plan),
-      plan_expire: timeStamp,
+      plan_expiration: timeStamp,
       trial: plan.is_trial ? 1 : 0,
     });
   }

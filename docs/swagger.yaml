@@ -1075,7 +1075,7 @@ components:
         plan:
           type: string
           example: "{\"id\":37,\"title\":\"abc\",\"short_description\":\"456\",\"allow_tag\":1,\"allow_note\":1,\"allow_chatbot\":1,\"contact_limit\":\"10000\",\"allow_api\":1,\"is_trial\":0,\"price\":10000,\"price_strike\":\"1000\",\"plan_duration_in_days\":\"10000\",\"createdAt\":\"2025-05-24T12:26:25.000Z\"}"
-        plan_expire:
+        plan_expiration:
           type: string
           example: "2612097040495"
         trial:
@@ -1101,7 +1101,7 @@ components:
         - mobile_with_country_code
         - timezone
         - plan
-        - plan_expire
+        - plan_expiration
         - trial
         - contact
     AgentLogin:
