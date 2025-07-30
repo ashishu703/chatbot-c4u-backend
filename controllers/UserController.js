@@ -20,8 +20,8 @@ class UserController {
 
   async getUser(req, res, next) {
     try {
-      const admin = await this.userService.getUser(req.decode.uid);
-      return formSuccess(res, { data: admin });
+      const user = await this.userService.getUser(req.decode.uid);
+      return formSuccess(res, { data: user });
     } catch (err) {
       next(err);
     }

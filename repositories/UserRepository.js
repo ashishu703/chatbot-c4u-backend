@@ -1,9 +1,29 @@
+const { Sequelize } = require("sequelize");
 const { User, Plan, WebPrivate } = require("../models");
 const { addDaysToCurrentTimestamp } = require("../utils/date.utils");
 const Repository = require("./Repository");
 class UserRepository extends Repository {
   constructor() {
     super(User, Plan, WebPrivate);
+  }
+
+  async getUser(uid) {
+    return this.model.findOne({
+      where: { uid },
+      include: ["plan"],
+      attributes: {
+        include: [
+          [
+            Sequelize.literal(`(
+                        SELECT COUNT(*)
+                        FROM "contacts" as c
+                        WHERE c."uid" = "User"."uid"
+                    )`),
+            'contact_counts'
+          ]
+        ]
+      }
+    });
   }
 
   async findByEmail(email) {

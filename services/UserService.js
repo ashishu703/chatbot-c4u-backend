@@ -54,7 +54,7 @@ class UserService {
   }
 
   async getUser(uid) {
-    return this.userRepository.findByUid(uid);
+    return this.userRepository.getUser(uid);
   }
 
   async updateUserPlan(uid, plan) {
