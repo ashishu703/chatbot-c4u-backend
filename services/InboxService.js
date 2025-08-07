@@ -7,7 +7,8 @@ const MessageRepository = require("../repositories/MessageRepository");
 const ChatNotFoundException = require("../exceptions/CustomExceptions/ChatNotFoundException");
 const AgentChatRepository = require("../repositories/AgentChatRepository");
 const { mergeArrays } = require("../utils/others.utils");
-
+const { SocialAccount } = require("../models");
+const { WHATSAPP } = require("../types/social-platform-types");
 class InboxService {
 
   constructor() {
@@ -19,10 +20,19 @@ class InboxService {
     this.messageRepository = new MessageRepository();
     this.agentChatRepository = new AgentChatRepository();
   }
-  
+
 
   async getChats(uid, query = {}) {
     return this.chatRepository.paginateInboxChats(uid, query);
+  }
+  async getWhatsappChats(uid, query = {}) {
+    return this.chatRepository.paginateInboxChats(uid, {
+      ...{
+        include: [
+          { model: SocialAccount, as: "account", required: true, where: { platform: WHATSAPP } }
+        ]
+      }, ...query
+    });
   }
 
   async getConversation(uid, chatId, query = {}) {
@@ -116,7 +126,7 @@ class InboxService {
     return mergeArrays(contacts, chats);
   }
 
- 
+
 
 
 

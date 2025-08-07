@@ -22,6 +22,17 @@ class InboxController {
     }
   }
 
+    async getWhatsappChats(req, res, next) {
+    try {
+      const user = req.decode;
+      const query = req.query;
+      const chats = await this.inboxService.getWhatsappChats(user.uid, query);
+      return formSuccess(res, chats);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async getConversation(req, res, next) {
     try {
       const { chatId } = req.body;

@@ -11,6 +11,11 @@ router.get(
   validateUser,
   inboxController.getChats.bind(inboxController)
 );
+router.get(
+  "/get_whatsapp_chats",
+  validateUser,
+  inboxController.getWhatsappChats.bind(inboxController)
+);
 router.post(
   "/get_convo",
   validateUser,
