@@ -29,7 +29,13 @@ class SocialApi {
     }
 
     async request(method, url, data = null, query = {}, customHeaders = {}, forcedOptions = {}) {
-      
+        console.log({
+            method,
+            url,
+            data,
+            query,
+            customHeaders
+        });
         const queryString = new URLSearchParams(query).toString();
 
         const isFullUrl = /^https?:\/\//i.test(url);
