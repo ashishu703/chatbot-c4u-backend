@@ -602,7 +602,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"pay_offline_id\": \"Suscipit \",\r\n        \"pay_offline_key\": \"Consequat\",\r\n        \"offline_active\": 1,\r\n        \"pay_stripe_id\": \"pk_test_51RBt8Y2cj1rG0o7qU7p8pdE1da07IQ57Qou03m3YDvgR8Vo85WyhNKhKqPua2sEG00SBl2QlCMNTCy0oJFL0PnHX00YwjhXRhV\",\r\n        \"pay_stripe_key\": \"sk_test_51RBt8Y2cj1rG0o7qJDC7iv4QOw4ifYQMwnAWMLIcOZrvg4KKvDyY5M62yYnc85RSMLuBW4Pp1fIlEvIAmzVzHxD100fnnvYjE9\",\r\n        \"stripe_active\": 1,\r\n        \"createdAt\": \"2024-02-26T17:06:06.000Z\",\r\n        \"pay_paypal_id\": \"Tempora ut debitis n\",\r\n        \"pay_paypal_key\": \"Cupidatat saepe comm\",\r\n        \"paypal_active\": \"1\",\r\n        \"rz_id\": \"Sint aut dignissimos\",\r\n        \"rz_key\": \"Pariatur Iusto quos\",\r\n        \"rz_active\": \"1\"\r\n}",
+									"raw": "{\r\n    \"pay_offline_id\": \"Suscipit \",\r\n        \"pay_offline_key\": \"Consequat\",\r\n        \"offline_active\": 1,\r\n        \"pay_stripe_id\": \"your stripe id\",\r\n        \"pay_stripe_key\": \"your stripe key\",\r\n        \"stripe_active\": 1,\r\n        \"createdAt\": \"2024-02-26T17:06:06.000Z\",\r\n        \"pay_paypal_id\": \"your paypal id\",\r\n        \"pay_paypal_key\": \"your paypal key\",\r\n        \"paypal_active\": \"1\",\r\n        \"rz_id\": \"your razorpay id\",\r\n        \"rz_key\": \"your razorpay key\",\r\n        \"rz_active\": \"1\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"

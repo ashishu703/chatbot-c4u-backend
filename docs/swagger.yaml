@@ -207,10 +207,10 @@ components:
           example: 1
         pay_stripe_id:
           type: string
-          example: pk_test_51RBt8Y2cj1rG0o7qU7p8pdE1da07IQ57Qou03m3YDvgR8Vo85WyhNKhKqPua2sEG00SBl2QlCMNTCy0oJFL0PnHX00YwjhXRhV
+          example: your stripe id
         pay_stripe_key:
           type: string
-          example: sk_test_51RBt8Y2cj1rG0o7qJDC7iv4QOw4ifYQMwnAWMLIcOZrvg4KKvDyY5M62yYnc85RSMLuBW4Pp1fIlEvIAmzVzHxD100fnnvYjE9
+          example: your stripe key
         stripe_active:
           type: integer
           example: 1
