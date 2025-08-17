@@ -1,0 +1,2 @@
+const { WebPrivate } = require('./models');
+ 

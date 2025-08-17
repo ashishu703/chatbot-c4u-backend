@@ -6,12 +6,37 @@ const { __t } = require("../utils/locale.utils");
 class InstagramAuthController  {
   async initiateUserAuth(req, res, next) {
     try {
-      const { code } = req.body;
+      console.log('🚀 InstagramAuthController.initiateUserAuth started');
+      console.log('🔍 Request body:', {
+        hasCode: !!req.body.code,
+        hasRedirectUri: !!req.body.redirect_uri,
+        redirectUri: req.body.redirect_uri
+      });
+      console.log('🔍 User from middleware:', {
+        uid: req.decode?.uid,
+        role: req.decode?.role,
+        name: req.decode?.name
+      });
+      
+      const { code, redirect_uri } = req.body;
       const user = req.decode;
+      
+      if (!user || !user.uid) {
+        console.error('❌ No user found in request');
+        return res.status(401).json({ success: false, message: 'User not authenticated' });
+      }
+      
       const authService = new InstagramAuthService(user, null);
-      await authService.initiateUserAuth(code);
+      const result = await authService.initiateUserAuth(code, redirect_uri);
+      
+      console.log('✅ InstagramAuthController.initiateUserAuth completed successfully');
       return formSuccess(res,{ msg: __t("success") });
     } catch (err) {
+      console.error('❌ InstagramAuthController.initiateUserAuth failed:', {
+        message: err.message,
+        stack: err.stack,
+        name: err.name
+      });
       next(err);
     }
   }

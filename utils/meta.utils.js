@@ -3,7 +3,15 @@ const ApiException = require("../exceptions/ApiException");
 
 async function handleApiResponse(response) {
   if (!response.ok) {
-    const errorData = await response.json();
+    let errorData;
+    try {
+      errorData = await response.json();
+    } catch (e) {
+      // If response is not JSON, get it as text
+      const errorText = await response.text();
+      errorData = { error: { message: errorText, code: response.status } };
+    }
+    
     const {
       code,
       message,
@@ -20,7 +28,12 @@ async function handleApiResponse(response) {
     );
   }
 
-  return await response.json();
+  try {
+    return await response.json();
+  } catch (e) {
+    // If response is not JSON, return the text
+    return await response.text();
+  }
 }
 
 async function verifyMetaWebhook(req) {

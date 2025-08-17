@@ -4,6 +4,8 @@ const SocialAccountRepository = require("../repositories/SocialAccountRepository
 const { MESSANGER } = require("../types/social-platform-types");
 class FacebookProfileService {
   constructor(user, accessToken) {
+    this.user = user;
+    this.accessToken = accessToken;
     this.messangerProfileApi = new MessengerProfileApi(user, accessToken);
     this.socialAccountRepository = new SocialAccountRepository();
     this.chatRepository = new ChatRepository();

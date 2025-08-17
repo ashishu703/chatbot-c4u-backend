@@ -9,6 +9,10 @@ class InstagramApi extends SocialApi {
 
     async initMeta() {
         const {
+            facebook_client_id,
+            facebook_client_secret,
+            facebook_graph_version,
+            facebook_auth_scopes,
             instagram_client_id,
             instagram_client_secret,
             instagram_graph_version,
@@ -16,10 +20,13 @@ class InstagramApi extends SocialApi {
             instagram_redirect_url,
         } = await this.webPublicRepository.getWebPublic();
 
-        this.AppId = instagram_client_id;
-        this.AppSecret = instagram_client_secret;
-        this.APIURL = `https://graph.instagram.com/${instagram_graph_version}`;
-        this.scopes = instagram_auth_scopes;
+        // Prefer Facebook/Meta app credentials for OAuth; fall back to Instagram fields if those are populated for legacy configs
+        this.AppId = facebook_client_id || instagram_client_id;
+        this.AppSecret = facebook_client_secret || instagram_client_secret;
+        // Use Facebook Graph for OAuth/token; keep Instagram Graph for IG user endpoints
+        this.APIURL = `https://graph.instagram.com/${instagram_graph_version || 'v18.0'}`;
+        this.oauthGraphVersion = facebook_graph_version || 'v18.0';
+        this.scopes = facebook_auth_scopes || instagram_auth_scopes;
         this.redirectUri = instagram_redirect_url;
         this.subscribedFields = [
             "messages",
