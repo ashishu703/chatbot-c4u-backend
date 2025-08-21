@@ -21,6 +21,7 @@ class InstagramWebhookController {
 
   async verifyWebhook(req, res) {
     const { status, message, data } = await verifyMetaWebhook(req);
+    res.set("Content-Type", "text/plain");
     return res.status(status).send(data);
   }
 };

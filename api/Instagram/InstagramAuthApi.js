@@ -98,7 +98,7 @@ class InstagramAuthApi extends InstagramApi {
             
             // 2) Find first page with instagram_business_account
             for (const page of pages) {
-                const igUrl = `https://graph.facebook.com/${graphVersion}/${page.id}?fields=instagram_business_account&access_token=${this.accessToken}`;
+                const igUrl = `https://graph.facebook.com/${graphVersion}/${page.id}?fields=instagram_business_account&access_token=${page.access_token || this.accessToken}`;
                 console.log('🔍 Checking page for IG account:', page.id, page.name);
                 
                 const igResp = await fetch(igUrl);
@@ -109,7 +109,7 @@ class InstagramAuthApi extends InstagramApi {
                         console.log('✅ Found Instagram business account:', ig.id);
                         
                         // 3) Fetch IG account details
-                        const igDetailsUrl = `https://graph.facebook.com/${graphVersion}/${ig.id}?fields=id,username,name,profile_picture_url&access_token=${this.accessToken}`;
+                        const igDetailsUrl = `https://graph.facebook.com/${graphVersion}/${ig.id}?fields=id,username,name,profile_picture_url&access_token=${page.access_token || this.accessToken}`;
                         const igDetailsResp = await fetch(igDetailsUrl);
                         
                         if (igDetailsResp.ok) {
@@ -126,6 +126,8 @@ class InstagramAuthApi extends InstagramApi {
                                 username: igDetails.username || '',
                                 name: igDetails.name || '',
                                 user_id: igDetails.id,
+                                page_id: page.id,
+                                page_access_token: page.access_token
                             };
                         }
                     }
@@ -142,12 +144,15 @@ class InstagramAuthApi extends InstagramApi {
         }
     }
 
-    async subscribeWebhook(igBusinessAccountId) {
-        // Subscribe app to IG Business account events
+    async subscribeWebhook(profile) {
+        console.log('🔍 instagram profile ',profile);
+        // Subscribe app to IG Business account events using the PAGE ID and PAGE access token
         const graphVersion = this.oauthGraphVersion || 'v18.0';
-        const url = `https://graph.facebook.com/${graphVersion}/${igBusinessAccountId}/subscribed_apps`;
+        const pageId = profile.page_id;
+        const pageAccessToken = profile.page_access_token || this.accessToken;
+        const url = `https://graph.facebook.com/${graphVersion}/${pageId}/subscribed_apps`;
         
-        console.log('🔍 Subscribing to webhook for IG account:', igBusinessAccountId);
+        console.log('🔍 Subscribing to webhook for Page:', pageId);
         
         const response = await fetch(url, {
             method: 'POST',
@@ -155,7 +160,7 @@ class InstagramAuthApi extends InstagramApi {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: new URLSearchParams({
-                access_token: this.accessToken,
+                access_token: pageAccessToken,
                 subscribed_fields: this.subscribedFields.join(','),
             }),
         });
@@ -163,7 +168,6 @@ class InstagramAuthApi extends InstagramApi {
         if (!response.ok) {
             const errorText = await response.text();
             console.error('❌ Failed to subscribe webhook:', response.status, errorText);
-            // Don't throw - webhook subscription is not critical for auth
             return false;
         }
         

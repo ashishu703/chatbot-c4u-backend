@@ -30,7 +30,6 @@ class PhonebookService {
 
 async deletePhonebook(uid, id) {
   await this.phonebookRepository.delete({ id }); 
-  await this.contactRepository.deleteByPhonebookId(id, uid);
   return true;
 }
 
@@ -46,15 +45,8 @@ async deletePhonebook(uid, id) {
 
     const contacts = csvData.map((item) => ({
       uid,
-      phonebook_id,
-      phonebook_name,
       name: item.name,
       mobile: item.mobile,
-      var1: item.var1,
-      var2: item.var2,
-      var3: item.var3,
-      var4: item.var4,
-      var5: item.var5,
     }));
 
     await this.contactRepository.bulkCreate(contacts);

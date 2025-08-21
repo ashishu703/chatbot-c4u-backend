@@ -75,8 +75,8 @@ class InstagramAuthService {
       // Ensure we subscribe to the correct IG business account
       const profile = await this.instagramAuthApi.fetchOwnerProfile();
       if (profile && profile.id) {
-        console.log('🔍 Subscribing to webhook for IG account:', profile.id);
-        const result = await this.instagramAuthApi.subscribeWebhook(profile.id);
+        console.log('🔍 Subscribing to webhook for IG account via Page:', profile.page_id);
+        const result = await this.instagramAuthApi.subscribeWebhook(profile);
         console.log('✅ Webhook subscription result:', result);
         return result;
       }
@@ -107,6 +107,9 @@ class InstagramAuthService {
         id, profile_picture_url, username, name, user_id
       } = profile;
 
+      // Prefer Page access token for IG Graph operations (messaging/profile), fallback to user token
+      const pageOrUserToken = profile.page_access_token || token;
+
       const result = await this.socialAccountRepository.updateOrCreateInstagramProfile(
         id,
         this.user.uid,
@@ -114,7 +117,7 @@ class InstagramAuthService {
         username,
         name,
         user_id,
-        token
+        pageOrUserToken
       );
       
       console.log('✅ Instagram profile saved to database:', !!result);

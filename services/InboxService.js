@@ -36,7 +36,18 @@ class InboxService {
   }
 
   async getConversation(uid, chatId, query = {}) {
-    return this.messageRepository.paginateInboxMessages(uid, chatId, query);
+    let resolvedChatId = chatId;
+    if (typeof resolvedChatId === "string") {
+      const numeric = parseInt(resolvedChatId, 10);
+      if (!Number.isFinite(numeric)) {
+        const chat = await this.chatRepository.findFirst({ where: { uid, chat_id: resolvedChatId } });
+        if (!chat) throw new ChatNotFoundException();
+        resolvedChatId = chat.id;
+      } else {
+        resolvedChatId = numeric;
+      }
+    }
+    return this.messageRepository.paginateInboxMessages(uid, resolvedChatId, query);
   }
 
   async deleteChat(uid, chatId) {

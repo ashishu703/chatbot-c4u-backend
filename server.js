@@ -33,6 +33,7 @@ app.use('/api/messanger', require('./routes/messanger.routes.js'))
 app.use('/api/instagram', require('./routes/instagram.routes.js'))
 app.use('/api/whatsapp', require('./routes/whatsapp.routes.js'))
 app.use('/api/quick-replies', require('./routes/quick-replies.routes.js'))
+app.use('/api/ai-integration', require('./routes/ai-integration.routes.js'))
 app.use(express.static(path.resolve(process.cwd(), "./client/public")));
 
 app.get("*", function (request, response) {

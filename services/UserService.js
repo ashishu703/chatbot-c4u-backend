@@ -194,14 +194,9 @@ class UserService {
       phoneBookId,
       phoneNumber,
       contactName,
-      var1,
-      var2,
-      var3,
-      var4,
-      var5,
     }
   ) {
-    if (!phoneBookName || !phoneBookId || !phoneNumber || !contactName) {
+    if (!phoneNumber || !contactName) {
       throw new NotEnoughInputProvidedException();
     }
 
@@ -215,15 +210,8 @@ class UserService {
 
     return this.contactRepository.create({
       uid,
-      phonebook_id: phoneBookId,
-      phonebook_name: phoneBookName,
       name: contactName,
       mobile: phoneNumber,
-      var1: var1 || "",
-      var2: var2 || "",
-      var3: var3 || "",
-      var4: var4 || "",
-      var5: var5 || "",
     });
   }
 

@@ -16,6 +16,12 @@ router.post(
   authController.initiateUserAuth.bind(authController)
 );
 
+// Debug health endpoint for connectivity checks
+router.get(
+  "/health",
+  (req, res) => res.json({ ok: true, ts: Date.now() })
+);
+
 router.get(
   "/accounts",
   validateUser,

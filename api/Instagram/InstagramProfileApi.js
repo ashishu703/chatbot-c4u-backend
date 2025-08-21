@@ -6,8 +6,9 @@ class InstagramProfileApi extends InstagramApi {
     }
 
     async fetchProfile(id) {
+        // For Instagram Messaging, allowed fields are name and profile_pic with a Page access token
         return this.get(`/${id}`, {
-            fields: "name,username,profile_pic",
+            fields: "name,profile_pic",
             access_token: this.accessToken,
         });
     }

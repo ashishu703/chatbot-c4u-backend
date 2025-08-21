@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
       facebook_client_secret: DataTypes.STRING,
       facebook_graph_version: DataTypes.STRING,
       facebook_auth_scopes: DataTypes.TEXT,
-      meta_webhook_verifcation_key: DataTypes.TEXT,
+      meta_webhook_verification_key: DataTypes.TEXT,
       instagram_client_id: DataTypes.STRING,
       instagram_client_secret: DataTypes.STRING,
       instagram_graph_version: DataTypes.STRING,

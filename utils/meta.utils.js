@@ -7,7 +7,6 @@ async function handleApiResponse(response) {
     try {
       errorData = await response.json();
     } catch (e) {
-      // If response is not JSON, get it as text
       const errorText = await response.text();
       errorData = { error: { message: errorText, code: response.status } };
     }
@@ -40,16 +39,17 @@ async function verifyMetaWebhook(req) {
   let mode = req.query["hub.mode"];
   let token = req.query["hub.verify_token"];
   let challenge = req.query["hub.challenge"];
-  const { meta_webhook_verifcation_key } =
-    await (new WebPublicRepository()).getWebPublic();
+  const webPublic = await (new WebPublicRepository()).getWebPublic();
+  const configuredToken = webPublic.meta_webhook_verification_key || webPublic.meta_webhook_verifcation_key;
 
   if (mode && token) {
-    if (mode === "subscribe" && token === meta_webhook_verifcation_key) {
+    if (mode === "subscribe" && token === configuredToken) {
       console.log("WEBHOOK_VERIFIED");
       return {
         status: 200,
         message: "WEBHOOK_VERIFIED",
-        data: challenge,
+        // Return the raw challenge string exactly as Meta expects
+        data: `${challenge}`,
       };
     }
   }

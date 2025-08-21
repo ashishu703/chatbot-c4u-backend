@@ -17,7 +17,7 @@ const defaultAppConfig = {
     facebook_client_secret: "",
     facebook_graph_version: "",
     facebook_auth_scopes: "",
-    meta_webhook_verifcation_key: "",
+    meta_webhook_verification_key: "",
     instagram_client_id: "",
     instagram_client_secret: "",
     instagram_graph_version: "",

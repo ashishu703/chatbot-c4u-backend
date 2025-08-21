@@ -71,22 +71,15 @@ class PhonebookController {
 
   async addSingleContact(req, res, next) {
     try {
-      const { id, phonebook_name, mobile, name, var1, var2, var3, var4, var5 } =
+      const { id, phonebook_name, mobile, name } =
         req.body;
       const user = req.decode;
       if (!mobile) {
         throw new MobileNumberRequiredException();
       }
       await this.phonebookService.addSingleContact(user.uid, {
-        phonebook_id: id,
-        phonebook_name,
         mobile,
         name,
-        var1,
-        var2,
-        var3,
-        var4,
-        var5,
       });
       return formSuccess(res, { msg: __t("contacts_inserted") });
     } catch (err) {
@@ -102,7 +95,7 @@ class PhonebookController {
         where: {
           uid: user.uid,
         },
-        include: ["phonebook"],
+        // phonebook association removed
         ...query,
       });
       return formSuccess(res, { ...contacts });

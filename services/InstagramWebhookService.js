@@ -135,11 +135,17 @@ class InstagramWebhookService {
 
     const senderId = messageObj.getTargetId();
     await this.instagramProfileApi.initMeta();
-    const {
-      name,
-      profile_pic
-    } = await this.instagramProfileApi.setToken(instagramProfile.token)
-      .fetchProfile(senderId);
+    let name = "";
+    let profile_pic = null;
+    try {
+      const resp = await this.instagramProfileApi
+        .setToken(instagramProfile.token)
+        .fetchProfile(senderId);
+      name = resp?.name || "";
+      profile_pic = resp?.profile_pic || null;
+    } catch (e) {
+      console.error("Instagram fetchProfile failed (non-blocking):", e?.message || e);
+    }
 
 
     return this.chatRepository.createIfNotExists(

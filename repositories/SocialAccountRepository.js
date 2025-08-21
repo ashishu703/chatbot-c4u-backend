@@ -16,21 +16,24 @@ class SocialAccountRepository extends Repository {
     instagramUserId,
     token
   ) {
-    return this.updateOrCreate({
-      platform: INSTAGRAM,
-      uid: userId,
-      social_user_id: instagramUserId,
-      social_account_id: accountId,
-      name: name,
-      username: username,
-      token: token,
-      avatar: profile_picture_url,
-      expires_in: 0
-    }, {
-      uid: userId,
-      social_account_id: accountId,
-      platform: INSTAGRAM,
-    })
+    // Upsert by primary key `id` to avoid duplicate PK Validation errors
+    return this.updateOrCreate(
+      {
+        id: accountId,
+        platform: INSTAGRAM,
+        uid: userId,
+        social_user_id: instagramUserId,
+        social_account_id: accountId,
+        name: name,
+        username: username,
+        token: token,
+        avatar: profile_picture_url,
+        expires_in: 0,
+      },
+      {
+        id: accountId,
+      }
+    )
   }
   async updateOrCreateFacebookProfile(
     userId,
@@ -41,21 +44,24 @@ class SocialAccountRepository extends Repository {
     accessToken,
   ) {
 
-    return this.updateOrCreate({
-      platform: MESSANGER,
-      avatar,
-      uid: userId,
-      social_user_id: accountId,
-      social_account_id: accountId,
-      name: name,
-      username: username,
-      token: accessToken,
-      expires_in: 0
-    }, {
-      uid: userId,
-      social_account_id: accountId,
-      platform: MESSANGER
-    })
+    // Upsert by primary key `id` to avoid duplicate PK Validation errors
+    return this.updateOrCreate(
+      {
+        id: accountId,
+        platform: MESSANGER,
+        avatar,
+        uid: userId,
+        social_user_id: accountId,
+        social_account_id: accountId,
+        name: name,
+        username: username,
+        token: accessToken,
+        expires_in: 0,
+      },
+      {
+        id: accountId,
+      }
+    )
   }
 
   async updateOrCreateWhatsappProfile(
@@ -68,21 +74,25 @@ class SocialAccountRepository extends Repository {
 
   ) {
 
-    return this.updateOrCreate({
-      platform: WHATSAPP,
-      avatar: null,
-      uid: userId,
-      social_user_id: phoneNumberId,
-      social_account_id: wabaId,
-      name: name,
-      username: socialUserId,
-      token: accessToken,
-      expires_in: 0
-    }, {
-      uid: userId,
-      social_account_id: wabaId,
-      platform: WHATSAPP,
-    })
+    console.log("[SocialAccountRepository] upsert whatsapp", { userId, wabaId, phoneNumberId, socialUserId, name, hasToken: !!accessToken });
+    // Use primary key id for uniqueness to avoid duplicate PK Validation errors
+    return this.updateOrCreate(
+      {
+        id: wabaId,
+        platform: WHATSAPP,
+        avatar: null,
+        uid: userId,
+        social_user_id: phoneNumberId,
+        social_account_id: wabaId,
+        name: name,
+        username: socialUserId,
+        token: accessToken,
+        expires_in: 0,
+      },
+      {
+        id: wabaId,
+      }
+    )
   }
 
   async findByUserIdAndAccountId(userId, accountId) {
