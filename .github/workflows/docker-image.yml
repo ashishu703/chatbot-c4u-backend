@@ -3,7 +3,7 @@ name: Node.js Backend Project CI/CD with Docker Compose
 on:
   push:
     branches:
-      - master
+      - dev
   workflow_dispatch:
 
 # Ensures only one deployment runs at a time for the master branch
