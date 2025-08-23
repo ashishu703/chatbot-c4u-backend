@@ -57,6 +57,7 @@ class MessengerChatController {
         url,
         senderId,
       });
+      return formSuccess(res, { msg: "success" });
     } catch (err) {
       next(err);
     }

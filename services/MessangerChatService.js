@@ -1,13 +1,11 @@
 const MessengerMessageApi = require("../api/Messanger/MessengerMessageApi");
-const { VIDEO, FILE, AUDIO } = require("../types/message.types");
+const { IMAGE, VIDEO, FILE, AUDIO } = require("../types/message.types");
 
 class MessangerChatService {
 
   constructor(user = null, accessToken = null) {
     this.messageApi = new MessengerMessageApi(user, accessToken);
   }
-
-
 
   async send({ text, senderId }) {
     await this.messageApi.initMeta();
@@ -20,7 +18,21 @@ class MessangerChatService {
   }
 
   async sendImage({ senderId, url }) {
-    return this.sendAttachment(url, IMAGE, senderId);
+    await this.messageApi.initMeta();
+    const payload = {
+      recipient: { id: senderId },
+      message: {
+        attachment: {
+          type: "image",
+          payload: {
+            url: url,
+            is_reusable: true
+          }
+        }
+      },
+      messaging_type: "RESPONSE",
+    };
+    return this.messageApi.sendMessage(payload);
   }
 
   async sendVideo({ senderId, url }) {
@@ -51,6 +63,5 @@ class MessangerChatService {
     return this.messageApi.sendMessage(payload);
   }
 };
-
 
 module.exports = MessangerChatService
