@@ -32,7 +32,6 @@ function initializeSocket(server) {
             uid: userId
           });
 
-
         } catch (error) {
           console.error("Error executing database queries:", error);
         }
