@@ -8,10 +8,6 @@ class WhatsappTemplateService {
     ) {
         this.whatsappTemplateApi = new WhatsappTemplateApi(user, accessToken, wabaId);
     }
-
-
-
-
     async addTemplate(body) {
         await this.whatsappTemplateApi.initMeta();
         return this.whatsappTemplateApi.createTemplete(body);

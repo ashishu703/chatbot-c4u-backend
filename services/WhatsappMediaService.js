@@ -16,8 +16,9 @@ class WhatsappMediaService {
         this.whatsappTempleteMediaRepository = new WhatsappTempleteMediaRepository();
     }
 
-    async uploadTempleteMedia() {
+    async uploadTempleteMedia(uid, templet_name) {
         if (!templet_name) {
+            console.log("templet_name is required",templet_name);
             throw new FillAllFieldsException();
         }
 
