@@ -2725,7 +2725,7 @@
 									]
 								},
 								"url": {
-									"raw": "{{BASE_URL}}/api/user/return_media_url",
+									"raw": "{{BASE_URL}}/",
 									"host": [
 										"{{BASE_URL}}"
 									],
