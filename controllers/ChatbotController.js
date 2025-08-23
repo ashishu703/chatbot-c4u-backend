@@ -13,7 +13,9 @@ class ChatbotController {
       const { title, chats, flow_id, for_all } = req.body;
       const { uid } = req.decode;
 
-      if (!title || !chats?.length || !flow_id) {
+      // Allow empty chats when for_all is true; otherwise require at least one chat
+      const chatsRequired = !for_all;
+      if (!title || !flow_id || (chatsRequired && !(Array.isArray(chats) && chats.length))) {
         throw new FillAllFieldsException();
       }
 
@@ -37,7 +39,9 @@ class ChatbotController {
       const { title, chats, flow_id, for_all, id } = req.body;
       const { uid } = req.decode;
 
-      if (!title || !chats?.length || !flow_id) {
+      // Allow empty chats when for_all is true; otherwise require at least one chat
+      const chatsRequired = !for_all;
+      if (!title || !flow_id || (chatsRequired && !(Array.isArray(chats) && chats.length))) {
         throw new FillAllFieldsException();
       }
 
