@@ -15,7 +15,7 @@ class WhatsappMediaController {
       const {
         url,
         hash
-      } = await this.whatsappMediaService.uploadTempleteMedia(uid, templet_name)
+      } = await this.whatsappMediaService.uploadTempleteMedia(uid, templet_name,req)
       return formSuccess(res, { url, hash });
     } catch (err) {
       next(err);
