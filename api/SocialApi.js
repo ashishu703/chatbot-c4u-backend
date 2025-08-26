@@ -51,12 +51,9 @@ class SocialApi {
         };
         const response = await fetch(fullUrl, options);
         console.log("response",response);
-        
-        // Helpful debug for callback URL / verification issues
         if (!response.ok) {
             try { console.log('Meta API error', await response.clone().text()); } catch (e) {}
-        }
-      
+        } 
         return this.handleResponse(response);
     }
 
