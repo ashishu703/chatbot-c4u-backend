@@ -65,7 +65,7 @@ class AuthController {
 
   async signup(req, res, next) {
     try {
-      const { email, name, password, mobile_with_country_code, acceptPolicy } =
+      const { email, name, password, mobile_with_country_code, acceptPolicy, plan_id } =
         req.body;
       await this.authService.signup({
         email,
@@ -73,6 +73,7 @@ class AuthController {
         password,
         mobile_with_country_code,
         acceptPolicy,
+        plan_id,
       });
 
       return formSuccess(res, { msg: __t("signup_success") });
