@@ -25,12 +25,27 @@ const uploadFile = async (file, destination) => {
 };
 
 const getFileInfo = async (filePath) => {
-  const stats = await fs.stat(filePath);
-  const mimeType = mime.lookup(filePath) || "application/octet-stream";
-  return {
-    fileSizeInBytes: stats.size,
-    mimeType,
-  };
+  try {
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`File does not exist: ${filePath}`);
+    }
+    const stats = await new Promise((resolve, reject) => {
+      fs.stat(filePath, (err, stats) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(stats);
+        }
+      });
+    });
+    const mimeType = mime.lookup(filePath) || "application/octet-stream";
+    return {
+      fileSizeInBytes: stats.size,
+      mimeType,
+    };   
+  } catch (error) {
+    throw error;
+  }
 };
 
 
@@ -69,11 +84,27 @@ async function deleteFileIfExists(filePath) {
 async function storeMetaFiles(file) {
   const randomString = generateUid();
   const filename = `${randomString}.${getFileExtension(file.name)}`;
-  await file.mv(`${__dirname}/../client/public/media/${filename}`);
-  const directory = `${__dirname}/../client/public/media/${filename}`
+  
+  const mediaDir = path.join(__dirname, '../client/public/media');
+  if (!fs.existsSync(mediaDir)) {
+    fs.mkdirSync(mediaDir, { recursive: true });
+  }
+  
+  const filePath = path.join(mediaDir, filename);
+  
+  await new Promise((resolve, reject) => {
+    file.mv(filePath, (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+  
   return {
     filename,
-    directory
+    directory: filePath
   }
 }
 
