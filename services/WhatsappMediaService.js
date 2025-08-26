@@ -4,7 +4,8 @@ const MetaApiKeysNotfoundException = require("../exceptions/CustomExceptions/Met
 const SocialAccountRepository = require("../repositories/SocialAccountRepository");
 const WhatsappTempleteMediaRepository = require("../repositories/WhatsappTempleteMediaRepository");
 const { generateUid } = require("../utils/auth.utils");
-const { storeMetaFiles, saveFileContent } = require("../utils/file.utils");
+const { storeMetaFiles, saveFileContent, getFileInfo } = require("../utils/file.utils");
+const { backendURI } = require("../config/app.config");
 
 
 class WhatsappMediaService {
@@ -16,12 +17,11 @@ class WhatsappMediaService {
         this.whatsappTempleteMediaRepository = new WhatsappTempleteMediaRepository();
     }
 
-    async uploadTempleteMedia(uid, templet_name) {
+    async uploadTempleteMedia(uid, templet_name,req) {
         if (!templet_name) {
             console.log("templet_name is required",templet_name);
             throw new FillAllFieldsException();
-        }
-
+        }        
         const file = req.files?.file;
 
         if (!file) {
@@ -41,9 +41,9 @@ class WhatsappMediaService {
         const { fileSizeInBytes, mimeType } = await getFileInfo(directory);
 
         const session = await this.whatsappMediaApi.getSessionUploadMediaMeta(fileSizeInBytes, mimeType);
-
+        
         const uploadedFile = await this.whatsappMediaApi.uploadFileMeta(session.id, directory)
-
+        
         const url = `${backendURI}/media/${filename}`;
 
         await this.whatsappTempleteMediaRepository.create({

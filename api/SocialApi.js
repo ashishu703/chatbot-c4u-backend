@@ -29,7 +29,6 @@ class SocialApi {
     }
 
     async request(method, url, data = null, query = {}, customHeaders = {}, forcedOptions = {}) {
-       
         const queryString = new URLSearchParams(query).toString();
 
         const isFullUrl = /^https?:\/\//i.test(url);
@@ -50,8 +49,9 @@ class SocialApi {
             ...(data && { body: JSON.stringify(data) }),
             ...forcedOptions
         };
-
         const response = await fetch(fullUrl, options);
+        console.log("response",response);
+        
         // Helpful debug for callback URL / verification issues
         if (!response.ok) {
             try { console.log('Meta API error', await response.clone().text()); } catch (e) {}
