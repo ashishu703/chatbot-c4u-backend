@@ -36,10 +36,7 @@ class FacebookProfileService {
   }
 
   async deleteProfile(id) {
-    return this.socialAccountRepository.delete({
-      id,
-      platform: MESSANGER
-    });
+    return this.socialAccountRepository.deleteByAccountId(id);
   }
 };
 

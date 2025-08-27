@@ -70,8 +70,30 @@ function extractTextFromWhatsappMessage(message) {
   return "";
 }
 
+function extractTextFromInstagramMessage(message) {
+  const { body, type } = message;
+
+  switch (type) {
+    case TEXT:
+      return body.text;
+    case INTERACTIVE:
+      const {
+        type: interactiveType
+      } = body;
+      switch (interactiveType) {
+        case BUTTON_REPLY:
+          return body.button_reply?.title;
+        case LIST_REPLY:
+          return body.list_reply?.title;
+      }
+  }
+
+  return "";
+}
+
 module.exports = {
   convertWebhookMessageToDBMessage,
   whatsappMessageDtoToSaveableBody,
   extractTextFromWhatsappMessage,
+  extractTextFromInstagramMessage,
 };

@@ -12,6 +12,7 @@ const { OPEN } = require("../types/chat-status.types");
 const InstagramWebhookDto = require("../dtos/Instagram/InstagramWebhookDto");
 const { READ } = require("../types/conversation-status.types");
 const { OUTGOING, INCOMING } = require("../types/conversation-route.types");
+const InstagramChatbotAutomationService = require("./InstagramChatbotAutomationService");
 class InstagramWebhookService {
 
 
@@ -208,11 +209,74 @@ class InstagramWebhookService {
         chat_id: chatId,
       }
     );
+    
     this.ioService.emitNewMsgEvent(message);
     await this.chatRepository.updateLastMessage(
       chatId,
       message.id
     );
+
+    // Trigger chatbot automation for incoming messages
+    try {
+      // Extract sender ID from the original webhook data
+      let senderId = null;
+      
+      // Try multiple methods to get sender ID
+      try {
+        // Method 1: Try to get sender ID directly from message object
+        if (messageObj.getSenderId) {
+          senderId = messageObj.getSenderId();
+          console.log('Method 1 - getSenderId():', senderId);
+        }
+        
+        // Method 2: Try to parse webhook data
+        if (!senderId && messageObj.getWebhookData) {
+          const webhookData = JSON.parse(messageObj.getWebhookData());
+          console.log('Method 2 - Parsed webhook data:', JSON.stringify(webhookData, null, 2));
+          
+          if (webhookData.entry && webhookData.entry[0] && webhookData.entry[0].messaging) {
+            const messaging = webhookData.entry[0].messaging[0];
+            senderId = messaging.sender?.id;
+            console.log('Method 2 - Extracted sender ID from webhook:', senderId);
+          }
+        }
+        
+        // Method 3: Try regex extraction from raw webhook string
+        if (!senderId && messageObj.getWebhookData) {
+          const rawWebhook = messageObj.getWebhookData();
+          if (rawWebhook && typeof rawWebhook === 'string') {
+            const match = rawWebhook.match(/"sender":\{"id":"([^"]+)"/);
+            if (match) {
+              senderId = match[1];
+              console.log('Method 3 - Regex extracted sender ID:', senderId);
+            }
+          }
+        }
+        
+        // Method 4: Try to get from message object properties
+        if (!senderId && messageObj.sender_id) {
+          senderId = messageObj.sender_id;
+          console.log('Method 4 - Direct sender_id property:', senderId);
+        }
+        
+      } catch (e) {
+        console.log('Error in sender ID extraction:', e.message);
+      }
+      
+      console.log('Final extracted sender ID:', senderId);
+
+      const chatbotMessage = {
+        ...message,
+        chat_id: chatId,
+        uid: chat.uid,
+        route: INCOMING,
+        sender_id: senderId
+      };
+      
+      await (new InstagramChatbotAutomationService(chatbotMessage)).initBot();
+    } catch (error) {
+      console.error('Instagram Chatbot Automation Error:', error);
+    }
   }
 
   async processReaction(messageObj) {

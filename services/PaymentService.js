@@ -2,7 +2,7 @@ const WebPrivate = require("../repositories/WebPrivateRepository");
 const OrderRepository = require("../repositories/OrderRepository");
 const WebPublic = require("../repositories/WebPublicRepository");
 const PlanRepository = require("../repositories/PlanRepository");
-const { rzCapturePayment, updateUserPlan } = require("../utils/payment.utils");
+const { rzCapturePayment } = require("../utils/payment.utils");
 const Stripe = require("stripe");
 const PaymentDetailsNotFoundException = require("../exceptions/CustomExceptions/PaymentDetailsNotFoundException");
 const PlanNotFoundWithIdException = require("../exceptions/CustomExceptions/PlanNotFoundWithIdException");
@@ -134,7 +134,7 @@ class PaymentService {
       console.log('Skipping payment verification (placeholder mode)');
       
       // Update user plan
-      await updateUserPlan(getPlan, uid);
+      await this.userRepository.updatePlan(uid, getPlan);
       
       // Create order record
       await this.orderRepository.createOrder(uid, "RAZORPAY", plan.price, JSON.stringify({
@@ -301,7 +301,7 @@ async payWithPaypal(uid, { orderID, plan }) {
 if (order_details.status === "COMPLETED") {
   const uidStr = typeof uid === 'string' ? uid : uid?.id || uid?.toString?.();
 
-  await updateUserPlan(getPlan, uidStr);
+  await this.userRepository.updatePlan(uidStr, getPlan);
 
   await this.orderRepository.createOrder(
     uidStr,
@@ -381,7 +381,7 @@ if (order_details.status === "COMPLETED") {
       throw new NotATrialPlanException();
     }
     await this.orderRepository.createOrder(uid, "OFFLINE", 0, JSON.stringify({ plan }));
-    await updateUserPlan(plan, uid);
+    await this.userRepository.updatePlan(uid, plan);
     await this.userRepository.update(uid, { trial: 1 });
     return true;
   }
