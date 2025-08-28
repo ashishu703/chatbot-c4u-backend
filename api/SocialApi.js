@@ -50,7 +50,6 @@ class SocialApi {
             ...forcedOptions
         };
         const response = await fetch(fullUrl, options);
-        console.log("response",response);
         if (!response.ok) {
             try { console.log('Meta API error', await response.clone().text()); } catch (e) {}
         } 

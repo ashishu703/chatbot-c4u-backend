@@ -90,15 +90,12 @@ class WebConfigService {
       whatsapp_graph_version,
       whatsapp_config_id,
     };
-
     const cleanedData = Object.fromEntries(
       Object.entries(configData).filter(([_, v]) => v !== undefined)
     );
-
     return await this.webConfigRepository.update(cleanedData, {
       id: 1
     });
-
   }
 
   async getWebPublic() {

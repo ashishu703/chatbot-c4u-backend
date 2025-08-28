@@ -8,7 +8,7 @@ class WebConfigController {
   }
   async updateWebConfig(req, res, next) {
     try {
-      const result = await this.webConfigService .updateWebConfig(req);
+      const result = await this.webConfigService.updateWebConfig(req);
       return formSuccess(res,{ msg: __t("web_config_updated"), result });
     } catch (err) {
       next(err);
