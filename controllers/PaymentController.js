@@ -74,6 +74,16 @@ class PaymentController {
     }
   }
 
+  async createRazorpayOrder(req, res, next) {
+    try {
+      const { planId, amount } = req.body;
+      const result = await this.paymentService.createRazorpayOrder(planId, amount);
+      return formSuccess(res, result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async payWithPaypal(req, res, next) {
     try {
       const { orderID, plan } = req.body;

@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
       password: DataTypes.STRING,
       mobile_with_country_code: DataTypes.STRING,
       timezone: DataTypes.STRING,
-      plan_id: DataTypes.TEXT,
+      plan_id: DataTypes.INTEGER,
       api_key: DataTypes.STRING,
       plan_expiration: DataTypes.DATE,
     },

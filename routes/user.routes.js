@@ -260,6 +260,24 @@ router.post(
   paymentController.createStripeSession.bind(paymentController)
 );
 
+router.post(
+  "/create_razorpay_order",
+  validateUser,
+  paymentController.createRazorpayOrder.bind(paymentController)
+);
+
+router.post(
+  "/pay_with_razorpay",
+  validateUser,
+  paymentController.payWithRazorpay.bind(paymentController)
+);
+
+router.post(
+  "/start_free_trial",
+  validateUser,
+  paymentController.startFreeTrial.bind(paymentController)
+);
+
 router.get(
   "/stripe_payment",
   paymentController.stripePayment.bind(paymentController)

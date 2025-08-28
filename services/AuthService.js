@@ -16,6 +16,7 @@ const EmailAlreadyInUseException = require("../exceptions/CustomExceptions/Email
 const InvalidCredentialsException = require("../exceptions/CustomExceptions/InvalidCredentialsException");
 const RecoveryUserNotFoundException = require("../exceptions/CustomExceptions/RecoveryUserNotFoundException");
 const PasswordRequiredException = require("../exceptions/CustomExceptions/PasswordRequiredException");
+const PlanRequiredException = require("../exceptions/CustomExceptions/PlanRequiredException");
 const { USER } = require("../types/roles.types");
 const { jwtKey } = require("../config/app.config");
 const EmailService = require("./EmailService");
@@ -106,6 +107,7 @@ class AuthService {
     password,
     mobile_with_country_code,
     acceptPolicy,
+    plan_id,
   }) {
     if (!email || !name || !password || !mobile_with_country_code) {
       throw new FillAllFieldsException();
@@ -115,10 +117,13 @@ class AuthService {
       throw new PrivacyTermsUncheckedException();
     }
 
+    if (!plan_id) {
+      throw new PlanRequiredException();
+    }
+
     if (!isValidEmail(email)) {
       throw new InvalidCredentialsException();
     }
-
 
     const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
@@ -133,6 +138,7 @@ class AuthService {
       email,
       password: haspass,
       mobile_with_country_code,
+      plan_id: parseInt(plan_id),
     });
     this.emailService.sendWelcomeEmail(email, name);
 
