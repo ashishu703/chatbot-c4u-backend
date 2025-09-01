@@ -7,12 +7,20 @@ const BroadcastLogRepository = require("../repositories/BroadcastLogRepository")
 const MetaApiKeysNotfoundException = require("../exceptions/CustomExceptions/MetaApiKeysNotfoundException");
 const AdminNotFoundException = require("../exceptions/CustomExceptions/AdminNotFoundException");
 const PhonebookNoMobileException = require("../exceptions/CustomExceptions/PhonebookNoMobileException");
-const { SENT, DELIVERED, READ, FAILED, PENDING } = require("../types/broadcast-delivery-status.types");
-const {  defaultTimeZone } = require("../config/app.config");
+const {
+  SENT,
+  DELIVERED,
+  READ,
+  FAILED,
+  PENDING,
+} = require("../types/broadcast-delivery-status.types");
+const { defaultTimeZone } = require("../config/app.config");
 const { QUEUE } = require("../types/broadcast-execution-status.types");
 const SocialAccountRepository = require("../repositories/SocialAccountRepository");
 const { generateUid } = require("../utils/auth.utils");
 const WhatsappProfileApi = require("../api/Whatsapp/WhatsappProfileApi");
+const { Op } = require("sequelize");
+const moment = require("moment-timezone");
 
 class DashboardService {
   userRepository;
@@ -110,7 +118,6 @@ class DashboardService {
         }
       }
 
-
       broadcastLogs.push({
         broadcast: broadcast,
         stats,
@@ -127,20 +134,17 @@ class DashboardService {
     phonebook,
     scheduleTimestamp,
     example,
-    user,
+    user
   ) {
-
     const account = await this.accountRepository.getWhatsappAccount(user.uid);
     if (!account) {
       throw new MetaApiKeysNotfoundException();
     }
 
-
     const contacts = await this.contactRepository.findByPhonebookId(
       phonebook.id,
       user.uid
     );
-
 
     if (!contacts.length) {
       throw new PhonebookNoMobileException();
@@ -185,23 +189,48 @@ class DashboardService {
     return this.broadcastRepository.delete({ broadcast_id, uid });
   }
 
-
   async getBroadcasts(uid, query = {}) {
-    return this.broadcastRepository.paginate({ where: { uid }, include: ["phonebook"], ...query });
+    const { search, page = 1, limit = 10, from, to } = query;
+
+    const whereClause = { uid };
+
+    if (from && to) {
+      const userData = await this.userRepository.findByUid(uid);
+      const userTimezone = userData?.timezone || defaultTimeZone;
+      const fromUserTz = moment.tz(from, userTimezone).startOf('day');
+      const toUserTz = moment.tz(to, userTimezone).endOf('day');
+      whereClause.createdAt = {
+        [Op.between]: [
+          fromUserTz,
+          toUserTz,
+        ],
+      };
+    }
+    return this.broadcastRepository.paginate({
+      where: whereClause,
+      include: ["phonebook"],
+      page,
+      limit,
+      search,
+      searchFields: "title",
+    });
   }
 
   async getBroadcastLogs(broadcast_id, uid) {
-    const logs = await this.broadcastLogRepository.find({where: { broadcast_id, uid }});
+    const logs = await this.broadcastLogRepository.find({
+      where: { broadcast_id, uid },
+    });
 
-    const getSent = logs?.filter(i => i.delivery_status === "sent")
+    const getSent = logs?.filter((i) => i.delivery_status === "sent");
 
-    const totalDelivered = logs?.filter(i => i.delivery_status === "delivered")
+    const totalDelivered = logs?.filter(
+      (i) => i.delivery_status === "delivered"
+    );
 
-    const totalRead = logs?.filter(i => i.delivery_status === "read")
-    const totalFailed = logs?.filter(i => i.delivery_status === "failed")
+    const totalRead = logs?.filter((i) => i.delivery_status === "read");
+    const totalFailed = logs?.filter((i) => i.delivery_status === "failed");
 
-    const totalPending = logs?.filter(i => i.delivery_status === "PENDING")
-
+    const totalPending = logs?.filter((i) => i.delivery_status === "PENDING");
 
     return {
       data: logs,
@@ -211,9 +240,8 @@ class DashboardService {
       totalRead: totalRead?.length,
       totalFailed: totalFailed?.length,
       totalPending: totalPending?.length,
-      totalDelivered: totalDelivered?.length
-    }
-
+      totalDelivered: totalDelivered?.length,
+    };
   }
 }
 

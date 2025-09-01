@@ -20,6 +20,10 @@ class WhatsappTemplateApi extends WhatsappApi {
     };
 
     async sendTemplate(senderId, template) {
+        console.log({
+            senderId,
+            template,
+        });
         return this.post(`/${this.wabaId}/messages`, {
             messaging_product: WHATSAPP,
             to: senderId,

@@ -28,6 +28,7 @@ class TempletService {
     example,
     dynamicMedia
   ) {
+    console.log("bhai 31 line me",template.components, example, dynamicMedia);
     const checkBody = template?.components?.filter((i) => i.type === "BODY");
     const getHeader = template?.components?.filter((i) => i.type === "HEADER");
     const headerFormat = getHeader?.length > 0 ? getHeader[0]?.format : "";

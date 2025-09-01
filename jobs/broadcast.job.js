@@ -1,15 +1,21 @@
 const moment = require("moment-timezone");
 const BroadcastRepository = require("../repositories/BroadcastRepository");
-const { QUEUE, ACTIVE_PLAN_NOT_FOUND, FINISHED } = require("../types/broadcast-execution-status.types");
+const {
+  QUEUE,
+  ACTIVE_PLAN_NOT_FOUND,
+  FINISHED,
+} = require("../types/broadcast-execution-status.types");
 const { getNumberOfDaysFromTimestamp } = require("../utils/date.utils");
 const SocialAccountRepository = require("../repositories/SocialAccountRepository");
 const BroadcastLogRepository = require("../repositories/BroadcastLogRepository");
-const { PENDING, SENT, FAILED } = require("../types/broadcast-delivery-status.types");
+const {
+  PENDING,
+  SENT,
+  FAILED,
+} = require("../types/broadcast-delivery-status.types");
 const WhatsappTemplateApi = require("../api/Whatsapp/WhatsappTemplateApi");
 const { dataGet } = require("../utils/others.utils");
 const TempletService = require("../services/TempletService");
-
-
 
 const broadcastRepository = new BroadcastRepository();
 const broadcastLogRepository = new BroadcastLogRepository();
@@ -31,12 +37,12 @@ function hasDatePassedInTimezone(timezone, date) {
   return momentDate.isBefore(currentMoment);
 }
 
-
-
 async function processBroadcast(campaign) {
   try {
-
-    const account = await socialAccountRepository.getWhatsappAccount(campaign.uid, ["user"]);
+    const account = await socialAccountRepository.getWhatsappAccount(
+      campaign.uid,
+      ["user"]
+    );
 
     if (!account) {
       return broadcastRepository.updateStatus(
@@ -44,13 +50,12 @@ async function processBroadcast(campaign) {
         META_API_NOT_FOUND,
         account.uid
       );
-
     }
 
     const user = account.user;
 
     const planDays = getNumberOfDaysFromTimestamp(user.plan_expiration);
-    
+
     if (planDays < 1) {
       return broadcastRepository.updateStatus(
         campaign.broadcast_id,
@@ -59,51 +64,60 @@ async function processBroadcast(campaign) {
       );
     }
 
-
-    const log = await broadcastLogRepository.findFirst(
+    const logs = await broadcastLogRepository.find(
       {
         where: {
           broadcast_id: campaign.id,
-          delivery_status: PENDING
-        }
+          delivery_status: PENDING,
+        },
       },
       ["broadcast"]
     );
 
-    if (!log) {
-      return broadcastRepository.updateStatus(
-        campaign.broadcast_id,
-        FINISHED,
-        account.uid
-      );
+    for (const log of logs) {
+      try {
+        const resp = await sendTemplate(log, account);
+        await broadcastLogRepository.update(
+          {
+            meta_msg_id: dataGet(resp, "messages.0.id"),
+            delivery_time: Date.now(),
+            delivery_status: SENT,
+          },
+          {
+            id: log.id,
+          }
+        );
+      } catch (err) {
+        console.log({
+          message: "Failed to send template: ",
+          err,
+        });
+        await broadcastLogRepository.update(
+          {
+            delivery_time: Date.now(),
+            delivery_status: FAILED,
+            err: err.message,
+          },
+          {
+            id: log.id,
+          }
+        );
+      }
     }
 
-    const resp = await sendTemplate(log, account);
-
-    await broadcastLogRepository.update(
-      {
-        meta_msg_id: dataGet(resp, "messages.0.id"),
-        delivery_time: Date.now(),
-        delivery_status: SENT
-      }
+    await broadcastRepository.updateStatus(
+      campaign.broadcast_id,
+      FINISHED,
+      account.uid
     );
-
   } catch (err) {
     console.log({
-      err
-    })
-    await broadcastLogRepository.update(
-      {
-        delivery_time: Date.now(),
-        delivery_status: FAILED,
-        err
-      }
-    );
+      err,
+    });
   }
 }
 
 async function processBroadcasts() {
-
   const broadcasts = await broadcastRepository.findByStatus(QUEUE);
 
   for (const campaign of broadcasts) {
@@ -114,7 +128,6 @@ async function processBroadcasts() {
       await processBroadcast(campaign);
     }
   }
-
 }
 
 async function runBroadcastJob() {
@@ -125,34 +138,21 @@ async function runBroadcastJob() {
   }, 5000);
 }
 
-
-
-
 async function sendTemplate(message, account) {
   const template = message.broadcast.templet;
-
+  console.log("bhai 143 line me",message, account);
   const messagePayload = await templetService.prepareTemplate(
     template,
     message.example,
     message.dynamic_media
   );
+  console.log("bhai 149 line me",messagePayload);
 
   await whatsappTemplateApi.initMeta();
   return whatsappTemplateApi
     .setToken(account.token)
     .setWabaId(account.social_user_id)
-    .sendTemplate(
-      message?.send_to?.replace("+", ""),
-      messagePayload
-    );
-
+    .sendTemplate(message?.send_to?.replace("+", ""), messagePayload);
 }
-
-
-
-
-
-
-
 
 module.exports = { runBroadcastJob };

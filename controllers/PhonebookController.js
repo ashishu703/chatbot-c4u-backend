@@ -77,7 +77,10 @@ class PhonebookController {
       if (!mobile) {
         throw new MobileNumberRequiredException();
       }
+      console.log(req.body);
       await this.phonebookService.addSingleContact(user.uid, {
+        phonebook_id: id,
+        phonebook_name,
         mobile,
         name,
       });

@@ -2,9 +2,9 @@ const WhatsappMediaApi = require("../api/Whatsapp/WhatsappMediaApi");
 const FillAllFieldsException = require("../exceptions/CustomExceptions/FillAllFieldsException");
 const MetaApiKeysNotfoundException = require("../exceptions/CustomExceptions/MetaApiKeysNotfoundException");
 const SocialAccountRepository = require("../repositories/SocialAccountRepository");
-const WhatsappTempleteMediaRepository = require("../repositories/WhatsappTempleteMediaRepository");
+const MetaTempleteMediaRepository = require("../repositories/MetaTempleteMediaRepository");
 const { generateUid } = require("../utils/auth.utils");
-const { WhatsappTempleteMedia } = require("../models");
+
 const {
   storeMetaFiles,
   saveFileContent,
@@ -16,50 +16,52 @@ class WhatsappMediaService {
   constructor(user = null, accessToken = null) {
     this.accountRepository = new SocialAccountRepository();
     this.whatsappMediaApi = new WhatsappMediaApi(user, accessToken);
-    this.whatsappTempleteMediaRepository =
-      new WhatsappTempleteMediaRepository();
+    this.metaTempleteMediaRepository = new MetaTempleteMediaRepository();
   }
 
-  async uploadTempleteMedia(uid, templet_name, req) {
+  async uploadTempleteMedia(uid, templet_name, file) {
     if (!templet_name) {
       throw new FillAllFieldsException();
     }
-    const file = req.files?.file;
 
     if (!file) {
       throw new FillAllFieldsException();
     }
 
-    const account =await this.accountRepository.getWhatsappAccount(uid);
+    const account = await this.accountRepository.getWhatsappAccount(uid);
     if (!account) {
       throw new MetaApiKeysNotfoundException();
     }
 
-    this.whatsappMediaApi = new WhatsappMediaApi(req.user, account.token);
     const { filename, directory } = await storeMetaFiles(file);
+
     const { fileSizeInBytes, mimeType } = await getFileInfo(directory);
 
-    await this.whatsappMediaApi.initMeta();
+    await this.whatsappMediaApi.setToken(account.token).initMeta();
+
     const session = await this.whatsappMediaApi.getSessionUploadMediaMeta(
       fileSizeInBytes,
       mimeType
     );
 
-    const uploadedFile = await this.whatsappMediaApi.uploadFileMeta(
+    const { h: hash } = await this.whatsappMediaApi.uploadFileMeta(
       session.id,
       directory
     );
+
     const url = `${backendURI}/media/${filename}`;
-    await WhatsappTempleteMedia.create({
+
+    await this.metaTempleteMediaRepository.create({
       uid: uid,
       account_id: account.id,
-      templet_name: templet_name,
-      meta_hash: uploadedFile?.h,
+      template_name: templet_name,
+      meta_hash: hash,
       file_name: filename,
     });
+
     return {
       url,
-      hash: uploadedFile?.h,
+      hash,
     };
   }
 

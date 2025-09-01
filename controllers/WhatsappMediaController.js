@@ -10,14 +10,16 @@ class WhatsappMediaController {
 
   async returnMediaUrlMeta(req, res, next) {
     try {
+      const file = req.files?.file;
       const { uid } = req.decode;
       const { templet_name } = req.body;
       const {
         url,
         hash
-      } = await this.whatsappMediaService.uploadTempleteMedia(uid, templet_name,req)
+      } = await this.whatsappMediaService.uploadTempleteMedia(uid, templet_name, file)
       return formSuccess(res, { url, hash });
     } catch (err) {
+
       next(err);
     }
   }
