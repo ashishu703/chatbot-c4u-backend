@@ -48,14 +48,12 @@ async function processBroadcast(campaign) {
       return broadcastRepository.updateStatus(
         campaign.broadcast_id,
         META_API_NOT_FOUND,
-        account.uid
+        campaign.uid
       );
     }
 
     const user = account.user;
-
     const planDays = getNumberOfDaysFromTimestamp(user.plan_expiration);
-
     if (planDays < 1) {
       return broadcastRepository.updateStatus(
         campaign.broadcast_id,
@@ -63,7 +61,6 @@ async function processBroadcast(campaign) {
         account.uid
       );
     }
-
     const logs = await broadcastLogRepository.find(
       {
         where: {
@@ -73,25 +70,37 @@ async function processBroadcast(campaign) {
       },
       ["broadcast"]
     );
+    let successCount = 0;
+    let failureCount = 0;
 
     for (const log of logs) {
       try {
         const resp = await sendTemplate(log, account);
-        await broadcastLogRepository.update(
-          {
-            meta_msg_id: dataGet(resp, "messages.0.id"),
-            delivery_time: Date.now(),
-            delivery_status: SENT,
-          },
-          {
-            id: log.id,
-          }
-        );
+        if (
+          resp &&
+          resp.data &&
+          resp.data.messages &&
+          resp.data.messages[0] &&
+          resp.data.messages[0].id
+        ) {
+          await broadcastLogRepository.update(
+            {
+              meta_msg_id: dataGet(resp, "messages.0.id"),
+              delivery_time: Date.now(),
+              delivery_status: SENT,
+            },
+            {
+              id: log.id,
+            }
+          );
+
+          successCount++;
+        } else {
+          throw new Error(
+            "Invalid response from Meta API - no message ID received"
+          );
+        }
       } catch (err) {
-        console.log({
-          message: "Failed to send template: ",
-          err,
-        });
         await broadcastLogRepository.update(
           {
             delivery_time: Date.now(),
@@ -102,24 +111,23 @@ async function processBroadcast(campaign) {
             id: log.id,
           }
         );
+        failureCount++;
       }
     }
 
-    await broadcastRepository.updateStatus(
-      campaign.broadcast_id,
-      FINISHED,
-      account.uid
-    );
-  } catch (err) {
-    console.log({
-      err,
-    });
-  }
+    // Only mark as FINISHED if ALL messages were sent successfully
+    if (successCount === logs.length && failureCount === 0) {
+      await broadcastRepository.updateStatus(
+        campaign.broadcast_id,
+        FINISHED,
+        account.uid
+      );
+    }
+  } catch (err) {}
 }
 
 async function processBroadcasts() {
   const broadcasts = await broadcastRepository.findByStatus(QUEUE);
-
   for (const campaign of broadcasts) {
     if (
       campaign.schedule &&
@@ -131,28 +139,35 @@ async function processBroadcasts() {
 }
 
 async function runBroadcastJob() {
-  console.log("Campaign started");
   setInterval(async () => {
-    await processBroadcasts();
-    await delayRandom(3, 5);
+    try {
+      await processBroadcasts();
+      await delayRandom(3, 5);
+    } catch (error) {
+      // Error handling
+    }
   }, 5000);
 }
 
 async function sendTemplate(message, account) {
   const template = message.broadcast.templet;
-  console.log("bhai 143 line me",message, account);
   const messagePayload = await templetService.prepareTemplate(
     template,
     message.example,
     message.dynamic_media
   );
-  console.log("bhai 149 line me",messagePayload);
-
   await whatsappTemplateApi.initMeta();
-  return whatsappTemplateApi
+  const finalPayload = {
+    messaging_product: "whatsapp",
+    to: message?.send_to?.replace("+", ""),
+    type: "template",
+    template: messagePayload,
+  };
+  const response = await whatsappTemplateApi
     .setToken(account.token)
     .setWabaId(account.social_user_id)
     .sendTemplate(message?.send_to?.replace("+", ""), messagePayload);
+  return response;
 }
 
 module.exports = { runBroadcastJob };

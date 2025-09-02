@@ -20,16 +20,23 @@ class WhatsappTemplateApi extends WhatsappApi {
     };
 
     async sendTemplate(senderId, template) {
-        console.log({
-            senderId,
-            template,
-        });
-        return this.post(`/${this.wabaId}/messages`, {
+        const payload = {
             messaging_product: WHATSAPP,
             to: senderId,
             type: "template",
             template,
-        });
+        };
+
+
+
+        try {
+            const response = await this.post(`/${this.wabaId}/messages`, payload);
+            console.log("response", response);
+            return response;
+        } catch (error) {
+
+            throw error;
+        }
     }
 
     async getTemplete(templateName) {
