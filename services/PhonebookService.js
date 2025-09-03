@@ -45,8 +45,10 @@ async deletePhonebook(uid, id) {
 
     const contacts = csvData.map((item) => ({
       uid,
+      phonebook_id,
       name: item.name,
       mobile: item.mobile,
+      source: 'csv_import'
     }));
 
     await this.contactRepository.bulkCreate(contacts);
@@ -54,7 +56,11 @@ async deletePhonebook(uid, id) {
   }
 
   async addSingleContact(uid, contact) {
-    await this.contactRepository.create({ ...contact, uid });
+    await this.contactRepository.create({ 
+      ...contact, 
+      uid,
+      source: contact.source || 'manual'
+    });
     return true;
   }
 
@@ -65,6 +71,36 @@ async deletePhonebook(uid, id) {
   async deleteContacts(ids) {
     await this.contactRepository.deleteByIds(ids);
     return true;
+  }
+
+  async reassignContactsToPhonebook(uid, contactIds, newPhonebookId) {
+    const phonebook = await this.phonebookRepository.findById(newPhonebookId);
+    if (!phonebook || phonebook.uid !== uid) {
+      throw new Error('Invalid Tag or Tag does not belong to user');
+    }
+    const contacts = await this.contactRepository.find({
+      where: { 
+        id: contactIds,
+        uid: uid 
+      }
+    });
+
+    if (contacts.length !== contactIds.length) {
+      throw new Error('Some contacts do not belong to user or do not exist');
+    }
+
+    await this.contactRepository.update(
+      { phonebook_id: newPhonebookId },
+      { 
+        id: contactIds,
+        uid: uid
+      }
+    );
+    return {
+      updatedContacts: contactIds.length,
+      newPhonebookId,
+      newPhonebookName: phonebook.name
+    };
   }
 }
 

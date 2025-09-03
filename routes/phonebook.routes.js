@@ -45,4 +45,11 @@ router.post(
   phonebookController.deleteContacts.bind(phonebookController)
 );
 
+router.post(
+  "/reassign_contacts",
+  validateUser,
+  checkPlan,
+  phonebookController.reassignContactsToTag.bind(phonebookController)
+);
+
 module.exports = router;

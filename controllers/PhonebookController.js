@@ -71,7 +71,7 @@ class PhonebookController {
 
   async addSingleContact(req, res, next) {
     try {
-      const { id, phonebook_name, mobile, name } =
+      const { id, phonebook_name, mobile, name, source } =
         req.body;
       const user = req.decode;
       if (!mobile) {
@@ -83,6 +83,7 @@ class PhonebookController {
         phonebook_name,
         mobile,
         name,
+        source: source || 'manual'
       });
       return formSuccess(res, { msg: __t("contacts_inserted") });
     } catch (err) {
@@ -112,6 +113,34 @@ class PhonebookController {
       const { selected } = req.body;
       await this.phonebookService.deleteContacts(selected);
       return formSuccess(res, { msg: __t("contacts_deleted") });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async reassignContactsToTag(req, res, next) {
+    try {
+      const { contactIds, newPhonebookId } = req.body;
+      const user = req.decode;
+
+      if (!contactIds || !Array.isArray(contactIds) || contactIds.length === 0) {
+        throw new Error('Contact are required ');
+      }
+
+      if (!newPhonebookId) {
+        throw new Error('Tag is required');
+      }
+
+      const result = await this.phonebookService.reassignContactsToPhonebook(
+        user.uid,
+        contactIds,
+        newPhonebookId
+      );
+
+      return formSuccess(res, { 
+        msg: __t("contacts_reassigned"),
+        data: result
+      });
     } catch (err) {
       next(err);
     }

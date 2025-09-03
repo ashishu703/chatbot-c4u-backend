@@ -171,5 +171,6 @@
     "user_already_exists": "User already exists",
     "chat_disabled" : "Chat is disabled",
     "invalid_plan_id":"invalid plan id",
-    "stripe_secret_key_is_missing":"Stripe secret key is missing"
+    "stripe_secret_key_is_missing":"Stripe secret key is missing",
+    "contacts_reassigned":"Contacts reassigned to phonebook successfully"
 }
