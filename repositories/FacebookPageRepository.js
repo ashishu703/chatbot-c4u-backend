@@ -55,6 +55,10 @@ class FacebookPageRepository extends Repository {
   async deleteByPageId(pageId) {
     await this.delete({ page_id: pageId });
   }
+
+  async findFirstWithAccount(condition = {}) {
+    return this.findFirst(condition, ["account"]);
+  }
 };
 
 module.exports = FacebookPageRepository;

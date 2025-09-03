@@ -12,26 +12,32 @@ function initializeSocket(server) {
       origin: "*",
       methods: ["GET", "POST"],
     },
+    transports: ['websocket', 'polling'],
+    allowEIO3: true,
   });
 
   ioInstance = io;
+  
+  console.log('WebSocket server initialized successfully');
+  console.log('Socket.IO server is ready to accept connections');
 
 
   io.on("connection", (socket) => {
-    console.log("A user connected", socket.id);
+    console.log("WebSocket client connected:", socket.id);
+    console.log("Total active connections:", io.engine.clientsCount);
 
     socket.on("user_connected", async ({ userId }) => {
-      console.log({ userId });
+      console.log("User connected with ID:", userId);
       if (userId) {
         try {
-
           await roomRepository.updateOrCreate({
             uid: userId,
             socket_id: socket.id,
           }, {
             uid: userId
           });
-
+          console.log("User room created/updated for userId:", userId);
+          console.log("User socket ID mapped:", socket.id);
         } catch (error) {
           console.error("Error executing database queries:", error);
         }
@@ -70,4 +76,14 @@ function getIOInstance() {
   return ioInstance;
 }
 
-module.exports = { initializeSocket, getIOInstance };
+function broadcastToAll(event, data) {
+  if (ioInstance) {
+    console.log(`Broadcasting ${event} to all users:`, data?.id || 'no id');
+    ioInstance.emit(event, data);
+    return true;
+  }
+  console.log('No Socket.IO instance available for broadcasting');
+  return false;
+}
+
+module.exports = { initializeSocket, getIOInstance, broadcastToAll };

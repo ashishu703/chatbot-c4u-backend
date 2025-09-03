@@ -39,6 +39,11 @@ module.exports = (sequelize, DataTypes) => {
         sourceKey: "uid",
         as: "templets",
       });
+      User.hasMany(models.CommentAutomationSetting, {
+        foreignKey: "uid",
+        sourceKey: "uid",
+        as: "commentAutomationSettings",
+      });
       User.belongsTo(models.Plan, {
         foreignKey: "plan_id",
         as: "plan",

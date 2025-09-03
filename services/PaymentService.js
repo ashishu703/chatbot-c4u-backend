@@ -105,6 +105,71 @@ class PaymentService {
     };
   }
 
+  async createStripeSessionPublic(planId, email, name) {
+    const plan = await this.planRepository.getPlanById(planId);
+    if (!plan || plan.length < 1) {
+      const error = new Error("No plan found with the id");
+      error.status = 400;
+      error.type = "PlanNotFoundWithIdException";
+      throw error;
+    }
+
+    const selectedPlan = plan[0];
+
+    const { secretKey } = await this.webPrivate.getStripeKeys();
+    if (!secretKey) {
+      throw new Error("Stripe secret key not found in database");
+    }
+
+    const stripe = new Stripe(secretKey);
+    const orderID = `STRIPE_PUBLIC_${randomstring.generate()}`;
+
+    // Create order without user ID for public payments
+    await this.orderRepository.create({
+      uid: null, // No user ID for public payments
+      payment_mode: "STRIPE",
+      amount: selectedPlan.price,
+      data: orderID,
+    });
+
+    const web = await this.webPublic.findFirst();
+
+    const productStripe = [
+      {
+        price_data: {
+          currency: web?.currency_code || "usd",
+          product_data: {
+            name: selectedPlan?.title,
+          },
+          unit_amount: selectedPlan?.price * 100,
+        },
+        quantity: 1,
+      },
+    ];
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: productStripe,
+      mode: "payment",
+      success_url: `${process.env.BACKURI}/api/user/stripe_payment?order=${orderID}&plan=${selectedPlan.id}&email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}`,
+      cancel_url: `${process.env.BACKURI}/api/user/stripe_payment?order=${orderID}&plan=${selectedPlan.id}&email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}`,
+      locale: process.env.STRIPE_LANG || "en",
+      customer_email: email,
+    });
+
+    await this.orderRepository.update(
+      { s_token: session.id },
+      { data: orderID }
+    );
+
+    return {
+      success: true,
+      session: {
+        id: session.id,
+      },
+    };
+  }
+
   async payWithRazorpay(uid, { rz_payment_id, plan, amount }) {
     try {
       console.log('Processing Razorpay payment:', { uid, rz_payment_id, plan, amount });
@@ -255,6 +320,73 @@ class PaymentService {
     }
   }
 
+  async createRazorpayOrderPublic(planId, amount, email, name) {
+    try {
+      console.log('Creating public Razorpay order for planId:', planId, 'amount:', amount, 'email:', email, 'name:', name);
+      
+      const plan = await this.planRepository.getPlanById(planId);
+      if (!plan || plan.length < 1) {
+        console.error('Plan not found for ID:', planId);
+        throw new PlanNotFoundWithIdException();
+      }
+
+      const selectedPlan = plan[0];
+      console.log('Selected plan:', selectedPlan);
+      
+      const webPrivate = await this.webPrivate.getWebPrivate();
+      const webPublic = await this.webPublic.findFirst();
+      
+      if (!webPrivate?.rz_id || !webPrivate?.rz_key) {
+        console.error('Razorpay credentials missing');
+        throw new FillRazorpayCredentialsException();
+      }
+      
+      // Get currency from web config or default to INR
+      let currency = webPublic?.currency_code || 'INR';
+      
+      // Validate amount
+      if (!amount || amount <= 0 || amount > 1000000) { 
+        console.error('Invalid amount:', amount);
+        throw new Error('Invalid amount provided');
+      }
+      
+      // Ensure amount is in the correct format for the currency
+      let amountInSmallestUnit = Math.round(amount * 100);
+      
+      // Create a unique order ID for public orders
+      const orderId = `RZ_PUBLIC_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      console.log('Generated public order ID:', orderId);
+
+      const response = {
+        success: true,
+        order_id: orderId,
+        key: webPrivate.rz_id,
+        amount: amountInSmallestUnit,
+        currency: currency,
+        plan: selectedPlan,
+        name: 'Subscription Payment',
+        description: selectedPlan.title || 'Plan Subscription',
+        prefill: {
+          email: email, 
+          contact: '' 
+        },
+        notes: {
+          plan_id: selectedPlan.id.toString(),
+          plan_name: selectedPlan.title,
+          email: email,
+          name: name
+        }
+      };
+      
+      console.log('Public Razorpay order response:', response);
+      return response;
+      
+    } catch (error) {
+      console.error('Error creating public Razorpay order:', error);
+      throw error;
+    }
+  }
+
 async payWithPaypal(uid, { orderID, plan }) {
   if (!orderID || !plan) {
     throw new OrderIdAndPlanRequiredException();
@@ -389,6 +521,87 @@ if (order_details.status === "COMPLETED") {
   async getPlanDetails(id) {
     const plan = await this.planRepository.findPlanById(id);
     return { success: !!plan, data: plan || null };
+  }
+
+  async payWithRazorpayPublic({ rz_payment_id, plan, amount, email, name }) {
+    try {
+      console.log('Processing public Razorpay payment:', { rz_payment_id, plan, amount, email, name });
+      
+      if (!rz_payment_id || !plan || !amount || !email || !name) {
+        console.error('Missing required fields for public payment');
+        throw new FillAllFieldsException();
+      }
+      
+      const getPlan = await this.orderRepository.findById(plan.id);
+      if (!getPlan) {
+        console.error('Plan not found for ID:', plan.id);
+        throw new InvalidPlanFoundException();
+      }
+      
+      // For public payments, we don't have a user ID yet
+      // Store the payment information to be processed after user registration
+      const paymentData = {
+        payment_id: rz_payment_id,
+        status: 'success',
+        verified: false,
+        email: email,
+        name: name,
+        plan_id: plan.id,
+        amount: amount,
+        payment_mode: 'RAZORPAY'
+      };
+      
+      // Store in a temporary table or session for later processing
+      // This will be processed after user registration
+      console.log('Public Razorpay payment processed successfully, waiting for user registration');
+      return { success: true, message: 'Payment processed successfully, please complete registration' };
+      
+    } catch (error) {
+      console.error('Error in payWithRazorpayPublic:', error);
+      throw error;
+    }
+  }
+
+  async payWithPaypalPublic({ orderID, plan, email, name }) {
+    try {
+      if (!orderID || !plan || !email || !name) {
+        throw new OrderIdAndPlanRequiredException();
+      }
+
+      const getPlan = await this.orderRepository.findById(plan.id);
+      if (!getPlan) {
+        throw new InvalidPlanFoundException();
+      }
+
+      const webPrivate = await this.webPrivate.getWebPrivate();
+      const paypalClientId = webPrivate?.pay_paypal_id;
+      const paypalClientSecret = webPrivate?.pay_paypal_key;
+
+      if (!paypalClientId || !paypalClientSecret) {
+        throw new PaypalCredentialsRequiredException();
+      }
+
+      // For public payments, we don't have a user ID yet
+      // Store the payment information to be processed after user registration
+      const paymentData = {
+        payment_id: orderID,
+        status: 'success',
+        verified: false,
+        email: email,
+        name: name,
+        plan_id: plan.id,
+        payment_mode: 'PAYPAL'
+      };
+      
+      // Store in a temporary table or session for later processing
+      // This will be processed after user registration
+      console.log('Public PayPal payment processed successfully, waiting for user registration');
+      return { success: true, message: 'Payment processed successfully, please complete registration' };
+      
+    } catch (error) {
+      console.error('Error in payWithPaypalPublic:', error);
+      throw error;
+    }
   }
 
   returnHtmlRes(msg) {

@@ -42,6 +42,49 @@ class FacebookPageController {
     await this.pageRepository.deleteInActiveByUserId(user.uid);
     return formSuccess(res, {});
   }
+
+  async fetchPostsAndCommentsForPage(req, res) {
+    try {
+      const { pageId } = req.params;
+      const user = req.decode;
+
+      this.pageService.setUser(user);
+      const result = await this.pageService.fetchPostsAndCommentsForPage(pageId);
+
+      return formSuccess(res, {
+        message: "Posts and comments fetched successfully",
+        result
+      });
+    } catch (error) {
+      console.error('Error in fetchPostsAndCommentsForPage:', error);
+      return res.status(500).send({
+        success: false,
+        message: "Failed to fetch posts and comments",
+        error: error.message
+      });
+    }
+  }
+
+  async fetchPostsAndCommentsForAllPages(req, res) {
+    try {
+      const user = req.decode;
+
+      this.pageService.setUser(user);
+      const result = await this.pageService.fetchPostsAndCommentsForAllPages(user.uid);
+
+      return formSuccess(res, {
+        message: "Posts and comments fetched for all pages successfully",
+        result
+      });
+    } catch (error) {
+      console.error('Error in fetchPostsAndCommentsForAllPages:', error);
+      return res.status(500).send({
+        success: false,
+        message: "Failed to fetch posts and comments for all pages",
+        error: error.message
+      });
+    }
+  }
 };
 
 module.exports = FacebookPageController

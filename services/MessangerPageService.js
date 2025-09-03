@@ -1,5 +1,6 @@
 const ChatRepository = require("../repositories/ChatRepository");
 const FacebookPageRepository = require("../repositories/FacebookPageRepository");
+const FacebookPostService = require("../services/FacebookPostService");
 const MessengerPageApi = require("../api/Messanger/MessengerPageApi");
 const { INACTIVE } = require("../types/facebook-page-status.types");
 const { Op } = require("sequelize");
@@ -79,8 +80,16 @@ class MessangerPageService {
       await this.messengerPageApi.setToken(accessToken).subscribeWebhooks(pageId);
       await this.facebookPageRepository.activatePagesByUserId(userId, [pageId]);
       await this.facebookPageRepository.deleteInActiveByUserId(userId);
+      
+      // Fetch posts and comments for the activated page
+      try {
+        const postService = new FacebookPostService(this.user, accessToken);
+        await postService.fetchAndSavePostsForPage(pageId);
+        console.log(`Posts and comments fetched for page: ${pageId}`);
+      } catch (error) {
+        console.error(`Error fetching posts and comments for page ${pageId}:`, error);
+      }
     }
-
   }
 
   async removePage(pageId) {
@@ -90,7 +99,32 @@ class MessangerPageService {
     await this.facebookPageRepository.deleteByPageId(pageId);
   }
 
+  async fetchPostsAndCommentsForAllPages(userId) {
+    try {
+      const postService = new FacebookPostService(this.user);
+      const result = await postService.fetchAndSaveAllPostsAndComments(userId);
+      return result;
+    } catch (error) {
+      console.error('Error fetching posts and comments for all pages:', error);
+      throw error;
+    }
+  }
 
+  async fetchPostsAndCommentsForPage(pageId) {
+    try {
+      const page = await this.facebookPageRepository.findByPageId(pageId);
+      if (!page) {
+        throw new Error(`Page not found: ${pageId}`);
+      }
+      
+      const postService = new FacebookPostService(this.user, page.token);
+      const result = await postService.fetchAndSavePostsForPage(pageId);
+      return result;
+    } catch (error) {
+      console.error(`Error fetching posts and comments for page ${pageId}:`, error);
+      throw error;
+    }
+  }
 };
 
 

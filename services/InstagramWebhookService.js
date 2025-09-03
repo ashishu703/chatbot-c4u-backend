@@ -13,6 +13,7 @@ const InstagramWebhookDto = require("../dtos/Instagram/InstagramWebhookDto");
 const { READ } = require("../types/conversation-status.types");
 const { OUTGOING, INCOMING } = require("../types/conversation-route.types");
 const InstagramChatbotAutomationService = require("./InstagramChatbotAutomationService");
+const InstagramCommentAutomationService = require("./InstagramCommentAutomationService");
 class InstagramWebhookService {
 
 
@@ -27,6 +28,15 @@ class InstagramWebhookService {
 
   async processIncomingWebhook(payload) {
     const { entry } = payload;
+    
+    // Process comment automation first
+    try {
+      const commentAutomationService = new InstagramCommentAutomationService();
+      await commentAutomationService.processComment(payload);
+    } catch (error) {
+      console.error('Error processing comment automation:', error);
+    }
+    
     entry.forEach((entryObj) => {
       const webhookDto = new InstagramWebhookDto(entryObj);
 
@@ -126,6 +136,14 @@ class InstagramWebhookService {
         await this.processDeliveryMessage(change, chat);
 
         await this.ioService.emitUpdateConversationEvent();
+      } else if (change.field === 'comments' && change.value) {
+        // Handle comment events for automation
+        try {
+          const commentAutomationService = new InstagramCommentAutomationService();
+          await commentAutomationService.handleNewComment(change.value, change.id);
+        } catch (error) {
+          console.error('Error processing comment automation:', error);
+        }
       }
     } catch (error) {
       return false;

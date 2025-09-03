@@ -52,6 +52,11 @@ router.post(
   planController.addPlan.bind(planController)
 );
 router.get("/get_plans", planController.getPlans.bind(planController));
+router.get("/get_payment_gateways_public", paymentController.getPaymentGatewaysPublic.bind(paymentController));
+router.post("/create_stripe_session_public", paymentController.createStripeSessionPublic.bind(paymentController));
+router.post("/create_razorpay_order_public", paymentController.createRazorpayOrderPublic.bind(paymentController));
+router.post("/pay_with_razorpay_public", paymentController.payWithRazorpayPublic.bind(paymentController));
+router.post("/pay_with_paypal_public", paymentController.payWithPaypalPublic.bind(paymentController));
 router.post(
   "/del_plan",
   adminValidator,

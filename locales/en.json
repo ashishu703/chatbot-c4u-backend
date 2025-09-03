@@ -171,5 +171,15 @@
     "user_already_exists": "User already exists",
     "chat_disabled" : "Chat is disabled",
     "invalid_plan_id":"invalid plan id",
-    "stripe_secret_key_is_missing":"Stripe secret key is missing"
+    "stripe_secret_key_is_missing":"Stripe secret key is missing",
+    "settings_saved_successfully": "Comment automation settings saved successfully",
+    "settings_retrieved_successfully": "Comment automation settings retrieved successfully",
+    "settings_updated_successfully": "Comment automation settings updated successfully",
+    "settings_deleted_successfully": "Comment automation settings deleted successfully",
+    "no_settings_found": "No comment automation settings found",
+    "settings_not_found": "Comment automation settings not found",
+    "invalid_platform": "Invalid platform. Must be 'facebook' or 'instagram'",
+    "invalid_active_status": "Invalid active status. Must be true or false",
+    "status_updated_successfully": "Settings status updated successfully",
+    "analytics_retrieved_successfully": "Analytics retrieved successfully"
 }

@@ -10,6 +10,10 @@ class MessengerMessageChangeDto {
         return this.getField() === "messaging_seen";
     }
 
+    isCommentEvent() {
+        const value = dataGet(this.data, "value");
+        return value && value.item === "comment";
+    }
 
     getField() {
         return dataGet(this.data, "field");
@@ -24,7 +28,7 @@ class MessengerMessageChangeDto {
     }
 
     getOwnerId() {
-        return getSenderId();
+        return this.getSenderId();
     }
 
     getReadObject() {
@@ -43,6 +47,9 @@ class MessengerMessageChangeDto {
         return createChatId(this.getTargetId(), this.getOwnerId());
     }
 
+    getCommentData() {
+        return dataGet(this.data, "value");
+    }
 }
 
 module.exports = MessengerMessageChangeDto;

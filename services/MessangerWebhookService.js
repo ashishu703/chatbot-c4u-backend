@@ -1,6 +1,7 @@
 const PageNotFoundException = require("../exceptions/CustomExceptions/PageNotFoundException");
 const ChatRepository = require("../repositories/ChatRepository");
 const FacebookPageRepository = require("../repositories/FacebookPageRepository");
+const FacebookCommentService = require("../services/FacebookCommentService");
 const {
   convertWebhookMessageToDBMessage,
 } = require("../utils/messages.utils");
@@ -20,6 +21,7 @@ class MessangerWebhookService {
     this.profileApi = new MessengerProfileApi(user, accessToken);
     this.messageRepository = new MessageRepository();
     this.ioService = new ChatIOService();
+    this.commentService = new FacebookCommentService();
   }
 
 
@@ -27,14 +29,38 @@ class MessangerWebhookService {
   async processIncomingMessages(payload) {
     const { object, entry } = payload;
 
+    console.log("Processing webhook payload:", {
+      object,
+      entryCount: entry?.length,
+      hasMessaging: entry?.some(e => e.messaging),
+      hasChanges: entry?.some(e => e.changes)
+    });
+
     for (const entryObj of entry) {
       const webhookDto = new MessengerWebhookDto(entryObj);
-
+      
+      // Handle messaging events (direct messages)
       if (webhookDto.isMessage()) {
         const messages = webhookDto.getMessages();
         if (messages) {
           for (const messageObj of messages) {
             await this.processWebhookEntry(messageObj);
+          }
+        }
+      }
+      
+      // Handle changes events (comments, posts, etc.)
+      if (webhookDto.isChange()) {
+        const changes = webhookDto.getChanges();
+        if (changes) {
+          for (const change of changes) {
+            if (change.isCommentEvent()) {
+              try {
+                await this.commentService.processCommentChange(change.getCommentData(), entryObj.id);
+              } catch (error) {
+                console.error("Error processing comment change:", error);
+              }
+            }
           }
         }
       }
@@ -48,9 +74,9 @@ class MessangerWebhookService {
 
     let chatId = messageObj.getChatId();
 
-    let facebookPage = await this.pageRepository.findFirst({
+    let facebookPage = await this.pageRepository.findFirstWithAccount({
       where: { page_id: ownerId }
-    }, ["account"]);
+    });
 
     if (!facebookPage) {
       throw new PageNotFoundException();
@@ -139,7 +165,11 @@ class MessangerWebhookService {
       }
     );
 
+    console.log('Processing delivery receipt for message:', message.id, 'in chat:', chatId);
+    
     this.ioService.emitNewMsgEvent(message);
+    console.log('Emitted delivery receipt event for message:', message.id);
+    
     await this.chatRepository.updateLastMessage(
       chatId,
       message.id
@@ -161,7 +191,13 @@ class MessangerWebhookService {
         chat_id: chatId,
       }
     );
+    
+    console.log('Processing incoming message:', message.id, 'for chat:', chatId);
+    console.log('Message route:', message.route, 'Message type:', message.type);
+    
     this.ioService.emitNewMsgEvent(message);
+    console.log('Emitted new message event for message:', message.id);
+    
     await this.chatRepository.updateLastMessage(
       chatId,
       message.id

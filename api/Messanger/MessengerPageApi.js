@@ -11,6 +11,20 @@ class MessengerPageApi extends MessengerApi {
         });
     }
 
+    async fetchPosts(pageId, limit = 100) {
+        return await this.get(`/${pageId}/posts`, {
+            fields: "id,message,story,created_time,updated_time",
+            limit: limit,
+        });
+    }
+
+    async fetchComments(postId, limit = 100) {
+        return await this.get(`/${postId}/comments`, {
+            fields: "id,from,message,created_time",
+            limit: limit,
+        });
+    }
+
     async subscribeWebhooks(page_id) {
         return this.post(`/${page_id}/subscribed_apps`, {
             subscribed_fields: [
@@ -22,6 +36,7 @@ class MessengerPageApi extends MessengerApi {
                 "message_echoes",
                 "message_deliveries",
                 "message_context",
+                "feed",
             ].join(","),
         });
     }

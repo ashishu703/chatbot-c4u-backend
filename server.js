@@ -35,6 +35,7 @@ app.use('/api/instagram', require('./routes/instagram.routes.js'))
 app.use('/api/whatsapp', require('./routes/whatsapp.routes.js'))
 app.use('/api/quick-replies', require('./routes/quick-replies.routes.js'))
 app.use('/api/ai-integration', require('./routes/ai-integration.routes.js'))
+app.use('/api', require('./routes/comment-automation.routes.js'))
 app.use(express.static(path.resolve(process.cwd(), "./client/public")));
 
 app.get("*", function (request, response) {
@@ -46,6 +47,7 @@ app.use(errorHandler);
 const server = app.listen(port || 3010, () => {
     const { app_name: appName } = defaultAppConfig
     console.log(`${appName} server is running on port ${port}`);
+    
     setTimeout(() => {
         runBroadcastJob()
     }, 1000);
