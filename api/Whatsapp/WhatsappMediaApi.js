@@ -18,39 +18,20 @@ class WhatsappMediaApi extends WhatsappApi {
   }
 
   async uploadFileMeta(sessionId, filePath) {
-    try {
-      if (!fs.existsSync(filePath)) {
-        throw new Error(`File not found: ${filePath}`);
-      }
-      const fileData = fs.readFileSync(filePath);
-      const fileExtension = filePath.split(".").pop().toLowerCase();
-      const contentType =
-        {
-          jpg: "image/jpeg",
-          jpeg: "image/jpeg",
-          png: "image/png",
-          gif: "image/gif",
-          pdf: "application/pdf",
-          doc: "application/msword",
-          docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          txt: "text/plain",
-          mp4: "video/mp4",
-          avi: "video/x-msvideo",
-          mov: "video/quicktime",
-        }[fileExtension] || "application/octet-stream";
-      return await this.post(
-        `/${sessionId}`,
-        fileData,
-        {},
-        {
-          Authorization: `OAuth ${this.accessToken}`,
-          "Content-Type": contentType,
-          Cookie: "ps_l=0; ps_n=0",
-        }
-      );
-    } catch (error) {
-      throw error;
-    }
+    const fileData = fs.readFileSync(filePath);
+    const url = `${this.APIURL}/${sessionId}`;
+
+    const options = {
+      method: "POST",
+      headers: {
+        Authorization: `OAuth ${this.accessToken}`,
+        "Content-Type": "application/pdf",
+        Cookie: "ps_l=0; ps_n=0",
+      },
+      body: fileData,
+    };
+    const response = await fetch(url, options);
+    return await response.json();
   }
 
   async getMedia(mediaId) {

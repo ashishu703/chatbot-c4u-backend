@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const fsp = require("fs/promises"); 
 const mime = require("mime-types");
 const { generateUid } = require("./auth.utils");
 
@@ -25,27 +26,12 @@ const uploadFile = async (file, destination) => {
 };
 
 const getFileInfo = async (filePath) => {
-  try {
-    if (!fs.existsSync(filePath)) {
-      throw new Error(`File does not exist: ${filePath}`);
-    }
-    const stats = await new Promise((resolve, reject) => {
-      fs.stat(filePath, (err, stats) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(stats);
-        }
-      });
-    });
-    const mimeType = mime.lookup(filePath) || "application/octet-stream";
-    return {
-      fileSizeInBytes: stats.size,
-      mimeType,
-    };   
-  } catch (error) {
-    throw error;
-  }
+  const stats = await fsp.stat(filePath); // use promises version
+  const mimeType = mime.lookup(filePath) || "application/octet-stream";
+  return {
+    fileSizeInBytes: stats.size,
+    mimeType,
+  };
 };
 
 
@@ -84,27 +70,11 @@ async function deleteFileIfExists(filePath) {
 async function storeMetaFiles(file) {
   const randomString = generateUid();
   const filename = `${randomString}.${getFileExtension(file.name)}`;
-  
-  const mediaDir = path.join(__dirname, '../client/public/media');
-  if (!fs.existsSync(mediaDir)) {
-    fs.mkdirSync(mediaDir, { recursive: true });
-  }
-  
-  const filePath = path.join(mediaDir, filename);
-  
-  await new Promise((resolve, reject) => {
-    file.mv(filePath, (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
-      }
-    });
-  });
-  
+  await file.mv(`${__dirname}/../client/public/media/${filename}`);
+  const directory = `${__dirname}/../client/public/media/${filename}`
   return {
     filename,
-    directory: filePath
+    directory
   }
 }
 

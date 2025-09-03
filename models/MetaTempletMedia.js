@@ -1,7 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class MetaTempletMedia extends Model {
+  class MetaTempleteMedia extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,18 +11,19 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  MetaTempletMedia.init(
+  MetaTempleteMedia.init(
     {
       uid: DataTypes.STRING,
-      templet_name: DataTypes.STRING,
+      template_name: DataTypes.STRING,
       meta_hash: DataTypes.STRING,
       file_name: DataTypes.STRING,
+      account_id: DataTypes.INTEGER,
     },
     {
       sequelize,
-      modelName: "MetaTempletMedia",
-      tableName: "meta_templet_media",
+      modelName: "MetaTempleteMedia",
+      tableName: "meta_templete_medias",
     }
   );
-  return MetaTempletMedia;
+  return MetaTempleteMedia;
 };

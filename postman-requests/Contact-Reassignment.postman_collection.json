@@ -1,0 +1,105 @@
+{
+  "info": {
+    "name": "Contact Reassignment API",
+    "description": "Collection for testing contact reassignment functionality",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Reassign Contacts to Tag",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"contactIds\": [1, 2, 3, 4, 5],\n  \"newPhonebookId\": 2\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/phonebook/reassign_contacts",
+          "host": ["{{base_url}}"],
+          "path": ["api", "phonebook", "reassign_contacts"]
+        },
+        "description": "Reassign selected contacts to a different phonebook/tag"
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Phonebooks",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/phonebook/get_by_uid?page=1&limit=10",
+          "host": ["{{base_url}}"],
+          "path": ["api", "phonebook", "get_by_uid"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Get all phonebooks to see available options for reassignment"
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Contacts",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/phonebook/get_uid_contacts?page=1&limit=10",
+          "host": ["{{base_url}}"],
+          "path": ["api", "phonebook", "get_uid_contacts"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Get all contacts to see available contact IDs for reassignment"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4500",
+      "type": "string"
+    }
+  ]
+}
