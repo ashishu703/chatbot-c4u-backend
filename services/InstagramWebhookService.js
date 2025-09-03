@@ -1,7 +1,4 @@
-
-const {
-  convertWebhookMessageToDBMessage,
-} = require("../utils/messages.utils");
+const { convertWebhookMessageToDBMessage } = require("../utils/messages.utils");
 const ChatIOService = require("./ChatIOService");
 const ProfileNotFoundException = require("../exceptions/CustomExceptions/ProfileNotFoundException");
 const ChatRepository = require("../repositories/ChatRepository");
@@ -13,10 +10,9 @@ const InstagramWebhookDto = require("../dtos/Instagram/InstagramWebhookDto");
 const { READ } = require("../types/conversation-status.types");
 const { OUTGOING, INCOMING } = require("../types/conversation-route.types");
 const InstagramChatbotAutomationService = require("./InstagramChatbotAutomationService");
-const InstagramCommentAutomationService = require("./InstagramCommentAutomationService");
+const kafkaManager = require("../utils/kafka/kafka-manager.utils");
+
 class InstagramWebhookService {
-
-
   constructor(user = null, accessToken = null) {
     this.chatRepository = new ChatRepository();
     this.socialAccountRepository = new SocialAccountRepository();
@@ -25,24 +21,35 @@ class InstagramWebhookService {
     this.ioService = new ChatIOService();
   }
 
-
   async processIncomingWebhook(payload) {
     const { entry } = payload;
-    
-    // Process comment automation first
-    try {
-      const commentAutomationService = new InstagramCommentAutomationService();
-      await commentAutomationService.processComment(payload);
-    } catch (error) {
-      console.error('Error processing comment automation:', error);
+    if (!entry || entry.length === 0) {
+      return;
     }
-    
+
+    const hasCommentEvent = entry.some(
+      (entryObj) =>
+        entryObj.changes &&
+        entryObj.changes.some((change) => change.field === "comments")
+    );
+
+    if (hasCommentEvent) {
+      try {
+        await kafkaManager.sendMessage("instagram-comments", payload);
+        console.log(
+          "✅ Comment event published to Kafka topic: instagram-comments"
+        );
+      } catch (error) {
+        console.error("❌ Error publishing comment to Kafka:", error);
+      }
+      return;
+    }
+
     entry.forEach((entryObj) => {
       const webhookDto = new InstagramWebhookDto(entryObj);
 
       if (webhookDto.isMessage()) {
         const messages = webhookDto.getMessages();
-
         messages?.forEach(async (messageObj) => {
           await this.processWebhookEntry(messageObj);
         });
@@ -59,40 +66,30 @@ class InstagramWebhookService {
 
   async processWebhookEntry(messageObj) {
     try {
-
-
       let ownerId = messageObj.getOwnerId();
 
       let chatId = messageObj.getChatId();
 
-      let instagramProfile =
-        await this.socialAccountRepository.findFirst({
-          where: { social_user_id: ownerId }
-        });
-
+      let instagramProfile = await this.socialAccountRepository.findFirst({
+        where: { social_user_id: ownerId },
+      });
 
       if (!instagramProfile) {
         throw new ProfileNotFoundException();
       }
 
-
-
-      let chat = await this.chatRepository.findFirst({
-        where: { chat_id: chatId, account_id: instagramProfile.id }
-      }, ["agentChat"]);
+      let chat = await this.chatRepository.findFirst(
+        {
+          where: { chat_id: chatId, account_id: instagramProfile.id },
+        },
+        ["agentChat"]
+      );
 
       if (!chat) {
-        chat = await this.createNewChat(
-          chatId,
-          instagramProfile,
-          messageObj
-        );
+        chat = await this.createNewChat(chatId, instagramProfile, messageObj);
       }
 
-
-
       await this.ioService.setChat(chat).init();
-
 
       if (messageObj.isDeliveryReceipt()) {
         await this.processDeliveryReciept(messageObj, chat);
@@ -105,8 +102,8 @@ class InstagramWebhookService {
       await this.ioService.emitUpdateConversationEvent();
     } catch (error) {
       console.log({
-        error
-      })
+        error,
+      });
       return false;
     }
   }
@@ -116,9 +113,8 @@ class InstagramWebhookService {
       if (change.isMessageSeenEvent()) {
         const sender = change.getSenderId();
         const instagramProfile = await this.socialAccountRepository.findFirst({
-          social_user_id: sender
+          social_user_id: sender,
         });
-
 
         if (!instagramProfile) {
           throw new ProfileNotFoundException();
@@ -126,23 +122,29 @@ class InstagramWebhookService {
 
         const chatId = change.getChatId();
 
-        const chat = await this.chatRepository.findFirst({
-          where: { chat_id: chatId, account_id: instagramProfile.id }
-        }, ["agentChat"]);
-
+        const chat = await this.chatRepository.findFirst(
+          {
+            where: { chat_id: chatId, account_id: instagramProfile.id },
+          },
+          ["agentChat"]
+        );
 
         await this.ioService.setChat(chat).init();
 
         await this.processDeliveryMessage(change, chat);
 
         await this.ioService.emitUpdateConversationEvent();
-      } else if (change.field === 'comments' && change.value) {
+      } else if (change.field === "comments" && change.value) {
         // Handle comment events for automation
         try {
-          const commentAutomationService = new InstagramCommentAutomationService();
-          await commentAutomationService.handleNewComment(change.value, change.id);
+          const commentAutomationService =
+            new InstagramCommentAutomationService();
+          await commentAutomationService.handleNewComment(
+            change.value,
+            change.id
+          );
         } catch (error) {
-          console.error('Error processing comment automation:', error);
+          console.error("Error processing comment automation:", error);
         }
       }
     } catch (error) {
@@ -151,7 +153,6 @@ class InstagramWebhookService {
   }
 
   async createNewChat(chatId, instagramProfile, messageObj) {
-
     const senderId = messageObj.getTargetId();
     await this.instagramProfileApi.initMeta();
     let name = "";
@@ -163,9 +164,11 @@ class InstagramWebhookService {
       name = resp?.name || "";
       profile_pic = resp?.profile_pic || null;
     } catch (e) {
-      console.error("Instagram fetchProfile failed (non-blocking):", e?.message || e);
+      console.error(
+        "Instagram fetchProfile failed (non-blocking):",
+        e?.message || e
+      );
     }
-
 
     return this.chatRepository.createIfNotExists(
       {
@@ -181,7 +184,7 @@ class InstagramWebhookService {
       },
       {
         chat_id: chatId,
-        uid: instagramProfile.uid
+        uid: instagramProfile.uid,
       }
     );
   }
@@ -190,7 +193,7 @@ class InstagramWebhookService {
     const chatId = chat.id;
 
     const dbMessageObj = convertWebhookMessageToDBMessage(messageObj);
-   
+
     const message = await this.messageRepository.createIfNotExists(
       {
         ...dbMessageObj,
@@ -205,10 +208,7 @@ class InstagramWebhookService {
     );
 
     this.ioService.emitNewMsgEvent(message);
-    await this.chatRepository.updateLastMessage(
-      chatId,
-      message.id
-    );
+    await this.chatRepository.updateLastMessage(chatId, message.id);
   }
 
   async processIncomingMessage(messageObj, chat) {
@@ -227,73 +227,79 @@ class InstagramWebhookService {
         chat_id: chatId,
       }
     );
-    
+
     this.ioService.emitNewMsgEvent(message);
-    await this.chatRepository.updateLastMessage(
-      chatId,
-      message.id
-    );
+    await this.chatRepository.updateLastMessage(chatId, message.id);
 
     // Trigger chatbot automation for incoming messages
     try {
       // Extract sender ID from the original webhook data
       let senderId = null;
-      
+
       // Try multiple methods to get sender ID
       try {
         // Method 1: Try to get sender ID directly from message object
         if (messageObj.getSenderId) {
           senderId = messageObj.getSenderId();
-          console.log('Method 1 - getSenderId():', senderId);
+          console.log("Method 1 - getSenderId():", senderId);
         }
-        
+
         // Method 2: Try to parse webhook data
         if (!senderId && messageObj.getWebhookData) {
           const webhookData = JSON.parse(messageObj.getWebhookData());
-          console.log('Method 2 - Parsed webhook data:', JSON.stringify(webhookData, null, 2));
-          
-          if (webhookData.entry && webhookData.entry[0] && webhookData.entry[0].messaging) {
+          console.log(
+            "Method 2 - Parsed webhook data:",
+            JSON.stringify(webhookData, null, 2)
+          );
+
+          if (
+            webhookData.entry &&
+            webhookData.entry[0] &&
+            webhookData.entry[0].messaging
+          ) {
             const messaging = webhookData.entry[0].messaging[0];
             senderId = messaging.sender?.id;
-            console.log('Method 2 - Extracted sender ID from webhook:', senderId);
+            console.log(
+              "Method 2 - Extracted sender ID from webhook:",
+              senderId
+            );
           }
         }
-        
+
         // Method 3: Try regex extraction from raw webhook string
         if (!senderId && messageObj.getWebhookData) {
           const rawWebhook = messageObj.getWebhookData();
-          if (rawWebhook && typeof rawWebhook === 'string') {
+          if (rawWebhook && typeof rawWebhook === "string") {
             const match = rawWebhook.match(/"sender":\{"id":"([^"]+)"/);
             if (match) {
               senderId = match[1];
-              console.log('Method 3 - Regex extracted sender ID:', senderId);
+              console.log("Method 3 - Regex extracted sender ID:", senderId);
             }
           }
         }
-        
+
         // Method 4: Try to get from message object properties
         if (!senderId && messageObj.sender_id) {
           senderId = messageObj.sender_id;
-          console.log('Method 4 - Direct sender_id property:', senderId);
+          console.log("Method 4 - Direct sender_id property:", senderId);
         }
-        
       } catch (e) {
-        console.log('Error in sender ID extraction:', e.message);
+        console.log("Error in sender ID extraction:", e.message);
       }
-      
-      console.log('Final extracted sender ID:', senderId);
+
+      console.log("Final extracted sender ID:", senderId);
 
       const chatbotMessage = {
         ...message,
         chat_id: chatId,
         uid: chat.uid,
         route: INCOMING,
-        sender_id: senderId
+        sender_id: senderId,
       };
-      
-      await (new InstagramChatbotAutomationService(chatbotMessage)).initBot();
+
+      await new InstagramChatbotAutomationService(chatbotMessage).initBot();
     } catch (error) {
-      console.error('Instagram Chatbot Automation Error:', error);
+      console.error("Instagram Chatbot Automation Error:", error);
     }
   }
 
@@ -306,27 +312,18 @@ class InstagramWebhookService {
 
     const { body } = message;
 
-
     message = await this.messageRepository.updateBody(mid, {
       ...body,
       reaction: messageObj.getEmoji(),
     });
 
-
     this.ioService.emitNewReactionEvent(message);
-
   }
 
   async processDeliveryMessage(messageObj) {
     const mid = messageObj.getId();
     return this.messageRepository.updateConversationStatus(mid, READ);
   }
+}
 
-
-
-
-
-};
-
-
-module.exports = InstagramWebhookService
+module.exports = InstagramWebhookService;

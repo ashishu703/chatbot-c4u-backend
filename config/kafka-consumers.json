@@ -3,8 +3,8 @@
     {
       "name": "instagram-comment-processor",
       "topic": "instagram-comments",
-      "handlerPath": "services/instagram-handlers.js",
-      "handlerFunction": "processInstagramComment"
+      "handlerPath": "services/InstagramCommentAutomationService.js",
+      "handlerFunction": "processComment"
     }
   ]
 }

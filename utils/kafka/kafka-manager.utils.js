@@ -1,4 +1,4 @@
-const { kafka, producer, consumer, topics, createTopics } = require("../config/kafka.config");
+const { kafka, producer, createTopics, generateConsumerConfigs } = require("../../config/kafka.config");
 const fs = require("fs");
 const path = require("path");
 
@@ -11,11 +11,9 @@ class KafkaManager {
 
   async initialize() {
     try {
-      console.log("🔌 [KAFKA MANAGER] Initializing...");
       await producer.connect();
       await createTopics();
       this.isConnected = true;
-      console.log("✅ [KAFKA MANAGER] Connected successfully");
     } catch (error) {
       console.error("❌ [KAFKA MANAGER] Connection failed:", error);
       throw error;
@@ -24,37 +22,31 @@ class KafkaManager {
 
   loadConsumersFromConfig() {
     try {
-      const configPath = path.join(__dirname, "../config/kafka-consumers.json");
+      const configPath = path.join(__dirname, "../../config/kafka-consumers.json");
       if (fs.existsSync(configPath)) {
         const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
         this.consumersConfig = config.consumers || [];
-        console.log(
-          `📝 [KAFKA MANAGER] Loaded ${this.consumersConfig.length} consumers from config`
-        );
       }
     } catch (error) {
-      console.log(
-        "ℹ️ [KAFKA MANAGER] No consumer config found, using manual registration"
-      );
     }
   }
 
   async autoRegisterConsumers() {
-    this.loadConsumersFromConfig();
-
-    for (const consumerConfig of this.consumersConfig) {
+    const consumerConfigs = generateConsumerConfigs();
+    for (const consumerConfig of consumerConfigs) {
       try {
         const handlerPath = path.join(
           __dirname,
-          "..",
+          "../..",
           consumerConfig.handlerPath
         );
         const handlerModule = require(handlerPath);
         const handler = handlerModule[consumerConfig.handlerFunction];
-
         this.registerConsumer(
           consumerConfig.name,
           consumerConfig.topic,
+          consumerConfig.consumerGroup,
+          consumerConfig.partitions,
           handler
         );
       } catch (error) {
@@ -66,42 +58,44 @@ class KafkaManager {
     }
   }
 
-  registerConsumer(consumerName, topicName, handler) {
-    const consumerInstance = kafka.consumer({
-      groupId: `${consumerName}-group`,
-    });
+  registerConsumer(consumerName, topicName, consumerGroup, partitionCount, handler) {
+    const consumers = [];
+    for (let i = 0; i < partitionCount; i++) {
+      const consumerInstance = kafka.consumer({
+        groupId: consumerGroup,
+      });
+      
+      consumers.push({
+        name: `${consumerName}-${i}`,
+        topic: topicName,
+        consumer: consumerInstance,
+        handler: handler,
+      });
+    }
 
-    this.consumers.set(consumerName, {
-      name: consumerName,
-      topic: topicName,
-      consumer: consumerInstance,
-      handler: handler,
-    });
-
-    console.log(
-      `📥 [KAFKA MANAGER] Consumer registered: ${consumerName} for topic: ${topicName}`
-    );
+    this.consumers.set(consumerName, consumers);
   }
 
   async startAllConsumers() {
     try {
-      console.log("🚀 [KAFKA MANAGER] Starting all consumers...");
-
-      const startPromises = Array.from(this.consumers.keys()).map(
-        (consumerName) => this.startConsumer(consumerName)
-      );
+      const startPromises = [];
+      
+      for (const [consumerName, consumers] of this.consumers) {
+        for (const consumerData of consumers) {
+          startPromises.push(this.startConsumer(consumerName, consumerData));
+        }
+      }
 
       await Promise.all(startPromises);
-      console.log("✅ [KAFKA MANAGER] All consumers started");
+      console.log("✅ [KAFKA] Started successfully");
     } catch (error) {
       console.error("❌ [KAFKA MANAGER] Failed to start consumers:", error);
       throw error;
     }
   }
 
-  async startConsumer(consumerName) {
+  async startConsumer(consumerName, consumerData) {
     try {
-      const consumerData = this.consumers.get(consumerName);
       if (!consumerData) {
         throw new Error(`Consumer ${consumerName} not found`);
       }
@@ -113,23 +107,31 @@ class KafkaManager {
       });
 
       await consumerData.consumer.run({
-        eachMessage: async ({ topic, partition, message }) => {
-          try {
-            const data = JSON.parse(message.value.toString());
-            await consumerData.handler(data, topic, partition, message);
-          } catch (error) {
-            console.error(
-              `❌ [${consumerName}] Error processing message:`,
-              error
-            );
+        eachBatch: async ({ batch, resolveOffset, heartbeat, isRunning, isStale }) => {
+          for (const message of batch.messages) {
+            if (!isRunning() || isStale()) break;
+            
+            try {
+              const data = JSON.parse(message.value.toString());
+              const result = await consumerData.handler(data, batch.topic, batch.partition, message);
+              
+              if (result && result.success) {
+                resolveOffset(message.offset);
+              }
+            } catch (error) {
+              console.error(
+                `❌ [${consumerData.name}] Error processing message:`,
+                error
+              );
+            }
+            
+            await heartbeat();
           }
         },
       });
-
-      console.log(`✅ [KAFKA MANAGER] Consumer started: ${consumerName}`);
     } catch (error) {
       console.error(
-        `❌ [KAFKA MANAGER] Failed to start consumer ${consumerName}:`,
+        `❌ [KAFKA MANAGER] Failed to start consumer ${consumerData.name}:`,
         error
       );
       throw error;
@@ -152,7 +154,6 @@ class KafkaManager {
         ],
       });
 
-      console.log(`📤 [KAFKA MANAGER] Message sent to ${topicName}`);
       return true;
     } catch (error) {
       console.error(
@@ -165,15 +166,12 @@ class KafkaManager {
 
   async stopAllConsumers() {
     try {
-      console.log("🛑 [KAFKA MANAGER] Stopping all consumers...");
-
-      for (const [consumerName, consumerData] of this.consumers) {
+      for (const [, consumerData] of this.consumers) {
         await consumerData.consumer.disconnect();
       }
 
       await producer.disconnect();
       this.isConnected = false;
-      console.log("✅ [KAFKA MANAGER] All consumers stopped");
     } catch (error) {
       console.error("❌ [KAFKA MANAGER] Error stopping consumers:", error);
     }

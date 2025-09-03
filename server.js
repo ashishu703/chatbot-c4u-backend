@@ -8,7 +8,7 @@ const { initializeSocket } = require('./utils/socket.utils');
 const { runBroadcastJob } = require('./jobs/broadcast.job')
 const { port, defaultAppConfig } = require('./config/app.config.js')
 const { errorHandler } = require('./utils/error-handler.utils.js')
-const kafkaManager = require('./utils/kafka-manager.utils')
+const kafkaManager = require('./utils/kafka/kafka-manager.utils')
 
 const app = express()
 
@@ -53,7 +53,6 @@ const server = app.listen(port || 3010, () => {
         runBroadcastJob()
     }, 1000);
 
-    // Initialize Kafka Manager automatically
     setTimeout(async () => {
         try {
             await kafkaManager.initialize();

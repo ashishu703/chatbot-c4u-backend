@@ -11,16 +11,29 @@ class InstagramCommentAutomationService {
   async processComment(commentData) {
     try {
       const { entry } = commentData;
+      let processedCount = 0;
+      let successCount = 0;
       
       for (const entryObj of entry) {
         if (entryObj.changes && entryObj.changes.length > 0) {
           for (const change of entryObj.changes) {
             if (change.field === 'comments' && change.value) {
-              await this.handleNewComment(change.value, entryObj.id);
+              const result = await this.handleNewComment(change.value, entryObj.id);
+              processedCount++;
+              if (result && result.success) {
+                successCount++;
+              }
             }
           }
         }
       }
+      const isSuccess = processedCount > 0 && successCount === processedCount;
+      return { 
+        success: isSuccess, 
+        processedCount, 
+        successCount 
+      };
+      
     } catch (error) {
       console.error('Instagram Comment Automation Error:', error);
     }

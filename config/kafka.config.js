@@ -7,45 +7,64 @@ const kafkaConfig = {
   clientId: "chatbot-mbg",
 };
 
-const topics = {
-  INSTAGRAM_COMMENTS: "instagram-comments",
+// Topic configurations with partition count
+const topicConfigs = {
+  "instagram-comments": {
+    partitions: 10,
+    consumerGroup: "instagram-comment-processors",
+    handlerPath: "services/InstagramCommentAutomationService.js",
+    handlerFunction: "processComment"
+  }
 };
 
 const kafka = new Kafka(kafkaConfig);
 const producer = kafka.producer();
-const consumer = kafka.consumer({ groupId: "instagram-comment-processors" });
 const admin = kafka.admin();
 
-// Auto-create topics
+// Auto-create topics based on configuration
 async function createTopics() {
   try {
-    const topicList = Object.values(topics);
     const existingTopics = await admin.listTopics();
-
-    const topicsToCreate = topicList.filter(
-      (topic) => !existingTopics.includes(topic)
-    );
-
-    if (topicsToCreate.length > 0) {
-      await admin.createTopics({
-        topics: topicsToCreate.map((topic) => ({
-          topic,
-          numPartitions: 3,
-          replicationFactor: 1,
-        })),
-      });
-      console.log("✅ [KAFKA] Created topics:", topicsToCreate);
+    
+    for (const [topicName, config] of Object.entries(topicConfigs)) {
+      if (!existingTopics.includes(topicName)) {
+        await admin.createTopics({
+          topics: [{
+            topic: topicName,
+            numPartitions: config.partitions,
+            replicationFactor: 1,
+          }],
+        });
+      }
     }
   } catch (error) {
     console.error("❌ [KAFKA] Failed to create topics:", error);
   }
 }
 
+// Generate consumer configurations from topic configs
+function generateConsumerConfigs() {
+  const consumers = [];
+  
+  for (const [topicName, config] of Object.entries(topicConfigs)) {
+    consumers.push({
+      name: `${topicName}-processor`,
+      topic: topicName,
+      consumerGroup: config.consumerGroup,
+      partitions: config.partitions,
+      handlerPath: config.handlerPath,
+      handlerFunction: config.handlerFunction
+    });
+  }
+  
+  return consumers;
+}
+
 module.exports = {
   kafka,
   producer,
-  consumer,
   admin,
-  topics,
+  topicConfigs,
   createTopics,
+  generateConsumerConfigs,
 };
