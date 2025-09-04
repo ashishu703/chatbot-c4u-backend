@@ -8,7 +8,7 @@ class InstagramCommentAutomationService {
     this.socialAccountRepository = new SocialAccountRepository();
   }
 
-  async processComment(commentData) {
+  async processComment(commentData, topic, partition, message) {
     try {
       const { entry } = commentData;
       let processedCount = 0;
@@ -36,6 +36,7 @@ class InstagramCommentAutomationService {
       
     } catch (error) {
       console.error('Instagram Comment Automation Error:', error);
+      return { success: false, error: error.message };
     }
   }
 
@@ -48,7 +49,6 @@ class InstagramCommentAutomationService {
         return;
       }
 
-      // PREVENT INFINITE LOOP: Don't reply to replies (comments with parent_id)
       if (parent_id) {
         console.log('Skipping reply comment to prevent infinite loop');
         return;
@@ -62,7 +62,6 @@ class InstagramCommentAutomationService {
         pageId
       });
 
-      // Find the Instagram profile/account
       const instagramProfile = await this.socialAccountRepository.findFirst({
         where: { social_user_id: pageId }
       });
@@ -72,13 +71,11 @@ class InstagramCommentAutomationService {
         return;
       }
 
-      // PREVENT INFINITE LOOP: Don't reply to our own comments
       if (from.id === pageId) {
         console.log('Skipping own comment to prevent infinite loop');
         return;
       }
 
-      // Get comment automation settings for this user
       const settings = await this.commentSettingsRepository.findActiveSettings(
         instagramProfile.uid, 
         'instagram'
@@ -89,18 +86,15 @@ class InstagramCommentAutomationService {
         return;
       }
 
-      // Check if we should reply to this comment
       if (!this.shouldReplyToComment(commentText, settings)) {
         console.log('Comment does not match reply criteria');
         return;
       }
 
-      // Process private reply (send message to user) - only if user is not the bot
       if (settings.private_reply_type !== 'none' && from.id !== pageId) {
         await this.sendPrivateReply(from.id, settings, instagramProfile);
       }
 
-      // Process public reply (reply to comment)
       if (settings.public_reply_type !== 'none') {
         await this.sendPublicReply(commentId, settings, instagramProfile);
       }
@@ -135,7 +129,6 @@ class InstagramCommentAutomationService {
       if (settings.private_reply_type === 'text' && settings.private_reply_text) {
         replyText = settings.private_reply_text;
       } else if (settings.private_reply_type === 'flow' && settings.private_reply_flow_id) {
-        // TODO: Implement flow execution
         console.log('Flow execution not implemented yet');
         return;
       }
@@ -145,7 +138,6 @@ class InstagramCommentAutomationService {
         return;
       }
 
-      // Send the private message only - don't create chat or save to database
       const chatService = new InstagramChatService(null, instagramProfile.token);
       await chatService.send({
         text: replyText,
@@ -164,11 +156,9 @@ class InstagramCommentAutomationService {
       let replyText = '';
 
       if (settings.public_reply_type === 'text' && settings.public_reply_texts) {
-        // Randomly select one of the reply texts
         const randomIndex = Math.floor(Math.random() * settings.public_reply_texts.length);
         replyText = settings.public_reply_texts[randomIndex];
       } else if (settings.public_reply_type === 'flow' && settings.public_reply_flow_id) {
-        // TODO: Implement flow execution
         console.log('Flow execution not implemented yet');
         return;
       }
@@ -178,7 +168,6 @@ class InstagramCommentAutomationService {
         return;
       }
 
-      // Send public reply to the comment using Instagram Graph API
       const response = await fetch(`https://graph.facebook.com/v22.0/${commentId}/replies?access_token=${instagramProfile.token}`, {
         method: 'POST',
         headers: {
@@ -207,5 +196,3 @@ class InstagramCommentAutomationService {
 }
 
 module.exports = InstagramCommentAutomationService;
-
-

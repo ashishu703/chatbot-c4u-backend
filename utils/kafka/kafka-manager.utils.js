@@ -48,7 +48,10 @@ class KafkaManager {
           consumerConfig.handlerPath
         );
         const handlerModule = require(handlerPath);
-        const handler = handlerModule[consumerConfig.handlerFunction];
+        
+        const serviceInstance = new handlerModule();
+        const handler = serviceInstance[consumerConfig.handlerFunction].bind(serviceInstance);
+        
         this.registerConsumer(
           consumerConfig.name,
           consumerConfig.topic,
