@@ -1,4 +1,4 @@
-const { Kafka } = require("kafkajs");
+const { Kafka, Partitioners } = require("kafkajs");
 
 const kafkaConfig = {
   brokers: process.env.KAFKA_BROKERS
@@ -18,7 +18,9 @@ const topicConfigs = {
 };
 
 const kafka = new Kafka(kafkaConfig);
-const producer = kafka.producer();
+const producer = kafka.producer({
+  createPartitioner: Partitioners.LegacyPartitioner
+});
 const admin = kafka.admin();
 
 // Auto-create topics based on configuration

@@ -1,4 +1,9 @@
-const { kafka, producer, createTopics, generateConsumerConfigs } = require("../../config/kafka.config");
+const {
+  kafka,
+  producer,
+  createTopics,
+  generateConsumerConfigs,
+} = require("../../config/kafka.config");
 const fs = require("fs");
 const path = require("path");
 
@@ -22,13 +27,15 @@ class KafkaManager {
 
   loadConsumersFromConfig() {
     try {
-      const configPath = path.join(__dirname, "../../config/kafka-consumers.json");
+      const configPath = path.join(
+        __dirname,
+        "../../config/kafka-consumers.json"
+      );
       if (fs.existsSync(configPath)) {
         const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
         this.consumersConfig = config.consumers || [];
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 
   async autoRegisterConsumers() {
@@ -58,13 +65,19 @@ class KafkaManager {
     }
   }
 
-  registerConsumer(consumerName, topicName, consumerGroup, partitionCount, handler) {
+  registerConsumer(
+    consumerName,
+    topicName,
+    consumerGroup,
+    partitionCount,
+    handler
+  ) {
     const consumers = [];
     for (let i = 0; i < partitionCount; i++) {
       const consumerInstance = kafka.consumer({
         groupId: consumerGroup,
       });
-      
+
       consumers.push({
         name: `${consumerName}-${i}`,
         topic: topicName,
@@ -79,7 +92,7 @@ class KafkaManager {
   async startAllConsumers() {
     try {
       const startPromises = [];
-      
+
       for (const [consumerName, consumers] of this.consumers) {
         for (const consumerData of consumers) {
           startPromises.push(this.startConsumer(consumerName, consumerData));
@@ -99,7 +112,6 @@ class KafkaManager {
       if (!consumerData) {
         throw new Error(`Consumer ${consumerName} not found`);
       }
-
       await consumerData.consumer.connect();
       await consumerData.consumer.subscribe({
         topic: consumerData.topic,
@@ -107,14 +119,25 @@ class KafkaManager {
       });
 
       await consumerData.consumer.run({
-        eachBatch: async ({ batch, resolveOffset, heartbeat, isRunning, isStale }) => {
+        eachBatch: async ({
+          batch,
+          resolveOffset,
+          heartbeat,
+          isRunning,
+          isStale,
+        }) => {
           for (const message of batch.messages) {
             if (!isRunning() || isStale()) break;
-            
+
             try {
               const data = JSON.parse(message.value.toString());
-              const result = await consumerData.handler(data, batch.topic, batch.partition, message);
-              
+              const result = await consumerData.handler(
+                data,
+                batch.topic,
+                batch.partition,
+                message
+              );
+
               if (result && result.success) {
                 resolveOffset(message.offset);
               }
@@ -124,7 +147,7 @@ class KafkaManager {
                 error
               );
             }
-            
+
             await heartbeat();
           }
         },
