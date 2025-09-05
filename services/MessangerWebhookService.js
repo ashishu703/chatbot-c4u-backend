@@ -1,7 +1,6 @@
 const PageNotFoundException = require("../exceptions/CustomExceptions/PageNotFoundException");
 const ChatRepository = require("../repositories/ChatRepository");
 const FacebookPageRepository = require("../repositories/FacebookPageRepository");
-const FacebookCommentService = require("../services/FacebookCommentService");
 const {
   convertWebhookMessageToDBMessage,
 } = require("../utils/messages.utils");
@@ -12,6 +11,7 @@ const MessengerWebhookDto = require("../dtos/Messenger/MessengerWebhookDto");
 const MessageRepository = require("../repositories/MessageRepository");
 const { INCOMING, OUTGOING } = require("../types/conversation-route.types");
 const { OPEN } = require("../types/chat-status.types");
+const kafkaManager = require("../utils/kafka/kafka-manager.utils");
 
 class MessangerWebhookService {
 
@@ -21,47 +21,36 @@ class MessangerWebhookService {
     this.profileApi = new MessengerProfileApi(user, accessToken);
     this.messageRepository = new MessageRepository();
     this.ioService = new ChatIOService();
-    this.commentService = new FacebookCommentService();
   }
 
 
 
   async processIncomingMessages(payload) {
-    const { object, entry } = payload;
+    const { entry } = payload;
 
-    console.log("Processing webhook payload:", {
-      object,
-      entryCount: entry?.length,
-      hasMessaging: entry?.some(e => e.messaging),
-      hasChanges: entry?.some(e => e.changes)
-    });
+    // Check for comment events and send to Kafka
+    const hasCommentEvent = entry?.some(entryObj => 
+      entryObj.changes?.some(change => change.field === "feed" && change.value?.item === "comment")
+    );
 
+    if (hasCommentEvent) {
+      try {
+        await kafkaManager.sendMessage("facebook-comments", payload);
+        console.log("✅ Facebook comment published to Kafka");
+      } catch (error) {
+        console.error("❌ Kafka error:", error);
+      }
+      return;
+    }
+
+    // Process regular messages
     for (const entryObj of entry) {
       const webhookDto = new MessengerWebhookDto(entryObj);
       
-      // Handle messaging events (direct messages)
       if (webhookDto.isMessage()) {
         const messages = webhookDto.getMessages();
-        if (messages) {
-          for (const messageObj of messages) {
-            await this.processWebhookEntry(messageObj);
-          }
-        }
-      }
-      
-      // Handle changes events (comments, posts, etc.)
-      if (webhookDto.isChange()) {
-        const changes = webhookDto.getChanges();
-        if (changes) {
-          for (const change of changes) {
-            if (change.isCommentEvent()) {
-              try {
-                await this.commentService.processCommentChange(change.getCommentData(), entryObj.id);
-              } catch (error) {
-                console.error("Error processing comment change:", error);
-              }
-            }
-          }
+        for (const messageObj of messages) {
+          await this.processWebhookEntry(messageObj);
         }
       }
     }

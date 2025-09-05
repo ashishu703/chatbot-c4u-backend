@@ -1,10 +1,12 @@
 const FacebookCommentRepository = require("../repositories/FacebookCommentRepository");
 const FacebookPageRepository = require("../repositories/FacebookPageRepository");
+const FacebookCommentAutomationService = require("./FacebookCommentAutomationService");
 
 class FacebookCommentService {
   constructor() {
     this.commentRepository = new FacebookCommentRepository();
     this.pageRepository = new FacebookPageRepository();
+    this.automationService = new FacebookCommentAutomationService();
   }
 
 
@@ -16,10 +18,9 @@ class FacebookCommentService {
         pageId
       });
       
-      const { comment_id, post_id, from, message, created_time } = commentData;
+      const { comment_id, post_id, from, message, created_time, verb } = commentData;
       
-      // Validate required fields
-      if (!comment_id || !post_id || !from || !message) {
+      if (!comment_id || !post_id || !from) {
         console.error("FacebookCommentService: Missing required comment data:", {
           comment_id,
           post_id,
@@ -28,17 +29,23 @@ class FacebookCommentService {
         });
         return;
       }
+
+      if (verb && verb !== 'add') {
+        console.log("FacebookCommentService: Skipping non-add comment event:", verb);
+        return;
+      }
+
+      const commentText = message || '[No text content]';
       
       console.log("FacebookCommentService: Comment data validated:", {
         comment_id,
         post_id,
         from_id: from.id,
         from_name: from.name,
-        message: message.substring(0, 100) + (message.length > 100 ? '...' : ''),
+        message: commentText.substring(0, 100) + (commentText.length > 100 ? '...' : ''),
         created_time
       });
       
-      // Find the Facebook page
       const facebookPage = await this.pageRepository.findFirstWithAccount({
         where: { page_id: pageId }
       });
@@ -54,36 +61,21 @@ class FacebookCommentService {
         accountId: facebookPage.account_id
       });
 
-      // Check if comment already exists
-      const existingComment = await this.commentRepository.findByCommentId(comment_id);
-      if (existingComment) {
-        console.log(`FacebookCommentService: Comment ${comment_id} already exists, skipping`);
-        return;
-      }
-
-      // Create new comment
-      const commentPayload = {
+      console.log("FacebookCommentService: Comment processed successfully :", {
         comment_id,
-        post_id,
-        page_id: facebookPage.id,
-        user_id: from.id,
-        user_name: from.name,
-        message,
-        created_time: new Date(created_time * 1000),
-        social_account_id: facebookPage.account_id,
-        status: 'active'
-      };
-
-      console.log("FacebookCommentService: Creating comment with payload:", commentPayload);
-      
-      const savedComment = await this.commentRepository.createComment(commentPayload);
-      console.log(`FacebookCommentService: Comment saved successfully:`, {
-        comment_id,
-        db_id: savedComment.id,
-        message: savedComment.message?.substring(0, 50) + '...'
+        from_id: from.id,
+        from_name: from.name,
+        message: commentText.substring(0, 50) + '...'
       });
+
+      try {
+        const automationResult = await this.automationService.processComment(commentData, pageId);
+        console.log("FacebookCommentService: Automation result:", automationResult);
+      } catch (error) {
+        console.error("FacebookCommentService: Automation error:", error);
+      }
       
-      return savedComment;
+      return { processed: true, comment_id };
     } catch (error) {
       console.error('FacebookCommentService: Error processing comment change:', error);
       console.error('FacebookCommentService: Comment data that caused error:', commentData);

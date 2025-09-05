@@ -77,7 +77,11 @@ class Repository {
             };
         }
         else {
-            return this.create({ ...data, ...uniqueKeys });
+            const createData = { ...data, ...uniqueKeys };
+            if (!createData.id && this.model.name === 'SocialAccount') {
+                createData.id = `sa_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            }
+            return this.create(createData);
         }
     }
 

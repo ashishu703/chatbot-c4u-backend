@@ -14,6 +14,12 @@ const topicConfigs = {
     consumerGroup: "instagram-comment-processors",
     handlerPath: "services/InstagramCommentAutomationService.js",
     handlerFunction: "processComment"
+  },
+  "facebook-comments": {
+    partitions: 10,
+    consumerGroup: "facebook-comment-processors",
+    handlerPath: "services/FacebookCommentAutomationService.js",
+    handlerFunction: "processComment"
   }
 };
 
