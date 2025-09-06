@@ -30,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
       uid: DataTypes.STRING,
       flow_id: DataTypes.STRING,
       title: DataTypes.STRING,
+      start_node_id: DataTypes.STRING,
       prevent_list: DataTypes.TEXT,
       ai_list: DataTypes.TEXT,
     },
