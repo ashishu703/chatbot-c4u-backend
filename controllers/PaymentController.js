@@ -170,10 +170,10 @@ class PaymentController {
   }
 
 async stripePayment(req, res) {
-    const { order, plan } = req.query;
+    const { order, plan, email, name } = req.query;
 
     try {
-      const response = await this.paymentService.handleStripePayment(order, plan);
+      const response = await this.paymentService.handleStripePayment(order, plan, email, name);
       res.send(response);
     } catch (error) {
       console.error('Stripe payment error:', error);

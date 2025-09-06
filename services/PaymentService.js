@@ -171,220 +171,129 @@ class PaymentService {
   }
 
   async payWithRazorpay(uid, { rz_payment_id, plan, amount }) {
-    try {
-      console.log('Processing Razorpay payment:', { uid, rz_payment_id, plan, amount });
-      
-      if (!rz_payment_id || !plan || !amount) {
-        console.error('Missing required fields:', { rz_payment_id, plan, amount });
-        throw new FillAllFieldsException();
-      }
-      
-      const getPlan = await this.orderRepository.findById(plan.id);
-      if (!getPlan) {
-        console.error('Plan not found for ID:', plan.id);
-        throw new InvalidPlanFoundException();
-      }
-      
-      const webPrivate = await this.webPrivate.getWebPrivate();
-      const webPublic = await this.webPublic.findFirst();
-      const rzId = webPrivate?.rz_id;
-      const rzKey = webPrivate?.rz_key;
-      
-      if (!rzId || !rzKey) {
-        console.error('Razorpay credentials missing');
-        throw new FillRazorpayCredentialsException();
-      }
-      
-      
-      console.log('Skipping payment verification (placeholder mode)');
-      
-      // Update user plan
-      await this.userRepository.updatePlan(uid, getPlan);
-      
-      // Create order record
-      await this.orderRepository.createOrder(uid, "RAZORPAY", plan.price, JSON.stringify({
-        payment_id: rz_payment_id,
-        status: 'success',
-        verified: false 
-      }));
-      
-      console.log('Razorpay payment processed successfully');
-      return { success: true, message: 'Payment processed successfully' };
-      
-    } catch (error) {
-      console.error('Error in payWithRazorpay:', error);
-      throw error;
+    if (!rz_payment_id || !plan || !amount) {
+      throw new FillAllFieldsException();
     }
+    
+    const getPlan = await this.orderRepository.findById(plan.id);
+    if (!getPlan) {
+      throw new InvalidPlanFoundException();
+    }
+    
+    const webPrivate = await this.webPrivate.getWebPrivate();
+    const rzId = webPrivate?.rz_id;
+    const rzKey = webPrivate?.rz_key;
+    
+    if (!rzId || !rzKey) {
+      throw new FillRazorpayCredentialsException();
+    }
+    
+    await this.userRepository.updatePlan(uid, getPlan);
+    
+    await this.orderRepository.createOrder(uid, "RAZORPAY", plan.price, JSON.stringify({
+      payment_id: rz_payment_id,
+      status: 'success',
+      verified: false 
+    }));
+    
+    return { success: true, message: 'Payment processed successfully' };
   }
 
   async createRazorpayOrder(planId, amount) {
-    try {
-      console.log('Creating Razorpay order for planId:', planId, 'amount:', amount);
-      
-      const plan = await this.planRepository.getPlanById(planId);
-      if (!plan || plan.length < 1) {
-        console.error('Plan not found for ID:', planId);
-        throw new PlanNotFoundWithIdException();
-      }
-
-      const selectedPlan = plan[0];
-      console.log('Selected plan:', selectedPlan);
-      
-      const webPrivate = await this.webPrivate.getWebPrivate();
-      const webPublic = await this.webPublic.findFirst();
-      
-      console.log('Web private config:', webPrivate);
-      console.log('Web public config:', webPublic);
-      
-      if (!webPrivate?.rz_id || !webPrivate?.rz_key) {
-        console.error('Razorpay credentials missing:', { rz_id: webPrivate?.rz_id, rz_key: webPrivate?.rz_key });
-        throw new FillRazorpayCredentialsException();
-      }
-      
-      // Validate Razorpay credentials format
-      if (!webPrivate.rz_id.startsWith('rzp_')) {
-        console.error('Invalid Razorpay key ID format:', webPrivate.rz_id);
-        throw new Error('Invalid Razorpay key ID format');
-      }
-      
-      if (!webPrivate.rz_key || webPrivate.rz_key.length < 10) {
-        console.error('Invalid Razorpay secret key format:', webPrivate.rz_key);
-        throw new Error('Invalid Razorpay secret key format');
-      }
-
-      // Get currency from web config or default to INR
-      let currency = webPublic?.currency_code || 'INR';
-      console.log('Using currency:', currency);
-      
-      // Validate currency - Razorpay supports INR, USD, EUR, etc.
-      const supportedCurrencies = ['INR', 'USD', 'EUR', 'GBP', 'SGD', 'AED'];
-      if (!supportedCurrencies.includes(currency)) {
-        console.warn(`Currency ${currency} might not be supported by Razorpay, using INR as fallback`);
-        currency = 'INR';
-      }
-      
-      // Validate amount
-      if (!amount || amount <= 0 || amount > 1000000) { 
-        console.error('Invalid amount:', amount);
-        throw new Error('Invalid amount provided');
-      }
-      
-      // Ensure amount is in the correct format for the currency
-      let amountInSmallestUnit;
-      if (currency === 'INR') {
-        amountInSmallestUnit = Math.round(amount * 100); 
-      } else if (currency === 'USD') {
-        amountInSmallestUnit = Math.round(amount * 100); 
-      } else {
-        amountInSmallestUnit = Math.round(amount * 100); 
-      }
-      
-      // Validate final amount
-      if (amountInSmallestUnit <= 0 || amountInSmallestUnit > 100000000) {
-        console.error('Invalid calculated amount:', amountInSmallestUnit);
-        throw new Error('Invalid calculated amount');
-      }
-      
-      console.log('Amount conversion:', { original: amount, currency, smallestUnit: amountInSmallestUnit });
-      
-      // Create a unique order ID
-      const orderId = `RZ_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      console.log('Generated order ID:', orderId);
-
-      const response = {
-        success: true,
-        order_id: orderId,
-        key: webPrivate.rz_id,
-        amount: amountInSmallestUnit,
-        currency: currency,
-        plan: selectedPlan,
-        // Add additional Razorpay required parameters
-        name: 'Subscription Payment',
-        description: selectedPlan.title || 'Plan Subscription',
-        prefill: {
-          email: '', 
-          contact: '' 
-        },
-        notes: {
-          plan_id: selectedPlan.id.toString(),
-          plan_name: selectedPlan.title
-        }
-      };
-      
-      console.log('Razorpay order response:', response);
-      return response;
-      
-    } catch (error) {
-      console.error('Error creating Razorpay order:', error);
-      throw error;
+    const plan = await this.planRepository.getPlanById(planId);
+    if (!plan || plan.length < 1) {
+      throw new PlanNotFoundWithIdException();
     }
+
+    const selectedPlan = plan[0];
+    const webPrivate = await this.webPrivate.getWebPrivate();
+    const webPublic = await this.webPublic.findFirst();
+    
+    if (!webPrivate?.rz_id || !webPrivate?.rz_key) {
+      throw new FillRazorpayCredentialsException();
+    }
+    
+    let currency = webPublic?.currency_code || 'INR';
+    const supportedCurrencies = ['INR', 'USD', 'EUR', 'GBP', 'SGD', 'AED'];
+    if (!supportedCurrencies.includes(currency)) {
+      currency = 'INR';
+    }
+    
+    if (!amount || amount <= 0 || amount > 1000000) { 
+      throw new Error('Invalid amount provided');
+    }
+    
+    const amountInSmallestUnit = Math.round(amount * 100);
+    
+    if (amountInSmallestUnit <= 0 || amountInSmallestUnit > 100000000) {
+      throw new Error('Invalid calculated amount');
+    }
+    
+    const orderId = `RZ_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    return {
+      success: true,
+      order_id: orderId,
+      key: webPrivate.rz_id,
+      amount: amountInSmallestUnit,
+      currency: currency,
+      plan: selectedPlan,
+      name: 'Subscription Payment',
+      description: selectedPlan.title || 'Plan Subscription',
+      prefill: {
+        email: '', 
+        contact: '' 
+      },
+      notes: {
+        plan_id: selectedPlan.id.toString(),
+        plan_name: selectedPlan.title
+      }
+    };
   }
 
   async createRazorpayOrderPublic(planId, amount, email, name) {
-    try {
-      console.log('Creating public Razorpay order for planId:', planId, 'amount:', amount, 'email:', email, 'name:', name);
-      
-      const plan = await this.planRepository.getPlanById(planId);
-      if (!plan || plan.length < 1) {
-        console.error('Plan not found for ID:', planId);
-        throw new PlanNotFoundWithIdException();
-      }
-
-      const selectedPlan = plan[0];
-      console.log('Selected plan:', selectedPlan);
-      
-      const webPrivate = await this.webPrivate.getWebPrivate();
-      const webPublic = await this.webPublic.findFirst();
-      
-      if (!webPrivate?.rz_id || !webPrivate?.rz_key) {
-        console.error('Razorpay credentials missing');
-        throw new FillRazorpayCredentialsException();
-      }
-      
-      // Get currency from web config or default to INR
-      let currency = webPublic?.currency_code || 'INR';
-      
-      // Validate amount
-      if (!amount || amount <= 0 || amount > 1000000) { 
-        console.error('Invalid amount:', amount);
-        throw new Error('Invalid amount provided');
-      }
-      
-      // Ensure amount is in the correct format for the currency
-      let amountInSmallestUnit = Math.round(amount * 100);
-      
-      // Create a unique order ID for public orders
-      const orderId = `RZ_PUBLIC_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      console.log('Generated public order ID:', orderId);
-
-      const response = {
-        success: true,
-        order_id: orderId,
-        key: webPrivate.rz_id,
-        amount: amountInSmallestUnit,
-        currency: currency,
-        plan: selectedPlan,
-        name: 'Subscription Payment',
-        description: selectedPlan.title || 'Plan Subscription',
-        prefill: {
-          email: email, 
-          contact: '' 
-        },
-        notes: {
-          plan_id: selectedPlan.id.toString(),
-          plan_name: selectedPlan.title,
-          email: email,
-          name: name
-        }
-      };
-      
-      console.log('Public Razorpay order response:', response);
-      return response;
-      
-    } catch (error) {
-      console.error('Error creating public Razorpay order:', error);
-      throw error;
+    const plan = await this.planRepository.getPlanById(planId);
+    if (!plan || plan.length < 1) {
+      throw new PlanNotFoundWithIdException();
     }
+
+    const selectedPlan = plan[0];
+    const webPrivate = await this.webPrivate.getWebPrivate();
+    const webPublic = await this.webPublic.findFirst();
+    
+    if (!webPrivate?.rz_id || !webPrivate?.rz_key) {
+      throw new FillRazorpayCredentialsException();
+    }
+    
+    let currency = webPublic?.currency_code || 'INR';
+    
+    if (!amount || amount <= 0 || amount > 1000000) { 
+      throw new Error('Invalid amount provided');
+    }
+    
+    const amountInSmallestUnit = Math.round(amount * 100);
+    const orderId = `RZ_PUBLIC_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    return {
+      success: true,
+      order_id: orderId,
+      key: webPrivate.rz_id,
+      amount: amountInSmallestUnit,
+      currency: currency,
+      plan: selectedPlan,
+      name: 'Subscription Payment',
+      description: selectedPlan.title || 'Plan Subscription',
+      prefill: {
+        email: email, 
+        contact: '' 
+      },
+      notes: {
+        plan_id: selectedPlan.id.toString(),
+        plan_name: selectedPlan.title,
+        email: email,
+        name: name
+      }
+    };
   }
 
 async payWithPaypal(uid, { orderID, plan }) {
@@ -442,18 +351,8 @@ if (order_details.status === "COMPLETED") {
     JSON.stringify(order_details)
   );
 
-  const durationDays = Number(getPlan?.plan_duration_in_days);
-  if (!durationDays || isNaN(durationDays)) {
-    throw new Error('Invalid or missing plan duration');
-  }
-
-  const planExpiration = new Date();
-  planExpiration.setDate(planExpiration.getDate() + durationDays);
-
   await this.userRepository.updateByUid(uidStr, {
-    plan_id: getPlan.id,
     api_key: webPrivate?.pay_paypal_key || null,
-    plan_expiration: planExpiration,
   });
 
   return true;
@@ -466,7 +365,7 @@ if (order_details.status === "COMPLETED") {
 }
 
 
-  async handleStripePayment(order, plan) {
+  async handleStripePayment(order, plan, email = null, name = null) {
     const getOrder = await this.orderRepository.findOrderByData(order);
     const getPlan = await this.orderRepository.findById(plan);
 
@@ -485,15 +384,33 @@ if (order_details.status === "COMPLETED") {
         data: JSON.stringify(session),
       });
 
-      const planDays = parseInt(getPlan.plan_duration_in_days || 0);
+      if (!getOrder.uid && email && name) {
+        const paymentData = {
+          payment_id: session.id,
+          email: email,
+          name: name,
+          plan_id: getPlan.id,
+          amount: getPlan.price,
+          payment_mode: 'STRIPE'
+        };
+        
+        const tempUid = `TEMP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        await this.orderRepository.updateOrder(order, {
+          uid: tempUid,
+          payment_mode: "STRIPE_PUBLIC",
+          data: JSON.stringify(paymentData),
+        });
+        
+        return this.returnHtmlRes(__t("payment_success_redirecting"));
+      }
 
-      const expirationTimestamp = Date.now() + planDays * 24 * 60 * 60 * 1000;
-
-      await this.userRepository.updateByUid(getOrder.uid, {
-        plan_id: getPlan.id,
-        plan_expiration: expirationTimestamp,
-        api_key: webPrivate?.pay_stripe_key || null,
-      });
+      if (getOrder.uid) {
+        await this.userRepository.updatePlan(getOrder.uid, getPlan);
+        await this.userRepository.updateByUid(getOrder.uid, {
+          api_key: webPrivate?.pay_stripe_key || null,
+        });
+      }
 
       return this.returnHtmlRes(__t("payment_success_redirecting"));
     }
@@ -524,84 +441,112 @@ if (order_details.status === "COMPLETED") {
   }
 
   async payWithRazorpayPublic({ rz_payment_id, plan, amount, email, name }) {
-    try {
-      console.log('Processing public Razorpay payment:', { rz_payment_id, plan, amount, email, name });
-      
-      if (!rz_payment_id || !plan || !amount || !email || !name) {
-        console.error('Missing required fields for public payment');
-        throw new FillAllFieldsException();
-      }
-      
-      const getPlan = await this.orderRepository.findById(plan.id);
-      if (!getPlan) {
-        console.error('Plan not found for ID:', plan.id);
-        throw new InvalidPlanFoundException();
-      }
-      
-      // For public payments, we don't have a user ID yet
-      // Store the payment information to be processed after user registration
-      const paymentData = {
-        payment_id: rz_payment_id,
-        status: 'success',
-        verified: false,
-        email: email,
-        name: name,
-        plan_id: plan.id,
-        amount: amount,
-        payment_mode: 'RAZORPAY'
-      };
-      
-      // Store in a temporary table or session for later processing
-      // This will be processed after user registration
-      console.log('Public Razorpay payment processed successfully, waiting for user registration');
-      return { success: true, message: 'Payment processed successfully, please complete registration' };
-      
-    } catch (error) {
-      console.error('Error in payWithRazorpayPublic:', error);
-      throw error;
+    if (!rz_payment_id || !plan || !amount || !email || !name) {
+      throw new FillAllFieldsException();
     }
+    
+    const getPlan = await this.orderRepository.findById(plan.id);
+    if (!getPlan) {
+      throw new InvalidPlanFoundException();
+    }
+    
+    const tempUid = `TEMP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const paymentData = {
+      payment_id: rz_payment_id,
+      email: email,
+      name: name,
+      plan_id: plan.id,
+      amount: amount,
+      payment_mode: 'RAZORPAY'
+    };
+    
+    await this.orderRepository.create({
+      uid: tempUid,
+      payment_mode: "RAZORPAY_PUBLIC",
+      amount: amount,
+      data: JSON.stringify(paymentData),
+      s_token: `TEMP_${rz_payment_id}`,
+    });
+    
+    return { success: true, message: 'Payment processed successfully, please complete registration' };
   }
 
   async payWithPaypalPublic({ orderID, plan, email, name }) {
-    try {
-      if (!orderID || !plan || !email || !name) {
-        throw new OrderIdAndPlanRequiredException();
-      }
-
-      const getPlan = await this.orderRepository.findById(plan.id);
-      if (!getPlan) {
-        throw new InvalidPlanFoundException();
-      }
-
-      const webPrivate = await this.webPrivate.getWebPrivate();
-      const paypalClientId = webPrivate?.pay_paypal_id;
-      const paypalClientSecret = webPrivate?.pay_paypal_key;
-
-      if (!paypalClientId || !paypalClientSecret) {
-        throw new PaypalCredentialsRequiredException();
-      }
-
-      // For public payments, we don't have a user ID yet
-      // Store the payment information to be processed after user registration
-      const paymentData = {
-        payment_id: orderID,
-        status: 'success',
-        verified: false,
-        email: email,
-        name: name,
-        plan_id: plan.id,
-        payment_mode: 'PAYPAL'
-      };
-      
-      // Store in a temporary table or session for later processing
-      // This will be processed after user registration
-      console.log('Public PayPal payment processed successfully, waiting for user registration');
-      return { success: true, message: 'Payment processed successfully, please complete registration' };
-      
-    } catch (error) {
-      console.error('Error in payWithPaypalPublic:', error);
-      throw error;
+    if (!orderID || !plan || !email || !name) {
+      throw new OrderIdAndPlanRequiredException();
     }
+
+    const getPlan = await this.orderRepository.findById(plan.id);
+    if (!getPlan) {
+      throw new InvalidPlanFoundException();
+    }
+
+    const tempUid = `TEMP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    const paymentData = {
+      payment_id: orderID,
+      email: email,
+      name: name,
+      plan_id: plan.id,
+      amount: plan.price,
+      payment_mode: 'PAYPAL'
+    };
+    
+    await this.orderRepository.create({
+      uid: tempUid,
+      payment_mode: "PAYPAL_PUBLIC",
+      amount: plan.price,
+      data: JSON.stringify(paymentData),
+      s_token: `TEMP_${orderID}`,
+    });
+    
+    return { success: true, message: 'Payment processed successfully, please complete registration' };
+  }
+
+  async processPendingPayment(email) {
+    const pendingOrder = await this.orderRepository.findFirst({
+      where: {
+        uid: {
+          [require('sequelize').Op.like]: 'TEMP_%'
+        },
+        payment_mode: ['RAZORPAY_PUBLIC', 'PAYPAL_PUBLIC', 'STRIPE_PUBLIC'],
+        data: {
+          [require('sequelize').Op.like]: `%"email":"${email}"%`
+        }
+      }
+    });
+    
+    if (!pendingOrder) {
+      return null;
+    }
+    
+    const paymentData = JSON.parse(pendingOrder.data);
+    
+    return {
+      orderId: pendingOrder.id,
+      paymentData: paymentData,
+      planId: paymentData.plan_id
+    };
+  }
+
+  async completePendingPayment(uid, pendingPayment) {
+    const { paymentData, orderId } = pendingPayment;
+    const plan = await this.orderRepository.findById(paymentData.plan_id);
+    
+    await this.userRepository.updatePlan(uid, plan);
+    
+    await this.orderRepository.updateOrder(orderId, {
+      uid: uid,
+      payment_mode: paymentData.payment_mode.replace('_PUBLIC', ''),
+      data: JSON.stringify({
+        ...paymentData,
+        completed: true,
+        uid: uid
+      })
+    });
+    
+    return true;
   }
 
   returnHtmlRes(msg) {

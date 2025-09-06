@@ -21,6 +21,7 @@ const { USER } = require("../types/roles.types");
 const { jwtKey } = require("../config/app.config");
 const EmailService = require("./EmailService");
 const UserRepository = require("../repositories/UserRepository");
+const PaymentService = require("./PaymentService");
 const {
   decodeToken,
   generateUid,
@@ -33,6 +34,7 @@ class AuthService {
     this.emailService = new EmailService();
     this.webPublicRepository = new WebPublicRepository();
     this.userRepository = new UserRepository();
+    this.paymentService = new PaymentService();
   }
 
   async verifyToken(token) {
@@ -132,6 +134,9 @@ class AuthService {
 
     const haspass = await encryptPassword(password);
     const uid = generateUid();
+    
+    const pendingPayment = await this.paymentService.processPendingPayment(email);
+    
     const user = await this.userRepository.create({
       name,
       uid,
@@ -140,6 +145,16 @@ class AuthService {
       mobile_with_country_code,
       plan_id: parseInt(plan_id),
     });
+
+    if (pendingPayment) {
+      await this.paymentService.completePendingPayment(uid, pendingPayment);
+    } else {
+      const plan = await this.paymentService.planRepository.findById(plan_id);
+      if (plan) {
+        await this.userRepository.updatePlan(uid, plan);
+      }
+    }
+
     this.emailService.sendWelcomeEmail(email, name);
 
     return user;
