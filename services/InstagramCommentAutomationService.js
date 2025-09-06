@@ -20,6 +20,7 @@ class InstagramCommentAutomationService {
             if (change.field === 'comments' && change.value) {
               const result = await this.handleNewComment(change.value, entryObj.id);
               processedCount++;
+              
               if (result && result.success) {
                 successCount++;
               }
@@ -27,11 +28,13 @@ class InstagramCommentAutomationService {
           }
         }
       }
+      
       const isSuccess = processedCount > 0 && successCount === processedCount;
+      
       return { 
         success: isSuccess, 
         processedCount, 
-        successCount 
+        successCount
       };
       
     } catch (error) {
@@ -46,12 +49,12 @@ class InstagramCommentAutomationService {
       
       if (!from || !from.id || !commentText) {
         console.log('Invalid comment data:', commentValue);
-        return;
+        return { success: false, error: 'Invalid comment data' };
       }
 
       if (parent_id) {
         console.log('Skipping reply comment to prevent infinite loop');
-        return;
+        return { success: false, error: 'Reply comment skipped' };
       }
 
       console.log('Processing new Instagram comment:', {
@@ -68,12 +71,12 @@ class InstagramCommentAutomationService {
 
       if (!instagramProfile) {
         console.log('Instagram profile not found for pageId:', pageId);
-        return;
+        return { success: false, error: 'Instagram profile not found' };
       }
 
       if (from.id === pageId) {
         console.log('Skipping own comment to prevent infinite loop');
-        return;
+        return { success: false, error: 'Own comment skipped' };
       }
 
       const settings = await this.commentSettingsRepository.findActiveSettings(
@@ -83,24 +86,47 @@ class InstagramCommentAutomationService {
 
       if (!settings || !settings.is_active) {
         console.log('No active comment automation settings found');
-        return;
+        return { success: false, error: 'No active settings' };
       }
 
       if (!this.shouldReplyToComment(commentText, settings)) {
         console.log('Comment does not match reply criteria');
-        return;
+        return { success: false, error: 'Comment does not match criteria' };
       }
 
+      let privateReplySent = false;
+      let publicReplySent = false;
+
       if (settings.private_reply_type !== 'none' && from.id !== pageId) {
-        await this.sendPrivateReply(from.id, settings, instagramProfile);
+        try {
+          await this.sendPrivateReply(from.id, settings, instagramProfile);
+          privateReplySent = true;
+        } catch (error) {
+          console.error('Error sending private reply:', error);
+        }
       }
 
       if (settings.public_reply_type !== 'none') {
-        await this.sendPublicReply(commentId, settings, instagramProfile);
+        try {
+          publicReplySent = await this.sendPublicReply(commentId, settings, instagramProfile);
+        } catch (error) {
+          console.error('Error sending public reply:', error);
+        }
       }
+
+      const success = privateReplySent || publicReplySent;
+      
+      return { 
+        success, 
+        privateReplySent, 
+        publicReplySent,
+        commentId,
+        userId: from.id
+      };
 
     } catch (error) {
       console.error('Error handling new comment:', error);
+      return { success: false, error: error.message };
     }
   }
 

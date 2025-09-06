@@ -5,6 +5,12 @@
       "topic": "instagram-comments",
       "handlerPath": "services/InstagramCommentAutomationService.js",
       "handlerFunction": "processComment"
+    },
+    {
+      "name": "facebook-comment-processor",
+      "topic": "facebook-comments",
+      "handlerPath": "services/FacebookCommentAutomationService.js",
+      "handlerFunction": "processComment"
     }
   ]
 }

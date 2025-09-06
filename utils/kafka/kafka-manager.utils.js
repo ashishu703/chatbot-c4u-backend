@@ -143,12 +143,22 @@ class KafkaManager {
 
               if (result && result.success) {
                 resolveOffset(message.offset);
+              } else {
+                await new Promise(resolve => setTimeout(resolve, 3 * 60 * 1000));
+                
+                const retryResult = await consumerData.handler(
+                  data,
+                  batch.topic,
+                  batch.partition,
+                  message
+                );
+
+                if (retryResult && retryResult.success) {
+                  resolveOffset(message.offset);
+                }
               }
             } catch (error) {
-              console.error(
-                `❌ [${consumerData.name}] Error processing message:`,
-                error
-              );
+              console.error(`❌ [${consumerData.name}] Error processing message:`, error);
             }
 
             await heartbeat();
