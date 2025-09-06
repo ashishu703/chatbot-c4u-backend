@@ -10,12 +10,13 @@ class FlowService {
     this.nodeRepository = new FlowNodeRepository();
     this.edgeRepository = new FlowEdgeRepository();
   }
-  async addFlow({ title, nodes, edges, flowId, uid }) {
+  async addFlow({ title, nodes, edges, flowId, startNodeId, uid }) {
 
     const flow = await this.flowRepository.updateOrCreate({
       uid: uid,
       flow_id: flowId,
       title,
+      start_node_id: startNodeId,
     }, {
       flow_id: flowId,
       uid: uid

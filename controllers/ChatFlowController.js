@@ -10,14 +10,14 @@ class FlowController {
   }
   async addFlow(req, res, next) {
     try {
-      const { title, nodes, edges, flowId } = req.body;
+      const { title, nodes, edges, flowId, startNodeId } = req.body;
       const { uid } = req.decode
 
       if (!title || !nodes || !edges || !flowId) {
         throw new FillAllFieldsException();
       }
 
-      await this.flowService.addFlow({ title, nodes, edges, flowId, uid });
+      await this.flowService.addFlow({ title, nodes, edges, flowId, startNodeId, uid });
       return formSuccess(res, { msg: __t("flow_saved") });
     } catch (err) {
       next(err);
