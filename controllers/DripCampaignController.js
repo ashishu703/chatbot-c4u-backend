@@ -32,31 +32,11 @@ class DripCampaignController {
   }
 
   _buildCampaignData(body) {
-    const { title, messages, time_interval_enabled, start_time, end_time, selected_days } = body;
-    
-    // Handle selected_days - it might come as a string or array
-    let processedSelectedDays = this.DEFAULT_DAYS;
-    if (selected_days) {
-      if (typeof selected_days === 'string') {
-        // If it's a string, try to parse it as JSON first
-        try {
-          processedSelectedDays = JSON.parse(selected_days);
-        } catch (e) {
-          // If JSON parsing fails, treat it as a comma-separated string
-          processedSelectedDays = selected_days.split(',').map(day => day.trim());
-        }
-      } else if (Array.isArray(selected_days)) {
-        processedSelectedDays = selected_days;
-      }
-    }
+    const { title, messages } = body;
     
     return {
       title,
-      messages,
-      time_interval_enabled: time_interval_enabled || false,
-      start_time: start_time || '00:00',
-      end_time: end_time || '23:00',
-      selected_days: processedSelectedDays
+      messages
     };
   }
 

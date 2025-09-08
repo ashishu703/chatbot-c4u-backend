@@ -20,10 +20,6 @@ module.exports = (sequelize, DataTypes) => {
       uid: DataTypes.STRING,
       title: DataTypes.STRING,
       status: DataTypes.ENUM('active', 'paused', 'completed', 'cancelled'),
-      time_interval_enabled: DataTypes.BOOLEAN,
-      start_time: DataTypes.TIME,
-      end_time: DataTypes.TIME,
-      selected_days: DataTypes.JSON,
       timezone: DataTypes.STRING,
     },
     {

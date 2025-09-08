@@ -149,10 +149,6 @@ class CampaignBuilder {
       uid: this.user.uid,
       title: campaignData.title,
       status: 'active',
-      time_interval_enabled: campaignData.time_interval_enabled,
-      start_time: campaignData.start_time,
-      end_time: campaignData.end_time,
-      selected_days: parseSelectedDays(campaignData.selected_days),
       timezone: this.userData.timezone || defaultTimeZone,
     };
   }
@@ -214,10 +210,6 @@ class DripCampaignService {
 
     const updatedCampaign = await this.dripCampaignRepository.update({
       title: campaignData.title,
-      time_interval_enabled: campaignData.time_interval_enabled,
-      start_time: campaignData.start_time,
-      end_time: campaignData.end_time,
-      selected_days: parseSelectedDays(campaignData.selected_days),
     }, { campaign_id, uid });
 
     const messageBuilder = new MessageBuilder(existingCampaign.id);
