@@ -1,83 +1,42 @@
-name: Node.js Backend Project CI/CD with Docker Compose
+name: CI/CD Deploy Backend (FAST)
 
 on:
   push:
-    branches:
-      - dev
-  workflow_dispatch:
+    branches: [ "main" ]
 
-# Ensures only one deployment runs at a time for the master branch
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: backend-deploy
   cancel-in-progress: true
 
-env:
-  # IMPORTANT: Replace this with your actual server user and IP/host
-  # For better security, consider setting these as secrets
-  SERVER_USER_HOST: "root@${{ secrets.SERVER_HOST }}"
-  DEPLOY_PATH: "/home/root/devchat-project-backend"
-
 jobs:
-  # This job is commented out for now to focus on deployment. 
-  # You can uncomment it once you have tests set up.
-  # test:
-  #   name: Run Tests
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4.1.1
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v4.0.2
-  #       with:
-  #         node-version: '20'
-  #         cache: 'npm'
-  #     - name: Install Dependencies
-  #       run: npm install
-  #     - name: Run Unit & Integration Tests
-  #       run: npm test
-
   deploy:
-    name: Deploy to Server
     runs-on: ubuntu-latest
-    # This ensures the deploy job waits for the test job to succeed.
-    # If you don't have tests yet, you can comment this line out.
-    # needs: test
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.1
+      - name: Checkout Repo
+        uses: actions/checkout@v4
 
-      - name: Load SSH Key
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
-
-      - name: Create Directory and Copy Files
+      - name: Setup SSH
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ env.SERVER_USER_HOST }} "mkdir -p ${{ env.DEPLOY_PATH }}"
-          # Using rsync is often more efficient than scp for subsequent deployments
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no" --exclude='.git/' ./ ${{ env.SERVER_USER_HOST }}:${{ env.DEPLOY_PATH }}/
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      # THIS IS THE CORRECTED STEP
-      - name: Deploy with Docker Compose
+      - name: Deploy on VPS
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ env.SERVER_USER_HOST }} '
-            # Navigate to the deployment directory on the server
-            cd ${{ env.DEPLOY_PATH }}
+          ssh root@${{ secrets.SERVER_IP }} << 'EOF'
+            set -e
+            cd /var/www/backend-app
 
-            # Create the production .env file from a GitHub Secret
-            # Make sure you have a DOT_ENV_FILE secret in your repository settings
-            echo "${{ secrets.DOT_ENV_FILE }}" > .env
-            echo ".env file created."
+            echo "Pulling latest code..."
+            git fetch origin main
+            git reset --hard origin/main
 
-            # Run Docker Compose to stop, pull, and restart the services
-            echo "Starting Docker Compose deployment..."
-            docker-compose down || true
-            docker-compose pull
-            docker-compose up -d --build --remove-orphans
-            
-            # Optional: Clean up dangling Docker images to save disk space
+            echo "Restarting containers..."
+            docker compose down
+            docker compose up -d --build
+
             docker image prune -f
-
-            echo "Deployment complete! ✅"
-          '
+            echo "Deploy Done ✅"
+          EOF

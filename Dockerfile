@@ -8,5 +8,5 @@ COPY . .
 FROM node:18-slim AS runner
 WORKDIR /app
 COPY --from=builder /app ./
-EXPOSE 4500
+EXPOSE 1300
 CMD ["node", "server.js"]

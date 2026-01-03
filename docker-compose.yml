@@ -65,9 +65,10 @@ services:
       - kafka
       - zookeeper
     ports:
-      - "4500:4500"
+      - "1300:1300"
     environment:
       NODE_ENV: production
+      PORT: 1300
       KAFKA_BROKERS: kafka:29092
       KAFKA_CLIENT_ID: chatbot-mbg
     restart: unless-stopped
