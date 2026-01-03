@@ -321,6 +321,19 @@ class UserService {
   return await this.WebPrivateRepository.findPaymentById(id);
 }
 
+  async generateApiKeys(uid) {
+    const { generateToken } = require("../utils/auth.utils");
+    const { USER } = require("../types/roles.types");
+    const token = generateToken({ uid, role: USER });
+    await this.userRepository.updateUser(uid, { api_key: token });
+    return { api_key: token };
+  }
+
+  async getApiKey(uid) {
+    const user = await this.userRepository.findByUid(uid);
+    return { api_key: user?.api_key || null };
+  }
+
 }
 
 module.exports = UserService;

@@ -15,7 +15,6 @@ class Repository {
     }
 
     async update(data, uniqueKeys = {}) {
-        console.log("data",data);
         await this.model.update(data, { where: uniqueKeys });
         return this.findFirst({ where: uniqueKeys });
     }

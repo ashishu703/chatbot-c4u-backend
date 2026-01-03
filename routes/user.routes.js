@@ -293,4 +293,33 @@ router.post(
   validateUser,
   paymentController.payWithPaypal.bind(paymentController)
 );
+
+router.post(
+  "/generate_api_key",
+  validateUser,
+  userController.generateApiKeys.bind(userController)
+);
+
+router.get(
+  "/api_key",
+  validateUser,
+  userController.getApiKey.bind(userController)
+);
+
+// Error Logs
+const ErrorLogController = require("../controllers/ErrorLogController");
+const errorLogController = new ErrorLogController();
+
+router.get(
+  "/error_logs",
+  validateUser,
+  errorLogController.getErrorLogs.bind(errorLogController)
+);
+
+router.get(
+  "/error_logs/stats",
+  validateUser,
+  errorLogController.getErrorStats.bind(errorLogController)
+);
+
 module.exports = router;

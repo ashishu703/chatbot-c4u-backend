@@ -32,6 +32,16 @@ function whatsappMessageDtoToSaveableBody(dto) {
       text: dto.getMessageText(),
       reaction: "",
     }
+  } else if (dto.getType && dto.getType() === 'unsupported') {
+    // Gracefully handle WhatsApp message types that Meta marks as "unsupported"
+    // so they still show something meaningful in the UI.
+    const details = dto.getUnsupportedDetails
+      ? dto.getUnsupportedDetails()
+      : "";
+    return {
+      text: details || "Unsupported WhatsApp message type",
+      reaction: "",
+    }
   } else if (dto.hasAttachment()) {
     const caption = dto.getCaption();
     const fileName = dto.getFileName();
@@ -39,7 +49,10 @@ function whatsappMessageDtoToSaveableBody(dto) {
     return {
       text: caption,
       fileName,
+      // Keep legacy field name plus more explicit ones so all frontends can read it
       attchment_url: link,
+      attachment_url: link,
+      url: link,
       reaction: "",
     }
   } else if (dto.isInteractive()) {
@@ -91,9 +104,31 @@ function extractTextFromInstagramMessage(message) {
   return "";
 }
 
+function extractTextFromMessengerMessage(message) {
+  const { body, type } = message;
+
+  switch (type) {
+    case TEXT:
+      return body.text;
+    case INTERACTIVE:
+      const {
+        type: interactiveType
+      } = body;
+      switch (interactiveType) {
+        case BUTTON_REPLY:
+          return body.button_reply?.title;
+        case LIST_REPLY:
+          return body.list_reply?.title;
+      }
+  }
+
+  return "";
+}
+
 module.exports = {
   convertWebhookMessageToDBMessage,
   whatsappMessageDtoToSaveableBody,
   extractTextFromWhatsappMessage,
   extractTextFromInstagramMessage,
+  extractTextFromMessengerMessage,
 };

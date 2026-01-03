@@ -23,6 +23,8 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "uid",
         sourceKey: "uid",
         as: "contacts",
+        // Explicitly exclude any phonebook related fields
+        attributes: { exclude: ['phonebook_id'] }
       });
       User.hasMany(models.Broadcast, {
         foreignKey: "uid",
@@ -43,6 +45,31 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "uid",
         sourceKey: "uid",
         as: "commentAutomationSettings",
+      });
+      User.hasMany(models.Catalog, {
+        foreignKey: "uid",
+        sourceKey: "uid",
+        as: "catalogs",
+      });
+      User.hasMany(models.EcommerceOrder, {
+        foreignKey: "uid",
+        sourceKey: "uid",
+        as: "ecommerceOrders",
+      });
+      User.hasMany(models.PaymentConfiguration, {
+        foreignKey: "uid",
+        sourceKey: "uid",
+        as: "paymentConfigurations",
+      });
+      User.hasOne(models.CommerceSettings, {
+        foreignKey: "uid",
+        sourceKey: "uid",
+        as: "commerceSettings",
+      });
+      User.hasOne(models.OrderSettings, {
+        foreignKey: "uid",
+        sourceKey: "uid",
+        as: "orderSettings",
       });
       User.belongsTo(models.Plan, {
         foreignKey: "plan_id",

@@ -13,20 +13,13 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "uid",
         as: "user",
       });
-      Contact.belongsTo(models.Phonebook, {
-        foreignKey: "phonebook_id",
-        targetKey: "id",
-        as: "phonebook",
-      });
     }
   }
-  Contact.init(
+    Contact.init(
     {
       uid: DataTypes.STRING,
       name: DataTypes.STRING,
-      mobile: DataTypes.STRING,
-      phonebook_id: DataTypes.INTEGER,
-      source: DataTypes.STRING,
+      mobile: DataTypes.STRING
     },
     {
       sequelize,

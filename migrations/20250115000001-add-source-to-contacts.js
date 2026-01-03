@@ -3,13 +3,9 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    // Add source field to contacts table
-    await queryInterface.addColumn('contacts', 'source', {
-      type: Sequelize.STRING,
-      allowNull: true,
-      defaultValue: 'manual', // Default source is manual entry
-      comment: 'Source of contact: manual, csv_import, api, etc.'
-    });
+    // This migration is redundant since it runs before create-contacts
+    // The source field should be added to the create-contacts migration if needed
+    return Promise.resolve();
   },
 
   async down (queryInterface, Sequelize) {

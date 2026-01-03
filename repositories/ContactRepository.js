@@ -14,16 +14,8 @@ class ContactRepository extends Repository {
     return this.find({ where: { uid } });
   }
 
-  async deleteByPhonebookId(phonebook_id, uid) {
-    return this.delete({ phonebook_id, uid });
-  }
-
   async deleteByIds(ids) {
     return this.delete({ id: ids });
-  }
-
-  async findByPhonebookId(phonebook_id, uid) {
-    return this.find({ where: { phonebook_id, uid } });
   }
 
   async countByUid(uid) {

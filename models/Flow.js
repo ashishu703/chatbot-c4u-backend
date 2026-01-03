@@ -27,14 +27,33 @@ module.exports = (sequelize, DataTypes) => {
   }
   Flow.init(
     {
-      uid: DataTypes.STRING,
-      flow_id: DataTypes.STRING,
-      title: DataTypes.STRING,
-      start_node_id: DataTypes.STRING,
-      prevent_list: DataTypes.TEXT,
-      ai_list: DataTypes.TEXT,
-    },
-    {
+      uid: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        references: {
+          model: 'users',
+          key: 'uid'
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+      },
+      flow_id: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      title: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      prevent_list: {
+        type: DataTypes.TEXT,
+        allowNull: true
+      },
+      ai_list: {
+        type: DataTypes.TEXT,
+        allowNull: true
+      }
+    }, {
       sequelize,
       modelName: "Flow",
       tableName: "flows",

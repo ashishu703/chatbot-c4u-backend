@@ -3,17 +3,9 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    // Add phonebook_id field only
-    await queryInterface.addColumn('contacts', 'phonebook_id', {
-      type: Sequelize.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'phonebooks',
-        key: 'id',
-      },
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
-    });
+    // This migration is redundant since phonebook_id is already included in create-contacts migration
+    // We can safely skip this migration
+    return Promise.resolve();
   },
 
   async down (queryInterface, Sequelize) {

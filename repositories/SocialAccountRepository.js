@@ -32,6 +32,7 @@ class SocialAccountRepository extends Repository {
       platform: INSTAGRAM,
     })
   }
+
   async updateOrCreateFacebookProfile(
     userId,
     accountId,
@@ -40,7 +41,6 @@ class SocialAccountRepository extends Repository {
     avatar,
     accessToken,
   ) {
-
     return this.updateOrCreate({
       platform: MESSANGER,
       avatar,
@@ -65,9 +65,7 @@ class SocialAccountRepository extends Repository {
     socialUserId,
     name,
     accessToken,
-
   ) {
-
     return this.updateOrCreate({
       platform: WHATSAPP,
       avatar: null,
@@ -129,8 +127,24 @@ class SocialAccountRepository extends Repository {
       where: {
         uid: userid,
         platform: WHATSAPP
-      }
+      },
     }, relations)
+  }
+
+  async updateToken(uid, platform, newToken) {
+    const platformType = platform === "whatsapp" ? WHATSAPP : MESSANGER;
+    const account = await this.findFirst({
+      where: { uid, platform: platformType }
+    });
+
+    if (!account) {
+      throw new Error(`No ${platform} account found for user`);
+    }
+
+    return this.update(
+      { token: newToken.trim() },
+      { uid, platform: platformType }
+    );
   }
 };
 

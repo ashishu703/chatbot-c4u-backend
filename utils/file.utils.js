@@ -80,6 +80,13 @@ async function storeMetaFiles(file) {
 
 
 function saveFileContent(fileContent, directory) {
+  const dirName = path.dirname(directory);
+
+  // Ensure target directory exists before writing
+  if (!fs.existsSync(dirName)) {
+    fs.mkdirSync(dirName, { recursive: true });
+  }
+
   return fs.writeFileSync(directory, fileContent);
 }
 

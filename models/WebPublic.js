@@ -23,6 +23,8 @@ module.exports = (sequelize, DataTypes) => {
       login_header_footer: DataTypes.INTEGER,
       exchange_rate: DataTypes.STRING,
       google_client_id: DataTypes.STRING,
+      google_client_secret: DataTypes.STRING,
+      google_redirect_uri: DataTypes.STRING,
       google_login_active: DataTypes.INTEGER,
       rtl: DataTypes.INTEGER,
       fb_login_app_id: DataTypes.STRING,

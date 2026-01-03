@@ -34,9 +34,14 @@ app.use('/api/instagram', require('./routes/instagram.routes.js'))
 app.use('/api/whatsapp', require('./routes/whatsapp.routes.js'))
 app.use('/api/quick-replies', require('./routes/quick-replies.routes.js'))
 app.use('/api/ai-integration', require('./routes/ai-integration.routes.js'))
+app.use('/api/integration', require('./routes/integration.routes.js'))
 app.use('/api/drip-campaign', require('./routes/drip-campaign.routes.js'))
+app.use('/api/user/qr', require('./routes/qr.routes.js'))
+app.use('/api/qr', require('./routes/qr.routes.js'))
 app.use('/api', require('./routes/comment-automation.routes.js'))
-app.use(express.static(path.resolve(process.cwd(), "./client/public")));
+    app.use('/api/ecommerce', require('./routes/ecommerce.routes.js'))
+    app.use('/api/google', require('./routes/google.routes.js'))
+    app.use(express.static(path.resolve(process.cwd(), "./client/public")));
 
 app.get("*", function (request, response) {
     response.sendFile(path.resolve(process.cwd(), "./client", "index.html"));

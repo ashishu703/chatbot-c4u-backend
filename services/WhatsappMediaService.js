@@ -66,16 +66,43 @@ class WhatsappMediaService {
   }
 
   async downloadAndSaveMedia(mediaId) {
-    await this.whatsappMediaApi.initMeta();
-    const attachment = await this.whatsappMediaApi.getMedia(mediaId);
-    const response = await this.whatsappMediaApi.getMediaFromUrl(
-      attachment.url
-    );
-    const ext = response.headers["content-type"].split("/")[1];
-    const randomSt = generateUid();
-    const savingPath = `${__dirname}/../client/public/meta-media/${randomSt}`;
-    saveFileContent(response.data, `${savingPath}.${ext}`);
-    return `${randomSt}.${ext}`;
+    try {
+      await this.whatsappMediaApi.initMeta();
+
+      const attachment = await this.whatsappMediaApi.getMedia(mediaId);
+      const mediaUrl =
+        attachment?.url ||
+        attachment?.data?.url ||
+        attachment?.data?.url?.[0] ||
+        null;
+
+      if (!mediaUrl) {
+        console.error("[WHATSAPP_MEDIA] No media URL returned for id:", mediaId);
+        return null;
+      }
+
+      const response = await this.whatsappMediaApi.getMediaFromUrl(mediaUrl);
+
+      const contentType =
+        response.headers?.["content-type"] ||
+        response.headers?.["Content-Type"] ||
+        "application/octet-stream";
+
+      const ext = (contentType.split(";")[0].split("/")[1] || "bin").toLowerCase();
+
+      const randomSt = generateUid();
+      const savingPath = `${__dirname}/../client/public/meta-media/${randomSt}`;
+
+      saveFileContent(response.data, `${savingPath}.${ext}`);
+
+      return `${randomSt}.${ext}`;
+    } catch (error) {
+      console.error("[WHATSAPP_MEDIA] Failed to download/save media:", {
+        mediaId,
+        error,
+      });
+      return null;
+    }
   }
 }
 

@@ -47,6 +47,20 @@ class WhatsappMessageDto {
         return dataGet(this.data, "type");
     }
 
+    /**
+     * For messages where Meta marks the type as "unsupported", WhatsApp
+     * often sends a helpful error payload describing why.
+     * We expose that here so it can be stored & rendered nicely.
+     */
+    getUnsupportedDetails() {
+        if (this.getType() !== 'unsupported') return "";
+        const details =
+            dataGet(this.data, "errors.0.error_data.details") ||
+            dataGet(this.data, "errors.0.message") ||
+            "";
+        return details;
+    }
+
     getInteractiveType() {
         return dataGet(this.data, "interactive.type");
     }

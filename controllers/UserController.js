@@ -288,6 +288,15 @@ class UserController {
     }
   }
 
+  async getApiKey(req, res, next) {
+    try {
+      const result = await this.userService.getApiKey(req.decode.uid);
+      return formSuccess(res, result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async autoAgentLogin(req, res, next) {
     try {
       const result = await this.userService.autoAgentLogin(req.body.uid);

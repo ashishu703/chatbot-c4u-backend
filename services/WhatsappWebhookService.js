@@ -128,11 +128,22 @@ class WhatsappWebhookService {
     }
     else {
       if (messageObj.hasAttachment()) {
-        const attachmentId = messageObj.getAttachmentId();
-        await this.whatsappMediaApi.initMeta();
-        const attachmentUrl = await (new WhatsappMediaService(null, whatsappProfile.token))
-          .downloadAndSaveMedia(attachmentId);
-        messageObj.setAttachmentUrl(`${backendURI}/meta-media/${attachmentUrl}`);
+        try {
+          const attachmentId = messageObj.getAttachmentId();
+          const mediaService = new WhatsappMediaService(null, whatsappProfile.token);
+          const attachmentFile = await mediaService.downloadAndSaveMedia(attachmentId);
+
+          if (attachmentFile) {
+            messageObj.setAttachmentUrl(`${backendURI}/meta-media/${attachmentFile}`);
+          } else {
+            console.warn("[WHATSAPP_WEBHOOK] Attachment could not be saved, continuing without media URL", {
+              chatId,
+              attachmentId,
+            });
+          }
+        } catch (e) {
+          console.error("[WHATSAPP_WEBHOOK] Error while processing attachment:", e);
+        }
       }
 
       const message = await this.messageRepository.createIfNotExists(
