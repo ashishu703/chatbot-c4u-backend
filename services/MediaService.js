@@ -1,6 +1,8 @@
 const path = require("path");
+const fs = require("fs");
 const NoFilesWereUploadedException = require("../exceptions/CustomExceptions/NoFilesWereUploadedException");
 const { generateUid } = require("../utils/auth.utils");
+
 function getFileExtension(filename) {
   return filename.split(".").pop();
 }
@@ -14,7 +16,10 @@ class MediaService {
     const randomString = generateUid();
     const file = files.file;
     const filename = `${randomString}.${getFileExtension(file.name)}`;
-    const filePath = path.join(__dirname, "../client/public/media", filename);
+    const mediaDir = path.join(__dirname, "../client/public/media");
+    const filePath = path.join(mediaDir, filename);
+
+    fs.mkdirSync(mediaDir, { recursive: true });
 
     await new Promise((resolve, reject) => {
       file.mv(filePath, (err) => {

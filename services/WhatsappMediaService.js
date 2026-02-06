@@ -57,6 +57,7 @@ class WhatsappMediaService {
       template_name: templet_name,
       meta_hash: hash,
       file_name: filename,
+      message_id: hash || `tmpl_${Date.now()}`,
     });
 
     return {

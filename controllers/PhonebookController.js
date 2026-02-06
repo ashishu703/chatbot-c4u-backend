@@ -69,21 +69,29 @@ class PhonebookController {
     }
   }
 
+  async updateContact(req, res, next) {
+    try {
+      const { id, name, mobile } = req.body;
+      const user = req.decode;
+      if (!id || !mobile) throw new MobileNumberRequiredException();
+      await this.phonebookService.updateContact(user.uid, id, { name: name || "", mobile });
+      return formSuccess(res, { msg: __t("contacts_inserted") });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async addSingleContact(req, res, next) {
     try {
-      const { id, phonebook_name, mobile, name, source } =
-        req.body;
+      const { id, phonebook_name, mobile, name, source } = req.body;
       const user = req.decode;
-      if (!mobile) {
-        throw new MobileNumberRequiredException();
-      }
-      console.log(req.body);
+      if (!mobile) throw new MobileNumberRequiredException();
       await this.phonebookService.addSingleContact(user.uid, {
         phonebook_id: id,
         phonebook_name,
         mobile,
         name,
-        source: source || 'manual'
+        source: source || "manual",
       });
       return formSuccess(res, { msg: __t("contacts_inserted") });
     } catch (err) {
@@ -96,13 +104,23 @@ class PhonebookController {
       const query = req.query;
       const user = req.decode;
       const contacts = await this.phonebookService.getContacts({
-        where: {
-          uid: user.uid,
-        },
-        // phonebook association removed
+        where: { uid: user.uid },
         ...query,
       });
       return formSuccess(res, { ...contacts });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async exportContacts(req, res, next) {
+    try {
+      const user = req.decode;
+      const format = (req.query.format || "csv").toLowerCase();
+      const { data, contentType, ext } = await this.phonebookService.exportContacts(user.uid, format);
+      res.setHeader("Content-Type", contentType);
+      res.setHeader("Content-Disposition", `attachment; filename="contacts.${ext}"`);
+      return res.send(data);
     } catch (err) {
       next(err);
     }

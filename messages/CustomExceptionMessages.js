@@ -324,6 +324,10 @@ module.exports = class CustomExceptionMessages {
         message: __t("csv_mobile_missing"),
         statusCode: 400,
       },
+      CsvCountryCodeRequiredException: {
+        message: __t("csv_country_code_required"),
+        statusCode: 400,
+      },
       InvalidUidOrPlanException: {
         message: __t("invalid_uid_or_plan"),
         statusCode: 400,

@@ -140,6 +140,7 @@
     "phonebook_deleted": "Le carnet d'adresses a été supprimé",
     "invalid_csv_provided": "Fichier CSV invalide fourni",
     "csv_mobile_missing": "Veuillez vérifier votre fichier CSV, un ou plusieurs numéros de mobile ne sont pas renseignés",
+    "csv_country_code_required": "Les numéros mobiles du CSV doivent inclure l'indicatif +91 (ex: +919876543210)",
     "contacts_inserted": "Les contacts ont été insérés",
     "contacts_deleted": "Le(s) contact(s) ont été supprimé(s)",
     "invalid_uid_or_plan": "UID ou données de plan invalides",

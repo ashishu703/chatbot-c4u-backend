@@ -13,14 +13,26 @@ const topicConfigs = {
     partitions: 10,
     consumerGroup: "instagram-comment-processors",
     handlerPath: "services/InstagramCommentAutomationService.js",
-    handlerFunction: "processComment"
+    handlerFunction: "processComment",
   },
   "facebook-comments": {
     partitions: 10,
     consumerGroup: "facebook-comment-processors",
     handlerPath: "services/FacebookCommentAutomationService.js",
-    handlerFunction: "processComment"
-  }
+    handlerFunction: "processComment",
+  },
+  "contacts": {
+    partitions: 3,
+    consumerGroup: "contact-event-processors",
+    handlerPath: "services/ContactEventService.js",
+    handlerFunction: "processContactEvent",
+  },
+  "contact-leads": {
+    partitions: 3,
+    consumerGroup: "contact-lead-processors",
+    handlerPath: "services/ContactLeadEventService.js",
+    handlerFunction: "processLeadEvent",
+  },
 };
 
 const kafka = new Kafka(kafkaConfig);

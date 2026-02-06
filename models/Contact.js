@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       uid: DataTypes.STRING,
       name: DataTypes.STRING,
-      mobile: DataTypes.STRING
+      mobile: DataTypes.STRING,
     },
     {
       sequelize,

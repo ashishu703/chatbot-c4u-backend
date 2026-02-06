@@ -23,8 +23,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "uid",
         sourceKey: "uid",
         as: "contacts",
-        // Explicitly exclude any phonebook related fields
-        attributes: { exclude: ['phonebook_id'] }
       });
       User.hasMany(models.Broadcast, {
         foreignKey: "uid",

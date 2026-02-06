@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       meta_hash: DataTypes.STRING,
       file_name: DataTypes.STRING,
       account_id: DataTypes.INTEGER,
+      message_id: DataTypes.TEXT,
     },
     {
       sequelize,

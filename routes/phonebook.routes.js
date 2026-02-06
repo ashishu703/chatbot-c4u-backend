@@ -34,10 +34,21 @@ router.post(
   checkPlan,
   phonebookController.addSingleContact.bind(phonebookController)
 );
+router.put(
+  "/update_contact",
+  validateUser,
+  checkPlan,
+  phonebookController.updateContact.bind(phonebookController)
+);
 router.get(
   "/get_uid_contacts",
   validateUser,
   phonebookController.getContacts.bind(phonebookController)
+);
+router.get(
+  "/export_contacts",
+  validateUser,
+  phonebookController.exportContacts.bind(phonebookController)
 );
 router.post(
   "/del_contacts",

@@ -37,7 +37,7 @@ class GoogleAuthController {
         order: [['reviewTime', 'DESC']],
       });
 
-      return formSuccess(res, reviews);
+      return formSuccess(res, { data: reviews });
     } catch (err) {
       next(err);
     }

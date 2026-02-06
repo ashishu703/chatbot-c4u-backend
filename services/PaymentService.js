@@ -213,11 +213,7 @@ class PaymentService {
       throw new FillRazorpayCredentialsException();
     }
     
-    let currency = webPublic?.currency_code || 'INR';
-    const supportedCurrencies = ['INR', 'USD', 'EUR', 'GBP', 'SGD', 'AED'];
-    if (!supportedCurrencies.includes(currency)) {
-      currency = 'INR';
-    }
+    const currency = 'INR';
     
     if (!amount || amount <= 0 || amount > 1000000) { 
       throw new Error('Invalid amount provided');
@@ -265,7 +261,7 @@ class PaymentService {
       throw new FillRazorpayCredentialsException();
     }
     
-    let currency = webPublic?.currency_code || 'INR';
+    const currency = 'INR';
     
     if (!amount || amount <= 0 || amount > 1000000) { 
       throw new Error('Invalid amount provided');
